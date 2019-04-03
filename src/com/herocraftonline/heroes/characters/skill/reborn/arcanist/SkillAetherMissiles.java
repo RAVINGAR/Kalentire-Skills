@@ -69,7 +69,7 @@ public class SkillAetherMissiles extends ActiveSkill {
 
         return getDescription()
                 .replace("$1", numProjectiles + "")
-                .replace("$2", Util.decFormat.format(duration / 1000))
+                .replace("$2", Util.decFormat.format((double) duration / 1000))
                 .replace("$3", Util.decFormat.format(damage))
                 .replace("$4", Util.decFormat.format(damageIncreasePerHit))
                 .replace("$5", Util.decFormat.format(totalMaxPossibleDamage));

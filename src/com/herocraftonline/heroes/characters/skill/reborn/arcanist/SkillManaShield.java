@@ -54,7 +54,7 @@ public class SkillManaShield extends ActiveSkill {
         double absorbCostRatio = SkillConfigManager.getUseSetting(hero, this, "absorb-cost-percent", 1.5, false);
 
         return getDescription()
-                .replace("$1", Util.decFormat.format(duration / 1000))
+                .replace("$1", Util.decFormat.format((double) duration / 1000))
                 .replace("$2", Util.decFormat.format(mitigationPercent * 100))
                 .replace("$3", Util.decFormat.format(absorbCostRatio * 100));
     }

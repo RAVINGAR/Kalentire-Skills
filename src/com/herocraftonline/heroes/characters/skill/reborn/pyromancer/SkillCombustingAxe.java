@@ -28,7 +28,7 @@ public class SkillCombustingAxe extends PassiveSkill {
 
     public SkillCombustingAxe(Heroes plugin) {
         super(plugin, "CombustingAxe");
-        setDescription("Whenever you hit an enemy that is on fire, your axe consumes the fire power and combusts on the target, dealing the damage immediately at a $1% rate.");
+        setDescription("Passive: Axe attacks on burning enemies will combust the target, dealing the remaining burning damage immediately at a $1% rate.");
         setTypes(SkillType.ABILITY_PROPERTY_FIRE, SkillType.DAMAGING);
 
         Bukkit.getServer().getPluginManager().registerEvents(new SkillHeroListener(this), plugin);
@@ -36,7 +36,9 @@ public class SkillCombustingAxe extends PassiveSkill {
 
     public String getDescription(Hero hero) {
         double damageEffectiveness = SkillConfigManager.getUseSetting(hero, this, "damage-effectiveness", 1.0, false);
-        return getDescription().replace("$1", Util.decFormat.format(damageEffectiveness * 100));
+
+        return getDescription()
+                .replace("$1", Util.decFormat.format(damageEffectiveness * 100));
     }
 
     public void init() {

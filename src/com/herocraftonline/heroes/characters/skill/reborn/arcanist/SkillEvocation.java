@@ -44,7 +44,7 @@ public class SkillEvocation extends ActiveSkill {
 
         return getDescription()
                 .replace("$1", Util.decFormat.format(regenMultiplier * 100))
-                .replace("$2", Util.decFormat.format(duration / 1000));
+                .replace("$2", Util.decFormat.format((double) duration / 1000));
     }
 
     @Override

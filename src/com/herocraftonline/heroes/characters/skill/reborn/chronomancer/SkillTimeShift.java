@@ -2,6 +2,7 @@ package com.herocraftonline.heroes.characters.skill.reborn.chronomancer;
 
 import com.herocraftonline.heroes.Heroes;
 import com.herocraftonline.heroes.api.SkillResult;
+import com.herocraftonline.heroes.api.events.HeroRegainHealthEvent;
 import com.herocraftonline.heroes.characters.CharacterTemplate;
 import com.herocraftonline.heroes.characters.Hero;
 import com.herocraftonline.heroes.characters.Monster;
@@ -16,6 +17,7 @@ import org.bukkit.*;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
+import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 
@@ -33,7 +35,10 @@ public class SkillTimeShift extends TargettedSkill {
 
     public SkillTimeShift(Heroes plugin) {
         super(plugin, "TimeShift");
-        setDescription("You tap into the web of time around you in a $1 radius, accelerating anyone and anything possible for $2 second(s).");
+        setDescription("You focus your temporal powers on a target, shifting their time. " +
+                "If used on ally, it will instantly heal them for $1 health and increase their movement speed by $2%. " +
+                "If used on an enemy, it will instantly deal $3 damage and decrease their movement speed by $4%. " +
+                "The movement speed effects can stack up to $5 times and lasts up to a maximum of $6 seconds.");
         setUsage("/skill timeshift");
         setArgumentRange(0, 0);
         setIdentifiers("skill timeshift");
@@ -42,13 +47,22 @@ public class SkillTimeShift extends TargettedSkill {
 
     @Override
     public String getDescription(Hero hero) {
-        int radius = SkillConfigManager.getUseSetting(hero, this, SkillSetting.RADIUS, 16, false);
-        int duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, 10000, false);
-        String formattedDuration = Util.decFormat.format(duration / 1000.0);
+        double healing = SkillConfigManager.getUseSetting(hero, this, SkillSetting.HEALING, 25.0, false);
+        double damage = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE, 25.0, false);
+
+        double speedIncrease = SkillConfigManager.getUseSetting(hero, this, "ally-percent-speed-increase", 0.1, false);
+        double speedDecrease = SkillConfigManager.getUseSetting(hero, this, "enemy-percent-speed-decrease", 0.1, false);
+
+        long duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, 10000, false);
+        int maxStacks = SkillConfigManager.getUseSetting(hero, this, "max-stacks", 10, false);
 
         return getDescription()
-                .replace("$1", radius + "")
-                .replace("$2", formattedDuration);
+                .replace("$1", Util.decFormat.format(healing))
+                .replace("$2", Util.decFormat.format(speedIncrease))
+                .replace("$3", Util.decFormat.format(damage))
+                .replace("$4", Util.decFormat.format(speedDecrease))
+                .replace("$5", Util.decFormat.format(maxStacks))
+                .replace("$6", Util.decFormat.format((double) duration / 1000.0));
     }
 
     @Override
@@ -83,12 +97,18 @@ public class SkillTimeShift extends TargettedSkill {
         return deceleratedShift(player, hero, target, ctTarget, duration, maxStacks);
     }
 
-    private SkillResult deceleratedShift(Player player, Hero hero, LivingEntity target, CharacterTemplate ctTarget, int duration, int maxStacks) {
+    private SkillResult deceleratedShift(Player player, Hero hero, LivingEntity target, CharacterTemplate targetCT, int duration, int maxStacks) {
         if (!damageCheck(player, target))
             return SkillResult.INVALID_TARGET;
 
+        broadcastExecuteText(hero, target);
+
+        double damage = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE, 40.0, false);
+        addSpellTarget(target, hero);
+        damageEntity(target, player, damage, EntityDamageEvent.DamageCause.MAGIC, false);
+
         double speedDecrease = SkillConfigManager.getUseSetting(hero, this, "enemy-percent-speed-decrease", 0.1, false);
-        boolean addedNewStack = ctTarget.addEffectStack(
+        boolean addedNewStack = targetCT.addEffectStack(
                 decelEffectName, this, player, duration,
                 () -> new DeceleratedShiftedTime(this, player, duration, speedDecrease, maxStacks)
         );
@@ -100,34 +120,43 @@ public class SkillTimeShift extends TargettedSkill {
 
         World world = target.getWorld();
         Location location = target.getLocation();
-        world.spawnParticle(Particle.REDSTONE, location, 45, 0.6, 1, 0.6, 0, new Particle.DustOptions(Color.YELLOW, 1));
+        //world.spawnParticle(Particle.REDSTONE, location, 45, 0.6, 1, 0.6, 0, new Particle.DustOptions(Color.YELLOW, 1));
         world.playSound(location, Sound.BLOCK_BEACON_DEACTIVATE, 0.5F, 2.0F);
-        broadcastExecuteText(hero, target);
         return SkillResult.NORMAL;
     }
 
-    //TODO: Make this method work like the decelerateShift method does, but test decel first.
     private SkillResult acceleratedShift(Player player, Hero hero, LivingEntity target, CharacterTemplate targetCT, int duration, int maxStacks) {
-        AcceleratedShiftedTime effect;
-        if (!targetCT.hasEffect(accelEffectName)) {
-            double percentIncrease = SkillConfigManager.getUseSetting(hero, this, "ally-percent-speed-increase", 0.1, false);
-            effect = new AcceleratedShiftedTime(this, player, duration, percentIncrease, maxStacks);
-            targetCT.addEffect(effect);
-        } else {
-            effect = (AcceleratedShiftedTime) targetCT.getEffect(accelEffectName);
-            if (effect.effectStack.hasMax()) {
-                player.sendMessage(ChatColor.WHITE + "Your target is already shifted as far as they can go!");
-                return SkillResult.INVALID_TARGET_NO_MSG;
+        broadcastExecuteText(hero, target);
+
+        double healing = SkillConfigManager.getUseSetting(hero, this, SkillSetting.HEALING, 40.0, false);
+
+        if (targetCT instanceof Hero) {
+            HeroRegainHealthEvent heal = new HeroRegainHealthEvent((Hero) targetCT, healing, this, hero);
+            plugin.getServer().getPluginManager().callEvent(heal);
+            if (heal.isCancelled()) {
+                player.sendMessage("Your target had their healing prevented!");
+            } else {
+                targetCT.heal(heal.getDelta());
             }
+        } else {
+            targetCT.heal(healing);
         }
-        effect.addStack(this, player, duration);
+
+        double speedIncrease = SkillConfigManager.getUseSetting(hero, this, "ally-percent-speed-increase", 0.1, false);
+        boolean addedNewStack = targetCT.addEffectStack(
+                accelEffectName, this, player, duration,
+                () -> new AcceleratedShiftedTime(this, player, duration, speedIncrease, maxStacks)
+        );
+
+        if (!addedNewStack) {
+            player.sendMessage(ChatColor.WHITE + "Your target is already shifted as far as they can go!");
+            return SkillResult.INVALID_TARGET_NO_MSG;
+        }
 
         World world = target.getWorld();
         Location location = target.getLocation();
-        world.spawnParticle(Particle.REDSTONE, location, 45, 0.6, 1, 0.6, 0, new Particle.DustOptions(Color.TEAL, 1));
+        //world.spawnParticle(Particle.REDSTONE, location, 45, 0.6, 1, 0.6, 0, new Particle.DustOptions(Color.TEAL, 1));
         world.playSound(location, Sound.BLOCK_BEACON_ACTIVATE, 1.0F, 1.7F);
-
-        broadcastExecuteText(hero, target);
         return SkillResult.NORMAL;
     }
 

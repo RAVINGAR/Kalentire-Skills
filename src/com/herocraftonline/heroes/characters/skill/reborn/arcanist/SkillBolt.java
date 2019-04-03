@@ -1,5 +1,6 @@
 package com.herocraftonline.heroes.characters.skill.reborn.arcanist;
 
+import com.herocraftonline.heroes.util.Util;
 import org.bukkit.Sound;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.LivingEntity;
@@ -31,9 +32,10 @@ public class SkillBolt extends TargettedSkill {
     public String getDescription(Hero hero) {
         int damage = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE, 150, false);
         double damageIncrease = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE_INCREASE_PER_INTELLECT, 0.0, false);
-        damage += (int) (damageIncrease * hero.getAttributeValue(AttributeType.INTELLECT));
+        damage += (damageIncrease * hero.getAttributeValue(AttributeType.INTELLECT));
 
-        return getDescription().replace("$1", damage + "");
+        return getDescription()
+                .replace("$1", Util.decFormat.format(damage));
     }
 
     @Override

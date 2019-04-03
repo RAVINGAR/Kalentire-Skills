@@ -9,6 +9,7 @@ import com.herocraftonline.heroes.characters.effects.Effect;
 import com.herocraftonline.heroes.characters.effects.EffectType;
 import com.herocraftonline.heroes.characters.effects.Stacking;
 import com.herocraftonline.heroes.characters.skill.*;
+import com.herocraftonline.heroes.util.Util;
 import de.slikey.effectlib.EffectManager;
 import de.slikey.effectlib.effect.SphereEffect;
 import de.slikey.effectlib.util.DynamicLocation;
@@ -23,8 +24,9 @@ public class SkillTimeDifferential extends TargettedSkill {
 
     public SkillTimeDifferential(Heroes plugin) {
         super(plugin, "TimeDifferential");
-        setDescription("Blah blah NOTTIFY A DEV THIS IS A TEMP DESCRIPTION - Attempt to shatter time around your target, dealing $3 damage and an additional "
-                + "$4 damage for each time based effect affecting them.");
+        setDescription("Restore your target's time to normal, dispelling any temporal buffs or debuffs, and absorbing their power to achieve an effect. " +
+                "If used on an ally, they will be healed for $1 health and an additional $2 health per temporal buff. " +
+                "If used on an enemy, they will take $3 damage and take an additional $4 damage per temporal debuff. ");
         setUsage("/skill timedifferential");
         setArgumentRange(0, 0);
         setIdentifiers("skill timedifferential");
@@ -39,10 +41,10 @@ public class SkillTimeDifferential extends TargettedSkill {
         double damagePerStack = SkillConfigManager.getUseSetting(hero, this, "damage-per-temporal-effect", 10.0, false);
 
         return getDescription()
-                .replace("$1", healing + "")
-                .replace("$2", healingPerStack + "")
-                .replace("$3", damage + "")
-                .replace("$4", damagePerStack + "");
+                .replace("$1", Util.decFormat.format(healing))
+                .replace("$2", Util.decFormat.format(healingPerStack))
+                .replace("$3", Util.decFormat.format(damage))
+                .replace("$4", Util.decFormat.format(damagePerStack));
     }
 
     @Override

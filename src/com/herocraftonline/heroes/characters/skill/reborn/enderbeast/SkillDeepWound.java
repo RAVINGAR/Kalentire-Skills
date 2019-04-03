@@ -39,20 +39,21 @@ public class SkillDeepWound extends TargettedSkill {
         setDescription("You inflict a deep wound on your target, slowing them by $1% and causing them to bleed for $2 damage over $3 second(s).");
         setUsage("/skill deepwound");
         setArgumentRange(0, 0);
-        setIdentifiers("skill deepwound", "skill mwound");
+        setIdentifiers("skill deepwound", "skill dwound");
         setTypes(SkillType.ABILITY_PROPERTY_PHYSICAL, SkillType.DAMAGING, SkillType.AGGRESSIVE);
     }
 
     @Override
     public String getDescription(Hero hero) {
         double reductionPercent = 1.0 - SkillConfigManager.getUseSetting(hero, this, "movespeed-reduction-percent", 0.2, true);
-        int duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, 10000, false);
+        long duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, 10000, false);
         double period = SkillConfigManager.getUseSetting(hero, this, SkillSetting.PERIOD, 2000, false);
         double damage = SkillConfigManager.getUseSetting(hero, this, "tick-damage", 1, false);
 
-        String formattedDamage = Util.decFormat.format(damage * duration / period);
-        String formattedDuration = Util.decFormat.format(duration / 1000);
-        return getDescription().replace("$1", reductionPercent * 100 + "").replace("$2", formattedDamage).replace("$3", formattedDuration);
+        return getDescription()
+                .replace("$1", reductionPercent * 100 + "")
+                .replace("$2", Util.decFormat.format(damage * ((double) duration / period)))
+                .replace("$3", Util.decFormat.format((double) duration / 1000));
     }
 
     @Override

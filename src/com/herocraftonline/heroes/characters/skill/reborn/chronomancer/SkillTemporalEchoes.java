@@ -10,6 +10,7 @@ import com.herocraftonline.heroes.characters.skill.ActiveSkill;
 import com.herocraftonline.heroes.characters.skill.Skill;
 import com.herocraftonline.heroes.characters.skill.SkillConfigManager;
 import com.herocraftonline.heroes.characters.skill.SkillType;
+import com.herocraftonline.heroes.util.Util;
 import me.libraryaddict.disguise.DisguiseAPI;
 import me.libraryaddict.disguise.disguisetypes.Disguise;
 import me.libraryaddict.disguise.disguisetypes.DisguiseType;
@@ -37,8 +38,9 @@ public class SkillTemporalEchoes extends ActiveSkill {
 
     public SkillTemporalEchoes(Heroes plugin) {
         super(plugin, "TemporalEchoes");
-        setDescription("Conjures up to $1 time doubles of yourself to assist you in battle for up to $2 seconds. "
-                + "The due to the unstable state of their existance, they only have $3 health and deal $4 damage per hit.");
+        setDescription("Conjures $1 time doubles of yourself to assist you in battle for up to $2 seconds. " +
+                "Due to the unstable state of their existence, they can only perform melee attacks. " +
+                "They each have $3 health and deal $4 damage per hit.");
         setUsage("/skill temporalechoes");
         setArgumentRange(0, 0);
         setIdentifiers("skill temporalechoes");
@@ -50,7 +52,16 @@ public class SkillTemporalEchoes extends ActiveSkill {
     }
 
     public String getDescription(Hero hero) {
-        return getDescription();
+        long duration = SkillConfigManager.getUseSetting(hero, this, "minion-duration", 6000, false);
+        int numEchoes = SkillConfigManager.getUseSetting(hero, this, "echoes-summoned", 4, false);
+        double maxHp = SkillConfigManager.getUseSetting(hero, this, "minion-max-hp", 100.0, false);
+        double hitDmg = SkillConfigManager.getUseSetting(hero, this, "minion-attack-damage", 40.0, false);
+
+        return getDescription()
+                .replace("$1", numEchoes + "")
+                .replace("$2", Util.decFormat.format((double) duration / 1000))
+                .replace("$3", Util.decFormat.format(maxHp))
+                .replace("$4", Util.decFormat.format(hitDmg));
     }
 
     public ConfigurationSection getDefaultConfig() {

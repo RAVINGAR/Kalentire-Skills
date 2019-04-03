@@ -33,14 +33,16 @@ public class SkillBlink extends ActiveSkill {
     @Override
     public String getDescription(Hero hero) {
         int distance = SkillConfigManager.getUseSetting(hero, this, SkillSetting.MAX_DISTANCE, 6, false);
-        return getDescription().replace("$1", distance + "");
+
+        return getDescription()
+                .replace("$1", distance + "");
     }
 
     @Override
     public ConfigurationSection getDefaultConfig() {
         ConfigurationSection config = super.getDefaultConfig();
         config.set(SkillSetting.MAX_DISTANCE.node(), 9);
-        config.set(SkillSetting.REAGENT.node(), 331);
+        config.set(SkillSetting.REAGENT.node(), Material.GUNPOWDER);
         config.set(SkillSetting.REAGENT_COST.node(), 3);
         return config;
     }

@@ -24,6 +24,8 @@ import org.bukkit.event.player.PlayerTeleportEvent;
 
 public class SkillRewind extends ActiveSkill implements Passive {
 
+    private final String trackerEffectName = "RewindTracker";
+
     public SkillRewind(Heroes plugin) {
         super(plugin, "Rewind");
         setDescription("You rewind in $1 second(s) in time, returning your stats and location to what they were back then.");
@@ -37,10 +39,10 @@ public class SkillRewind extends ActiveSkill implements Passive {
 
     @Override
     public String getDescription(Hero hero) {
-        int rewindDuration = SkillConfigManager.getUseSetting(hero, this, "rewind-duration", 4000, false);
-        String formattedDuration = Util.decFormat.format(rewindDuration / 1000.0);
+        long rewindDuration = SkillConfigManager.getUseSetting(hero, this, "rewind-duration", 4000, false);
 
-        return getDescription().replace("$1", formattedDuration);
+        return getDescription()
+                .replace("$1", Util.decFormat.format((double) rewindDuration / 1000.0));
     }
 
     @Override
@@ -54,11 +56,11 @@ public class SkillRewind extends ActiveSkill implements Passive {
     @Override
     public SkillResult use(Hero hero, String[] args) {
         Player player = hero.getPlayer();
-        if (!hero.hasEffect("RewindTracker")) {
+        if (!hero.hasEffect(trackerEffectName)) {
             return SkillResult.INVALID_TARGET;
         }
 
-        RewindTrackerEffect effect = (RewindTrackerEffect) hero.getEffect("RewindTracker");
+        RewindTrackerEffect effect = (RewindTrackerEffect) hero.getEffect(trackerEffectName);
         if (effect == null) {
             return SkillResult.INVALID_TARGET;
         }
@@ -98,7 +100,7 @@ public class SkillRewind extends ActiveSkill implements Passive {
         final EvictingQueue<SavedPlayerState> stateQueue;
 
         RewindTrackerEffect(Skill skill, int period, int rewindDuration) {
-            super(skill, "RewindTracker", period);
+            super(skill, trackerEffectName, period);
 
             types.add(EffectType.INTERNAL);
 
@@ -146,7 +148,7 @@ public class SkillRewind extends ActiveSkill implements Passive {
     public void tryApplying(Hero hero) {
         Player player = hero.getPlayer();
         if (hero.canUseSkill(this)) {
-            hero.removeEffect(hero.getEffect("RewindTracker"));
+            hero.removeEffect(hero.getEffect(trackerEffectName));
             this.apply(hero);
         } else {
             this.unapply(hero);
@@ -164,7 +166,7 @@ public class SkillRewind extends ActiveSkill implements Passive {
 
     @Override
     public void unapply(Hero hero) {
-        hero.removeEffect(hero.getEffect("RewindTracker"));
+        hero.removeEffect(hero.getEffect(trackerEffectName));
     }
 
     public class SkillListener implements Listener {

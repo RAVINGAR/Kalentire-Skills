@@ -66,7 +66,7 @@ public class SkillDecelerationField extends TargettedLocationSkill {
         return getDescription()
                 .replace("$2", Util.decFormat.format(maxDistance))
                 .replace("$2", Util.decFormat.format(radius))
-                .replace("$3", Util.decFormat.format(duration / 1000.0));
+                .replace("$3", Util.decFormat.format((double) duration / 1000.0));
     }
 
     @Override

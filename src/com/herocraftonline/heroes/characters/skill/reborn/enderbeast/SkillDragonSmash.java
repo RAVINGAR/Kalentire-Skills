@@ -4,16 +4,19 @@ import com.herocraftonline.heroes.Heroes;
 import com.herocraftonline.heroes.api.SkillResult;
 import com.herocraftonline.heroes.attributes.AttributeType;
 import com.herocraftonline.heroes.characters.Hero;
-import com.herocraftonline.heroes.characters.skill.ActiveSkill;
-import com.herocraftonline.heroes.characters.skill.SkillConfigManager;
-import com.herocraftonline.heroes.characters.skill.SkillSetting;
-import com.herocraftonline.heroes.characters.skill.SkillType;
-import com.herocraftonline.heroes.util.Util;
-import org.bukkit.*;
+import com.herocraftonline.heroes.characters.effects.Effect;
+import com.herocraftonline.heroes.characters.skill.*;
+import com.herocraftonline.heroes.util.GeometryUtil;
+import org.bukkit.Bukkit;
+import org.bukkit.Location;
+import org.bukkit.Sound;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
 import org.bukkit.configuration.ConfigurationSection;
-import org.bukkit.entity.*;
+import org.bukkit.entity.Entity;
+import org.bukkit.entity.FallingBlock;
+import org.bukkit.entity.LivingEntity;
+import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
@@ -30,11 +33,15 @@ import java.util.logging.Level;
 
 public class SkillDragonSmash extends ActiveSkill implements Listener {
 
+    private static String midDragonSmashEffectName;
     private List<FallingBlock> fallingBlocks = new ArrayList<FallingBlock>();
 
     public SkillDragonSmash(Heroes plugin) {
         super(plugin, "DragonSmash");
-        setDescription("You launch into the air and then smash down into the ground. Enemies in a $1 radius of the landing are dealt $2 damage.");
+        setDescription("Briefly transform and leap into the air. When you hit the peak of your jump, you will slam down at an incredible speed. " +
+                "Upon hitting the ground, all enemies within a $1 block radius of you will take $2 damage. " +
+                "The damage will be increased by $3 for every block you travel downwards. Can deal a maximum of $4 damage. " +
+                "If you are already transformed when you use this ability, you will leap much higher.");
         setUsage("/skill dragonsmash");
         setArgumentRange(0, 0);
         setIdentifiers("skill dragonsmash");
@@ -45,13 +52,15 @@ public class SkillDragonSmash extends ActiveSkill implements Listener {
 
     @Override
     public String getDescription(Hero hero) {
-        int radius = SkillConfigManager.getUseSetting(hero, this, SkillSetting.RADIUS, 5, false);
+        double radius = SkillConfigManager.getUseSetting(hero, this, SkillSetting.RADIUS, 5.0, false);
 
         double damage = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE, 100.0, false);
-        double damageIncrease = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE_INCREASE_PER_STRENGTH, 0.0, false);
-        damage += (int) (damageIncrease * hero.getAttributeValue(AttributeType.STRENGTH));
+        double strDamage = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE_INCREASE_PER_STRENGTH, 0.0, false);
+        damage += strDamage * hero.getAttributeValue(AttributeType.STRENGTH);
 
-        return getDescription().replace("$1", radius + "").replace("$2", damage + "");
+        return getDescription()
+                .replace("$1", radius + "")
+                .replace("$2", damage + "");
     }
 
     @Override
@@ -60,7 +69,7 @@ public class SkillDragonSmash extends ActiveSkill implements Listener {
         node.set(SkillSetting.DAMAGE.node(), 80.0);
         node.set("damage-per-block-height", 10.0);
         node.set("maximum-total-damage-increase-for-blocks", 80);
-        node.set(SkillSetting.RADIUS.node(), 5);
+        node.set(SkillSetting.RADIUS.node(), 5.0);
         node.set("upwards-velocity", 1.0);
         node.set("downwards-velocity", 1.0);
         node.set("transform-jump-velocity-difference", 1.0);
@@ -84,6 +93,8 @@ public class SkillDragonSmash extends ActiveSkill implements Listener {
 
         broadcastExecuteText(hero);
 
+        hero.addEffect(new MidDragonSmashEffect(this, player));
+
         player.playSound(player.getLocation(), Sound.ENTITY_ENDER_DRAGON_FLAP, 0.5f, 0.5f);
         player.playSound(player.getLocation(), Sound.ENTITY_PHANTOM_FLAP, 0.5f, 0.5f);
 
@@ -102,6 +113,12 @@ public class SkillDragonSmash extends ActiveSkill implements Listener {
             }
         }, delayTicksBeforeDrop);
         return SkillResult.NORMAL;
+    }
+
+    private class MidDragonSmashEffect extends Effect {
+        MidDragonSmashEffect(Skill skill, Player player) {
+            super(skill, midDragonSmashEffectName, player);
+        }
     }
 
     private class DragonSmashUpdateTask implements Runnable {
@@ -144,7 +161,7 @@ public class SkillDragonSmash extends ActiveSkill implements Listener {
         final double maxDamageGain = SkillConfigManager.getUseSetting(hero, this, "maximum-total-damage-increase-for-block", 80.0, false);
         final double hPower = SkillConfigManager.getUseSetting(hero, this, "target-horizontal-knockback", 0.5, false);
         final double vPower = SkillConfigManager.getUseSetting(hero, this, "target-vertical-knockback", 0.5, false);
-        final int radius = SkillConfigManager.getUseSetting(hero, this, SkillSetting.RADIUS, 5, false);
+        final double radius = SkillConfigManager.getUseSetting(hero, this, SkillSetting.RADIUS, 5.0, false);
 
         Location playerLoc = player.getLocation();
         int yDistance = (int) (topYValue - loc.getY());
@@ -186,11 +203,12 @@ public class SkillDragonSmash extends ActiveSkill implements Listener {
             @Override
             public void run() {
                 if (i > radius) {
+                    hero.removeEffect(hero.getEffect(midDragonSmashEffectName));
                     this.cancel();
                     return;
                 }
 
-                for (Location l : Util.getCircleLocationList(loc, radius, radius, false, false, -2)) {
+                for (Location l : GeometryUtil.getPerfectCircle(loc, (int) radius, (int) radius, false, false, -2)) {
                     Block block = l.getBlock();
                     Block aboveBlock = block.getRelative(BlockFace.UP);
                     if (!block.getType().isSolid() || !aboveBlock.isEmpty())

@@ -34,9 +34,6 @@ import java.util.List;
 
 public class SkillGravityFlux extends TargettedSkill {
 
-//    private String applyText;
-//    private String expireText;
-
     public SkillGravityFlux(Heroes plugin) {
         super(plugin, "GravityFlux");
         setDescription("Warp the space in a $1 block radius around a target, reversing gravity for them and all of those that are nearby."
@@ -51,11 +48,10 @@ public class SkillGravityFlux extends TargettedSkill {
     public String getDescription(Hero hero) {
         double radius = SkillConfigManager.getUseSetting(hero, this, SkillSetting.RADIUS, 5, false);
         long duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, 5000, false);
-        String formattedDuration = Util.decFormat.format(duration / 1000.0);
 
         return getDescription()
                 .replace("$1", Util.decFormat.format(radius))
-                .replace("$2", formattedDuration);
+                .replace("$2", Util.decFormat.format((double) duration / 1000.0));
     }
 
     @Override
@@ -65,18 +61,8 @@ public class SkillGravityFlux extends TargettedSkill {
         config.set(SkillSetting.RADIUS.node(), 5.0);
         config.set(SkillSetting.DURATION.node(), 3000);
         config.set("levitation-amplifier", 0);
-//        config.set(SkillSetting.APPLY_TEXT.node(), ChatComponents.GENERIC_SKILL + "%target% has had their gravity inversed by %hero%!");
-//        config.set(SkillSetting.EXPIRE_TEXT.node(), ChatComponents.GENERIC_SKILL + "%target%'s gravity returns to normal.");
         return config;
     }
-
-//    @Override
-//    public void init() {
-//        super.init();
-//
-//        applyText = SkillConfigManager.getRaw(this, SkillSetting.APPLY_TEXT, ChatComponents.GENERIC_SKILL + "%target% has had their gravity inversed by %hero%!").replace("%hero%", "$1");
-//        expireText = SkillConfigManager.getRaw(this, SkillSetting.EXPIRE_TEXT, ChatComponents.GENERIC_SKILL + "%target%'s gravity returns to normal.").replace("%hero%", "$1");
-//    }
 
     @Override
     public SkillResult use(Hero hero, LivingEntity target, String[] args) {

@@ -48,6 +48,7 @@ public class SkillSummonEnderCrystal extends ActiveSkill {
         setArgumentRange(0, 0);
         setIdentifiers("skill summonendercrystal", "skill endercrystal");
         setTypes(SkillType.ABILITY_PROPERTY_ENDER, SkillType.ABILITY_PROPERTY_DARK, SkillType.SILENCEABLE, SkillType.BLOCK_CREATING, SkillType.HEALING);
+
         Bukkit.getServer().getPluginManager().registerEvents(new SkillBlockListener(), plugin);
     }
 

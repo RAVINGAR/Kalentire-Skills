@@ -7,6 +7,7 @@ import com.herocraftonline.heroes.characters.skill.*;
 import com.herocraftonline.heroes.characters.skill.skills.SkillBaseGroundEffect;
 import com.herocraftonline.heroes.characters.skill.tools.BasicMissile;
 import com.herocraftonline.heroes.nms.NMSHandler;
+import com.herocraftonline.heroes.util.GeometryUtil;
 import com.herocraftonline.heroes.util.Util;
 import de.slikey.effectlib.Effect;
 import de.slikey.effectlib.EffectManager;
@@ -44,8 +45,8 @@ public class SkillEnderBreath extends SkillBaseGroundEffect {
     }
 
     public String getDescription(Hero hero) {
-        final int radius = SkillConfigManager.getUseSetting(hero, this, SkillSetting.RADIUS, 4, false);
-        int height = SkillConfigManager.getUseSetting(hero, this, HEIGHT_NODE, 2, false);
+        final double radius = SkillConfigManager.getUseSetting(hero, this, SkillSetting.RADIUS, 4.0, false);
+        double height = SkillConfigManager.getUseSetting(hero, this, HEIGHT_NODE, 2.0, false);
         long duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, 6000, false);
         final long period = SkillConfigManager.getUseSetting(hero, this, SkillSetting.PERIOD, 200, false);
         final double damageTick = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE_TICK, 50d, false);
@@ -66,7 +67,7 @@ public class SkillEnderBreath extends SkillBaseGroundEffect {
     public ConfigurationSection getDefaultConfig() {
         ConfigurationSection node = super.getDefaultConfig();
         node.set(SkillSetting.RADIUS.node(), 4);
-        node.set(HEIGHT_NODE, 2);
+        node.set(HEIGHT_NODE, 2.0);
         node.set(SkillSetting.DURATION.node(), 6000);
         node.set(SkillSetting.PERIOD.node(), 200);
         node.set(SkillSetting.DAMAGE_TICK.node(), 50d);
@@ -106,14 +107,14 @@ public class SkillEnderBreath extends SkillBaseGroundEffect {
         }
 
         private void explodeIntoGroundEffect(Location location) {
-            final int radius = SkillConfigManager.getUseSetting(hero, skill, SkillSetting.RADIUS, 4, false);
-            int height = SkillConfigManager.getUseSetting(hero, skill, HEIGHT_NODE, 2, false);
+            final double radius = SkillConfigManager.getUseSetting(hero, skill, SkillSetting.RADIUS, 4.0, false);
+            double height = SkillConfigManager.getUseSetting(hero, skill, HEIGHT_NODE, 2.0, false);
             long duration = SkillConfigManager.getUseSetting(hero, skill, SkillSetting.DURATION, 6000, false);
             final long period = SkillConfigManager.getUseSetting(hero, skill, SkillSetting.PERIOD, 200, false);
             final double damageTick = SkillConfigManager.getUseSetting(hero, skill, SkillSetting.DAMAGE_TICK, 50d, false);
 
-            int teleportRadius = (int) (radius * 0.75);
-            List<Location> locationsInCircle = Util.getCircleLocationList(location, teleportRadius, 1, false, false, 1);
+            double teleportRadius = radius * 0.75;
+            List<Location> locationsInCircle = GeometryUtil.getPerfectCircle(location, (int) teleportRadius, 1, false, false, 1);
 
             EnderFlameAoEGroundActions groundEffect = new EnderFlameAoEGroundActions(damageTick, radius, height, locationsInCircle);
             applyAreaGroundEffectEffect(hero, period, duration, location, radius, height, groundEffect);
@@ -123,11 +124,11 @@ public class SkillEnderBreath extends SkillBaseGroundEffect {
     private class EnderFlameAoEGroundActions implements GroundEffectActionsWithVisuals {
 
         private final double damageTick;
-        private final int radius;
-        private final int height;
+        private final double radius;
+        private final double height;
         private final List<Location> locationsInRadius;
 
-        EnderFlameAoEGroundActions(double damageTick, int radius, int height, List<Location> locationsInRadius) {
+        EnderFlameAoEGroundActions(double damageTick, double radius, double height, List<Location> locationsInRadius) {
             this.damageTick = damageTick;
             this.radius = radius;
             this.height = height;

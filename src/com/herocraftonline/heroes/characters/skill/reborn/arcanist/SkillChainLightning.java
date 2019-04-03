@@ -44,7 +44,7 @@ public class SkillChainLightning extends TargettedSkill {
     public String getDescription(Hero hero) {
         int damage = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE, 100, false);
         double damageIncrease = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE_INCREASE_PER_INTELLECT, 0.0, false);
-        damage += (int) (damageIncrease * hero.getAttributeValue(AttributeType.INTELLECT));
+        damage += damageIncrease * hero.getAttributeValue(AttributeType.INTELLECT);
 
         int maxTargets = SkillConfigManager.getUseSetting(hero, this, "max-targets", 5, false);
         int maxChainDistance = SkillConfigManager.getUseSetting(hero, this, "max-chain-distance", 5, false);

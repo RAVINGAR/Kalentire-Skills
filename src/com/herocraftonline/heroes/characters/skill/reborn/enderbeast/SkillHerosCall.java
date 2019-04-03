@@ -35,10 +35,10 @@ public class SkillHerosCall extends ActiveSkill {
 
     public SkillHerosCall(Heroes plugin) {
         super(plugin, "HerosCall");
-        setDescription("You loose a dreadful howl, imposing your beastly presence in a $1 block radius. "
-                + "All those who hear the call will have their inner dragon slayer awoken. "
-                + "The beast MUST be slain. The effect lasts for $2 second(s). "
-                + "Not very effective if you are in your human form.");
+        setDescription("You loose a dreadful howl, imposing your beastly presence in a $1 block radius. " +
+                "All those who hear the call will have their inner dragon slayer awoken. " +
+                "The beast " + ChatColor.BOLD + ChatColor.ITALIC + "must" + ChatColor.RESET + " be slain. The effect lasts for $2 second(s). " +
+                "Not very effective if you are in your human form.");
         setArgumentRange(0, 0);
         setUsage("/skill heroscall");
         setIdentifiers("skill heroscall");
@@ -47,17 +47,18 @@ public class SkillHerosCall extends ActiveSkill {
 
     @Override
     public String getDescription(Hero hero) {
-        int radius = SkillConfigManager.getUseSetting(hero, this, SkillSetting.RADIUS, 8, false);
-        int duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, 4000, false);
-        String formattedDuration = Util.decFormat.format(duration / 1000.0);
+        double radius = SkillConfigManager.getUseSetting(hero, this, SkillSetting.RADIUS, 8.0, false);
+        long duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, 4000, false);
 
-        return getDescription().replace("$1", radius + "").replace("$2", formattedDuration);
+        return getDescription()
+                .replace("$1", Util.decFormat.format(radius))
+                .replace("$2", Util.decFormat.format((double) duration / 1000.0));
     }
 
     @Override
     public ConfigurationSection getDefaultConfig() {
         ConfigurationSection node = super.getDefaultConfig();
-        node.set(SkillSetting.RADIUS.node(), 8);
+        node.set(SkillSetting.RADIUS.node(), 8.0);
         node.set("transform-period", 500);
         node.set(SkillSetting.PERIOD.node(), 4000);
         node.set(SkillSetting.DURATION.node(), 4000);
@@ -85,8 +86,8 @@ public class SkillHerosCall extends ActiveSkill {
     public SkillResult use(Hero hero, String[] args) {
         Player player = hero.getPlayer();
 
-        int radius = SkillConfigManager.getUseSetting(hero, this, SkillSetting.RADIUS, 8, false);
-        int duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, 4000, false);
+        double radius = SkillConfigManager.getUseSetting(hero, this, SkillSetting.RADIUS, 8.0, false);
+        long duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, 4000, false);
 
         int period = hero.hasEffect("EnderBeastTransformed")
                 ? SkillConfigManager.getUseSetting(hero, this, "transform-period", 500, false)

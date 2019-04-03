@@ -25,8 +25,8 @@ public class SkillHardenScales extends ActiveSkill {
 
     public SkillHardenScales(Heroes plugin) {
         super(plugin, "HardenScales");
-        setDescription("Harden your scales, increasing your weight and defense for the next $1 second(s). "
-                + "While active, you reduce incoming physical damage by $2%.");
+        setDescription("Harden your scales, increasing your weight and defense for the next $1 second(s). " +
+                "While active, you reduce incoming physical damage by $2%.");
         setArgumentRange(0, 0);
         setUsage("/skill hardenscales");
         setIdentifiers("skill hardenscales");
@@ -37,13 +37,12 @@ public class SkillHardenScales extends ActiveSkill {
 
     @Override
     public String getDescription(Hero hero) {
-        int duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, 4000, false);
+        long duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, 4000, false);
         double damageReduction = SkillConfigManager.getUseSetting(hero, this, "damage-reduction-percent", 0.35, false);
 
-        String formattedDuration = Util.decFormat.format(duration / 1000.0);
-        String formattedDamageReduction = Util.decFormat.format(damageReduction * 100);
-
-        return getDescription().replace("$1", formattedDuration).replace("$2", formattedDamageReduction);
+        return getDescription()
+                .replace("$1", Util.decFormat.format((double) duration / 1000.0))
+                .replace("$2", Util.decFormat.format(damageReduction * 100));
     }
 
     @Override
