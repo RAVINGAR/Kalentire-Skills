@@ -23,6 +23,8 @@ public class SkillHemorrhage extends TargettedSkill {
 
     private static final DustOptions enterParticleOptions = new Particle.DustOptions(Color.RED, 1);
     private static final DustOptions exitParticleOptions = new Particle.DustOptions(Color.RED, 2);
+    private final float enterParticleDisplaySpeed = 1.5F;   // 1.0F is default
+    private final float exitParticleDisplaySpeed = 1.5F;   // 1.0F is default
 
     public SkillHemorrhage(Heroes plugin) {
         super(plugin, "Hemorrhage");
@@ -65,11 +67,11 @@ public class SkillHemorrhage extends TargettedSkill {
 
         // display entrance of the hook
         player.getWorld().playSound(player.getLocation(), Sound.ENTITY_SQUID_HURT, 0.2F, 0.5F);
-        player.getWorld().spawnParticle(Particle.REDSTONE, target.getEyeLocation(), 5, 0.5F, 0.25F, 0.3F, 1.5F, enterParticleOptions, false);
+        player.getWorld().spawnParticle(Particle.REDSTONE, target.getEyeLocation(), 5, 0.5F, 0.25F, 0.3F, enterParticleDisplaySpeed, enterParticleOptions);
 
         int ticksBeforeDamage = SkillConfigManager.getUseSetting(hero, this, "ticks-before-damage", 3, false);
 
-        final double finalDamage = damage;  // Final for the runnable
+        final double finalDamage = damage;  // final so that it can be used in the runnable
         new BukkitRunnable() {
             @Override
             public void run() {
@@ -85,7 +87,7 @@ public class SkillHemorrhage extends TargettedSkill {
 
                 // display removal of the hook
                 player.getWorld().playSound(player.getLocation(), Sound.ENTITY_SQUID_HURT, 0.4F, 1.0F);
-                player.getWorld().spawnParticle(Particle.REDSTONE, target.getEyeLocation(), 15, 0.25F, 0.15F, 0.4F, 1.5F, exitParticleOptions, false);
+                player.getWorld().spawnParticle(Particle.REDSTONE, target.getEyeLocation(), 15, 0.25F, 0.15F, 0.4F, exitParticleDisplaySpeed, exitParticleOptions);
             }
         }.runTaskLaterAsynchronously(plugin, ticksBeforeDamage);
 
