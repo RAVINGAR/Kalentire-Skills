@@ -33,7 +33,7 @@ import java.util.logging.Level;
 
 public class SkillDragonSmash extends ActiveSkill implements Listener {
 
-    private static String midDragonSmashEffectName;
+    private static String midDragonSmashEffectName = "MidDragonSmash";
     private List<FallingBlock> fallingBlocks = new ArrayList<FallingBlock>();
 
     public SkillDragonSmash(Heroes plugin) {
@@ -82,6 +82,9 @@ public class SkillDragonSmash extends ActiveSkill implements Listener {
     @Override
     public SkillResult use(final Hero hero, String[] args) {
         final Player player = hero.getPlayer();
+
+        if (hero.hasEffect(midDragonSmashEffectName))
+            return SkillResult.INVALID_TARGET_NO_MSG;
 
         double vTransformPower = SkillConfigManager.getUseSetting(hero, this, "transform-jump-velocity-difference", 1.0, false);
         if (!hero.hasEffect("EnderBeastTransformed"))

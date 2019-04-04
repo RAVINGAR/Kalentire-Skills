@@ -15,26 +15,29 @@ import de.slikey.effectlib.effect.CylinderEffect;
 import de.slikey.effectlib.util.DynamicLocation;
 import org.bukkit.*;
 import org.bukkit.configuration.ConfigurationSection;
+import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
-import org.bukkit.potion.PotionEffect;
-import org.bukkit.potion.PotionEffectType;
+import org.bukkit.util.Vector;
+
+import java.util.List;
 
 public class SkillEvocation extends ActiveSkill {
 
     private static Color MANA_BLUE = Color.fromRGB(0, 191, 255);
 
-    private String delayText;
+    private String applyText;
     private String expireText;
 
     public SkillEvocation(Heroes plugin) {
         super(plugin, "Evocation");
         setDescription("Channeling: Increases your mana regeneration by $1% for up to $2 second(s). " +
+                "While channeling you will knock nearby enemies away from you. " +
                 "You are slowed while casting this ability and can be interrupted by others.");
         setUsage("/skill evocation");
         setArgumentRange(0, 0);
         setIdentifiers("skill evocation");
-        setTypes(SkillType.BUFFING, SkillType.MANA_INCREASING);
+        setTypes(SkillType.ABILITY_PROPERTY_MAGICAL, SkillType.BUFFING, SkillType.MANA_INCREASING);
     }
 
     @Override
@@ -53,8 +56,8 @@ public class SkillEvocation extends ActiveSkill {
         config.set("regen-multiplier", 4.0);
         config.set(SkillSetting.PERIOD.node(), 1000);
         config.set(SkillSetting.DELAY.node(), 4000);
-        config.set(SkillSetting.DELAY_TEXT.node(), ChatComponents.GENERIC_SKILL + "%hero% is evocating mana!");
         config.set(SkillSetting.INTERRUPT_TEXT.node(), "");
+        config.set(SkillSetting.APPLY_TEXT.node(), ChatComponents.GENERIC_SKILL + "%hero% is evocating mana!");
         config.set(SkillSetting.EXPIRE_TEXT.node(), ChatComponents.GENERIC_SKILL + "%hero% is no longer evocating.");
         return config;
     }
@@ -63,7 +66,7 @@ public class SkillEvocation extends ActiveSkill {
     public void init() {
         super.init();
 
-        delayText = SkillConfigManager.getRaw(this, SkillSetting.DELAY_TEXT, ChatComponents.GENERIC_SKILL + "%hero% is evocating mana!").replace("%hero%", "$1");
+        applyText = SkillConfigManager.getRaw(this, SkillSetting.APPLY_TEXT, ChatComponents.GENERIC_SKILL + "%hero% is evocating mana!").replace("%hero%", "$1");
         expireText = SkillConfigManager.getRaw(this, SkillSetting.EXPIRE_TEXT, ChatComponents.GENERIC_SKILL + "%hero% is no longer evocating.").replace("%hero%", "$1");
     }
 
@@ -119,9 +122,12 @@ public class SkillEvocation extends ActiveSkill {
 
         private double regenMultiplier;
         private double perSecondModifier;
+        private double hPower;
+        private double vPower;
+        private double radius;
 
         public EvocationEffect(Skill skill, Player applier, long regainPeriod) {
-            super(skill, "Evocating", applier, regainPeriod, null, expireText);
+            super(skill, "Evocating", applier, regainPeriod, applyText, expireText);
 
             types.add(EffectType.BENEFICIAL);
             types.add(EffectType.MAGIC);
@@ -133,20 +139,57 @@ public class SkillEvocation extends ActiveSkill {
 
             this.regenMultiplier = SkillConfigManager.getUseSetting(hero, skill, "regen-multiplier", 4.0, false);
             this.perSecondModifier = (1000.0 / getPeriod());
+            this.hPower = SkillConfigManager.getUseSetting(hero, skill, "horizontal-power", 0.75, false);
+            this.vPower = SkillConfigManager.getUseSetting(hero, skill, "vertical-power", 0.3, false);
+            this.radius = SkillConfigManager.getUseSetting(hero, skill, SkillSetting.RADIUS, 3.0, false);
 
             applyVisuals(hero.getPlayer());
         }
 
         @Override
         public void tickHero(Hero hero) {
+            regainMana(hero);
+            performKnockback(hero);
+        }
+
+        private void regainMana(Hero hero) {
             int manaIncreaseAmount = (int) (hero.getManaRegen() * regenMultiplier * perSecondModifier);   // Recalculate every tick for better compatibility with other skills..
             HeroRegainManaEvent manaEvent = new HeroRegainManaEvent(hero, manaIncreaseAmount, skill);
             plugin.getServer().getPluginManager().callEvent(manaEvent);
             if (!manaEvent.isCancelled()) {
                 hero.setMana(manaEvent.getDelta() + hero.getMana());
-
                 if (hero.isVerboseMana())
                     hero.getPlayer().sendMessage(ChatComponents.Bars.mana(hero.getMana(), hero.getMaxMana(), true));
+            }
+        }
+
+        private void performKnockback(Hero hero) {
+            Player player = hero.getPlayer();
+
+            List<Entity> entities = hero.getPlayer().getNearbyEntities(radius, radius, radius);
+            for (Entity entity : entities) {
+                if (!(entity instanceof LivingEntity))
+                    continue;
+                if (!damageCheck(player, (LivingEntity) entity))
+                    continue;
+
+                final LivingEntity target = (LivingEntity) entity;
+                double individualHPower = hPower;
+                double individualVPower = vPower;
+
+                // Do our knockback
+                Location playerLoc = player.getLocation();
+                Location targetLoc = target.getLocation();
+
+                double xDir = targetLoc.getX() - playerLoc.getX();
+                double zDir = targetLoc.getZ() - playerLoc.getZ();
+                double magnitude = Math.sqrt(xDir * xDir + zDir * zDir);
+
+                xDir = xDir / magnitude * individualHPower;
+                zDir = zDir / magnitude * individualHPower;
+
+                final Vector velocity = new Vector(xDir, individualVPower, zDir);
+                target.setVelocity(velocity);
             }
         }
 

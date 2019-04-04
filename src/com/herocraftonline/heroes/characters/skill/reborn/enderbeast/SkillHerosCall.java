@@ -11,13 +11,14 @@ import com.herocraftonline.heroes.characters.effects.PeriodicExpirableEffect;
 import com.herocraftonline.heroes.characters.skill.*;
 import com.herocraftonline.heroes.chat.ChatComponents;
 import com.herocraftonline.heroes.util.Util;
-
-import org.bukkit.*;
+import org.bukkit.ChatColor;
+import org.bukkit.Location;
+import org.bukkit.Particle;
+import org.bukkit.Sound;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
-import org.bukkit.Sound;
 import org.bukkit.event.player.PlayerTeleportEvent;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
@@ -25,6 +26,7 @@ import org.bukkit.util.Vector;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.logging.Level;
 
 public class SkillHerosCall extends ActiveSkill {
 
@@ -57,16 +59,16 @@ public class SkillHerosCall extends ActiveSkill {
 
     @Override
     public ConfigurationSection getDefaultConfig() {
-        ConfigurationSection node = super.getDefaultConfig();
-        node.set(SkillSetting.RADIUS.node(), 8.0);
-        node.set("transform-period", 500);
-        node.set(SkillSetting.PERIOD.node(), 4000);
-        node.set(SkillSetting.DURATION.node(), 4000);
-        node.set("maximum-effective-distance", 40);
-        node.set("pull-power-reduction", 6.0);
-        node.set(SkillSetting.APPLY_TEXT.node(), ChatComponents.GENERIC_SKILL + "%target% is filled with a Hero's call and wishes to slay %hero%!");
-        node.set(SkillSetting.EXPIRE_TEXT.node(), ChatComponents.GENERIC_SKILL + "%target% is no longer filled with heroic purpose!");
-        return node;
+        ConfigurationSection config = super.getDefaultConfig();
+        config.set(SkillSetting.RADIUS.node(), 8.0);
+        config.set("transform-period", 500);
+        config.set(SkillSetting.PERIOD.node(), 4000);
+        config.set(SkillSetting.DURATION.node(), 4000);
+        config.set("maximum-effective-distance", 40.0);
+        config.set("pull-power-reduction", 6.0);
+        config.set(SkillSetting.APPLY_TEXT.node(), ChatComponents.GENERIC_SKILL + "%target% is filled with a Hero's call and wishes to slay %hero%!");
+        config.set(SkillSetting.EXPIRE_TEXT.node(), ChatComponents.GENERIC_SKILL + "%target% is no longer filled with heroic purpose!");
+        return config;
     }
 
     public void init() {
@@ -93,8 +95,9 @@ public class SkillHerosCall extends ActiveSkill {
                 ? SkillConfigManager.getUseSetting(hero, this, "transform-period", 500, false)
                 : SkillConfigManager.getUseSetting(hero, this, SkillSetting.PERIOD, 4000, false);
 
-        int maxEffectiveDistance = SkillConfigManager.getUseSetting(hero, this, "maximum-effective-distance", 40, false);
+        double maxDistance = SkillConfigManager.getUseSetting(hero, this, "maximum-effective-distance", 40.0, false);
         double pullPowerReduction = SkillConfigManager.getUseSetting(hero, this, "pull-power-reduction", 6.0, false);
+        double maxAngle = SkillConfigManager.getUseSetting(hero, this, "max-angle", 25.0, false);
 
         broadcastExecuteText(hero);
 
@@ -114,7 +117,7 @@ public class SkillHerosCall extends ActiveSkill {
             if (targetCT.hasEffect(debuffEffectName))
                 targetCT.removeEffect(hero.getEffect(debuffEffectName));
 
-            HeroicPurposeEffect callEffect = new HeroicPurposeEffect(this, player, period, duration, maxEffectiveDistance, pullPowerReduction);
+            HeroicPurposeEffect callEffect = new HeroicPurposeEffect(this, player, period, duration, maxDistance, maxAngle, pullPowerReduction);
             targetCT.addEffect(callEffect);
             if (targetCT instanceof Hero) {
                 ((Hero) targetCT).interruptDelayedSkill();
@@ -151,12 +154,14 @@ public class SkillHerosCall extends ActiveSkill {
     }
 
     public class HeroicPurposeEffect extends PeriodicExpirableEffect {
-        private final int maxEffectiveDistance;
+        private final double maxDistanceSquared;
+        private final double maxAngle;
         private final double pullPowerReduction;
 
-        HeroicPurposeEffect(Skill skill, Player applier, long period, long duration, int maxEffectiveDistance, double pullPowerReduction) {
+        HeroicPurposeEffect(Skill skill, Player applier, long period, long duration, double maxDistance, double maxAngle, double pullPowerReduction) {
             super(skill, debuffEffectName, applier, period, duration, applyText, expireText);
-            this.maxEffectiveDistance = maxEffectiveDistance;
+            this.maxDistanceSquared = maxDistance * maxDistance;
+            this.maxAngle = maxAngle;
 
             this.pullPowerReduction = pullPowerReduction;
 
@@ -172,7 +177,7 @@ public class SkillHerosCall extends ActiveSkill {
         public void tickHero(Hero hero) {
             Player victim = hero.getPlayer();
             Hero currentlyCallingHero = plugin.getCharacterManager().getHero((Player) applier);
-            if (currentlyCallingHero == null || !currentlyCallingHero.hasEffect(buffEffectName) || victim.getLocation().distance(applier.getLocation()) > maxEffectiveDistance)
+            if (currentlyCallingHero == null || !currentlyCallingHero.hasEffect(buffEffectName) || victim.getLocation().distanceSquared(applier.getLocation()) > maxDistanceSquared)
                 hero.removeEffect(this);
 
             Location targetLocation = applier.getLocation();
@@ -184,65 +189,31 @@ public class SkillHerosCall extends ActiveSkill {
         public void tickMonster(Monster monster) {
             LivingEntity victim = monster.getEntity();
             Hero currentlyCallingHero = plugin.getCharacterManager().getHero((Player) applier);
-            if (currentlyCallingHero == null || !currentlyCallingHero.hasEffect(buffEffectName) || victim.getLocation().distance(applier.getLocation()) > maxEffectiveDistance)
+            if (currentlyCallingHero == null || !currentlyCallingHero.hasEffect(buffEffectName) || victim.getLocation().distanceSquared(applier.getLocation()) > maxDistanceSquared)
                 monster.removeEffect(this);
 
             Location targetLocation = applier.getLocation();
             faceTarget(victim, targetLocation);
             pullToTarget(victim, targetLocation);
 
-            org.bukkit.entity.Monster bukkitMonster = (org.bukkit.entity.Monster) victim;
-            bukkitMonster.setTarget(applier);
+            monster.setTargetIfAble(applier);
         }
 
-        private void faceTarget(LivingEntity victim, Location callerLocation) {
-
+        private void faceTarget(LivingEntity victim, Location casterLocation) {
             Location victimLocation = victim.getLocation();
-//            Vector targetDir = victimLocation.toVector().subtract(callerLocation.toVector());
-//            float angleToCaller = targetDir.angle(victimLocation.getDirection());
-//
-//            victim.sendMessage("DEBUG: FOV: " + angleToCaller);
-//            if (angleToCaller >= -60 && angleToCaller <= 60) {
-//                // Already facing target. Don't mess with their camera.
-//                return;
-//            }
+//            Vector victimDirection = victimLocation.getDirection();
+//            Vector difference = casterLocation.toVector().subtract(victimLocation.toVector());
 
-//            Vector oldVelocity = victim.getVelocity().clone();
-            Vector dir = callerLocation.clone().subtract(victim.getEyeLocation()).toVector();
-            Location loc = victim.getLocation().setDirection(dir);
-            victim.teleport(loc, PlayerTeleportEvent.TeleportCause.PLUGIN);
-//            victim.setVelocity(oldVelocity);
+//            double angle = victimDirection.angle(difference) * 100;
+//            Heroes.log(Level.INFO, "Angle: " + angle + ", Difference: " + difference.toString());
+//            if (angle > maxAngle) {
+                Vector dir = casterLocation.clone().subtract(victim.getEyeLocation()).toVector();
+                Location loc = victim.getLocation().setDirection(dir);
+                victim.teleport(loc, PlayerTeleportEvent.TeleportCause.PLUGIN);
+//            }
         }
 
-//        protected boolean isInFieldOfVision(LivingEntity e1, LivingEntity e2){
-//
-//            float yawPrime = e2.getLocation().getYaw();
-//            float pitchPrime = e2.getLocation().getPitch();
-//
-//            e2.faceEntity(e1, 360F, 360F);
-//
-//            //switch values of prime rotation variables with current rotation variables
-//            float f = e2.getLocation().getYaw();
-//            float f2 = e2.getLocation().getPitch();
-//            e2.getLocation().setYaw(yawPrime);
-//            e2.getLocation().setPitch(pitchPrime);
-//            yawPrime = f;
-//            pitchPrime = f1;
-//            //assuming field of vision consists of everything within X degrees from getLocation().getYaw() and Y degrees from getLocation().getPitch(), check if entity 2's current getLocation().getYaw() and getLocation().getPitch() within this X and Y range
-//            float X = 60F; //this is only a guess, I don't know the actual range
-//            float Y = 45F; //this is only a guess, I don't know the actual range
-//            float yawFOVMin = e2.getLocation().getYaw() - X >= 0F ? e2.getLocation().getYaw() - X : 360F + e2.getLocation().getYaw() - X;
-//            float yawFOVMax = e2.getLocation().getYaw() + X < 360F ? e2.getLocation().getYaw() + X : -360F + e2.getLocation().getYaw() + X;
-//            //NOTE: I dont recall the range of getLocation().getPitch(); 0 to 180?
-//            float pitchFOVMin = e2.getLocation().getPitch() - Y >= 0F ? e2.getLocation().getPitch() - Y : 180F + e2.getLocation().getPitch() - Y;
-//            float pitchFOVMax = e2.getLocation().getPitch() + Y < 180F ? e2.getLocation().getPitch() + Y : -180F + e2.getLocation().getPitch() + Y;
-//            if(yawPrime >= yawFOVMin && yawPrime <= yawFOVMax && pitchPrime >= pitchFOVMin && pitchPrime <= pitchFOVMax && e2.canEntityBeSean(e1))
-//                return true;
-//            else return false;
-//        }
-
-        private void pullToTarget(LivingEntity victim, Location callerLocation)
-        {
+        private void pullToTarget(LivingEntity victim, Location callerLocation) {
             Location victimLocation = victim.getLocation();
             if (callerLocation.distance(victimLocation) > 75)
                 return;

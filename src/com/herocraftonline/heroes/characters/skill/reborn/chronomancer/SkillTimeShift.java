@@ -68,9 +68,11 @@ public class SkillTimeShift extends TargettedSkill {
     @Override
     public ConfigurationSection getDefaultConfig() {
         ConfigurationSection config = super.getDefaultConfig();
+        config.set(SkillSetting.DAMAGE.node(), 20);
+        config.set(SkillSetting.HEALING.node(), 20);
         config.set("ally-percent-speed-increase", 0.05);
         config.set("enemy-percent-speed-decrease", 0.05);
-        config.set("max-stacks", 10);
+        config.set("max-stacks", 5);
         config.set(SkillSetting.DURATION.node(), 10000);
         return config;
     }
@@ -103,7 +105,7 @@ public class SkillTimeShift extends TargettedSkill {
 
         broadcastExecuteText(hero, target);
 
-        double damage = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE, 40.0, false);
+        double damage = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE, 20.0, false);
         addSpellTarget(target, hero);
         damageEntity(target, player, damage, EntityDamageEvent.DamageCause.MAGIC, false);
 
@@ -120,7 +122,7 @@ public class SkillTimeShift extends TargettedSkill {
 
         World world = target.getWorld();
         Location location = target.getLocation();
-        //world.spawnParticle(Particle.REDSTONE, location, 45, 0.6, 1, 0.6, 0, new Particle.DustOptions(Color.YELLOW, 1));
+        world.spawnParticle(Particle.REDSTONE, location, 45, 0.6, 1, 0.6, 0, new Particle.DustOptions(Color.YELLOW, 1));
         world.playSound(location, Sound.BLOCK_BEACON_DEACTIVATE, 0.5F, 2.0F);
         return SkillResult.NORMAL;
     }
@@ -128,7 +130,7 @@ public class SkillTimeShift extends TargettedSkill {
     private SkillResult acceleratedShift(Player player, Hero hero, LivingEntity target, CharacterTemplate targetCT, int duration, int maxStacks) {
         broadcastExecuteText(hero, target);
 
-        double healing = SkillConfigManager.getUseSetting(hero, this, SkillSetting.HEALING, 40.0, false);
+        double healing = SkillConfigManager.getUseSetting(hero, this, SkillSetting.HEALING, 20.0, false);
 
         if (targetCT instanceof Hero) {
             HeroRegainHealthEvent heal = new HeroRegainHealthEvent((Hero) targetCT, healing, this, hero);
@@ -155,7 +157,7 @@ public class SkillTimeShift extends TargettedSkill {
 
         World world = target.getWorld();
         Location location = target.getLocation();
-        //world.spawnParticle(Particle.REDSTONE, location, 45, 0.6, 1, 0.6, 0, new Particle.DustOptions(Color.TEAL, 1));
+        world.spawnParticle(Particle.REDSTONE, location, 45, 0.6, 1, 0.6, 0, new Particle.DustOptions(Color.TEAL, 1));
         world.playSound(location, Sound.BLOCK_BEACON_ACTIVATE, 1.0F, 1.7F);
         return SkillResult.NORMAL;
     }

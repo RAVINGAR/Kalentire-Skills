@@ -167,9 +167,7 @@ public class SkillRecklessFlurry extends ActiveSkill {
 
                     @Override
                     public void run() {
-                        attackerLE.sendMessage("Flurry Invuln Ticks Before: " + defenderLE.getNoDamageTicks());
                         defenderLE.setNoDamageTicks(newInvulnTickValue);
-                        attackerLE.sendMessage("Flurry Invuln Ticks After: " + defenderLE.getNoDamageTicks());
                     }
                 }.runTaskLaterAsynchronously(plugin, 1);
             }
