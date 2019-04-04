@@ -66,7 +66,7 @@ public class SkillHemorrhage extends TargettedSkill {
         // entrance of the hook
         player.getWorld().playSound(player.getLocation(), Sound.ENTITY_SQUID_HURT, 0.2F, 0.5F);
         DustOptions hookEnter = new Particle.DustOptions(Color.RED, 1);
-        player.getWorld().spawnParticle(Particle.REDSTONE, target.getEyeLocation(),25, 0, 0, 0, 1, hookEnter);
+        player.getWorld().spawnParticle(Particle.REDSTONE, target.getEyeLocation(),5, 0.5F, 0.25F, 0.3F, hookEnter);
 
         // do damage
         addSpellTarget(target, hero);
@@ -74,8 +74,8 @@ public class SkillHemorrhage extends TargettedSkill {
 
         // removal of the hook
         player.getWorld().playSound(player.getLocation(), Sound.ENTITY_SQUID_HURT, 0.4F, 1.0F);
-        DustOptions hookExit = new Particle.DustOptions(Color.RED, 3);
-        player.getWorld().spawnParticle(Particle.REDSTONE, target.getEyeLocation(),25, 0, 0, 0, 1, hookExit);
+        DustOptions hookExit = new Particle.DustOptions(Color.RED, 2);
+        player.getWorld().spawnParticle(Particle.REDSTONE, target.getEyeLocation(),15, 0.25F, 0.15F, 0.4F, hookExit);
         return SkillResult.NORMAL;
     }
 }
