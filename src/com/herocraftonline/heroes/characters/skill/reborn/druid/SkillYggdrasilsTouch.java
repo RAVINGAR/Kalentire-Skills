@@ -96,6 +96,11 @@ public class SkillYggdrasilsTouch extends ActiveSkill {
         }
         final int radiusSquared = (int) Math.pow(SkillConfigManager.getUseSetting(hero, this, SkillSetting.RADIUS, 5, false), 2);
         final Location heroLoc = player.getLocation();
+        if (hero.getParty() == null) {
+            player.sendMessage(ChatColor.GRAY + "Must be in a party");
+            return SkillResult.CANCELLED;
+        }
+
         for (final Hero partyHero : hero.getParty().getMembers()) {
             for (double r = 1; r < radius * 2; r++) {
                 if (!player.getWorld().equals(partyHero.getPlayer().getWorld())) {
@@ -103,6 +108,7 @@ public class SkillYggdrasilsTouch extends ActiveSkill {
                 }
                 ArrayList<Location> particleLocations = circle(partyHero.getPlayer().getLocation(), 45, r / 2);
                 if (partyHero.getPlayer().getLocation().distanceSquared(heroLoc) <= radiusSquared) {
+                    partyHero.getPlayer().sendMessage( ChatColor.LIGHT_PURPLE + "You have been touched by Yggdrasils");
                     final HeroRegainHealthEvent hrhEvent = new HeroRegainHealthEvent(partyHero, healing, this, hero);
                     this.plugin.getServer().getPluginManager().callEvent(hrhEvent);
                     if (hrhEvent.isCancelled()) {
@@ -117,7 +123,6 @@ public class SkillYggdrasilsTouch extends ActiveSkill {
                     }
                 }
             }
-
         }
 //        player.getWorld().playSound(player.getLocation(), Sound.ENTITY_EXPERIENCE_ORB_PICKUP, 1.0F, 1.2F);
 //        player.getWorld().playSound(player.getLocation(), Sound.ENTITY_CHICKEN_EGG, 1.0F, 1.2F);
