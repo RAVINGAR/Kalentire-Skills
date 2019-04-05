@@ -25,9 +25,9 @@ import java.util.List;
 public class SkillDimensionalRift extends TargettedSkill {
     public SkillDimensionalRift(Heroes plugin) {
         super(plugin, "DimensionalRift");
-        setDescription("Open a rift in space between you and your target, distorting both time and space. " +
-                "You and your target will switch places, and all enemies within $1 block of both locations will take $2 damage, " +
-                "you will lose $3 harmful effect(s), and if your target was an ally, they will also lose $3 harmful effect(s). " +
+        setDescription("Open a rift in space between you and your target, causing you to switch places. " +
+                "After swapping, all enemies within $1 block of both locations will take $2 damage. " +
+                "Additionally, you will lose $3 harmful effect(s), and if your target was an ally, they will also lose $3 harmful effect(s). " +
                 "If you targetted an enemy however, they will lose $4 beneficial effect(s) instead.");
         setUsage("/skill dimensionalrift");
         setArgumentRange(0, 0);

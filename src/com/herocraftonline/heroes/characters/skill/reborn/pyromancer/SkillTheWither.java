@@ -177,10 +177,10 @@ public class SkillTheWither extends ActiveSkill {
             PlayerInventory inventory = player.getInventory();
 
             ItemStack transformedHead = new ItemStack(Material.WITHER_SKELETON_SKULL);
-            ItemMeta itemmeta = transformedHead.getItemMeta();
-            itemmeta.setDisplayName("Wither Form");
-            itemmeta.setUnbreakable(true);
-            transformedHead.setItemMeta(itemmeta);
+            ItemMeta itemMeta = transformedHead.getItemMeta();
+            itemMeta.setDisplayName("Wither Form");
+            itemMeta.setUnbreakable(true);
+            transformedHead.setItemMeta(itemMeta);
 
             EquipmentChangedEvent replaceEvent = new EquipmentChangedEvent(player, EquipMethod.APPLYING_SKILL_EFFECT, EquipmentType.HELMET, inventory.getHelmet(), transformedHead);
             Bukkit.getServer().getPluginManager().callEvent(replaceEvent);
