@@ -6,6 +6,7 @@ import com.herocraftonline.heroes.api.events.HeroRegainHealthEvent;
 import com.herocraftonline.heroes.attributes.AttributeType;
 import com.herocraftonline.heroes.characters.CharacterTemplate;
 import com.herocraftonline.heroes.characters.Hero;
+import com.herocraftonline.heroes.characters.effects.EffectManager;
 import com.herocraftonline.heroes.characters.effects.EffectType;
 import com.herocraftonline.heroes.characters.effects.ExpirableEffect;
 import com.herocraftonline.heroes.characters.skill.*;
@@ -102,25 +103,27 @@ public class SkillYggdrasilsTouch extends ActiveSkill {
         }
 
         for (final Hero partyHero : hero.getParty().getMembers()) {
-            for (double r = 1; r < radius * 2; r++) {
-                if (!player.getWorld().equals(partyHero.getPlayer().getWorld())) {
-                    continue;
-                }
-                ArrayList<Location> particleLocations = circle(partyHero.getPlayer().getLocation(), 45, r / 2);
+            if (player.getWorld().equals(partyHero.getPlayer().getWorld())) {
                 if (partyHero.getPlayer().getLocation().distanceSquared(heroLoc) <= radiusSquared) {
-                    partyHero.getPlayer().sendMessage( ChatColor.LIGHT_PURPLE + "You have been touched by Yggdrasils");
+                    partyHero.getPlayer().sendMessage(ChatColor.LIGHT_PURPLE + "You have been touched by Yggdrasils");
+                    /*
                     final HeroRegainHealthEvent hrhEvent = new HeroRegainHealthEvent(partyHero, healing, this, hero);
                     this.plugin.getServer().getPluginManager().callEvent(hrhEvent);
                     if (hrhEvent.isCancelled()) {
                         player.sendMessage(ChatColor.GRAY + "Unable to heal the target at this time!");
                         return SkillResult.CANCELLED;
                     }
-
-                    for (int i = 0; i < particleLocations.size(); i++) {
-                        MarkBuff markBuff = new MarkBuff(this, player, duration);
-                        partyHero.addEffect(markBuff);
-                        player.getWorld().spawnParticle(Particle.HEART, particleLocations.get(i), 1, 0, 0.1, 0, 0.1);
-                    }
+                    partyHero.heal(hrhEvent.getDelta());
+                     */
+                    partyHero.addEffect(new MarkBuff( this, player, duration));
+                }
+            }
+            for (double r = 1; r < radius * 2; r++) {
+                ArrayList<Location> particleLocations = circle(partyHero.getPlayer().getLocation(), 45, r / 2);
+                for (int i = 0; i < particleLocations.size(); i++) {
+//                    MarkBuff markBuff = new MarkBuff(this, player, duration);
+//                    partyHero.addEffect(markBuff);
+                    player.getWorld().spawnParticle(Particle.HEART, particleLocations.get(i), 1, 0, 0.1, 0, 0.1);
                 }
             }
         }
@@ -135,18 +138,43 @@ public class SkillYggdrasilsTouch extends ActiveSkill {
 
     public class MarkBuff extends ExpirableEffect {
 
+        private int radius;
+        private double healing;
+
         public MarkBuff(Skill skill, Player applier, long duration) {
             super(skill, "MarkBuff", applier, duration);
             types.add(EffectType.HEALING);
+        }
 
-
+        @Override
+        public void applyToHero(Hero hero) {
+            super.applyToHero(hero);
+            this.radius = SkillConfigManager.getUseSetting(hero, skill, SkillSetting.RADIUS, 5, false);
+            this.healing = SkillConfigManager.getUseSetting(hero, this, SkillSetting.HEALING, 60, false);
         }
 
         @Override
         public void removeFromHero(Hero hero) {
             super.removeFromHero(hero);
-
-
+            Player player = hero.getPlayer();
+            // get everyone in the player's party
+            final int radiusSquared = (int) Math.pow(radius, 2);
+            final Location heroLoc = player.getLocation();
+            if (hero.getParty() == null) {
+                return;
+            }
+            for (final Hero partyHero : hero.getParty().getMembers()) {
+                if (player.getWorld().equals(partyHero.getPlayer().getWorld())) {
+                    if (partyHero.getPlayer().getLocation().distanceSquared(heroLoc) <= radiusSquared) {
+                        final HeroRegainHealthEvent hrhEvent = new HeroRegainHealthEvent(partyHero, healing, this, hero);
+                        this.plugin.getServer().getPluginManager().callEvent(hrhEvent);
+                        if (hrhEvent.isCancelled()) {
+                            player.sendMessage(ChatColor.GRAY + "Unable to heal the target at this time!");
+                        }
+                        partyHero.heal(hrhEvent.getDelta());
+                    }
+                }
+            }
         }
     }
 }
