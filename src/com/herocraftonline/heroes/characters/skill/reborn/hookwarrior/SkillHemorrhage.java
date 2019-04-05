@@ -1,4 +1,4 @@
-package com.herocraftonline.heroes.characters.skill.reborn.shared;
+package com.herocraftonline.heroes.characters.skill.reborn.hookwarrior;
 
 import com.herocraftonline.heroes.Heroes;
 import com.herocraftonline.heroes.api.SkillResult;
