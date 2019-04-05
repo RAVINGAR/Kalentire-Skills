@@ -150,7 +150,7 @@ public class SkillYggdrasilsTouch extends ActiveSkill {
         public void applyToHero(Hero hero) {
             super.applyToHero(hero);
             this.radius = SkillConfigManager.getUseSetting(hero, skill, SkillSetting.RADIUS, 5, false);
-            this.healing = SkillConfigManager.getUseSetting(hero, this, SkillSetting.HEALING, 60, false);
+            this.healing = SkillConfigManager.getUseSetting(hero, skill, SkillSetting.HEALING, 60, false);
         }
 
         @Override
@@ -166,7 +166,7 @@ public class SkillYggdrasilsTouch extends ActiveSkill {
             for (final Hero partyHero : hero.getParty().getMembers()) {
                 if (player.getWorld().equals(partyHero.getPlayer().getWorld())) {
                     if (partyHero.getPlayer().getLocation().distanceSquared(heroLoc) <= radiusSquared) {
-                        final HeroRegainHealthEvent hrhEvent = new HeroRegainHealthEvent(partyHero, healing, this, hero);
+                        final HeroRegainHealthEvent hrhEvent = new HeroRegainHealthEvent(partyHero, healing, skill, hero);
                         this.plugin.getServer().getPluginManager().callEvent(hrhEvent);
                         if (hrhEvent.isCancelled()) {
                             player.sendMessage(ChatColor.GRAY + "Unable to heal the target at this time!");
