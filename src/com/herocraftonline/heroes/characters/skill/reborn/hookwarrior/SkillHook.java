@@ -50,13 +50,18 @@ public class SkillHook extends ActiveSkill {
     public ConfigurationSection getDefaultConfig() {
         ConfigurationSection config = super.getDefaultConfig();
         config.set(SkillSetting.DAMAGE.node(), 40.0);
+        config.set(SkillSetting.DURATION.node(), 18000);
         config.set("projectile-size", 0.25);
         config.set("projectile-velocity", 20.0);
+        config.set("projectile-gravity", 2.5);
+        config.set("hook-leash-distance", 20.0);
+        config.set("hook-leash-power", 1.25);
         return config;
     }
 
     @Override
     public SkillResult use(Hero hero, String[] args) {
+        Player player = hero.getPlayer();
 
         broadcastExecuteText(hero);
 
@@ -66,21 +71,25 @@ public class SkillHook extends ActiveSkill {
         HookProjectile missile = new HookProjectile(plugin, this, hero, projSize, projVelocity);
         missile.fireMissile();
 
+        player.getWorld().playSound(player.getLocation(), Sound.ITEM_TRIDENT_RIPTIDE_2, 1.0F, 0.7F);
+
         return SkillResult.NORMAL;
     }
 
     private class HookProjectile extends BasicMissile {
         private final long hookedDuration;
-        private final double maxHookDistance;
+        private final double hookLeashDistance;
+        private final double hookLeashPower;
 
         HookProjectile(Plugin plugin, Skill skill, Hero hero, double projectileSize, double projVelocity) {
             super(plugin, skill, hero, projectileSize, projVelocity);
 
-            setNoGravity();
             setRemainingLife(30);
+            setGravity(SkillConfigManager.getUseSetting(hero, skill, "projectile-gravity", 2.5, false));
             this.damage = SkillConfigManager.getUseSetting(hero, skill, SkillSetting.DAMAGE, 50.0, false);
-            this.maxHookDistance = SkillConfigManager.getUseSetting(hero, skill, "max-hook-distance", 20.0, false);
-            this.hookedDuration = SkillConfigManager.getUseSetting(hero, skill, SkillSetting.DURATION, 10000, false);
+            this.hookLeashDistance = SkillConfigManager.getUseSetting(hero, skill, "hook-leash-distance", 20.0, false);
+            this.hookLeashPower = SkillConfigManager.getUseSetting(hero, skill, "hook-leash-power", 1.25, false);
+            this.hookedDuration = SkillConfigManager.getUseSetting(hero, skill, SkillSetting.DURATION, 18000, false);
 
             this.visualEffect = getHookVisual(this.effectManager, player, getLocation());
         }
@@ -95,9 +104,11 @@ public class SkillHook extends ActiveSkill {
             if (!(entity instanceof LivingEntity))
                 return;
 
+            player.getWorld().playSound(player.getLocation(), Sound.ITEM_TRIDENT_HIT, 0.5F, 0.5F);
+
             LivingEntity target = (LivingEntity)entity;
             CharacterTemplate targetCT = plugin.getCharacterManager().getCharacter(target);
-            HookedEffect hookedEffect = new HookedEffect(skill, player, hookedDuration, maxHookDistance);
+            HookedEffect hookedEffect = new HookedEffect(skill, player, hookedDuration, hookLeashDistance, hookLeashPower);
 
             // If we're an ally, make the effect beneficial and add it to them.
             if (hero.isAlliedTo(target)) {
@@ -119,12 +130,18 @@ public class SkillHook extends ActiveSkill {
     }
 
     public class HookedEffect extends PeriodicExpirableEffect {
-        private final double maxDistSquared;
+        private final double leashDistSquared;
+        private final double snapDistSquared;
+        private final double hookLeashPower;
         private EffectManager effectManager;
 
-        HookedEffect(Skill skill, Player applier, long duration, double maxDist) {
+        HookedEffect(Skill skill, Player applier, long duration, double leashDist, double hookLeashPower) {
             super(skill, applier.getName() + "-Hooked", applier, 1000, duration, null, null);
-            this.maxDistSquared = maxDist * maxDist;
+            double snapDist = leashDist * 1.5;
+            this.leashDistSquared = leashDist * leashDist;
+            this.snapDistSquared = snapDist * snapDist;
+            this.hookLeashPower = hookLeashPower;
+
             types.add(EffectType.PHYSICAL);
         }
 
@@ -134,6 +151,8 @@ public class SkillHook extends ActiveSkill {
 
             this.effectManager = new EffectManager(plugin);
             LineEffect effect = getHookVisual(this.effectManager, applier, hero.getPlayer());
+            effect.disappearWithOriginEntity = true;
+            effect.disappearWithTargetEntity = true;
             this.effectManager.start(effect);
         }
 
@@ -143,6 +162,8 @@ public class SkillHook extends ActiveSkill {
 
             this.effectManager = new EffectManager(plugin);
             LineEffect effect = getHookVisual(this.effectManager, applier, monster.getEntity());
+            effect.disappearWithOriginEntity = true;
+            effect.disappearWithTargetEntity = true;
             this.effectManager.start(effect);
         }
 
@@ -160,14 +181,29 @@ public class SkillHook extends ActiveSkill {
 
         @Override
         public void tickHero(Hero hero) {
-            if (hero.getEntity().getLocation().distanceSquared(applier.getLocation()) > maxDistSquared)
-                hero.removeEffect(this);
+            tryToLeashOrSnap(hero, hero.getPlayer());
         }
 
         @Override
         public void tickMonster(Monster monster) {
-            if (monster.getEntity().getLocation().distanceSquared(applier.getLocation()) > maxDistSquared)
-                monster.removeEffect(this);
+            tryToLeashOrSnap(monster, monster.getEntity());
+        }
+
+        private void tryToLeashOrSnap(CharacterTemplate selfCT, LivingEntity self) {
+            Location playerLoc = self.getLocation();
+            Location applierLoc = applier.getLocation();
+            double distanceSquared = playerLoc.distanceSquared(applierLoc);
+            if (distanceSquared > snapDistSquared) {
+                selfCT.removeEffect(this);
+            } else if (distanceSquared > leashDistSquared) {
+                // Only leash them if it's a harmful hook. Otherwise we'll just snap instead.
+                if (types.contains(EffectType.HARMFUL)) {
+                    Vector locDiff = applierLoc.toVector().subtract(playerLoc.toVector()).normalize().setY(0.25).multiply(hookLeashPower);
+                    self.setVelocity(locDiff);
+                }
+
+                selfCT.removeEffect(this);
+            }
         }
     }
 

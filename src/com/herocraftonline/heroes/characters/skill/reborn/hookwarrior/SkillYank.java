@@ -13,9 +13,7 @@ import com.herocraftonline.heroes.characters.skill.TargettedSkill;
 import com.herocraftonline.heroes.characters.skill.ncp.NCPFunction;
 import com.herocraftonline.heroes.characters.skill.ncp.NCPUtils;
 import com.herocraftonline.heroes.util.Util;
-import org.bukkit.Bukkit;
-import org.bukkit.Location;
-import org.bukkit.Material;
+import org.bukkit.*;
 import org.bukkit.block.BlockFace;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.LivingEntity;
@@ -23,7 +21,11 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.util.Vector;
 
+import java.util.Arrays;
+
 public class SkillYank extends TargettedSkill {
+    public static String skillName = "Yank";
+
     public SkillYank(Heroes plugin) {
         super(plugin, "Yank");
         setDescription("Yank on the chains of a hooked target, pulling them towards you and dealing $1 damage. " +
@@ -63,7 +65,12 @@ public class SkillYank extends TargettedSkill {
         if (!targetCT.hasEffect(player.getName() + "-Hooked"))
             return SkillResult.INVALID_TARGET;
 
-        broadcastExecuteText(hero, target);
+        if (args == null || args.length == 0 || Arrays.stream(args).noneMatch(x -> x.equalsIgnoreCase("NoBroadcast")))
+            broadcastExecuteText(hero, target);
+
+        boolean isAlliedTo = hero.isAlliedTo(target);
+        if (!isAlliedTo && !damageCheck(player, target))
+            return SkillResult.INVALID_TARGET;
 
         boolean shouldWeaken = shouldWeaken(target.getLocation());
 
@@ -73,26 +80,30 @@ public class SkillYank extends TargettedSkill {
         double vPower = SkillConfigManager.getUseSetting(hero, this, "vertical-power", 0.4, false);
         double hPower = SkillConfigManager.getUseSetting(hero, this, "horizontal-power", 0.5, false);
         double hPowerIncrease = SkillConfigManager.getUseSetting(hero, this, "horizontal-power-increase-per-strength", 0.0125, false);
-        hPower += hPowerIncrease * hero.getAttributeValue(AttributeType.STRENGTH);
+        hPower+= hPowerIncrease * hero.getAttributeValue(AttributeType.STRENGTH);
 
-        double xDir = (playerLoc.getX() - targetLoc.getX());
-        double zDir = (playerLoc.getZ() - targetLoc.getZ());
-
+        Vector locDiff = playerLoc.toVector().subtract(targetLoc.toVector());
+        locDiff = locDiff.normalize();
         if (shouldWeaken) {
-            vPower *= 0.75;
-            hPower *= 0.75;
+            locDiff.multiply(0.75);
         }
 
-        if (hero.isAlliedTo(target)) {
+        if (isAlliedTo) {
             pushTargetUpwards(hero, target, vPower, true);
-            pullTarget(hero, target, vPower, hPower, xDir / 2, zDir / 2);
+            pullTarget(hero, target, vPower, hPower, locDiff);
         } else {
             pushTargetUpwards(hero, target, vPower, false);
-            pullTarget(hero, target, vPower, hPower, xDir / 3, zDir / 3);
+            pullTarget(hero, target, vPower, hPower, locDiff.multiply(0.5));
             damageEnemy(hero, target, player);
         }
 
+        playSound(player.getWorld(), player.getLocation());
+
         return SkillResult.NORMAL;
+    }
+
+    private void playSound(World world, Location location) {
+        world.playSound(location, Sound.ENTITY_PLAYER_ATTACK_SWEEP, 0.5F, 0.5F);
     }
 
     private void damageEnemy(Hero hero, LivingEntity target, Player player) {
@@ -106,12 +117,13 @@ public class SkillYank extends TargettedSkill {
         }
     }
 
-    private void pullTarget(Hero hero, LivingEntity target, double vPower, double hPower, double xDir, double zDir) {
+    private void pullTarget(Hero hero, LivingEntity target, double vPower, double hPower, Vector locDiff) {
         double delay = SkillConfigManager.getUseSetting(hero, this, "pull-delay", 0.2, false);
         Bukkit.getScheduler().scheduleSyncDelayedTask(plugin, new Runnable() {
             public void run() {
-                Vector pushVector = new Vector(xDir, 0, zDir).normalize().multiply(hPower).setY(vPower);
+                Vector pushVector = locDiff.multiply(hPower).setY(vPower);
                 target.setVelocity(pushVector);
+                playSound(target.getWorld(), target.getLocation());
             }
         }, (long) (delay * 20));
     }
@@ -130,6 +142,8 @@ public class SkillYank extends TargettedSkill {
         } else {
             target.setVelocity(pushUpVector);
         }
+
+        playSound(target.getWorld(), target.getLocation());
 
         if (reduceFallDamage)
             target.setFallDistance(target.getFallDistance() - 3F);
