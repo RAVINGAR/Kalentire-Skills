@@ -39,7 +39,6 @@ public class SkillYggdrasilsTouch extends ActiveSkill {
         int particleradius = SkillConfigManager.getUseSetting(hero, this, SkillSetting.RADIUS, 5, false);
         int radius = SkillConfigManager.getUseSetting(hero, this, SkillSetting.RADIUS, 5, false);
         int duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, 5000, false);
-
         return getDescription().replace("$1", healing + "").replace("$2", radius + "");
     }
 
@@ -104,15 +103,8 @@ public class SkillYggdrasilsTouch extends ActiveSkill {
         for (final Hero partyHero : hero.getParty().getMembers()) {
             if (player.getWorld().equals(partyHero.getPlayer().getWorld())) {
                 if (partyHero.getPlayer().getLocation().distanceSquared(heroLoc) <= radiusSquared) {
-                    partyHero.getPlayer().sendMessage(ChatColor.LIGHT_PURPLE + "You have been touched by Yggdrasils");
-                    partyHero.getPlayer().sendMessage("duration: " + duration);
-                    partyHero.addEffect(new MarkBuff( this, player, duration));
-                    for (double r = 1; r < radius / 2; r++) {
-                        ArrayList<Location> particleLocations = circle(partyHero.getPlayer().getLocation(), 45, r / 2);
-                        for (int i = 0; i < particleLocations.size(); i++) {
-                            player.getWorld().spawnParticle(Particle.HEART, particleLocations.get(i), 1, 0, 0.1, 0, 0.1);
-                        }
-                    }
+
+                    partyHero.addEffect(new MarkBuff(this, player, duration));
                 }
             }
         }
@@ -126,6 +118,9 @@ public class SkillYggdrasilsTouch extends ActiveSkill {
 
         private int radius;
         private double healing;
+        float red = 124f;
+        float green = 255f;
+        float blue = 0f;
 
         public MarkBuff(Skill skill, Player applier, long duration) {
             super(skill, "MarkBuff", applier, duration);
@@ -164,7 +159,7 @@ public class SkillYggdrasilsTouch extends ActiveSkill {
                             for (double r = 1; r < radius; r++) {
                                 ArrayList<Location> particleLocations = circle(partyHero.getPlayer().getLocation(), 45, r / 2);
                                 for (int i = 0; i < particleLocations.size(); i++) {
-                                    partyHero.getPlayer().getWorld().spawnParticle(Particle.HEART, particleLocations.get(i), 1, 0, 0.1, 0, 0.1);
+                                    partyHero.getPlayer().getWorld().spawnParticle(Particle.REDSTONE, particleLocations.get(i), 1, red, green, blue, 0.1);
                                 }
                             }
                         }

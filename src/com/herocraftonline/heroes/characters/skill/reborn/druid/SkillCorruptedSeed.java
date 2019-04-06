@@ -109,7 +109,6 @@ public class SkillCorruptedSeed extends TargettedSkill {
 
         public CorruptedSeedEffect(Skill skill, Player applier, double healthDrainTick, long period, long duration) {
             super(skill, toggleableEffectName, applier, period, duration, applyText, expireText);
-
             this.healthDrainTick = healthDrainTick;
             types.add(EffectType.DISPELLABLE);
             types.add(EffectType.DARK);
@@ -134,7 +133,7 @@ public class SkillCorruptedSeed extends TargettedSkill {
         public void tickHero(Hero hero) {
             Player player = hero.getPlayer();
             double newHealth = player.getHealth() - healthDrainTick;
-            player.getWorld().playSound(player.getLocation(), Sound.ENTITY_GENERIC_HURT, 1, 0.5F);
+            player.getWorld().playSound(player.getLocation(), Sound.ENTITY_GENERIC_HURT, 0.5F, 10);
             if (newHealth < 1)
                 hero.removeEffect(this);
 
@@ -255,7 +254,6 @@ public class SkillCorruptedSeed extends TargettedSkill {
 
 
             SphereEffect visualEffect = new SphereEffect(effectManager);
-
             DynamicLocation dynamicLoc = new DynamicLocation(target);
             visualEffect.setDynamicOrigin(dynamicLoc);
             visualEffect.disappearWithOriginEntity = true;
