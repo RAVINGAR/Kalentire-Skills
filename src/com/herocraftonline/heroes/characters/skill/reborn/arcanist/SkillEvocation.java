@@ -32,8 +32,8 @@ public class SkillEvocation extends ActiveSkill {
     public SkillEvocation(Heroes plugin) {
         super(plugin, "Evocation");
         setDescription("Channeling: Increases your mana regeneration by $1% for up to $2 second(s). " +
-                "While channeling you will knock nearby enemies away from you. " +
-                "You are slowed while casting this ability and can be interrupted by others.");
+                "While channeling you will knock nearby enemies away from you as you regain mana. " +
+                "Channeling abilities are a constant cast: you will be slowed and be unable to cast other abilities while it is active.");
         setUsage("/skill evocation");
         setArgumentRange(0, 0);
         setIdentifiers("skill evocation");

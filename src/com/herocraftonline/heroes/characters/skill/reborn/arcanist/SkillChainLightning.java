@@ -52,7 +52,7 @@ public class SkillChainLightning extends TargettedSkill {
         return getDescription()
                 .replace("$1", Util.decFormat.format(damage))
                 .replace("$2", maxTargets + "")
-                .replace("$2", maxChainDistance + "");
+                .replace("$3", maxChainDistance + "");
     }
 
     @Override

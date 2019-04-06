@@ -183,7 +183,7 @@ public class SkillAetherMissiles extends ActiveSkill {
                     public void run() {
                         final Player player = hero.getPlayer();
                         if (player.isDead() || player.getHealth() <= 0) {
-
+                            return;
                         }
                         Pair<EffectManager, SphereEffect> pair = missileVisuals.get(finalI);
                         SphereEffect missileVisual = pair.getRight();
