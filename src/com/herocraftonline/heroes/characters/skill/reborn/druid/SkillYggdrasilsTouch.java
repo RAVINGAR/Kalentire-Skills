@@ -152,21 +152,20 @@ public class SkillYggdrasilsTouch extends ActiveSkill {
             for (final Hero partyHero : hero.getParty().getMembers()) {
                 if (player.getWorld().equals(partyHero.getPlayer().getWorld())) {
                     if (partyHero.getPlayer().getLocation().distanceSquared(heroLoc) <= radiusSquared) {
-                        if (partyHero.hasEffectType(MarkBuff) {
-                            
-                        }
-                        final HeroRegainHealthEvent hrhEvent = new HeroRegainHealthEvent(partyHero, healing, skill, hero);
-                        this.plugin.getServer().getPluginManager().callEvent(hrhEvent);
-                        if (hrhEvent.isCancelled()) {
-                            player.sendMessage(ChatColor.GRAY + "Unable to heal the target at this time!");
-                        }
-                        partyHero.heal(hrhEvent.getDelta());
-                        partyHero.getPlayer().sendMessage("healing: " + hrhEvent.getDelta());
-                        // explode
-                        for (double r = 1; r < radius; r++) {
-                            ArrayList<Location> particleLocations = circle(partyHero.getPlayer().getLocation(), 45, r / 2);
-                            for (int i = 0; i < particleLocations.size(); i++) {
-                                partyHero.getPlayer().getWorld().spawnParticle(Particle.HEART, particleLocations.get(i), 1, 0, 0.1, 0, 0.1);
+                        if (partyHero.hasEffect("MarkBuff")) {
+                            final HeroRegainHealthEvent hrhEvent = new HeroRegainHealthEvent(partyHero, healing, skill, hero);
+                            this.plugin.getServer().getPluginManager().callEvent(hrhEvent);
+                            if (hrhEvent.isCancelled()) {
+                                player.sendMessage(ChatColor.GRAY + "Unable to heal the target at this time!");
+                            }
+                            partyHero.heal(hrhEvent.getDelta());
+                            partyHero.getPlayer().sendMessage("healing: " + hrhEvent.getDelta());
+                            // explode
+                            for (double r = 1; r < radius; r++) {
+                                ArrayList<Location> particleLocations = circle(partyHero.getPlayer().getLocation(), 45, r / 2);
+                                for (int i = 0; i < particleLocations.size(); i++) {
+                                    partyHero.getPlayer().getWorld().spawnParticle(Particle.HEART, particleLocations.get(i), 1, 0, 0.1, 0, 0.1);
+                                }
                             }
                         }
                     }
