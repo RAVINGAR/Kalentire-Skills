@@ -2,9 +2,11 @@ package com.herocraftonline.heroes.characters.skill.reborn.druid;
 
 import com.herocraftonline.heroes.Heroes;
 import com.herocraftonline.heroes.api.SkillResult;
+import com.herocraftonline.heroes.characters.CharacterTemplate;
 import com.herocraftonline.heroes.characters.Hero;
 import com.herocraftonline.heroes.characters.effects.EffectType;
 import com.herocraftonline.heroes.characters.effects.ExpirableEffect;
+import com.herocraftonline.heroes.characters.effects.common.SafeFallEffect;
 import com.herocraftonline.heroes.characters.skill.*;
 import com.herocraftonline.heroes.chat.ChatComponents;
 import com.herocraftonline.heroes.nms.physics.NMSPhysics;
@@ -80,6 +82,9 @@ public class SkillOvergrowth extends ActiveSkill {
 
     public SkillResult use(Hero hero, String[] args) {
         Player player = hero.getPlayer();
+
+        broadcastExecuteText(hero);
+
         World world = player.getWorld();
 
         int maxDist = SkillConfigManager.getUseSetting(hero, this, SkillSetting.MAX_DISTANCE, 12, false);
@@ -437,6 +442,9 @@ public class SkillOvergrowth extends ActiveSkill {
                 Location inAirLoc = new Location(entLoc.getWorld(), entLoc.getBlockX(), entLoc.getBlockY() + 1, entLoc.getBlockZ(), entLoc.getYaw(), entLoc.getPitch());
                 entity.teleport(inAirLoc, PlayerTeleportEvent.TeleportCause.PLUGIN);
                 entity.setFallDistance(-512);
+                CharacterTemplate targetCT = plugin.getCharacterManager().getCharacter((LivingEntity)entity);
+                int duration = SkillConfigManager.getUseSetting(hero, skill, SkillSetting.DURATION, 6000, false);
+                targetCT.addEffect(new SafeFallEffect(skill, player, duration));
             }
             revertBlocks();
         }
