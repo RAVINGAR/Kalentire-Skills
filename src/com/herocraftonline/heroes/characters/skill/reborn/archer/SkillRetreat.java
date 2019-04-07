@@ -1,4 +1,4 @@
-package com.herocraftonline.heroes.characters.skill.reborn;
+package com.herocraftonline.heroes.characters.skill.reborn.archer;
 
 import com.google.common.collect.Lists;
 import com.herocraftonline.heroes.Heroes;

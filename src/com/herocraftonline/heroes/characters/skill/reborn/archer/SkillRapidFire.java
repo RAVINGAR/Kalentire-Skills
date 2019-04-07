@@ -1,4 +1,4 @@
-package com.herocraftonline.heroes.characters.skill.reborn;
+package com.herocraftonline.heroes.characters.skill.reborn.archer;
 
 import com.herocraftonline.heroes.Heroes;
 import com.herocraftonline.heroes.api.SkillResult;
@@ -172,6 +172,7 @@ public class SkillRapidFire extends ActiveSkill {
                 Arrow proj = player.getWorld().spawnArrow(rowLocation, facingDirection.normalize(), (float) 0.5, (float) 1.0);
                 proj.setKnockbackStrength(0);
                 proj.setPickupStatus(Arrow.PickupStatus.DISALLOWED);
+                proj.setVelocity(new Vector(6, 0, 6));
                 proj.setDamage(0);
                 proj.setBounce(false);
                 proj.setGravity(false);

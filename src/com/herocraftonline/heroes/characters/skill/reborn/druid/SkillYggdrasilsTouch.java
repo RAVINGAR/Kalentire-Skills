@@ -6,17 +6,21 @@ import com.herocraftonline.heroes.api.events.HeroRegainHealthEvent;
 import com.herocraftonline.heroes.attributes.AttributeType;
 import com.herocraftonline.heroes.characters.CharacterTemplate;
 import com.herocraftonline.heroes.characters.Hero;
-import com.herocraftonline.heroes.characters.effects.EffectManager;
 import com.herocraftonline.heroes.characters.effects.EffectType;
 import com.herocraftonline.heroes.characters.effects.ExpirableEffect;
 import com.herocraftonline.heroes.characters.skill.*;
 
+import de.slikey.effectlib.EffectManager;
+import de.slikey.effectlib.effect.HeartEffect;
+import de.slikey.effectlib.effect.LoveEffect;
+import de.slikey.effectlib.util.DynamicLocation;
 import org.bukkit.*;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.entity.EntityDamageEvent.DamageCause;
+import org.bukkit.util.Vector;
 import org.yaml.snakeyaml.error.Mark;
 
 import java.util.ArrayList;
@@ -118,9 +122,7 @@ public class SkillYggdrasilsTouch extends ActiveSkill {
 
         private int radius;
         private double healing;
-        float red = 124f;
-        float green = 255f;
-        float blue = 0f;
+        private EffectManager effectManager;
 
         public MarkBuff(Skill skill, Player applier, long duration) {
             super(skill, "MarkBuff", applier, duration);
@@ -130,8 +132,10 @@ public class SkillYggdrasilsTouch extends ActiveSkill {
         @Override
         public void applyToHero(Hero hero) {
             super.applyToHero(hero);
+            this.effectManager = new EffectManager(plugin);
             this.radius = SkillConfigManager.getUseSetting(hero, skill, SkillSetting.RADIUS, 5, false);
             this.healing = SkillConfigManager.getUseSetting(hero, skill, SkillSetting.HEALING, 60, false);
+            heartVisual(hero.getPlayer());
         }
 
         @Override
@@ -159,7 +163,7 @@ public class SkillYggdrasilsTouch extends ActiveSkill {
                             for (double r = 1; r < radius; r++) {
                                 ArrayList<Location> particleLocations = circle(partyHero.getPlayer().getLocation(), 45, r / 2);
                                 for (int i = 0; i < particleLocations.size(); i++) {
-                                    partyHero.getPlayer().getWorld().spawnParticle(Particle.REDSTONE, particleLocations.get(i), 1, red, green, blue, 0.1);
+                                    partyHero.getPlayer().getWorld().spawnParticle(Particle.TOTEM, particleLocations.get(i), 1, 0, 0.1, 0, 0.1);
                                 }
                             }
                         }
@@ -167,5 +171,30 @@ public class SkillYggdrasilsTouch extends ActiveSkill {
                 }
             }
         }
+
+        //Visual Mark to signify all players with the heal explosion
+        public void heartVisual(LivingEntity target) {
+            //Maybe need durationTicks
+            final int durationTicks = (int) this.getDuration() / 50;
+            final int displayPeriod = 2;
+
+            LoveEffect visualEffect = new LoveEffect(effectManager);
+            DynamicLocation dynamicLoc = new DynamicLocation(target);
+            visualEffect.setDynamicOrigin(dynamicLoc);
+            visualEffect.disappearWithOriginEntity = true;
+
+            visualEffect.particle = Particle.TOTEM;
+            visualEffect.period = displayPeriod;
+            visualEffect.particleSize = 15;
+
+            visualEffect.iterations = durationTicks / displayPeriod;
+            dynamicLoc.addOffset(new Vector(0, 0.8, 0));
+
+            effectManager.start(visualEffect);
+            effectManager.disposeOnTermination();
+
+
+        }
+
     }
 }

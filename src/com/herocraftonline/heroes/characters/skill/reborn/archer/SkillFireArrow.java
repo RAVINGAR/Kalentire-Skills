@@ -1,4 +1,4 @@
-package com.herocraftonline.heroes.characters.skill.public1;
+package com.herocraftonline.heroes.characters.skill.reborn.archer;
 
 import com.herocraftonline.heroes.Heroes;
 import com.herocraftonline.heroes.api.SkillResult;
@@ -6,18 +6,12 @@ import com.herocraftonline.heroes.characters.Hero;
 import com.herocraftonline.heroes.characters.effects.EffectType;
 import com.herocraftonline.heroes.characters.effects.common.CombustEffect;
 import com.herocraftonline.heroes.characters.effects.common.ImbueEffect;
-import com.herocraftonline.heroes.characters.skill.ActiveSkill;
-import com.herocraftonline.heroes.characters.skill.Skill;
-import com.herocraftonline.heroes.characters.skill.SkillConfigManager;
-import com.herocraftonline.heroes.characters.skill.SkillType;
+import com.herocraftonline.heroes.characters.skill.*;
 import org.bukkit.Bukkit;
+import org.bukkit.Color;
+import org.bukkit.FireworkEffect;
 import org.bukkit.configuration.ConfigurationSection;
-import org.bukkit.entity.Arrow;
-import org.bukkit.entity.Entity;
-import org.bukkit.entity.LivingEntity;
-import org.bukkit.entity.Player;
-import org.bukkit.Sound;
-import org.bukkit.entity.Projectile;
+import org.bukkit.entity.*;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
@@ -27,9 +21,11 @@ import org.bukkit.event.entity.EntityShootBowEvent;
 
 public class SkillFireArrow extends ActiveSkill {
 
+    public VisualEffect fplayer = new VisualEffect();
+
     public SkillFireArrow(Heroes plugin) {
         super(plugin, "FireArrow");
-        this.setDescription("Your arrows will light the target on fire, but they will drain $1 mana per shot!");
+        this.setDescription("Your next arrow will light the target on fire");
         this.setUsage("/skill firearrow");
         this.setArgumentRange(0, 0);
         this.setIdentifiers("skill firearrow", "skill farrow");
@@ -40,7 +36,7 @@ public class SkillFireArrow extends ActiveSkill {
     @Override
     public ConfigurationSection getDefaultConfig() {
         final ConfigurationSection node = super.getDefaultConfig();
-        node.set("mana-per-shot", 1); // mana per shot
+        node.set("mana-per-shot", 15); // mana per shot
         node.set("fire-ticks", 100);
         return node;
     }
@@ -112,6 +108,15 @@ public class SkillFireArrow extends ActiveSkill {
             entity.setFireTicks(entity.getFireTicks() + fireTicks);
             //Add our combust effect so we can track fire-tick damage
             SkillFireArrow.this.plugin.getCharacterManager().getCharacter(entity).addEffect(new CombustEffect(this.skill, player));
+
+            final LivingEntity target = (LivingEntity) event.getEntity();
+            addSpellTarget(target, hero);
+            fplayer.playFirework(target.getWorld(), target.getLocation().add(0,2.0,0),
+                    FireworkEffect.builder().flicker(false).trail(false)
+                            .with(FireworkEffect.Type.BURST)
+                            .withColor(Color.ORANGE)
+                            .withFade(Color.RED)
+                            .build());
         }
 
         @EventHandler(priority = EventPriority.MONITOR)
@@ -121,19 +126,15 @@ public class SkillFireArrow extends ActiveSkill {
             }
             final Hero hero = SkillFireArrow.this.plugin.getCharacterManager().getHero((Player) event.getEntity());
             if (hero.hasEffect("FireArrowBuff")) {
-                final int mana = SkillConfigManager.getUseSetting(hero, this.skill, "mana-per-shot", 1, true);
-                if (hero.getMana() < mana) {
                     hero.removeEffect(hero.getEffect("FireArrowBuff"));
-                } else {
-                    hero.setMana(hero.getMana() - mana);
                 }
-            }
+
         }
     }
 
     @Override
     public String getDescription(Hero hero) {
-        final int mana = SkillConfigManager.getUseSetting(hero, this, "mana-per-shot", 1, false);
+        final int mana = SkillConfigManager.getUseSetting(hero, this, "mana", 15, false);
         return this.getDescription().replace("$1", mana + "");
     }
 }
