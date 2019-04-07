@@ -180,7 +180,7 @@ public class SkillRapidFire extends ActiveSkill {
                     public void run() {
                         proj.remove();
                     }
-                }, 3L); //Edit ticks for arrows based on skill range, otherwise arrow visual will be thrown off****************
+                }, 2L); //Edit ticks for arrows based on skill range, otherwise arrow visual will be thrown off****************
             }
         }
 
