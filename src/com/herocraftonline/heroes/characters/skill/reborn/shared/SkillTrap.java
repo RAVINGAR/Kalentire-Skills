@@ -145,6 +145,7 @@ public class SkillTrap extends SkillBaseGroundEffect {
                     final CharacterTemplate targetCt = plugin.getCharacterManager().getCharacter(target);
                     final RootEffect effect = new RootEffect( SkillTrap.this, player, 5000, 100);
                     targetCt.addEffect(effect);
+                    hero.removeEffect(hero.getEffect(SkillTrap.this.getName()));
                 }
             }
 			});
