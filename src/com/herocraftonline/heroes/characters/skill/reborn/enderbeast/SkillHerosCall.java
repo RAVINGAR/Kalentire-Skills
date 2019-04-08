@@ -203,9 +203,8 @@ public class SkillHerosCall extends ActiveSkill {
         private void faceTarget(LivingEntity victim, Location casterLocation) {
             Location victimLocation = victim.getLocation();
             Vector difference = casterLocation.toVector().subtract(victimLocation.toVector());
-            double angleDegrees = victimLocation.getDirection().angle(difference);
+            double angleDegrees = Math.toDegrees(victimLocation.getDirection().angle(difference));
 
-            Heroes.log(Level.INFO, "Angle: " + angleDegrees + ", Difference: " + difference.toString());
             if (angleDegrees > maxAngleDegrees) {
                 Vector dir = casterLocation.clone().subtract(victim.getEyeLocation()).toVector();
                 Location loc = victim.getLocation().setDirection(dir);

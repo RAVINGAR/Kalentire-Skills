@@ -28,6 +28,7 @@ public class SkillEvocation extends ActiveSkill {
 
     private String applyText;
     private String expireText;
+    private String effectName = "Evocating";
 
     public SkillEvocation(Heroes plugin) {
         super(plugin, "Evocation");
@@ -56,6 +57,8 @@ public class SkillEvocation extends ActiveSkill {
         config.set("regen-multiplier", 4.0);
         config.set(SkillSetting.PERIOD.node(), 1000);
         config.set(SkillSetting.DELAY.node(), 4000);
+        config.set("horizontal-power", 0.75);
+        config.set("vertical-power", 0.3);
         config.set(SkillSetting.INTERRUPT_TEXT.node(), "");
         config.set(SkillSetting.APPLY_TEXT.node(), ChatComponents.GENERIC_SKILL + "%hero% is evocating mana!");
         config.set(SkillSetting.EXPIRE_TEXT.node(), ChatComponents.GENERIC_SKILL + "%hero% is no longer evocating.");
@@ -83,13 +86,13 @@ public class SkillEvocation extends ActiveSkill {
 
     @Override
     public SkillResult use(Hero hero, String[] args) {
-        hero.removeEffect(hero.getEffect("Evocating"));
+        hero.removeEffect(hero.getEffect(effectName));
         return SkillResult.NORMAL;
     }
 
     private class ChannelingEffect extends PeriodicEffect {
         public ChannelingEffect(Skill skill, Player applier) {
-            super(skill, "Channeling-Evocation", applier, 100, null, null);
+            super(skill, "Channeling-" + skill.getName(), applier, 100, null, null);
         }
 
         @Override
@@ -112,7 +115,7 @@ public class SkillEvocation extends ActiveSkill {
         @Override
         public void removeFromHero(Hero hero) {
             super.removeFromHero(hero);
-            hero.removeEffect(hero.getEffect("Evocating"));
+            hero.removeEffect(hero.getEffect(effectName));
         }
     }
 
@@ -127,7 +130,7 @@ public class SkillEvocation extends ActiveSkill {
         private double radius;
 
         public EvocationEffect(Skill skill, Player applier, long regainPeriod) {
-            super(skill, "Evocating", applier, regainPeriod, applyText, expireText);
+            super(skill, effectName, applier, regainPeriod, applyText, expireText);
 
             types.add(EffectType.BENEFICIAL);
             types.add(EffectType.MAGIC);

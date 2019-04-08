@@ -18,6 +18,7 @@ import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.scheduler.BukkitRunnable;
+import org.bukkit.util.Vector;
 
 import java.util.Arrays;
 
@@ -47,7 +48,7 @@ public class SkillHemorrhage extends TargettedSkill {
     public ConfigurationSection getDefaultConfig() {
         ConfigurationSection config = super.getDefaultConfig();
         config.set(SkillSetting.MAX_DISTANCE.node(), 30);
-        config.set(SkillSetting.DAMAGE.node(), 30);
+        config.set(SkillSetting.DAMAGE.node(), 80);
         config.set(SkillSetting.DAMAGE_INCREASE_PER_STRENGTH.node(), 0.0);
         return config;
     }
@@ -68,14 +69,15 @@ public class SkillHemorrhage extends TargettedSkill {
         if (shouldBroadCast)
             broadcastExecuteText(hero, target);
 
-        double damage = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE, 75, false);
+        double damage = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE, 80, false);
         double damageIncrease = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE_INCREASE_PER_STRENGTH, 0.0, false);
         damage += damageIncrease * hero.getAttributeValue(AttributeType.STRENGTH);
 
 
         // do damage
         addSpellTarget(target, hero);
-        damageEntity(target, player, damage, EntityDamageEvent.DamageCause.ENTITY_ATTACK);
+        damageEntity(target, player, damage, EntityDamageEvent.DamageCause.ENTITY_ATTACK, false);
+        target.setVelocity(new Vector(0, 0, 0));
 
         // display removal of the hook
         player.getWorld().playSound(player.getLocation(), Sound.ENTITY_SQUID_HURT, 0.4F, 1.0F);

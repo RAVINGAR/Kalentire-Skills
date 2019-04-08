@@ -108,10 +108,12 @@ public class SkillGrapple extends TargettedSkill {
         double zDir = (targetLoc.getZ() - playerLoc.getZ()) / horizontalDivider;
         double multi2 = SkillConfigManager.getUseSetting(hero, this, "multiplier", 1.2, false);
         final Vector grappleVector = new Vector(xDir, yDir, zDir).multiply(multi2);
+        if (grappleVector.getY() < 0.5)
+            grappleVector.setY(0.5);
 
         // Prevent y velocity increase if told to.
         if (noY) {
-            grappleVector.multiply(0.5).setY(0.5);	// Half the power of the grapple, and eliminate the y power
+            grappleVector.multiply(0.5).setY(0.5);	// Half the power of the grapple, but keep our minimum 0.5
         } else {
             // As long as we have Y, give them safefall
             long safeFallDuration = SkillConfigManager.getUseSetting(hero, this, "safe-fall-duration", 5000, false);
@@ -121,14 +123,14 @@ public class SkillGrapple extends TargettedSkill {
         player.getWorld().playSound(playerLoc, Sound.ENTITY_MAGMA_CUBE_JUMP, 0.8F, 1.0F);
 
         long exemptionDuration = SkillConfigManager.getUseSetting(hero, this, "ncp-exemption-duration", 3000, false);
-        if (exemptionDuration > 0)
+        if (exemptionDuration > 0) {
             NCPUtils.applyExemptions(player, new NCPFunction() {
                 @Override
                 public void execute() {
                     player.setVelocity(grappleVector);
                 }
             }, Lists.newArrayList("MOVING"), exemptionDuration);
-        else {
+        } else {
             player.setVelocity(grappleVector);
         }
     }
