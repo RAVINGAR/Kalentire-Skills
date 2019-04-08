@@ -105,7 +105,7 @@ public class SkillDragonSmash extends ActiveSkill implements Listener {
         player.setVelocity(new Vector(currentVelocity.getX(), currentVelocity.getY() + vPowerUp, currentVelocity.getZ()));
 
         BukkitScheduler scheduler = Bukkit.getServer().getScheduler();
-        scheduler.runTaskLaterAsynchronously(plugin, new Runnable() {
+        scheduler.runTaskLater(plugin, new Runnable() {
             @Override
             public void run() {
                 player.setFallDistance(-512);

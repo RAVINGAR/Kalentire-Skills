@@ -169,7 +169,7 @@ public class SkillRecklessFlurry extends ActiveSkill {
                     public void run() {
                         defenderLE.setNoDamageTicks(newInvulnTickValue);
                     }
-                }.runTaskLaterAsynchronously(plugin, 1);
+                }.runTaskLater(plugin, 1);
             }
 
             // Handle incoming

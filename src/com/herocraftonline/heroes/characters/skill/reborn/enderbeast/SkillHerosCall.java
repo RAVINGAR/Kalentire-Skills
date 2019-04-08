@@ -11,6 +11,7 @@ import com.herocraftonline.heroes.characters.effects.PeriodicExpirableEffect;
 import com.herocraftonline.heroes.characters.skill.*;
 import com.herocraftonline.heroes.chat.ChatComponents;
 import com.herocraftonline.heroes.util.Util;
+import de.slikey.effectlib.util.VectorUtils;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.Particle;
@@ -155,13 +156,13 @@ public class SkillHerosCall extends ActiveSkill {
 
     public class HeroicPurposeEffect extends PeriodicExpirableEffect {
         private final double maxDistanceSquared;
-        private final double maxAngle;
         private final double pullPowerReduction;
+        private final double maxAngleDegrees;
 
         HeroicPurposeEffect(Skill skill, Player applier, long period, long duration, double maxDistance, double maxAngle, double pullPowerReduction) {
             super(skill, debuffEffectName, applier, period, duration, applyText, expireText);
             this.maxDistanceSquared = maxDistance * maxDistance;
-            this.maxAngle = maxAngle;
+            this.maxAngleDegrees = maxAngle * 0.5;
 
             this.pullPowerReduction = pullPowerReduction;
 
@@ -201,23 +202,19 @@ public class SkillHerosCall extends ActiveSkill {
 
         private void faceTarget(LivingEntity victim, Location casterLocation) {
             Location victimLocation = victim.getLocation();
-//            Vector victimDirection = victimLocation.getDirection();
-//            Vector difference = casterLocation.toVector().subtract(victimLocation.toVector());
+            Vector difference = casterLocation.toVector().subtract(victimLocation.toVector());
+            double angleDegrees = victimLocation.getDirection().angle(difference);
 
-//            double angle = victimDirection.angle(difference) * 100;
-//            Heroes.log(Level.INFO, "Angle: " + angle + ", Difference: " + difference.toString());
-//            if (angle > maxAngle) {
+            Heroes.log(Level.INFO, "Angle: " + angleDegrees + ", Difference: " + difference.toString());
+            if (angleDegrees > maxAngleDegrees) {
                 Vector dir = casterLocation.clone().subtract(victim.getEyeLocation()).toVector();
                 Location loc = victim.getLocation().setDirection(dir);
                 victim.teleport(loc, PlayerTeleportEvent.TeleportCause.PLUGIN);
-//            }
+            }
         }
 
         private void pullToTarget(LivingEntity victim, Location callerLocation) {
             Location victimLocation = victim.getLocation();
-            if (callerLocation.distance(victimLocation) > 75)
-                return;
-
             double xDir = (callerLocation.getX() - victimLocation.getX()) / pullPowerReduction;
             double zDir = (callerLocation.getZ() - victimLocation.getZ()) / pullPowerReduction;
             final Vector v = new Vector(xDir, 0, zDir);

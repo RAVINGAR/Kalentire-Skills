@@ -1,4 +1,4 @@
-package com.herocraftonline.heroes.characters.skill.reborn.druid;
+package com.herocraftonline.heroes.characters.skill.reborn.shared;
 
 import com.google.common.base.Joiner;
 import com.google.common.base.Splitter;
@@ -142,7 +142,7 @@ public class SkillPort extends ActiveSkill implements Listener, PluginMessageLis
 
         // Run this delayed task to check if the port failed
         final String playerName = player.getName();
-        Bukkit.getScheduler().runTaskLaterAsynchronously(plugin, new Runnable() {
+        Bukkit.getScheduler().runTaskLater(plugin, new Runnable() {
 
             @Override
             public void run() {

@@ -1,0 +1,88 @@
+package com.herocraftonline.heroes.characters.skill.reborn.chainwarden;
+
+import com.herocraftonline.heroes.Heroes;
+import com.herocraftonline.heroes.api.SkillResult;
+import com.herocraftonline.heroes.attributes.AttributeType;
+import com.herocraftonline.heroes.characters.Hero;
+import com.herocraftonline.heroes.characters.skill.SkillConfigManager;
+import com.herocraftonline.heroes.characters.skill.SkillSetting;
+import com.herocraftonline.heroes.characters.skill.SkillType;
+import com.herocraftonline.heroes.characters.skill.TargettedSkill;
+import com.herocraftonline.heroes.util.Util;
+import org.bukkit.Color;
+import org.bukkit.Particle;
+import org.bukkit.Particle.DustOptions;
+import org.bukkit.Sound;
+import org.bukkit.configuration.ConfigurationSection;
+import org.bukkit.entity.LivingEntity;
+import org.bukkit.entity.Player;
+import org.bukkit.event.entity.EntityDamageEvent;
+import org.bukkit.scheduler.BukkitRunnable;
+
+import java.util.Arrays;
+
+public class SkillHemorrhage extends TargettedSkill {
+
+    private static final DustOptions exitParticleOptions = new Particle.DustOptions(Color.RED, 2);
+
+    public SkillHemorrhage(Heroes plugin) {
+        super(plugin, "Hemorrhage");
+        this.setDescription("Yank a hook out of a target, dealing $1 physical damage and interrupting their casting.");
+        this.setUsage("/skill hemorrhage");
+        this.setArgumentRange(0, 1);
+        this.setIdentifiers("skill hemorrhage");
+        this.setTypes(SkillType.DAMAGING, SkillType.AGGRESSIVE, SkillType.INTERRUPTING);
+    }
+
+    @Override
+    public String getDescription(Hero hero) {
+        double damage = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE, 60, false);
+        double damageIncrease = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE_INCREASE_PER_STRENGTH, 0.0, false);
+        damage += damageIncrease * hero.getAttributeValue(AttributeType.STRENGTH);
+
+        return getDescription()
+                .replace("$1", Util.decFormat.format(damage));
+    }
+
+    public ConfigurationSection getDefaultConfig() {
+        ConfigurationSection config = super.getDefaultConfig();
+        config.set(SkillSetting.MAX_DISTANCE.node(), 30);
+        config.set(SkillSetting.DAMAGE.node(), 30);
+        config.set(SkillSetting.DAMAGE_INCREASE_PER_STRENGTH.node(), 0.0);
+        return config;
+    }
+
+    @Override
+    public SkillResult use(Hero hero, LivingEntity target, String[] args) {
+        Player player = hero.getPlayer();
+
+        // This is necessary for compatibility with AoE versions of this skill.
+        boolean shouldBroadCast = args == null || args.length == 0 || Arrays.stream(args).noneMatch(x -> x.equalsIgnoreCase("NoBroadcast"));
+
+        if (!SkillHook.tryRemoveHook(plugin, hero, target)) {
+            if (shouldBroadCast)
+                return SkillResult.INVALID_TARGET;
+            return SkillResult.INVALID_TARGET_NO_MSG;
+        }
+
+        if (shouldBroadCast)
+            broadcastExecuteText(hero, target);
+
+        double damage = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE, 75, false);
+        double damageIncrease = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE_INCREASE_PER_STRENGTH, 0.0, false);
+        damage += damageIncrease * hero.getAttributeValue(AttributeType.STRENGTH);
+
+
+        // do damage
+        addSpellTarget(target, hero);
+        damageEntity(target, player, damage, EntityDamageEvent.DamageCause.ENTITY_ATTACK);
+
+        // display removal of the hook
+        player.getWorld().playSound(player.getLocation(), Sound.ENTITY_SQUID_HURT, 0.4F, 1.0F);
+        // 1.0F is default
+        float exitParticleDisplaySpeed = 1.5F;
+        player.getWorld().spawnParticle(Particle.REDSTONE, target.getEyeLocation(), 15, 0.25F, 0.15F, 0.4F, exitParticleDisplaySpeed, exitParticleOptions);
+
+        return SkillResult.NORMAL;
+    }
+}

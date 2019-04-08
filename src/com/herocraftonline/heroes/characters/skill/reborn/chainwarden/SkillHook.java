@@ -1,10 +1,11 @@
-package com.herocraftonline.heroes.characters.skill.reborn.hookwarrior;
+package com.herocraftonline.heroes.characters.skill.reborn.chainwarden;
 
 import com.herocraftonline.heroes.Heroes;
 import com.herocraftonline.heroes.api.SkillResult;
 import com.herocraftonline.heroes.characters.CharacterTemplate;
 import com.herocraftonline.heroes.characters.Hero;
 import com.herocraftonline.heroes.characters.Monster;
+import com.herocraftonline.heroes.characters.effects.Effect;
 import com.herocraftonline.heroes.characters.effects.EffectType;
 import com.herocraftonline.heroes.characters.effects.PeriodicExpirableEffect;
 import com.herocraftonline.heroes.characters.skill.*;
@@ -13,7 +14,10 @@ import com.herocraftonline.heroes.util.Util;
 import de.slikey.effectlib.EffectManager;
 import de.slikey.effectlib.effect.LineEffect;
 import de.slikey.effectlib.util.DynamicLocation;
-import org.bukkit.*;
+import org.bukkit.Color;
+import org.bukkit.Location;
+import org.bukkit.Particle;
+import org.bukkit.Sound;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
@@ -22,6 +26,8 @@ import org.bukkit.event.entity.EntityDamageEvent.DamageCause;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.util.Vector;
 import org.jetbrains.annotations.NotNull;
+
+import java.util.Arrays;
 
 public class SkillHook extends ActiveSkill {
 
@@ -54,6 +60,7 @@ public class SkillHook extends ActiveSkill {
         config.set("projectile-size", 0.25);
         config.set("projectile-velocity", 20.0);
         config.set("projectile-gravity", 2.5);
+        config.set("projectile-max-ticks-lived", 20);
         config.set("hook-leash-distance", 20.0);
         config.set("hook-leash-power", 1.25);
         return config;
@@ -63,10 +70,18 @@ public class SkillHook extends ActiveSkill {
     public SkillResult use(Hero hero, String[] args) {
         Player player = hero.getPlayer();
 
-        broadcastExecuteText(hero);
+        // This is necessary for compatibility with AoE versions of this skill.
+        boolean shouldBroadCast = args == null || args.length == 0 || Arrays.stream(args).noneMatch(x -> x.equalsIgnoreCase("NoBroadcast"));
+
+        if (!SkillChainBelt.tryRemoveChain(this, hero, shouldBroadCast)) {
+            return SkillResult.FAIL;
+        }
+
+        if (shouldBroadCast)
+            broadcastExecuteText(hero);
 
         double projSize = SkillConfigManager.getUseSetting(hero, this, "projectile-size", 0.25, false);
-        double projVelocity = SkillConfigManager.getUseSetting(hero, this, "projectile-velocity", 20.0, false);
+        double projVelocity = SkillConfigManager.getUseSetting(hero, this, "projectile-velocity", 20, false);
 
         HookProjectile missile = new HookProjectile(plugin, this, hero, projSize, projVelocity);
         missile.fireMissile();
@@ -84,7 +99,7 @@ public class SkillHook extends ActiveSkill {
         HookProjectile(Plugin plugin, Skill skill, Hero hero, double projectileSize, double projVelocity) {
             super(plugin, skill, hero, projectileSize, projVelocity);
 
-            setRemainingLife(30);
+            setRemainingLife(SkillConfigManager.getUseSetting(hero, skill, "projectile-max-ticks-lived", 20, false));
             setGravity(SkillConfigManager.getUseSetting(hero, skill, "projectile-gravity", 2.5, false));
             this.damage = SkillConfigManager.getUseSetting(hero, skill, SkillSetting.DAMAGE, 50.0, false);
             this.hookLeashDistance = SkillConfigManager.getUseSetting(hero, skill, "hook-leash-distance", 20.0, false);
@@ -126,7 +141,48 @@ public class SkillHook extends ActiveSkill {
 
             hookedEffect.types.add(EffectType.HARMFUL);
             targetCT.addEffect(hookedEffect);
+
+            player.getWorld().spawnParticle(Particle.REDSTONE, target.getEyeLocation(), 5, 0.5F, 0.25F, 0.3F, 1.0F, new Particle.DustOptions(Color.RED, 1));
         }
+    }
+
+    public class HookOwnerEffect extends Effect {
+        private final int currentHookCount;
+
+        HookOwnerEffect(Skill skill, Player applier) {
+            super(skill, "HookOwner", applier);
+
+            this.types.add(EffectType.INTERNAL);
+            this.currentHookCount = 1;
+        }
+    }
+
+    public static boolean tryRemoveHook(Heroes plugin, Hero hookOwner, LivingEntity target) {
+        if (target == null)
+            return false;
+
+        CharacterTemplate targetCT = plugin.getCharacterManager().getCharacter(target);
+        return tryRemoveHook(hookOwner, targetCT);
+    }
+
+    public static boolean tryRemoveHook(Hero hookOwner, CharacterTemplate targetCT) {
+        if (targetCT == null)
+            return false;
+
+        String effectName = getHookedEffectName(hookOwner.getPlayer());
+        if (!targetCT.hasEffect(effectName))
+            return false;
+
+        boolean isAlliedTo = hookOwner.isAlliedTo(targetCT.getEntity());
+        if (!isAlliedTo && !damageCheck(hookOwner.getPlayer(), targetCT.getEntity()))
+            return false;
+
+        targetCT.removeEffect(targetCT.getEffect(effectName));
+        return true;
+    }
+
+    public static String getHookedEffectName(Player hookOwner) {
+        return hookOwner.getName() + "-Hooked";
     }
 
     public class HookedEffect extends PeriodicExpirableEffect {
@@ -136,7 +192,7 @@ public class SkillHook extends ActiveSkill {
         private EffectManager effectManager;
 
         HookedEffect(Skill skill, Player applier, long duration, double leashDist, double hookLeashPower) {
-            super(skill, applier.getName() + "-Hooked", applier, 1000, duration, null, null);
+            super(skill, getHookedEffectName(applier), applier, 1000, duration, null, null);
             double snapDist = leashDist * 1.5;
             this.leashDistSquared = leashDist * leashDist;
             this.snapDistSquared = snapDist * snapDist;

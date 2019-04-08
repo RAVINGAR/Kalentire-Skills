@@ -96,7 +96,7 @@ public class SkillDragonSmash extends ActiveSkill implements Listener {
                 player.getWorld().spawnParticle(Particle.CLOUD, player.getLocation(), 1, 0, 0, 0, 1);
             }
         }, 0, 1).getTaskId();
-        Bukkit.getScheduler().runTaskLaterAsynchronously(plugin, new Runnable() {
+        Bukkit.getScheduler().runTaskLater(plugin, new Runnable() {
             @Override
             public void run() {
                 Bukkit.getScheduler().cancelTask(taskId);

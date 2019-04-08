@@ -34,17 +34,17 @@ import org.bukkit.util.BoundingBox;
 import org.bukkit.util.Vector;
 
 import java.util.*;
+import java.util.logging.Level;
 
-public class SkillOvergrowth extends ActiveSkill {
+public class SkillOvergrowth extends TargettedLocationSkill {
 
     private static final Random random = new Random(System.currentTimeMillis());
-    private final NMSPhysics physics = NMSPhysics.instance();
-    private String applyText;
-    private String expireText;
 
     public SkillOvergrowth(Heroes plugin) {
         super(plugin, "Overgrowth");
-        setDescription("Create a large overgrowth up to $1 blocks in front of you that is $2 blocks wide and $3 blocks tall.");
+        setDescription("Create a large overgrowth in front of you that is $1 blocks wide and $2 blocks tall. " +
+                "Anyone that is nearby the overgrowth when it grows will be transported on top of it. " +
+                "The overgrowth lasts for a maximum of $3 seconds, and anyone that remains on top of it when it ends will be granted safety from fall damage.");
         setUsage("/skill overgrowth");
         setArgumentRange(0, 0);
         setIdentifiers("skill overgrowth");
@@ -54,106 +54,50 @@ public class SkillOvergrowth extends ActiveSkill {
 
     public ConfigurationSection getDefaultConfig() {
         ConfigurationSection config = super.getDefaultConfig();
-        config.set("height", 18);
-        config.set(SkillSetting.RADIUS.node(), 3);
         config.set(SkillSetting.MAX_DISTANCE.node(), 12);
+        config.set(ALLOW_TARGET_AIR_BLOCK_NODE, false);
+        config.set(TRY_GET_SOLID_BELOW_BLOCK_NODE, true);
+        config.set(MAXIMUM_FIND_SOLID_BELOW_BLOCK_HEIGHT_NODE, 15);
+        config.set("height", 16);
+        config.set(SkillSetting.RADIUS.node(), 4);
         config.set(SkillSetting.DURATION.node(), 7500);
-//        node.set(SkillSetting.APPLY_TEXT.node(), ChatComponents.GENERIC_SKILL + "%hero% conjures a wall of Water!");
-//        node.set(SkillSetting.EXPIRE_TEXT.node(), ChatComponents.GENERIC_SKILL + "%hero%'s wall has crumbled");
         return config;
     }
 
     public String getDescription(Hero hero) {
-        //int height = SkillConfigManager.getUseSetting(hero, this, "height", 3, false) * 2;
-        //int width = SkillConfigManager.getUseSetting(hero, this, "width", 2, false) * 2;
-//        int maxDist = SkillConfigManager.getUseSetting(hero, this, SkillSetting.MAX_DISTANCE, 12, false);
+        int radius = SkillConfigManager.getUseSetting(hero, this, SkillSetting.RADIUS, 4, false);
+        long duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, 7500, false);
+        int height = SkillConfigManager.getUseSetting(hero, this, "height", 16, false);
 
-        return getDescription();
-        //.replace("$1", maxDist + "");//.replace("$2", width + "").replace("$3", height + "");
+        return getDescription()
+                .replace("$1", radius + "")
+                .replace("$2", height + "")
+                .replace("$3", Util.decFormat.format((double) duration / 1000));
     }
 
-    @Override
-    public void init() {
-        super.init();
-
-        applyText = SkillConfigManager.getRaw(this, SkillSetting.APPLY_TEXT, ChatComponents.GENERIC_SKILL + "%hero% creates an overgrowth!").replace("%hero%", "$1");
-        expireText = SkillConfigManager.getRaw(this, SkillSetting.EXPIRE_TEXT, ChatComponents.GENERIC_SKILL + "%hero%'s overgrowth has vanished").replace("%hero%", "$1");
-    }
-
-    public SkillResult use(Hero hero, String[] args) {
+    public SkillResult use(Hero hero, Location targetLocation, String[] args) {
         Player player = hero.getPlayer();
 
-        broadcastExecuteText(hero);
-
-        World world = player.getWorld();
-
-        int maxDist = SkillConfigManager.getUseSetting(hero, this, SkillSetting.MAX_DISTANCE, 12, false);
         int radius = SkillConfigManager.getUseSetting(hero, this, SkillSetting.RADIUS, 4, false);
         long duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, 7500, false);
         int height = SkillConfigManager.getUseSetting(hero, this, "height", 18, false);
         int heightWithoutBaseBlock = height - 1;
 
-        Block targettedBlock = getBlockViaRaycast(player, maxDist);
-        if (targettedBlock == null)
-            return invalidTargetWithMessage(player);
+        Block targetBlock = targetLocation.getBlock();
+        if (targetLocation.getBlock().getType() != Material.AIR) {
+            targetBlock = targetBlock.getRelative(BlockFace.UP);
+        }
 
-        Block baseSkillBlock = getBaseSkillBlock(player, targettedBlock, heightWithoutBaseBlock);
-        if (baseSkillBlock == null)
-            return invalidTargetWithMessage(player);
+        OvergrowthConstructionData overgrowthConstructionData = tryGetOvergrowthConstructionData(player, targetBlock, heightWithoutBaseBlock, radius);
+        if (overgrowthConstructionData == null) {
+            player.sendMessage("Unable to fit an overgrowth at this location.");
+            return SkillResult.INVALID_TARGET_NO_MSG;
+        }
 
-        OvergrowthConstructionData overgrowthConstructionData = tryGetOvergrowthConstructionData(player, baseSkillBlock, heightWithoutBaseBlock, radius);
-        if (overgrowthConstructionData == null)
-            return invalidTargetWithMessage(player);
-
+        broadcastExecuteText(hero);
         hero.addEffect(new OvergrowthEffect(this, player, duration, overgrowthConstructionData));
 
         return SkillResult.NORMAL;
-    }
-
-    private SkillResult invalidTargetWithMessage(Player player) {
-        player.sendMessage("Unable to fit an overgrowth at this location.");
-        return SkillResult.INVALID_TARGET_NO_MSG;
-    }
-
-    private Block getBlockViaRaycast(Player player, int maxDist) {
-        World world = player.getWorld();
-        Location eyeLocation = player.getEyeLocation();
-        Vector normal = eyeLocation.getDirection();
-        Vector start = eyeLocation.toVector();
-        Vector end = normal.clone().multiply(maxDist).add(start);
-        RayCastHit hit = physics.rayCast(world, player, start, end);
-        if (hit == null)
-            return world.getBlockAt(end.getBlockX(), end.getBlockY(), end.getBlockZ());
-        return hit.isEntity() ? hit.getEntity().getLocation().getBlock() : hit.getBlock(world);
-    }
-
-    private Block getBlockViaRaycast(Block castLocation, Vector direction, int maxDist) {
-        World world = castLocation.getWorld();
-        Vector start = castLocation.getLocation().toVector();
-        Vector end = direction.clone().multiply(maxDist).add(start);
-        RayCastHit hit = physics.rayCast(world, start, end);
-        if (hit == null)
-            return world.getBlockAt(end.getBlockX(), end.getBlockY(), end.getBlockZ());
-        return hit.isEntity() ? hit.getEntity().getLocation().getBlock() : hit.getBlock(world);
-    }
-
-    private Block getBaseSkillBlock(Player player, Block targetBlock, int height) {
-        Block pillarRootBlock;
-        if (targetBlock.isEmpty()) {
-            targetBlock = getBlockViaRaycast(targetBlock, new Vector(0, -1, 0), height);
-            if (targetBlock == null)
-                return null;
-
-            pillarRootBlock = targetBlock.getRelative(BlockFace.UP);
-            if (pillarRootBlock.getRelative(BlockFace.DOWN).isEmpty())
-                pillarRootBlock = null;
-        } else {
-            pillarRootBlock = targetBlock.getRelative(BlockFace.UP);
-        }
-
-        if (pillarRootBlock == null || !Util.transparentBlocks.contains(pillarRootBlock.getType()))
-            return null;
-        return pillarRootBlock;
     }
 
     private OvergrowthConstructionData tryGetOvergrowthConstructionData(Player player, Block startBlock, int height, int radius) {
@@ -171,6 +115,7 @@ public class SkillOvergrowth extends ActiveSkill {
         } catch (IllegalStateException e) {
             return null;
         }
+
         while (iter.hasNext()) {
             currentBlock = iter.next();
 

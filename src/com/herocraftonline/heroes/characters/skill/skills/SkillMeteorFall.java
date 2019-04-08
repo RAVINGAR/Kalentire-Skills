@@ -144,7 +144,7 @@ public class SkillMeteorFall extends ActiveSkill {
 //            k++;
 //
 //            final int j = i;
-//            Bukkit.getScheduler().runTaskLaterAsynchronously(plugin, new Runnable() {
+//            Bukkit.getScheduler().runTaskLater(plugin, new Runnable() {
 //                @Override
 //                public void run() {
 //                    //temp remove until we can figure out why the task is never-ending.

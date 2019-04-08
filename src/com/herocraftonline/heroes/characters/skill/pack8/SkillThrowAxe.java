@@ -114,11 +114,11 @@ public class SkillThrowAxe extends ActiveSkill implements Listener {
         hero.addEffect(new ThrowAxeDisarmEffect(this, player, 3000));
 
         axes.add(new ThrownAxe(dropItem, hero, damage, hitVector));
-        Bukkit.getScheduler().runTaskLaterAsynchronously(plugin, new Runnable() {
+        Bukkit.getScheduler().runTaskLater(plugin, new Runnable() {
             @Override
             public void run() {
                 dropItem.setVelocity(player.getEyeLocation().toVector().subtract(dropItem.getLocation().toVector()).multiply(0.2).add(new Vector(0, 0, 0)));
-                Bukkit.getScheduler().runTaskLaterAsynchronously(plugin, new Runnable() {
+                Bukkit.getScheduler().runTaskLater(plugin, new Runnable() {
                     @Override
                     public void run() {
                         if (dropItem.isValid()) {

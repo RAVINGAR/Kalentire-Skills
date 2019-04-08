@@ -1,4 +1,4 @@
-package com.herocraftonline.heroes.characters.skill.reborn.hookwarrior;
+package com.herocraftonline.heroes.characters.skill.reborn.chainwarden;
 
 import com.google.common.collect.Lists;
 import com.herocraftonline.heroes.Heroes;
@@ -24,7 +24,6 @@ import org.bukkit.util.Vector;
 import java.util.Arrays;
 
 public class SkillYank extends TargettedSkill {
-    public static String skillName = "Yank";
 
     public SkillYank(Heroes plugin) {
         super(plugin, "Yank");
@@ -49,7 +48,6 @@ public class SkillYank extends TargettedSkill {
     public ConfigurationSection getDefaultConfig() {
         ConfigurationSection config = super.getDefaultConfig();
         config.set(SkillSetting.MAX_DISTANCE.node(), 25);
-        config.set(SkillSetting.DURATION.node(), 10000);
         config.set(SkillSetting.TARGET_HIT_TOLERANCE.node(), 0.5);
         config.set(SkillSetting.DAMAGE.node(), 40.0);
         config.set(SkillSetting.DAMAGE_INCREASE_PER_STRENGTH.node(), 0.0);
@@ -61,16 +59,18 @@ public class SkillYank extends TargettedSkill {
 
     public SkillResult use(Hero hero, LivingEntity target, String[] args) {
         Player player = hero.getPlayer();
-        CharacterTemplate targetCT = plugin.getCharacterManager().getCharacter(target);
-        if (!targetCT.hasEffect(player.getName() + "-Hooked"))
-            return SkillResult.INVALID_TARGET;
 
-        if (args == null || args.length == 0 || Arrays.stream(args).noneMatch(x -> x.equalsIgnoreCase("NoBroadcast")))
+        // This is necessary for compatibility with AoE versions of this skill.
+        boolean shouldBroadCast = args == null || args.length == 0 || Arrays.stream(args).noneMatch(x -> x.equalsIgnoreCase("NoBroadcast"));
+
+        if (!SkillHook.tryRemoveHook(plugin, hero, target)) {
+            if (shouldBroadCast)
+                return SkillResult.INVALID_TARGET;
+            return SkillResult.INVALID_TARGET_NO_MSG;
+        }
+
+        if (shouldBroadCast)
             broadcastExecuteText(hero, target);
-
-        boolean isAlliedTo = hero.isAlliedTo(target);
-        if (!isAlliedTo && !damageCheck(player, target))
-            return SkillResult.INVALID_TARGET;
 
         boolean shouldWeaken = shouldWeaken(target.getLocation());
 
@@ -82,13 +82,12 @@ public class SkillYank extends TargettedSkill {
         double hPowerIncrease = SkillConfigManager.getUseSetting(hero, this, "horizontal-power-increase-per-strength", 0.0125, false);
         hPower+= hPowerIncrease * hero.getAttributeValue(AttributeType.STRENGTH);
 
-        Vector locDiff = playerLoc.toVector().subtract(targetLoc.toVector());
-        locDiff = locDiff.normalize();
+        Vector locDiff = playerLoc.toVector().subtract(targetLoc.toVector()).normalize();
         if (shouldWeaken) {
             locDiff.multiply(0.75);
         }
 
-        if (isAlliedTo) {
+        if (hero.isAlliedTo(target)) {
             pushTargetUpwards(hero, target, vPower, true);
             pullTarget(hero, target, vPower, hPower, locDiff);
         } else {

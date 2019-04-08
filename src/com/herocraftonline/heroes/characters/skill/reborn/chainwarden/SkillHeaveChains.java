@@ -1,4 +1,4 @@
-package com.herocraftonline.heroes.characters.skill.reborn.hookwarrior;
+package com.herocraftonline.heroes.characters.skill.reborn.chainwarden;
 
 import com.herocraftonline.heroes.Heroes;
 import com.herocraftonline.heroes.api.SkillResult;
@@ -39,7 +39,7 @@ public class SkillHeaveChains extends ActiveSkill {
     public SkillResult use(Hero hero, String[] args) {
         Player player = hero.getPlayer();
 
-        SkillYank yankSkill = (SkillYank) plugin.getSkillManager().getSkill(SkillYank.skillName);
+        SkillYank yankSkill = (SkillYank) plugin.getSkillManager().getSkill("Yank");
         if (yankSkill == null) {
             Heroes.log(Level.SEVERE, "SkillYank is missing from the server. SkillHeave will no longer work. SkillYank _must_ be available to the class that has SkillHeave.");
             player.sendMessage("One of the Admins or devs broke this skill. Tell them to read the heroes logs to fix it.");
@@ -60,7 +60,6 @@ public class SkillHeaveChains extends ActiveSkill {
 
             SkillResult result = yankSkill.use(hero, target, new String[]{"NoBroadcast"});
             if (result == SkillResult.NORMAL) {
-                targetCT.removeEffect(targetCT.getEffect(effectName));
                 hitCount++;
             }
         }

@@ -87,7 +87,7 @@ public class SkillDualWield extends PassiveSkill {
 //                public void run() {
 //                    nmsHandler.sendPlayerAnimationPacket(player, 3);
 //                }
-//            }.runTaskLaterAsynchronously(plugin, delayTicks);
+//            }.runTaskLater(plugin, delayTicks);
 //
 ////            event.setUseItemInHand(Event.Result.DENY);
 ////            event.setCancelled(true);
@@ -130,7 +130,7 @@ public class SkillDualWield extends PassiveSkill {
                     nmsHandler.sendPlayerAnimationPacket(player, 3);
                     targetLE.getWorld().playSound(targetLE.getLocation(), Sound.ENTITY_GENERIC_HURT, 0.8F, 1.0F);
                 }
-            }.runTaskLaterAsynchronously(plugin, delayTicks);
+            }.runTaskLater(plugin, delayTicks);
         }
     }
 }

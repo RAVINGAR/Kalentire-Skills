@@ -103,7 +103,7 @@ public class SkillShadowEdge extends ActiveSkill implements Listener{
 
         axes.add(new ThrownAxe(dropItem, hero, damage));
 
-        Bukkit.getScheduler().runTaskLaterAsynchronously(plugin, new Runnable() {
+        Bukkit.getScheduler().runTaskLater(plugin, new Runnable() {
             @Override
             public void run() {
                 if (dropItem.isValid()) {

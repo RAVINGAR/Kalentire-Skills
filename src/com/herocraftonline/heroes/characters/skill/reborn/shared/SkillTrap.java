@@ -132,8 +132,6 @@ public class SkillTrap extends SkillBaseGroundEffect {
 
                 e.start();
                 em.disposeOnTermination();
-
-                player.getWorld().playSound(effect.getLocation(), Sound.ENTITY_GENERIC_BURN, 0.25f, 0.0001f);
             }
 
             @Override
@@ -147,8 +145,7 @@ public class SkillTrap extends SkillBaseGroundEffect {
                 final RootEffect effect = new RootEffect(skill, player, 100, 5000);
                 targetCT.addEffect(effect);
 
-                if (skill.isAreaGroundEffectApplied(hero))
-                    hero.removeEffect(hero.getEffect(skill.getName()));
+                hero.removeEffect(hero.getEffect(skill.getName()));
             }
         });
         return SkillResult.NORMAL;

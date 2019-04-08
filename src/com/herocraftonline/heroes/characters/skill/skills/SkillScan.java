@@ -1,10 +1,5 @@
 package com.herocraftonline.heroes.characters.skill.skills;
 
-import org.bukkit.Effect;
-import org.bukkit.entity.LivingEntity;
-import org.bukkit.entity.Player;
-import org.bukkit.Sound;
-
 import com.herocraftonline.heroes.Heroes;
 import com.herocraftonline.heroes.api.SkillResult;
 import com.herocraftonline.heroes.characters.CharacterTemplate;
@@ -12,6 +7,11 @@ import com.herocraftonline.heroes.characters.CustomNameManager;
 import com.herocraftonline.heroes.characters.Hero;
 import com.herocraftonline.heroes.characters.skill.SkillType;
 import com.herocraftonline.heroes.characters.skill.TargettedSkill;
+import com.herocraftonline.heroes.util.Util;
+import org.bukkit.Effect;
+import org.bukkit.Sound;
+import org.bukkit.entity.LivingEntity;
+import org.bukkit.entity.Player;
 
 public class SkillScan extends TargettedSkill {
     private final Heroes plugin;
@@ -43,10 +43,11 @@ public class SkillScan extends TargettedSkill {
 
             // Send the message
             player.sendMessage(tHero.getPlayer().getName() + " is a level " + tHero.getHeroLevel(tHero.getHeroClass()) + " " + tHero.getHeroClass().getName() + " and has " + (int) target.getHealth() + " / " + (int) target.getMaxHealth() + " HP");
-        }
-        else {
-            // Send the message
-            player.sendMessage(CustomNameManager.getName(target) + " has " + (int) target.getHealth() + " / " + (int) target.getMaxHealth() + " HP");
+        } else {
+            player.sendMessage(CustomNameManager.getName(target) + " has "
+                    + Util.decFormat.format(target.getHealth())
+                    + " / "
+                    + Util.decFormat.format(target.getMaxHealth()) + " HP");
         }
 
         player.getWorld().playEffect(player.getLocation(), Effect.ENDER_SIGNAL, 3);

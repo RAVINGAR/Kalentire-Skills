@@ -77,7 +77,7 @@ public class SkillTempest extends ActiveSkill {
         final int maxTargets = SkillConfigManager.getUseSetting(hero, this, "max-targets", 0, false);
 
         // Damage all entities near the center after the fireworks finish playing
-        Bukkit.getScheduler().runTaskLaterAsynchronously(plugin, new Runnable() {
+        Bukkit.getScheduler().runTaskLater(plugin, new Runnable() {
             @Override
             public void run() {
                 int targetsHit = 0;

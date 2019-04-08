@@ -267,7 +267,7 @@ public class SkillRecall extends ActiveSkill implements Listener {
         // Run this delayed task to check if the recall failed
         final String playerName = player.getName();
         final SkillRecall thisSkill = this;
-        Bukkit.getScheduler().runTaskLaterAsynchronously(plugin, new Runnable() {
+        Bukkit.getScheduler().runTaskLater(plugin, new Runnable() {
 
             @Override
             public void run() {
@@ -369,7 +369,7 @@ public class SkillRecall extends ActiveSkill implements Listener {
 
         // Removed for now until I have time to properly test it.
         // final Location finalTeleportLocation = teleportLocation;
-        // Bukkit.getScheduler().runTaskLaterAsynchronously(plugin, new Runnable() {
+        // Bukkit.getScheduler().runTaskLater(plugin, new Runnable() {
         //     @Override
         //     public void run() {
         //         if (!player.getLocation().equals(finalTeleportLocation))

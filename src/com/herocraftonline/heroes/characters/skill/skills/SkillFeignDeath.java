@@ -239,7 +239,7 @@ public class SkillFeignDeath extends ActiveSkill {
             if (player.hasPotionEffect(PotionEffectType.POISON) || player.hasPotionEffect(PotionEffectType.WITHER)
                     || player.hasPotionEffect(PotionEffectType.HARM)) {
                 // If they have a harmful effect present when removing the ability, delay effect removal by a bit.
-                Bukkit.getScheduler().runTaskLaterAsynchronously(plugin, new Runnable() {
+                Bukkit.getScheduler().runTaskLater(plugin, new Runnable() {
                     @Override
                     public void run() {
                         expire(player);
