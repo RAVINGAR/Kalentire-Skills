@@ -12,14 +12,14 @@ import com.herocraftonline.heroes.characters.skill.TargettedSkill;
 import com.herocraftonline.heroes.chat.ChatComponents;
 import com.herocraftonline.heroes.nms.NMSHandler;
 import com.herocraftonline.heroes.util.Util;
-import org.bukkit.Bukkit;
-import org.bukkit.Material;
-import org.bukkit.Particle;
-import org.bukkit.Sound;
+import org.bukkit.*;
+import org.bukkit.block.Block;
+import org.bukkit.block.BlockFace;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.entity.EntityDamageEvent.DamageCause;
+import org.bukkit.util.Vector;
 
 public class SkillImpale extends TargettedSkill {
 
@@ -35,6 +35,32 @@ public class SkillImpale extends TargettedSkill {
         setTypes(SkillType.ABILITY_PROPERTY_PHYSICAL, SkillType.DAMAGING, SkillType.AGGRESSIVE, SkillType.MOVEMENT_SLOWING, SkillType.INTERRUPTING);
     }
 
+    public static final Vector rotateVector(Vector v, float yawDegrees, float pitchDegrees) {
+        double yaw = Math.toRadians(-1 * (yawDegrees + 90));
+        double pitch = Math.toRadians(-pitchDegrees);
+
+        double cosYaw = Math.cos(yaw);
+        double cosPitch = Math.cos(pitch);
+        double sinYaw = Math.sin(yaw);
+        double sinPitch = Math.sin(pitch);
+
+        double initialX, initialY, initialZ;
+        double x, y, z;
+
+        // Z_Axis rotation (Pitch)
+        initialX = v.getX();
+        initialY = v.getY();
+        x = initialX * cosPitch - initialY * sinPitch;
+        y = initialX * sinPitch + initialY * cosPitch;
+
+        // Y_Axis rotation (Yaw)
+        initialZ = v.getZ();
+        initialX = x;
+        z = initialZ * cosYaw - initialX * sinYaw;
+        x = initialZ * sinYaw + initialX * cosYaw;
+
+        return new Vector(x, y, z);
+    }
     @Override
     public String getDescription(Hero hero) {
         int damage = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE, 50, false);
@@ -90,13 +116,52 @@ public class SkillImpale extends TargettedSkill {
         double damage = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE, 50, false);
         double damageIncrease = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE_INCREASE_PER_STRENGTH, 0.0, false);
         damage += damageIncrease * hero.getAttributeValue(AttributeType.STRENGTH);
-
-        addSpellTarget(target, hero);
         damageEntity(target, player, damage, DamageCause.ENTITY_ATTACK);
+        addSpellTarget(target, hero);
 
-        // Add the slow effect
-        long duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, 3000, false);
-        int amplitude = SkillConfigManager.getUseSetting(hero, this, "amplitude", 2, false);
+        /*
+        // get inverse directgion vector
+        // use dotproduct forst
+        double dot = target.getLocation().getDirection().dot(player.getLocation().getDirection());
+        float angle = target.getLocation().getDirection().angle(player.getLocation().getDirection());
+        float angle2 = player.getLocation().getDirection().angle(target.getLocation().getDirection());
+        hero.getPlayer().sendMessage("dot: " + dot);
+        hero.getPlayer().sendMessage("target angle plager: " + angle);
+        hero.getPlayer().sendMessage("player angle target: " + angle2);
+        Location targetLocation = target.getLocation();
+        Vector inverseDirectionVect = targetLocation.getDirection().normalize().multiply(-1);
+        Location behindTargetLocation = targetLocation.add(inverseDirectionVect);
+
+         */
+
+        // assume the passed in vector is going to now be the same as the location
+        // get direction target is facing
+        Location targetLocation = target.getLocation();
+        Vector targetDirection = targetLocation.getDirection();
+
+        // make him look at user
+        Location playerLocation = player.getLocation();
+        targetDirection = rotateVector(targetDirection, playerLocation.getYaw(), playerLocation.getPitch());
+
+        // flip 90 deg
+        Vector inverseDirectionVect = targetDirection.normalize().multiply(-1);
+        Location behindTargetLocation = targetLocation.add(inverseDirectionVect);
+        player.sendMessage("" + behindTargetLocation);
+        player.sendMessage("" + behindTargetLocation.getBlock());
+
+        long duration;
+        int amplitude;
+        if (behindTargetLocation.getBlock().getRelative(BlockFace.SELF).getType().isSolid()) {
+            // if something is stun
+            hero.getPlayer().sendMessage("pinned");
+            target.sendMessage("get fucked");
+            duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, 6000, false);
+            amplitude = SkillConfigManager.getUseSetting(hero, this, "amplitude", 2, false);
+        } else {
+            // Add the slow effect
+            duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, 3000, false);
+            amplitude = SkillConfigManager.getUseSetting(hero, this, "amplitude", 2, false);
+        }
 
         SlowEffect sEffect = new SlowEffect(this, player, duration, amplitude, applyText, expireText);
         plugin.getCharacterManager().getCharacter(target).addEffect(sEffect);
