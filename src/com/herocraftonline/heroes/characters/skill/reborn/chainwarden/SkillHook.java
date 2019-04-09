@@ -80,10 +80,7 @@ public class SkillHook extends ActiveSkill {
         if (shouldBroadCast)
             broadcastExecuteText(hero);
 
-        double projSize = SkillConfigManager.getUseSetting(hero, this, "projectile-size", 0.25, false);
-        double projVelocity = SkillConfigManager.getUseSetting(hero, this, "projectile-velocity", 20, false);
-
-        HookProjectile missile = new HookProjectile(plugin, this, hero, projSize, projVelocity);
+        HookProjectile missile = createHookProjectile(hero);
         missile.fireMissile();
 
         player.getWorld().playSound(player.getLocation(), Sound.ITEM_TRIDENT_RIPTIDE_2, 1.0F, 0.7F);
@@ -91,7 +88,14 @@ public class SkillHook extends ActiveSkill {
         return SkillResult.NORMAL;
     }
 
-    private class HookProjectile extends BasicMissile {
+    public SkillHook.HookProjectile createHookProjectile(Hero hero) {
+        double projSize = SkillConfigManager.getUseSetting(hero, this, "projectile-size", 0.25, false);
+        double projVelocity = SkillConfigManager.getUseSetting(hero, this, "projectile-velocity", 20, false);
+
+        return new HookProjectile(plugin, this, hero, projSize, projVelocity);
+    }
+
+    public class HookProjectile extends BasicMissile {
         private final long hookedDuration;
         private final double hookLeashDistance;
         private final double hookLeashPower;
@@ -112,6 +116,11 @@ public class SkillHook extends ActiveSkill {
         @Override
         protected void onTick() {
             this.visualEffect.setTargetLocation(getLocation());
+        }
+
+        @Override
+        protected boolean onCollideWithEntity(Entity entity) {
+            return !player.equals(entity);  // Don't let them hook themselves.
         }
 
         @Override
