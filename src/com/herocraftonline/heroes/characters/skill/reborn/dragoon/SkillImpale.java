@@ -119,41 +119,10 @@ public class SkillImpale extends TargettedSkill {
         damageEntity(target, player, damage, DamageCause.ENTITY_ATTACK);
         addSpellTarget(target, hero);
 
-        /*
-        // get inverse directgion vector
-        // use dotproduct forst
-        double dot = target.getLocation().getDirection().dot(player.getLocation().getDirection());
-        float angle = target.getLocation().getDirection().angle(player.getLocation().getDirection());
-        float angle2 = player.getLocation().getDirection().angle(target.getLocation().getDirection());
-        hero.getPlayer().sendMessage("dot: " + dot);
-        hero.getPlayer().sendMessage("target angle plager: " + angle);
-        hero.getPlayer().sendMessage("player angle target: " + angle2);
-        Location targetLocation = target.getLocation();
-        Vector inverseDirectionVect = targetLocation.getDirection().normalize().multiply(-1);
-        Location behindTargetLocation = targetLocation.add(inverseDirectionVect);
-
-         */
-
-        // assume the passed in vector is going to now be the same as the location
-        // get direction target is facing
-        Location targetLocation = target.getLocation();
-        Vector targetDirection = targetLocation.getDirection();
-
-        // make him look at user
-        Location playerLocation = player.getLocation();
-        targetDirection = rotateVector(targetDirection, playerLocation.getYaw(), playerLocation.getPitch());
-
-        // flip 90 deg
-        Vector inverseDirectionVect = targetDirection.normalize().multiply(-1);
-        //Location behindTargetLocation = targetLocation.add(inverseDirectionVect);
-        //Location behindTargetLocation = targetLocation.add(playerLocation.getDirection());
-        Location behindTargetLocation = target.getEyeLocation().add(playerLocation.getDirection());
-
-        // debugging
-
-        // these should be the same
-        player.sendMessage("" + behindTargetLocation);
-        player.sendMessage("" + behindTargetLocation.getBlock());
+        // take current player direction
+        Vector playerDirection = player.getLocation().getDirection().normalize();
+        // move target 1 block away from direction of player
+        Location behindTargetLocation = target.getEyeLocation().add(playerDirection);
 
         long duration;
         int amplitude;
