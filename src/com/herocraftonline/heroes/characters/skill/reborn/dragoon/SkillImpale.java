@@ -145,7 +145,13 @@ public class SkillImpale extends TargettedSkill {
 
         // flip 90 deg
         Vector inverseDirectionVect = targetDirection.normalize().multiply(-1);
-        Location behindTargetLocation = targetLocation.add(inverseDirectionVect);
+        //Location behindTargetLocation = targetLocation.add(inverseDirectionVect);
+        //Location behindTargetLocation = targetLocation.add(playerLocation.getDirection());
+        Location behindTargetLocation = target.getEyeLocation().add(playerLocation.getDirection());
+
+        // debugging
+
+        // these should be the same
         player.sendMessage("" + behindTargetLocation);
         player.sendMessage("" + behindTargetLocation.getBlock());
 
