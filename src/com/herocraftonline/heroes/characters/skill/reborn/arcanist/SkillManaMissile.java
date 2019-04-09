@@ -55,11 +55,15 @@ public class SkillManaMissile extends PassiveSkill {
 
 	public ConfigurationSection getDefaultConfig() {
 		ConfigurationSection config = super.getDefaultConfig();
-		config.set(SkillSetting.DAMAGE.node(), 50.0);
+		config.set(SkillSetting.DAMAGE.node(), 40.0);
 		config.set("catalysts", Util.hoes);
-        config.set("projectile-size", 0.25);
-		config.set(SkillSetting.COOLDOWN.node(), 2000);
-		config.set("projectile-velocity", 20.0);
+        config.set("projectile-size", 0.3);
+		config.set("projectile-velocity", 75.0);
+		config.set("projectile-ticks-lives", 30);
+		config.set("projectile-gravity", 0.0);
+		config.set(SkillSetting.COOLDOWN.node(), 500);
+		config.set(SkillSetting.APPLY_TEXT.node(), "");
+		config.set(SkillSetting.UNAPPLY_TEXT.node(), "");
 		return config;
 	}
 
@@ -194,8 +198,8 @@ public class SkillManaMissile extends PassiveSkill {
 		public ManaProjectile(Plugin plugin, Skill skill, Hero hero, double projectileSize, double projVelocity) {
 			super(plugin, skill, hero, projectileSize, projVelocity);
 
-			setNoGravity();
-			setRemainingLife(30);
+			setRemainingLife(SkillConfigManager.getUseSetting(hero, skill, "projectile-max-ticks-lived", 30, false));
+			setGravity(SkillConfigManager.getUseSetting(hero, skill, "projectile-gravity", 0.0, false));
 			this.damage = SkillConfigManager.getUseSetting(hero, skill, SkillSetting.DAMAGE, 50.0, false);
 			this.visualEffect = new ManaMissileVisualEffect(this.effectManager);
 		}

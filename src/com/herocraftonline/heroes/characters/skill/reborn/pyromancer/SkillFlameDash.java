@@ -40,9 +40,9 @@ public class SkillFlameDash extends ActiveSkill {
     @Override
     public ConfigurationSection getDefaultConfig() {
         ConfigurationSection config = super.getDefaultConfig();
-        config.set(SkillSetting.MAX_DISTANCE.node(), 7);
+        config.set(SkillSetting.MAX_DISTANCE.node(), 8);
         config.set("max-step-climb", 2);
-        config.set("max-step-drop", 5);
+        config.set("max-step-drop", 6);
         return config;
     }
 

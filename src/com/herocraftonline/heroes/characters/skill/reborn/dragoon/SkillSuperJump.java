@@ -48,11 +48,11 @@ public class SkillSuperJump extends ActiveSkill {
     @Override
     public ConfigurationSection getDefaultConfig() {
         ConfigurationSection config = super.getDefaultConfig();
-        config.set(SkillSetting.DURATION.node(), 5000);
+        config.set(SkillSetting.DURATION.node(), 4000);
         config.set("horizontal-power", 0.0);
         config.set("horizontal-power-increase-per-dexterity", 0.0);
         config.set("vertical-power", 2.0);
-        config.set("vertical-power-increase-per-dexterity", 0.00625);
+        config.set("vertical-power-increase-per-dexterity", 0.0);
         config.set("ncp-exemption-duration", 0);
         return config;
     }

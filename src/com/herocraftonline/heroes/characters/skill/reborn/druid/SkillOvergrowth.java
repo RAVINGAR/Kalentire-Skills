@@ -12,10 +12,7 @@ import com.herocraftonline.heroes.chat.ChatComponents;
 import com.herocraftonline.heroes.nms.physics.NMSPhysics;
 import com.herocraftonline.heroes.nms.physics.RayCastHit;
 import com.herocraftonline.heroes.util.Util;
-import org.bukkit.Bukkit;
-import org.bukkit.Location;
-import org.bukkit.Material;
-import org.bukkit.World;
+import org.bukkit.*;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
 import org.bukkit.configuration.ConfigurationSection;
@@ -43,7 +40,7 @@ public class SkillOvergrowth extends TargettedLocationSkill {
     public SkillOvergrowth(Heroes plugin) {
         super(plugin, "Overgrowth");
         setDescription("Create a large overgrowth in front of you that is $1 blocks wide and $2 blocks tall. " +
-                "Anyone that is nearby the overgrowth when it grows will be transported on top of it. " +
+                "Anyone that is near the overgrowth when it grows will be transported on top of it. " +
                 "The overgrowth lasts for a maximum of $3 seconds, and anyone that remains on top of it when it ends will be granted safety from fall damage.");
         setUsage("/skill overgrowth");
         setArgumentRange(0, 0);
@@ -57,7 +54,7 @@ public class SkillOvergrowth extends TargettedLocationSkill {
         config.set(SkillSetting.MAX_DISTANCE.node(), 12);
         config.set(ALLOW_TARGET_AIR_BLOCK_NODE, false);
         config.set(TRY_GET_SOLID_BELOW_BLOCK_NODE, true);
-        config.set(MAXIMUM_FIND_SOLID_BELOW_BLOCK_HEIGHT_NODE, 15);
+        config.set(MAXIMUM_FIND_SOLID_BELOW_BLOCK_HEIGHT_NODE, 10);
         config.set("height", 16);
         config.set(SkillSetting.RADIUS.node(), 4);
         config.set(SkillSetting.DURATION.node(), 7500);
@@ -422,6 +419,9 @@ public class SkillOvergrowth extends TargettedLocationSkill {
                 Location entLoc = entity.getLocation();
                 Location onPillarLoc = new Location(entLoc.getWorld(), entLoc.getX(), data.getTopY() + 1, entLoc.getZ(), entLoc.getYaw(), entLoc.getPitch());
                 entity.teleport(onPillarLoc, PlayerTeleportEvent.TeleportCause.PLUGIN);
+                if (entity instanceof Player) {
+                    entity.sendMessage(ChatComponents.GENERIC_SKILL + ChatColor.GOLD + "You've been transported onto an Overgrowth! Stay on the tree to avoid fall damage!");
+                }
             }
         }
 

@@ -54,7 +54,6 @@ public class SkillTransform extends ActiveSkill {
 
     @Override
     public String getDescription(Hero hero) {
-
         int healthDrainTick = SkillConfigManager.getUseSetting(hero, this, "health-drain-tick", 20, false);
         int healthDrainPeriod = SkillConfigManager.getUseSetting(hero, this, "health-drain-period", 500, false);
 
@@ -68,11 +67,11 @@ public class SkillTransform extends ActiveSkill {
     @Override
     public ConfigurationSection getDefaultConfig() {
         ConfigurationSection config = super.getDefaultConfig();
-        config.set(SkillSetting.DELAY.node(), 250);
+        config.set(SkillSetting.DELAY.node(), 500);
         config.set(SkillSetting.APPLY_TEXT.node(), ChatComponents.GENERIC_SKILL + "%hero% has transformed!");
         config.set(SkillSetting.EXPIRE_TEXT.node(), ChatComponents.GENERIC_SKILL + "%hero% returns to their human form.");
         config.set("health-drain-tick", 20.0D);
-        config.set("health-drain-period", 500);
+        config.set("health-drain-period", 1000);
         return config;
     }
 

@@ -58,8 +58,7 @@ public class SkillDarkBolt extends ActiveSkill {
 
     @Override
     public String getDescription(Hero hero) {
-
-        int radius = SkillConfigManager.getUseSetting(hero, this, SkillSetting.RADIUS, 4, false);
+        double radius = SkillConfigManager.getUseSetting(hero, this, SkillSetting.RADIUS, 4.0, false);
 
         double damage = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE, 80, false);
         double damageIncrease = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE_INCREASE_PER_INTELLECT, 1.25, false);
@@ -79,14 +78,14 @@ public class SkillDarkBolt extends ActiveSkill {
     @Override
     public ConfigurationSection getDefaultConfig() {
         ConfigurationSection config = super.getDefaultConfig();
-        config.set(SkillSetting.DAMAGE.node(), 80);
-        config.set(SkillSetting.DAMAGE_INCREASE_PER_INTELLECT.node(), 1.25);
-        config.set(SkillSetting.RADIUS.node(), 3);
-        config.set(SkillSetting.DURATION.node(), 6000);
+        config.set(SkillSetting.DAMAGE.node(), 50);
+        config.set(SkillSetting.DAMAGE_INCREASE_PER_INTELLECT.node(), 0.0);
+        config.set(SkillSetting.RADIUS.node(), 4.0);
+        config.set(SkillSetting.DURATION.node(), 7000);
         config.set("wither-level", 1);
-        config.set("healing-reduction-percent", 0.15);
-        config.set("projectile-velocity", 1.5);
-        config.set("projectile-ticks-lived", 20);
+        config.set("healing-reduction-percent", 0.35);
+        config.set("projectile-velocity", 1.2);
+        config.set("projectile-max-ticks-lived", 15);
         config.set(SkillSetting.APPLY_TEXT.node(), ChatComponents.GENERIC_SKILL + "%target%'s begins to wither away!");
         config.set(SkillSetting.EXPIRE_TEXT.node(), ChatComponents.GENERIC_SKILL + "%target%'s is no longer withering.");
         return config;
@@ -116,7 +115,7 @@ public class SkillDarkBolt extends ActiveSkill {
         darkBolt.setCharged(false);
         darkBolt.setYield(0.0F);
 
-        int ticksLived = SkillConfigManager.getUseSetting(hero, this, "projectile-ticks-lived", 20, false);
+        int ticksLived = SkillConfigManager.getUseSetting(hero, this, "projectile-max-ticks-lived", 20, false);
 
         Bukkit.getScheduler().scheduleSyncDelayedTask(plugin, new Runnable() {
             public void run() {
@@ -180,7 +179,7 @@ public class SkillDarkBolt extends ActiveSkill {
         Player player = (Player) darkBolt.getShooter();
         Hero hero = plugin.getCharacterManager().getHero(player);
 
-        int radius = SkillConfigManager.getUseSetting(hero, this, SkillSetting.RADIUS, 3, false);
+        double radius = SkillConfigManager.getUseSetting(hero, this, SkillSetting.RADIUS, 3, false);
         double damage = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE, 80, false);
         double damageIncrease = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE_INCREASE_PER_INTELLECT, 0.0, false);
         damage += damageIncrease * hero.getAttributeValue(AttributeType.INTELLECT);
@@ -193,7 +192,7 @@ public class SkillDarkBolt extends ActiveSkill {
         darkBoltLoc.getWorld().spawnParticle(Particle.EXPLOSION_LARGE, darkBoltLoc, 15, 1, 1, 1, 0);
         player.getWorld().playSound(player.getLocation(), Sound.ENTITY_WITHER_DEATH, 0.1F, 2.0F);
 
-        List<Location> circle = Util.getCircleLocationList(darkBoltLoc, radius, 0, true, true, 0);
+        List<Location> circle = Util.getCircleLocationList(darkBoltLoc, (int) radius, 0, true, true, 0);
         for (Location location : circle) {
             darkBolt.getWorld().spawnParticle(Particle.SPELL_WITCH, location, 2, 0.2, 0.3, 0.2, 0);
         }

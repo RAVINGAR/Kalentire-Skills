@@ -36,7 +36,7 @@ public class SkillGravityFlux extends TargettedSkill {
 
     public SkillGravityFlux(Heroes plugin) {
         super(plugin, "GravityFlux");
-        setDescription("Warp the space in a $1 block radius around a target, reversing gravity for them and all of those that are nearby."
+        setDescription("Warp the space in a $1 block radius around a target, reversing gravity for them and all of those that are nearby. "
                 + "Lasts for $2 seconds. Affects both allies and enemies. Use with caution!");
         setArgumentRange(0, 0);
         setUsage("/skill gravityflux");
@@ -57,9 +57,10 @@ public class SkillGravityFlux extends TargettedSkill {
     @Override
     public ConfigurationSection getDefaultConfig() {
         ConfigurationSection config = super.getDefaultConfig();
-        config.set(SkillSetting.MAX_DISTANCE.node(), 12.0);
-        config.set(SkillSetting.RADIUS.node(), 5.0);
-        config.set(SkillSetting.DURATION.node(), 3000);
+        config.set(SkillSetting.MAX_DISTANCE.node(), 14.0);
+        config.set(SkillSetting.TARGET_HIT_TOLERANCE.node(), 0.25);
+        config.set(SkillSetting.RADIUS.node(), 6.0);
+        config.set(SkillSetting.DURATION.node(), 5000);
         config.set("levitation-amplifier", 0);
         return config;
     }

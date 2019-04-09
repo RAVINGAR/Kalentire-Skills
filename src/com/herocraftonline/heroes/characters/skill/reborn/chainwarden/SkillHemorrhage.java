@@ -17,7 +17,6 @@ import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.entity.EntityDamageEvent;
-import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.util.Vector;
 
 import java.util.Arrays;
@@ -58,15 +57,15 @@ public class SkillHemorrhage extends TargettedSkill {
         Player player = hero.getPlayer();
 
         // This is necessary for compatibility with AoE versions of this skill.
-        boolean shouldBroadCast = args == null || args.length == 0 || Arrays.stream(args).noneMatch(x -> x.equalsIgnoreCase("NoBroadcast"));
+        boolean shouldBroadcast = args == null || args.length == 0 || Arrays.stream(args).noneMatch(x -> x.equalsIgnoreCase("NoBroadcast"));
 
-        if (!SkillHook.tryRemoveHook(plugin, hero, target)) {
-            if (shouldBroadCast)
+        if (!SkillHookshot.tryRemoveHook(plugin, hero, target)) {
+            if (shouldBroadcast)
                 return SkillResult.INVALID_TARGET;
             return SkillResult.INVALID_TARGET_NO_MSG;
         }
 
-        if (shouldBroadCast)
+        if (shouldBroadcast)
             broadcastExecuteText(hero, target);
 
         double damage = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE, 80, false);

@@ -3,15 +3,13 @@ package com.herocraftonline.heroes.characters.skill.reborn.enderbeast;
 import com.herocraftonline.heroes.Heroes;
 import com.herocraftonline.heroes.api.SkillResult;
 import com.herocraftonline.heroes.api.events.HeroRegainHealthEvent;
-import com.herocraftonline.heroes.characters.CharacterTemplate;
 import com.herocraftonline.heroes.characters.Hero;
 import com.herocraftonline.heroes.characters.Monster;
 import com.herocraftonline.heroes.characters.effects.EffectType;
 import com.herocraftonline.heroes.characters.effects.ExpirableEffect;
 import com.herocraftonline.heroes.characters.effects.PeriodicExpirableEffect;
 import com.herocraftonline.heroes.characters.skill.*;
-import com.herocraftonline.heroes.nms.physics.NMSPhysics;
-import com.herocraftonline.heroes.nms.physics.RayCastHit;
+import com.herocraftonline.heroes.util.Util;
 import org.bukkit.*;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
@@ -26,7 +24,6 @@ import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityExplodeEvent;
 import org.bukkit.event.hanging.HangingBreakEvent;
 import org.bukkit.event.server.PluginDisableEvent;
-import org.bukkit.plugin.Plugin;
 import org.bukkit.util.BlockIterator;
 import org.bukkit.util.BoundingBox;
 import org.bukkit.util.Vector;
@@ -34,71 +31,65 @@ import org.bukkit.util.Vector;
 import java.util.*;
 import java.util.stream.Collectors;
 
-public class SkillSummonEnderCrystal extends ActiveSkill {
+public class SkillSummonEnderCrystal extends TargettedLocationSkill {
 
-    private final NMSPhysics physics = NMSPhysics.instance();
     private static Set<SkillConstructionData> activeConstructions = new HashSet<SkillConstructionData>();
+    private static String toggleableEffectName = "HasActiveEnderCrystal";
 
     public SkillSummonEnderCrystal(Heroes plugin) {
         super(plugin, "SummonEnderCrystal");
-        setDescription("Summon an EnderCrystal to help sustain your existence while transformed. "
-                + "The crystal will remain for $1 second(s). "
-                + "Has no notable effects while in your human form.");
+        setDescription("Summon an EnderCrystal to help sustain your existence while transformed. " +
+                "The crystal will heal you for $1 every $2 second(s) from up to $3 blocks away. " +
+                "Fades after $4 second(s). Has no notable effects while in your human form.");
         setUsage("/skill summonendercrystal");
+        setIdentifiers("skill summonendercrystal");
         setArgumentRange(0, 0);
-        setIdentifiers("skill summonendercrystal", "skill endercrystal");
+        setToggleableEffectName(toggleableEffectName);
         setTypes(SkillType.ABILITY_PROPERTY_ENDER, SkillType.ABILITY_PROPERTY_DARK, SkillType.SILENCEABLE, SkillType.BLOCK_CREATING, SkillType.HEALING);
 
         Bukkit.getServer().getPluginManager().registerEvents(new SkillBlockListener(), plugin);
     }
 
+    public String getDescription(Hero hero) {
+        double healDist = SkillConfigManager.getUseSetting(hero, this, "heal-distance", 20.0, false);
+        double healAmount = SkillConfigManager.getUseSetting(hero, this, "heal-tick", 20.0, false);
+        long period = SkillConfigManager.getUseSetting(hero, this, SkillSetting.PERIOD, 1000, false);
+        long duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, 20000, false);
+
+        return getDescription()
+                .replace("$1", Util.decFormat.format(healAmount))
+                .replace("$2", Util.decFormat.format(period / 1000.0))
+                .replace("$3", Util.decFormat.format(healDist))
+                .replace("$4", Util.decFormat.format(duration / 1000.0));
+    }
+
     public ConfigurationSection getDefaultConfig() {
         ConfigurationSection config = super.getDefaultConfig();
-        config.set("targetting-distance", 5);
+        config.set(SkillSetting.MAX_DISTANCE.node(), 12);
+        config.set(ALLOW_TARGET_AIR_BLOCK_NODE, false);
+        config.set(TRY_GET_SOLID_BELOW_BLOCK_NODE, true);
+        config.set(MAXIMUM_FIND_SOLID_BELOW_BLOCK_HEIGHT_NODE, 4);
         config.set(SkillSetting.DURATION.node(), 20000);
-        config.set(SkillSetting.PERIOD.node(), 500);
-        config.set("crystal-height", 2);
-        config.set("heal-distance", 20);
-        config.set("heal-tick", 20.0D);
+        config.set(SkillSetting.PERIOD.node(), 1000);
+        config.set("crystal-height", 3);
+        config.set("heal-distance", 20.0);
+        config.set("heal-tick", 30.0D);
         return config;
     }
 
-    public String getDescription(Hero hero) {
-        //int height = SkillConfigManager.getUseSetting(hero, this, "height", 3, false) * 2;
-        //int width = SkillConfigManager.getUseSetting(hero, this, "width", 2, false) * 2;
-//        int maxDist = SkillConfigManager.getUseSetting(hero, this, SkillSetting.MAX_DISTANCE, 12, false);
-
-        return getDescription();//.replace("$1", maxDist + "");//.replace("$2", width + "").replace("$3", height + "");
-    }
-
     @Override
-    public SkillResult use(Hero hero, String[] strings) {
+    public SkillResult use(Hero hero, Location targetLocation, String[] strings) {
         Player player = hero.getPlayer();
         World world = player.getWorld();
 
-        if (hero.hasEffect("HasSummonedEnderCrystal")) {
-            hero.removeEffect(hero.getEffect("HasSummonedEnderCrystal"));
-            player.sendMessage("You dispel your Ender Crystal.");
-            return SkillResult.SKIP_POST_USAGE;
-        }
-
-        int maxDist = SkillConfigManager.getUseSetting(hero, this, "targetting-distance", 5, false);
-        int healDist = SkillConfigManager.getUseSetting(hero, this, "heal-distance", 20, false);
-        double healAmount = SkillConfigManager.getUseSetting(hero, this, "heal-tick", 20.0D, false);
+        double healDist = SkillConfigManager.getUseSetting(hero, this, "heal-distance", 20.0, false);
+        double healAmount = SkillConfigManager.getUseSetting(hero, this, "heal-tick", 20.0, false);
         long period = SkillConfigManager.getUseSetting(hero, this, SkillSetting.PERIOD, 400, false);
         long duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, 20000, false);
         int height = SkillConfigManager.getUseSetting(hero, this, "crystal-height", 2, false);
         int heightWithoutBaseBlock = height - 1;
 
-        Block targettedBlock = getTargetBlockViaRaycast(player, maxDist);
-        if (targettedBlock == null)
-            return invalidTargetWithMessage(player);
-
-        Block baseSkillBlock = getBaseSkillBlock(player, targettedBlock, heightWithoutBaseBlock);
-        if (baseSkillBlock == null)
-            return invalidTargetWithMessage(player);
-
-        SkillConstructionData constructionData = getConstructionData(player, baseSkillBlock, height);
+        SkillConstructionData constructionData = getConstructionData(player, targetLocation.getBlock(), height);
         if (constructionData == null)
             return invalidTargetWithMessage(player);
 
@@ -106,25 +97,6 @@ public class SkillSummonEnderCrystal extends ActiveSkill {
         hero.addEffect(effect);
 
         return SkillResult.NORMAL;
-    }
-
-    private Block getBaseSkillBlock(Player player, Block targetBlock, int height) {
-        Block pillarRootBlock;
-        if (targetBlock.isEmpty()) {
-            targetBlock = getTargetBlockViaRaycast(targetBlock, new Vector(0, -1, 0), height);
-            if (targetBlock == null)
-                return null;
-
-            pillarRootBlock = targetBlock.getRelative(BlockFace.UP);
-            if (pillarRootBlock.getRelative(BlockFace.DOWN).isEmpty())
-                pillarRootBlock = null;
-        } else {
-            pillarRootBlock = targetBlock.getRelative(BlockFace.UP);
-        }
-
-        if (pillarRootBlock == null || !pillarRootBlock.isEmpty())
-            return null;
-        return pillarRootBlock;
     }
 
     private SkillConstructionData getConstructionData(Player player, Block startBlock, int height) {
@@ -158,28 +130,6 @@ public class SkillSummonEnderCrystal extends ActiveSkill {
             return null;
 
         return new SkillConstructionData(constructionBlocks);
-    }
-
-    private Block getTargetBlockViaRaycast(Player player, int maxDist) {
-        World world = player.getWorld();
-        Location eyeLocation = player.getEyeLocation();
-        Vector normal = eyeLocation.getDirection();
-        Vector start = eyeLocation.toVector();
-        Vector end = normal.clone().multiply(maxDist).add(start);
-        RayCastHit hit = physics.rayCast(world, player, start, end);
-        if (hit == null)
-            return world.getBlockAt(end.getBlockX(), end.getBlockY(), end.getBlockZ());
-        return hit.isEntity() ? hit.getEntity().getLocation().getBlock() : hit.getBlock(world);
-    }
-
-    private Block getTargetBlockViaRaycast(Block castLocation, Vector direction, int maxDist) {
-        World world = castLocation.getWorld();
-        Vector start = castLocation.getLocation().toVector();
-        Vector end = direction.clone().multiply(maxDist).add(start);
-        RayCastHit hit = physics.rayCast(world, start, end);
-        if (hit == null)
-            return world.getBlockAt(end.getBlockX(), end.getBlockY(), end.getBlockZ());
-        return hit.isEntity() ? hit.getEntity().getLocation().getBlock() : hit.getBlock(world);
     }
 
     private SkillResult invalidTargetWithMessage(Player player) {
@@ -238,14 +188,14 @@ public class SkillSummonEnderCrystal extends ActiveSkill {
     public class EnderCrystaledEffect extends PeriodicExpirableEffect {
         private final SkillConstructionData constructionData;
         private final double healAmount;
-        private final int maxHealDistance;
+        private final double healDistSquared;
 
         EnderCrystaledEffect(Skill skill, Player applier, long period, long duration,
-                             SkillConstructionData constructionData, double healAmount, int naxHealDistance) {
-            super(skill, "HasSummonedEnderCrystal", applier, period, duration);
+                             SkillConstructionData constructionData, double healAmount, double maxHealDistance) {
+            super(skill, toggleableEffectName, applier, period, duration);
             this.constructionData = constructionData;
             this.healAmount = healAmount;
-            this.maxHealDistance = naxHealDistance;
+            this.healDistSquared = maxHealDistance * maxHealDistance;
 
             types.add(EffectType.BENEFICIAL);
             types.add(EffectType.DARK);
@@ -283,7 +233,7 @@ public class SkillSummonEnderCrystal extends ActiveSkill {
                 return;
 
             Player player = hero.getPlayer();
-            if (!hero.hasEffect("EnderBeastTransformed") || constructionData.activeEnderCrystal.getLocation().distance(player.getLocation()) > maxHealDistance) {
+            if (!hero.hasEffect("EnderBeastTransformed") || constructionData.activeEnderCrystal.getLocation().distanceSquared(player.getLocation()) > healDistSquared) {
                 constructionData.activeEnderCrystal.setBeamTarget(constructionData.activeEnderCrystal.getLocation());
                 return;
             }

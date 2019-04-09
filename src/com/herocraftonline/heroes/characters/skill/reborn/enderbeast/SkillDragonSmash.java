@@ -7,6 +7,7 @@ import com.herocraftonline.heroes.characters.Hero;
 import com.herocraftonline.heroes.characters.effects.Effect;
 import com.herocraftonline.heroes.characters.skill.*;
 import com.herocraftonline.heroes.util.GeometryUtil;
+import com.herocraftonline.heroes.util.Util;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Sound;
@@ -38,7 +39,7 @@ public class SkillDragonSmash extends ActiveSkill implements Listener {
 
     public SkillDragonSmash(Heroes plugin) {
         super(plugin, "DragonSmash");
-        setDescription("Briefly transform and leap into the air. When you hit the peak of your jump, you will slam down at an incredible speed. " +
+        setDescription("Briefly transform and leap into the air, quickly followed by a downwards slam at incredible speeds. " +
                 "Upon hitting the ground, all enemies within a $1 block radius of you will take $2 damage. " +
                 "The damage will be increased by $3 for every block you travel downwards. Can deal a maximum of $4 damage. " +
                 "If you are already transformed when you use this ability, you will leap much higher.");
@@ -58,23 +59,28 @@ public class SkillDragonSmash extends ActiveSkill implements Listener {
         double strDamage = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE_INCREASE_PER_STRENGTH, 0.0, false);
         damage += strDamage * hero.getAttributeValue(AttributeType.STRENGTH);
 
+        final double damagePerBlockHeight = SkillConfigManager.getUseSetting(hero, this, "damage-per-block-height", 10.0, false);
+        final double maxDamageGain = SkillConfigManager.getUseSetting(hero, this, "maximum-total-damage-increase-for-block", 80.0, false);
+
         return getDescription()
-                .replace("$1", radius + "")
-                .replace("$2", damage + "");
+                .replace("$1", Util.decFormat.format(radius))
+                .replace("$2", Util.decFormat.format(damage))
+                .replace("$3", Util.decFormat.format(damagePerBlockHeight))
+                .replace("$4", Util.decFormat.format(damage + maxDamageGain));
     }
 
     @Override
     public ConfigurationSection getDefaultConfig() {
         ConfigurationSection node = super.getDefaultConfig();
-        node.set(SkillSetting.DAMAGE.node(), 80.0);
+        node.set(SkillSetting.DAMAGE.node(), 60.0);
         node.set("damage-per-block-height", 10.0);
         node.set("maximum-total-damage-increase-for-blocks", 80);
         node.set(SkillSetting.RADIUS.node(), 5.0);
-        node.set("upwards-velocity", 1.0);
-        node.set("downwards-velocity", 1.0);
-        node.set("transform-jump-velocity-difference", 1.0);
+        node.set("upwards-velocity", 1.25);
+        node.set("downwards-velocity", 2.5);
+        node.set("transform-jump-velocity-difference", 0.75);
         node.set("delay-ticks-before-drop", 10);
-        node.set("target-horizontal-knockback", 1.0);
+        node.set("target-horizontal-knockback", 0.0);
         node.set("target-vertical-knockback", 1.0);
         return node;
     }

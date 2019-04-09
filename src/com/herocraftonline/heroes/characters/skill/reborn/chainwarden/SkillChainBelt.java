@@ -11,6 +11,7 @@ import com.herocraftonline.heroes.characters.skill.*;
 import com.herocraftonline.heroes.chat.ChatComponents;
 import com.herocraftonline.heroes.util.Messaging;
 import com.herocraftonline.heroes.util.Properties;
+import com.herocraftonline.heroes.util.Util;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.configuration.ConfigurationSection;
@@ -43,12 +44,14 @@ public class SkillChainBelt extends PassiveSkill {
 
     @Override
     public String getDescription(Hero hero) {
-        long period = SkillConfigManager.getUseSetting(hero, this, SkillSetting.PERIOD, 8000, false) / 1000;
+        long period = SkillConfigManager.getUseSetting(hero, this, SkillSetting.PERIOD, 8000, false);
         int maxChains = SkillConfigManager.getUseSetting(hero, this, "max-chain-count", 6, false);
+        int chainLoss = SkillConfigManager.getUseSetting(hero, this, "chains-lost-on-overcap", 2, false);
 
         return getDescription()
                 .replace("$1", maxChains + "")
-                .replace("$2", period + "");
+                .replace("$2", Util.decFormat.format(period / 1000.0))
+                .replace("$3", chainLoss + "");
     }
 
     @Override
@@ -74,7 +77,7 @@ public class SkillChainBelt extends PassiveSkill {
             ChainBeltEffect chainBelt = (ChainBeltEffect) hero.getEffect(SkillChainBelt.effectName);
             if (!chainBelt.tryRemoveChain(shouldBroadcast)) {
                 if (shouldBroadcast) {
-                    hero.getPlayer().sendMessage("    " + ChatComponents.GENERIC_SKILL + ChatColor.GRAY + "Not enough chains available to use " + skill.getName() + "!");
+                    hero.getPlayer().sendMessage("    " + ChatComponents.GENERIC_SKILL +  "Not enough chains available to use " + skill.getName() + "!");
                 }
                 return false;
             }

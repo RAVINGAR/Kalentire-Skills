@@ -39,7 +39,7 @@ public class SkillRewind extends ActiveSkill implements Passive {
 
     @Override
     public String getDescription(Hero hero) {
-        long rewindDuration = SkillConfigManager.getUseSetting(hero, this, "rewind-duration", 4000, false);
+        long rewindDuration = SkillConfigManager.getUseSetting(hero, this, "rewind-duration", 3000, false);
 
         return getDescription()
                 .replace("$1", Util.decFormat.format((double) rewindDuration / 1000.0));
@@ -48,7 +48,7 @@ public class SkillRewind extends ActiveSkill implements Passive {
     @Override
     public ConfigurationSection getDefaultConfig() {
         ConfigurationSection config = super.getDefaultConfig();
-        config.set("rewind-duration", 4000);
+        config.set("rewind-duration", 3000);
         config.set("record-period", 250);
         return config;
     }
@@ -148,7 +148,9 @@ public class SkillRewind extends ActiveSkill implements Passive {
     public void tryApplying(Hero hero) {
         Player player = hero.getPlayer();
         if (hero.canUseSkill(this)) {
-            hero.removeEffect(hero.getEffect(trackerEffectName));
+            if (hero.hasEffect(this.getName())) {
+                hero.removeEffect(hero.getEffect(this.getName()));
+            }
             this.apply(hero);
         } else {
             this.unapply(hero);
@@ -157,7 +159,7 @@ public class SkillRewind extends ActiveSkill implements Passive {
 
     @Override
     public void apply(Hero hero) {
-        int rewindDuration = SkillConfigManager.getUseSetting(hero, this, "rewind-duration", 4000, false);
+        int rewindDuration = SkillConfigManager.getUseSetting(hero, this, "rewind-duration", 3000, false);
         int recordPeriod = SkillConfigManager.getUseSetting(hero, this, "record-period", 250, false);
         RewindTrackerEffect effect = new RewindTrackerEffect(this, recordPeriod, rewindDuration);
         effect.setPersistent(true);

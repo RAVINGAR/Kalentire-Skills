@@ -22,16 +22,16 @@ import org.bukkit.event.entity.EntityDamageEvent;
 import java.util.ArrayList;
 import java.util.List;
 
-public class SkillDimensionalRift extends TargettedSkill {
-    public SkillDimensionalRift(Heroes plugin) {
-        super(plugin, "DimensionalRift");
+public class SkillRift extends TargettedSkill {
+    public SkillRift(Heroes plugin) {
+        super(plugin, "Rift");
         setDescription("Open a rift in space between you and your target, causing you to switch places. " +
-                "After swapping, all enemies within $1 block of both locations will take $2 damage. " +
+                "After swapping, all enemies within $1 block(s) of both locations will take $2 damage. " +
                 "Additionally, you will lose $3 harmful effect(s), and if your target was an ally, they will also lose $3 harmful effect(s). " +
                 "If you targetted an enemy however, they will lose $4 beneficial effect(s) instead.");
-        setUsage("/skill dimensionalrift");
+        setUsage("/skill rift");
+        setIdentifiers("skill rift");
         setArgumentRange(0, 0);
-        setIdentifiers("skill dimensionalrift");
         setTypes(SkillType.ABILITY_PROPERTY_TEMPORAL, SkillType.SILENCEABLE, SkillType.TELEPORTING, SkillType.MULTI_GRESSIVE, SkillType.NO_SELF_TARGETTING);
     }
 
@@ -46,15 +46,16 @@ public class SkillDimensionalRift extends TargettedSkill {
                 .replace("$1", Util.decFormat.format(radius))
                 .replace("$2", Util.decFormat.format(damage))
                 .replace("$3", debuffRemovals + "")
-                .replace("$3", buffRemovals + "");
+                .replace("$4", buffRemovals + "");
     }
 
     @Override
     public ConfigurationSection getDefaultConfig() {
         ConfigurationSection config = super.getDefaultConfig();
         config.set(SkillSetting.MAX_DISTANCE.node(), 10);
+        config.set(SkillSetting.TARGET_HIT_TOLERANCE.node(), 2.5);
         config.set(SkillSetting.RADIUS.node(), 4.0);
-        config.set(SkillSetting.DAMAGE.node(), 40.0);
+        config.set(SkillSetting.DAMAGE.node(), 30.0);
         config.set("max-debuff-removals", 1);
         config.set("max-buff-removals", 1);
         return config;

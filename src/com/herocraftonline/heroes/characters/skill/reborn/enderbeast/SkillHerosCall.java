@@ -63,10 +63,11 @@ public class SkillHerosCall extends ActiveSkill {
         ConfigurationSection config = super.getDefaultConfig();
         config.set(SkillSetting.RADIUS.node(), 8.0);
         config.set("transform-period", 500);
-        config.set(SkillSetting.PERIOD.node(), 4000);
-        config.set(SkillSetting.DURATION.node(), 4000);
-        config.set("maximum-effective-distance", 40.0);
+        config.set(SkillSetting.PERIOD.node(), 3000);
+        config.set(SkillSetting.DURATION.node(), 6000);
+        config.set("maximum-effective-distance", 25.0);
         config.set("pull-power-reduction", 6.0);
+        config.set("taunt-required-fov", 30.0);
         config.set(SkillSetting.APPLY_TEXT.node(), ChatComponents.GENERIC_SKILL + "%target% is filled with a Hero's call and wishes to slay %hero%!");
         config.set(SkillSetting.EXPIRE_TEXT.node(), ChatComponents.GENERIC_SKILL + "%target% is no longer filled with heroic purpose!");
         return config;
@@ -75,13 +76,13 @@ public class SkillHerosCall extends ActiveSkill {
     public void init() {
         super.init();
 
-        applyText = SkillConfigManager.getRaw(this,
-                SkillSetting.APPLY_TEXT, ChatComponents.GENERIC_SKILL + "%target% is filled with a Hero's call and wishes to slay %hero%!")
+        applyText = SkillConfigManager.getRaw(this, SkillSetting.APPLY_TEXT,
+                ChatComponents.GENERIC_SKILL + "%target% is filled with a Hero's call and wishes to slay %hero%!")
                 .replace("%target%", "$1")
                 .replace("%hero%", "$2");
 
-        expireText = SkillConfigManager.getRaw(this,
-                SkillSetting.EXPIRE_TEXT, ChatComponents.GENERIC_SKILL + "%target% is no longer filled with heroic purpose!")
+        expireText = SkillConfigManager.getRaw(this, SkillSetting.EXPIRE_TEXT,
+                ChatComponents.GENERIC_SKILL + "%target% is no longer filled with heroic purpose!")
                 .replace("%target%", "$1");
     }
 
@@ -98,7 +99,7 @@ public class SkillHerosCall extends ActiveSkill {
 
         double maxDistance = SkillConfigManager.getUseSetting(hero, this, "maximum-effective-distance", 40.0, false);
         double pullPowerReduction = SkillConfigManager.getUseSetting(hero, this, "pull-power-reduction", 6.0, false);
-        double maxAngle = SkillConfigManager.getUseSetting(hero, this, "max-angle", 25.0, false);
+        double maxAngle = SkillConfigManager.getUseSetting(hero, this, "taunt-required-fov", 30.0, false);
 
         broadcastExecuteText(hero);
 

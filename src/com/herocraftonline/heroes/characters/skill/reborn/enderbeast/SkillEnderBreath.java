@@ -32,9 +32,9 @@ public class SkillEnderBreath extends SkillBaseGroundEffect {
 
     public SkillEnderBreath(Heroes plugin) {
         super(plugin, "EnderBreath");
-        setDescription("Launch a ball of Ender Flame at your opponent. "
-                + "The projectile explodes on hit, spreading dragon breath $4 blocks to the side and $5 blocks up and down (cylinder). "
-                + "Enemies within the breath are dealt $1 damage every $2 second(s) for $3 second(s) and"
+        setDescription("Launch a ball of Ender Flame towards your opponents. "
+                + "The projectile disperses on contact, spreading dragon breath in a $4 block wide radius. "
+                + "Enemies within the breath are dealt $1 damage every $2 second(s) for $3 second(s) and "
                 + "if you are transformed, they suffer chaotic ender teleports.");
         setUsage("/skill enderbreath");
         setArgumentRange(0, 0);
@@ -46,7 +46,6 @@ public class SkillEnderBreath extends SkillBaseGroundEffect {
 
     public String getDescription(Hero hero) {
         final double radius = SkillConfigManager.getUseSetting(hero, this, SkillSetting.RADIUS, 4.0, false);
-        double height = SkillConfigManager.getUseSetting(hero, this, HEIGHT_NODE, 2.0, false);
         long duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, 6000, false);
         final long period = SkillConfigManager.getUseSetting(hero, this, SkillSetting.PERIOD, 200, false);
         final double damageTick = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE_TICK, 50d, false);
@@ -60,17 +59,16 @@ public class SkillEnderBreath extends SkillBaseGroundEffect {
                 .replace("$1", Util.decFormat.format(damageTick))
                 .replace("$2", Util.decFormat.format((double) period / 1000))
                 .replace("$3", Util.decFormat.format((double) duration / 1000))
-                .replace("$4", Util.decFormat.format(radius))
-                .replace("$5", Util.decFormat.format(height));
+                .replace("$4", Util.decFormat.format(radius));
     }
 
     public ConfigurationSection getDefaultConfig() {
         ConfigurationSection node = super.getDefaultConfig();
         node.set(SkillSetting.RADIUS.node(), 4);
         node.set(HEIGHT_NODE, 2.0);
-        node.set(SkillSetting.DURATION.node(), 6000);
-        node.set(SkillSetting.PERIOD.node(), 200);
-        node.set(SkillSetting.DAMAGE_TICK.node(), 50d);
+        node.set(SkillSetting.DURATION.node(), 5000);
+        node.set(SkillSetting.PERIOD.node(), 250);
+        node.set(SkillSetting.DAMAGE_TICK.node(), 15.0);
         node.set("projectile-velocity", 15.0);
         node.set("projectile-gravity", 14.7045);
         return node;

@@ -15,23 +15,24 @@ import org.bukkit.Sound;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
 
-public class SkillPrepareChains extends ActiveSkill {
+import java.util.logging.Level;
 
+public class SkillGatherArsenal extends ActiveSkill {
     private static Color MANA_BLUE = Color.fromRGB(0, 191, 255);
 
     private String applyText;
     private String expireText;
-    private String effectName = "PreparingChains";
+    private String effectName = "GatheringArsenal";
 
-    public SkillPrepareChains(Heroes plugin) {
-        super(plugin, "PrepareChains");
+    public SkillGatherArsenal(Heroes plugin) {
+        super(plugin, "GatherArsenal");
         setDescription("Channeling: You take a moment to regenerate stamina and prepare a few extra sets of chains. " +
                 "Adds $1 extra chain(s) to your belt every $2 second(s) over the next $3 second(s). " +
                 "Stamina regeneration is increased by $4% while active. " +
                 "You can go over your normal maximum chain belt limit with this skill.");
-        setUsage("/skill preparechains");
+        setUsage("/skill gatherarsenal");
+        setIdentifiers("skill gatherarsenal");
         setArgumentRange(0, 0);
-        setIdentifiers("skill preparechains");
         setTypes(SkillType.ABILITY_PROPERTY_PHYSICAL, SkillType.STAMINA_INCREASING, SkillType.BUFFING);
     }
 
@@ -57,8 +58,8 @@ public class SkillPrepareChains extends ActiveSkill {
         config.set(SkillSetting.PERIOD.node(), 1000);
         config.set(SkillSetting.DELAY.node(), 5000);
         config.set(SkillSetting.INTERRUPT_TEXT.node(), "");
-        config.set(SkillSetting.APPLY_TEXT.node(), ChatComponents.GENERIC_SKILL + "%hero% is preparing chains!");
-        config.set(SkillSetting.EXPIRE_TEXT.node(), ChatComponents.GENERIC_SKILL + "%hero% is no longer preparing chains.");
+        config.set(SkillSetting.APPLY_TEXT.node(), ChatComponents.GENERIC_SKILL + "%hero% is preparing their arsenal!");
+        config.set(SkillSetting.EXPIRE_TEXT.node(), ChatComponents.GENERIC_SKILL + "%hero% is no longer gathering an arsenal.");
         return config;
     }
 
@@ -67,11 +68,11 @@ public class SkillPrepareChains extends ActiveSkill {
         super.init();
 
         applyText = SkillConfigManager.getRaw(this, SkillSetting.APPLY_TEXT,
-                ChatComponents.GENERIC_SKILL + "%hero% is preparing chains!")
+                ChatComponents.GENERIC_SKILL + "%hero% is gathering their arsenal!")
                 .replace("%hero%", "$1");
 
         expireText = SkillConfigManager.getRaw(this, SkillSetting.EXPIRE_TEXT,
-                ChatComponents.GENERIC_SKILL + "%hero% is no longer preparing chains.")
+                ChatComponents.GENERIC_SKILL + "%hero% is no longer gathering an arsenal.")
                 .replace("%hero%", "$1");
     }
 
@@ -146,6 +147,10 @@ public class SkillPrepareChains extends ActiveSkill {
             this.perSecondModifier = (1000.0 / getPeriod());
 
             this.chainBelt = (SkillChainBelt.ChainBeltEffect) hero.getEffect(SkillChainBelt.effectName);
+            if (this.chainBelt == null) {
+                Heroes.log(Level.SEVERE, SkillChainBelt.skillName + " is missing from the server. " + getName() + " will no longer work. "
+                        + SkillChainBelt.skillName + "_must_ be available to the class that has " + getName() + ".");
+            }
         }
 
         @Override

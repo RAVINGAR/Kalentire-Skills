@@ -51,13 +51,12 @@ public class SkillSpear extends ActiveSkill {
         config.set(SkillSetting.DAMAGE.node(), 45);
         config.set(SkillSetting.DAMAGE_INCREASE_PER_STRENGTH.node(), 0.0);
         config.set("projectile-size", 0.25);
-        config.set("projectile-velocity", 20.0);
+        config.set("projectile-velocity", 35.0);
         config.set("projectile-gravity", 2.5);
-        config.set("projectile-max-ticks-lived", 5);
+        config.set("projectile-max-ticks-lived", 12);
         config.set("vertical-power", 0.4);
         config.set("horizontal-power", 1.5);
         config.set("horizontal-power-increase-per-strength", 0.0);
-        config.set("weapons", Util.shovels);
         config.set("ncp-exemption-duration", 0);
         return config;
     }
@@ -66,12 +65,6 @@ public class SkillSpear extends ActiveSkill {
     public SkillResult use(Hero hero, String[] args) {
         Player player = hero.getPlayer();
 
-        Material item = NMSHandler.getInterface().getItemInMainHand(player.getInventory()).getType();
-        if (!SkillConfigManager.getUseSetting(hero, this, "weapons", Util.shovels).contains(item.name())) {
-            player.sendMessage("You can't use spear with that weapon!");
-            return SkillResult.FAIL;
-        }
-
         broadcastExecuteText(hero);
 
         double projSize = SkillConfigManager.getUseSetting(hero, this, "projectile-size", 0.25, false);
@@ -79,7 +72,7 @@ public class SkillSpear extends ActiveSkill {
         SpearProjectile missile = new SpearProjectile(plugin, this, hero, projSize, projVelocity);
         missile.fireMissile();
 
-        player.getWorld().playSound(player.getLocation(), Sound.ITEM_TRIDENT_RIPTIDE_2, 1.0F, 0.7F);
+        player.getWorld().playSound(player.getLocation(), Sound.ITEM_TRIDENT_RIPTIDE_3, 1.0F, 0.7F);
 
         return SkillResult.NORMAL;
     }

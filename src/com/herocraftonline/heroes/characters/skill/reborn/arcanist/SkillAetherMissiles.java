@@ -41,9 +41,9 @@ public class SkillAetherMissiles extends ActiveSkill {
 
     public SkillAetherMissiles(Heroes plugin) {
         super(plugin, "AetherMissiles");
-        setDescription("Summons up to $1 missiles around the caster, that will float and remain inactive around the caster for up to $2 seconds." +
-                "If this ability is cast again within that time, it will unleash each stored missile in a stream." +
-                "Each missile does $3 damage, increased by $4 for each number of missile you previously landed on the same target." +
+        setDescription("Summons up to $1 missiles that will float and remain inactive around the caster for up to $2 seconds. " +
+                "If this ability is cast again within that time, it will unleash each stored missile in a stream. " +
+                "Each missile does $3 damage, increased by $4 for each number of missile you previously landed on the same target. " +
                 "Total maximum damage for hitting every projectile is $5!");
         setUsage("/skill aethermissiles");
         setArgumentRange(0, 0);
@@ -81,12 +81,11 @@ public class SkillAetherMissiles extends ActiveSkill {
         config.set(SkillSetting.DURATION.node(), 15000);
         config.set("projectile-damage", 25.0);
         config.set("projectile-damage-increase-per-hit", 10.0);
-        config.set("projectile-velocity", 20.0);
-        config.set("projectile-max-duration", 1500);
-        config.set("projectile-radius", 0.15);
-        config.set("projectile-launch-delay-ticks", 3);
-        config.set("num-projectiles", 4);
-
+        config.set("projectile-velocity", 65.0);
+        config.set("projectile-max-ticks-lived", 30);
+        config.set("projectile-radius", 0.25);
+        config.set("projectile-launch-delay-ticks", 15);
+        config.set("num-projectiles", 5);
         return config;
     }
 
@@ -146,7 +145,7 @@ public class SkillAetherMissiles extends ActiveSkill {
 
             this.numProjectiles = SkillConfigManager.getUseSetting(hero, skill, "num-projectiles", 4, false);
             this.projectileRadius = SkillConfigManager.getUseSetting(hero, skill, "projectile-radius", 0.15, false);
-            int projDurationTicks = SkillConfigManager.getUseSetting(hero, skill, "projectile-max-duration", 2000, false) / 50;
+            int projDurationTicks = SkillConfigManager.getUseSetting(hero, skill, "projectile-max-ticks-lived", 30, false);
 
             List<Location> missileLocations = GeometryUtil.circle(applier.getLocation().clone().add(new Vector(0, 0.8, 0)), numProjectiles, 1.5);
             if (missileLocations.size() < numProjectiles) {

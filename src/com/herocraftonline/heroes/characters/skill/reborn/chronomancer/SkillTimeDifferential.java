@@ -51,11 +51,11 @@ public class SkillTimeDifferential extends TargettedSkill {
     public ConfigurationSection getDefaultConfig() {
         ConfigurationSection config = super.getDefaultConfig();
         config.set(SkillSetting.MAX_DISTANCE.node(), 12);
-        config.set(SkillSetting.DAMAGE.node(), 40.0);
+        config.set(SkillSetting.DAMAGE.node(), 20.0);
         config.set("damage-per-temporal-effect", 10.0);
-        config.set(SkillSetting.HEALING.node(), 40.0);
-        config.set("healing-per-temporal-effect", 10.0);
-        config.set("healing-delay", 1000);
+        config.set(SkillSetting.HEALING.node(), 35.0);
+        config.set("healing-per-temporal-effect", 15.0);
+        config.set("healing-delay", 1500);
         config.set("damage-delay", 1000);
         return config;
     }

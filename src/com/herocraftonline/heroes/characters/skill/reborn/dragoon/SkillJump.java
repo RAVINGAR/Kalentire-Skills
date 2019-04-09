@@ -42,11 +42,11 @@ public class SkillJump extends ActiveSkill {
     public ConfigurationSection getDefaultConfig() {
         ConfigurationSection config = super.getDefaultConfig();
         config.set("no-air-jump", false);
-        config.set("horizontal-power", 0.5);
-        config.set("horizontal-power-increase-per-dexterity", 0.0125);
+        config.set("horizontal-power", 1.0);
+        config.set("horizontal-power-increase-per-dexterity", 0.0);
         config.set("vertical-power", 0.5);
-        config.set("vertical-power-increase-per-dexterity", 0.00625);
-        config.set("ncp-exemption-duration", 2000);
+        config.set("vertical-power-increase-per-dexterity", 0.0);
+        config.set("ncp-exemption-duration", 0);
         return config;
     }
 

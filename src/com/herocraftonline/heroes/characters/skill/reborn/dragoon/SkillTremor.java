@@ -51,8 +51,8 @@ public class SkillTremor extends ActiveSkill {
     public ConfigurationSection getDefaultConfig() {
         ConfigurationSection config = super.getDefaultConfig();
         config.set(SkillSetting.DAMAGE.node(), 50);
-        config.set(SkillSetting.DAMAGE_INCREASE_PER_STRENGTH.node(), 1.125);
-        config.set(SkillSetting.RADIUS.node(), 5);
+        config.set(SkillSetting.DAMAGE_INCREASE_PER_STRENGTH.node(), 0.0);
+        config.set(SkillSetting.RADIUS.node(), 7);
         config.set("horizontal-power", 0.0);
         config.set("vertical-power", 0.4);
         config.set("ncp-exemption-duration", 1500);

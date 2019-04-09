@@ -34,7 +34,7 @@ public class SkillLungingBite extends ActiveSkill {
         setArgumentRange(0, 0);
         setDescription("You lunge forward with transformed jaws, biting any targets in your path and dealing $1 damage. " +
                 "You are healed by $2 for each target you kill with this ability. " +
-                "While fully transformed, you are healed for $1 instead, and any targets caught in your jaws will be held for $3 second(s).");
+                "While transformed, you are healed for $1 instead and any targets caught in your jaws will be held for $3 second(s).");
         setTypes(SkillType.DAMAGING, SkillType.MOVEMENT_INCREASING, SkillType.ABILITY_PROPERTY_PHYSICAL, SkillType.AGGRESSIVE);
     }
 
@@ -67,9 +67,9 @@ public class SkillLungingBite extends ActiveSkill {
         ConfigurationSection config = super.getDefaultConfig();
         config.set(SkillSetting.DAMAGE.node(), 35.0);
         config.set("damage-radius", 3.0);
-        config.set("bonus-damage-per-level", 5.0);
-        config.set("speed-boost-per-level", 0.000125);
-        config.set("speed-mult", 1.0001);
+        config.set("bonus-damage-per-level", 0.5);
+        config.set("speed-boost-per-level", 0.00125);
+        config.set("speed-mult", 1.0);
         config.set("transform-jaws-period", 200);
         config.set("transform-jaws-duration", 2500);
         config.set("transform-jaws-pull-power-reduction", 6.0);

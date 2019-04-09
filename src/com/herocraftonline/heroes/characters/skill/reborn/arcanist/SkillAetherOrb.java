@@ -44,7 +44,7 @@ public class SkillAetherOrb extends ActiveSkill {
 	}
 
 	public String getDescription(Hero hero) {
-		final int radius = SkillConfigManager.getUseSetting(hero, this, SkillSetting.RADIUS, 4, false);
+		final double radius = SkillConfigManager.getUseSetting(hero, this, SkillSetting.RADIUS, 4.0, false);
 		long duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, 6000, false);
 		final long period = SkillConfigManager.getUseSetting(hero, this, SkillSetting.PERIOD, 200, false);
 		final double damageTick = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE_TICK, 50d, false);
@@ -60,13 +60,13 @@ public class SkillAetherOrb extends ActiveSkill {
 
 	public ConfigurationSection getDefaultConfig() {
 		ConfigurationSection node = super.getDefaultConfig();
-		node.set(SkillSetting.RADIUS.node(), 6);
-		node.set("height", 4);
+		node.set(SkillSetting.RADIUS.node(), 5.0);
+		node.set("height", 4.0);
 		node.set(SkillSetting.PERIOD.node(), 500);
 		node.set(SkillSetting.DURATION.node(), 6000);
 		node.set(SkillSetting.DAMAGE_TICK.node(), 50d);
 		node.set("max-targets-per-pulse", 4);
-		node.set("projectile-velocity", 20.0);
+		node.set("projectile-velocity", 30.0);
 		node.set("visual-orb-radius", 1.0);
 		return node;
 	}
@@ -75,7 +75,7 @@ public class SkillAetherOrb extends ActiveSkill {
 		final Player player = hero.getPlayer();
 
 		broadcastExecuteText(hero);
-		double projVelocity = SkillConfigManager.getUseSetting(hero, this, "projectile-velocity", 20.0, false);
+		double projVelocity = SkillConfigManager.getUseSetting(hero, this, "projectile-velocity", 30.0, false);
 		AetherOrbMissile missile = new AetherOrbMissile(plugin, this, hero, 0.2, projVelocity);
 		missile.fireMissile();
 
@@ -111,16 +111,16 @@ public class SkillAetherOrb extends ActiveSkill {
         private EffectManager effectManager;
         private final Location orbLocation;
 		private double orbVisualRadius;
-		private final int height;
+		private final double height;
 		private double damageTick;
         private int maxTargetsPerPulse;
-        private int radius;
+        private double radius;
 
         AetherOrbEffect(Skill skill, Player player, Hero hero, long period, long duration, Location location) {
 		    super(skill, "ActiveAetherOrb", player, period, duration, null, null);
 
-            this.height = SkillConfigManager.getUseSetting(hero, skill, "height", 4, false);
-		    this.orbLocation = location.add(new Vector(0, height / 2, 0));
+            this.height = SkillConfigManager.getUseSetting(hero, skill, "height", 4.0, false);
+		    this.orbLocation = location.add(new Vector(0, height / 2.0, 0));
         }
 
         @Override
@@ -128,7 +128,7 @@ public class SkillAetherOrb extends ActiveSkill {
             super.applyToHero(hero);
 
             this.effectManager = new EffectManager(plugin);
-            this.radius = SkillConfigManager.getUseSetting(hero, skill, SkillSetting.RADIUS, 6, false);
+            this.radius = SkillConfigManager.getUseSetting(hero, skill, SkillSetting.RADIUS, 6.0, false);
             this.damageTick = SkillConfigManager.getUseSetting(hero, skill, SkillSetting.DAMAGE_TICK, 50d, false);
             this.maxTargetsPerPulse = SkillConfigManager.getUseSetting(hero, skill, "max-targets-per-pulse", 4, false);
             this.orbVisualRadius = SkillConfigManager.getUseSetting(hero, skill, "visual-orb-radius", 1.0, false);

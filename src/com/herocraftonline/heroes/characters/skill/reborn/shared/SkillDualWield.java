@@ -54,7 +54,7 @@ public class SkillDualWield extends PassiveSkill {
     public ConfigurationSection getDefaultConfig() {
         ConfigurationSection config = super.getDefaultConfig();
         config.set("damage-effectiveness", 1.0);
-        config.set("attack-delay-ticks", 5);
+        config.set("attack-delay-ticks", 10);
         return config;
     }
 

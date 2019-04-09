@@ -41,9 +41,8 @@ public class SkillBlink extends ActiveSkill {
     @Override
     public ConfigurationSection getDefaultConfig() {
         ConfigurationSection config = super.getDefaultConfig();
-        config.set(SkillSetting.MAX_DISTANCE.node(), 9);
-        config.set(SkillSetting.REAGENT.node(), Material.GUNPOWDER);
-        config.set(SkillSetting.REAGENT_COST.node(), 3);
+        config.set(SkillSetting.MAX_DISTANCE.node(), 10);
+        config.set(SkillSetting.MAX_DISTANCE_INCREASE_PER_INTELLECT.node(), 0.0);
         return config;
     }
 
@@ -57,6 +56,8 @@ public class SkillBlink extends ActiveSkill {
         }
 
         int distance = SkillConfigManager.getUseSetting(hero, this, SkillSetting.MAX_DISTANCE, 9, false);
+        double distIncrease = SkillConfigManager.getUseSetting(hero, this, SkillSetting.MAX_DISTANCE_INCREASE_PER_INTELLECT, 0.0, false);
+        distance += (int) (distIncrease * hero.getAttributeValue(AttributeType.INTELLECT));
 
         Material mat = player.getLocation().getBlock().getRelative(BlockFace.DOWN).getType();
         switch (mat) {
