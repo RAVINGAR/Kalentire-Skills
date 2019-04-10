@@ -1,4 +1,4 @@
-package com.herocraftonline.heroes.characters.skill.reborn.archer;
+package com.herocraftonline.heroes.characters.skill.reborn.pathfinder;
 
 import com.herocraftonline.heroes.Heroes;
 import com.herocraftonline.heroes.api.SkillResult;
@@ -19,15 +19,12 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.potion.PotionEffect;
-import com.herocraftonline.heroes.characters.skill.VisualEffect;
 import org.bukkit.potion.PotionEffectType;
 
 public class SkillFeatheredShot extends ActiveSkill {
 
     private String applyText;
     private String expireText;
-
-
 
     public SkillFeatheredShot(Heroes plugin) {
         super(plugin, "FeatheredShot");
@@ -41,27 +38,26 @@ public class SkillFeatheredShot extends ActiveSkill {
 
     @Override
     public String getDescription(Hero hero) {
-
         int duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, 10000, false);
-
         double damage = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE, 5, false);
 
         String formattedDamage = Util.decFormat.format(damage);
-
         String formattedDuration = Util.decFormat.format(duration / 1000.0);
 
-        return getDescription().replace("$1", formattedDuration).replace("$2", formattedDamage);
+        return getDescription()
+                .replace("$1", formattedDuration)
+                .replace("$2", formattedDamage);
     }
 
     @Override
     public ConfigurationSection getDefaultConfig() {
-        ConfigurationSection node = super.getDefaultConfig();
-        node.set(SkillSetting.DURATION.node(), 10000);
-        node.set(SkillSetting.DAMAGE.node(), 5);
-        node.set(SkillSetting.DAMAGE_INCREASE_PER_INTELLECT.node(), (double) 2);
-        node.set(SkillSetting.APPLY_TEXT.node(), ChatComponents.GENERIC_SKILL + "%hero% has deadly feathers attached to their bow.");
-        node.set(SkillSetting.EXPIRE_TEXT.node(), ChatComponents.GENERIC_SKILL + "%hero%'s bow no longer has deadly feathers attached to their bow.");
-        return node;
+        ConfigurationSection noconfige = super.getDefaultConfig();
+        noconfige.set(SkillSetting.DURATION.node(), 10000);
+        noconfige.set(SkillSetting.DAMAGE.node(), 5);
+        noconfige.set(SkillSetting.DAMAGE_INCREASE_PER_INTELLECT.node(), (double) 2);
+        noconfige.set(SkillSetting.APPLY_TEXT.node(), ChatComponents.GENERIC_SKILL + "%hero% has deadly feathers attached to their bow.");
+        noconfige.set(SkillSetting.EXPIRE_TEXT.node(), ChatComponents.GENERIC_SKILL + "%hero%'s bow no longer has deadly feathers attached to their bow.");
+        return noconfige;
     }
 
     public void init() {
@@ -79,7 +75,6 @@ public class SkillFeatheredShot extends ActiveSkill {
         broadcastExecuteText(hero);
         return SkillResult.NORMAL;
     }
-
 
     public class FeatheredEffect extends ExpirableEffect {
 
@@ -149,10 +144,9 @@ public class SkillFeatheredShot extends ActiveSkill {
                 target.addPotionEffect(new PotionEffect(PotionEffectType.JUMP, 80 * duration / 1000, 2));
                 target.addPotionEffect(new PotionEffect(PotionEffectType.SPEED, 80 * duration / 1000, 0));
             }
-
         }
     }
-    }
+}
 
 
 

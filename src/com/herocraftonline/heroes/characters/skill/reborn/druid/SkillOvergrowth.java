@@ -144,8 +144,9 @@ public class SkillOvergrowth extends TargettedLocationSkill {
                 break;
 
             for (Block block : getBlocksWithinFlatCircle(currentBlock.getLocation(), radius)) {
-                if (block.isEmpty())
+                if (block.isEmpty()) {
                     conversionBlocks.add(block);
+                }
             }
 
             validTopBlock = currentBlock;
@@ -159,30 +160,30 @@ public class SkillOvergrowth extends TargettedLocationSkill {
         return new OvergrowthConstructionData(startBlock, validTopBlock, radius, conversionBlocks, targets);
     }
 
-    private static Block safelyIterateFromBlock(Block block, Vector direction, int maxDist, int requiredUpwardFreeSpace) {
-        Block validFinalBlock = null;
-        BlockIterator iter = null;
-        try {
-            iter = new BlockIterator(block.getWorld(), block.getLocation().toVector(), direction, 0, maxDist);
-        } catch (IllegalStateException e) {
-            return null;
-        }
-
-        Block currentBlock;
-        while (iter.hasNext()) {
-            currentBlock = iter.next();
-            Material currentBlockType = currentBlock.getType();
-            if (!currentBlock.isEmpty())
-                break;
-
-            validFinalBlock = currentBlock;
-            if (cannotGoAnyHigher(currentBlock, requiredUpwardFreeSpace))
-                break;
-        }
-        if (validFinalBlock == null)
-            return null;
-        return validFinalBlock;
-    }
+//    private static Block safelyIterateFromBlock(Block block, Vector direction, int maxDist, int requiredUpwardFreeSpace) {
+//        Block validFinalBlock = null;
+//        BlockIterator iter = null;
+//        try {
+//            iter = new BlockIterator(block.getWorld(), block.getLocation().toVector(), direction, 0, maxDist);
+//        } catch (IllegalStateException e) {
+//            return null;
+//        }
+//
+//        Block currentBlock;
+//        while (iter.hasNext()) {
+//            currentBlock = iter.next();
+//            Material currentBlockType = currentBlock.getType();
+//            if (!currentBlock.isEmpty())
+//                break;
+//
+//            validFinalBlock = currentBlock;
+//            if (cannotGoAnyHigher(currentBlock, requiredUpwardFreeSpace))
+//                break;
+//        }
+//        if (validFinalBlock == null)
+//            return null;
+//        return validFinalBlock;
+//    }
 
     private static boolean cannotGoAnyHigher(Block sourceBlock, int requiredUpwardFreeSpace) {
         boolean cannotGoAnyHigher = false;
@@ -241,19 +242,19 @@ public class SkillOvergrowth extends TargettedLocationSkill {
         return entitiesWithinRadius;
     }
 
-    private List<Entity> getEntitiesWithinFlatCircle(Location center, int radius) {
-        World world = center.getWorld();
-        List<Entity> worldEntities = world.getEntities();
-        List<Entity> entitiesWithinRadius = new ArrayList<Entity>();
-        List<Block> blocksInRadius = getBlocksWithinFlatCircle(center, radius);
-
-        for (Entity entity : worldEntities) {
-            Block standingBlock = entity.getLocation().getBlock();
-            if (blocksInRadius.contains(standingBlock))
-                entitiesWithinRadius.add(entity);
-        }
-        return entitiesWithinRadius;
-    }
+//    private List<Entity> getEntitiesWithinFlatCircle(Location center, int radius) {
+//        World world = center.getWorld();
+//        List<Entity> worldEntities = world.getEntities();
+//        List<Entity> entitiesWithinRadius = new ArrayList<Entity>();
+//        List<Block> blocksInRadius = getBlocksWithinFlatCircle(center, radius);
+//
+//        for (Entity entity : worldEntities) {
+//            Block standingBlock = entity.getLocation().getBlock();
+//            if (blocksInRadius.contains(standingBlock))
+//                entitiesWithinRadius.add(entity);
+//        }
+//        return entitiesWithinRadius;
+//    }
 
     private List<Block> getBlocksWithinSphere(Location center, int radius, boolean hollow) {
         List<Block> sphereBlocks = new ArrayList<Block>();

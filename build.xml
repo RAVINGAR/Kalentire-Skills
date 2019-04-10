@@ -10,8 +10,8 @@
     <property name="dir.dist.path" value="${ant.project.name}/skills" />
     <property name="dir.maven.dependencies" value ="maven" />
     <property name="skill-packs" value="public1,pack1,pack2,pack3,pack4,pack5,pack6,pack7,pack8,skills" />
-    <!--<property name="reborn-classes" value="arcanist,chronomancer,duelist,druid,enderbeast,necromancer,ninja,pyromancer,professions,shared" />-->
-    <property name="reborn-classes" value="enderbeast,dragoon,chainwarden,shared" />
+    <!--<property name="reborn-classes" value="arcanist,chainwarden,chronomancer,dragoon,druid,enderbeast,necromancer,pathfinder,pyromancer,professions,shared" />-->
+    <property name="reborn-classes" value="chainwarden,chronomancer" />
 
     <!--Classpath used by javac compiler-->
     <path id="classpath">

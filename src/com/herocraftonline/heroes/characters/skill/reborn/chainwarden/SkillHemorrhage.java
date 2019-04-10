@@ -22,16 +22,16 @@ import org.bukkit.util.Vector;
 import java.util.Arrays;
 
 public class SkillHemorrhage extends TargettedSkill {
-
+    public static final String skillName = "Hemorrhage";
     private static final DustOptions exitParticleOptions = new Particle.DustOptions(Color.RED, 2);
 
     public SkillHemorrhage(Heroes plugin) {
         super(plugin, "Hemorrhage");
-        this.setDescription("Yank a hook out of a target, dealing $1 physical damage and interrupting their casting.");
+        this.setDescription("Violently wrench your hook out of a target, dealing $1 physical damage and interrupting their casting.");
         this.setUsage("/skill hemorrhage");
         this.setArgumentRange(0, 1);
         this.setIdentifiers("skill hemorrhage");
-        this.setTypes(SkillType.DAMAGING, SkillType.AGGRESSIVE, SkillType.INTERRUPTING);
+        this.setTypes(SkillType.ABILITY_PROPERTY_PHYSICAL, SkillType.DAMAGING, SkillType.AGGRESSIVE, SkillType.INTERRUPTING);
     }
 
     @Override

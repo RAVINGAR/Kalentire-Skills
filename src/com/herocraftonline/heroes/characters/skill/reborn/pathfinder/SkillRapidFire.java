@@ -1,4 +1,4 @@
-package com.herocraftonline.heroes.characters.skill.reborn.archer;
+package com.herocraftonline.heroes.characters.skill.reborn.pathfinder;
 
 import com.herocraftonline.heroes.Heroes;
 import com.herocraftonline.heroes.api.SkillResult;
@@ -13,10 +13,11 @@ import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.block.Block;
 import org.bukkit.configuration.ConfigurationSection;
-import org.bukkit.entity.*;
-import org.bukkit.event.EventHandler;
+import org.bukkit.entity.Arrow;
+import org.bukkit.entity.Entity;
+import org.bukkit.entity.LivingEntity;
+import org.bukkit.entity.Player;
 import org.bukkit.event.entity.EntityDamageEvent;
-import org.bukkit.event.entity.ProjectileLaunchEvent;
 import org.bukkit.util.BlockIterator;
 import org.bukkit.util.Vector;
 import org.jetbrains.annotations.NotNull;
@@ -33,7 +34,6 @@ public class SkillRapidFire extends ActiveSkill {
         setArgumentRange(0, 0);
         setIdentifiers("skill rapidfire");
         setTypes(SkillType.DAMAGING, SkillType.ABILITY_PROPERTY_PROJECTILE, SkillType.AGGRESSIVE, SkillType.AREA_OF_EFFECT);
-
     }
 
     public String getDescription(Hero hero) {
@@ -110,7 +110,7 @@ public class SkillRapidFire extends ActiveSkill {
             _damage = damage;
 
             types.add(EffectType.PHYSICAL);
-            
+
         }
 
         @Override

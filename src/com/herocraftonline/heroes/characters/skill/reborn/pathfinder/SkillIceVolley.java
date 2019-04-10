@@ -1,4 +1,4 @@
-package com.herocraftonline.heroes.characters.skill.reborn.archer;
+package com.herocraftonline.heroes.characters.skill.reborn.pathfinder;
 
 import com.google.common.collect.Lists;
 import com.herocraftonline.heroes.Heroes;
@@ -218,10 +218,9 @@ public class SkillIceVolley extends ActiveSkill {
             final double centerRadians = actualCenterDegreesRad;
             final double centerYaw = yaw;
             NCPUtils.applyExemptions(player, new NCPFunction() {
-                
+
                 @Override
-                public void execute()
-                {
+                public void execute() {
                     // Fire arrows from the center and move clockwise towards the end.
                     for (double a = centerRadians; a <= degreesRad; a += diff) {
                         shootIceVolleyArrow(player, centerYaw + a, pitchMultiplier, adjustedVelocityMultiplier);
@@ -245,8 +244,7 @@ public class SkillIceVolley extends ActiveSkill {
                 removedArrows += remove;
                 if (remove == amount) {
                     inventory.clear(entry.getKey());
-                }
-                else {
+                } else {
                     inventory.getItem(entry.getKey()).setAmount(amount - remove);
                 }
 
@@ -258,27 +256,21 @@ public class SkillIceVolley extends ActiveSkill {
 
             hero.removeEffect(msEffect);
         }
-        
-        public void addParticleEffect(final Projectile p)
-		{
-			new BukkitRunnable()
-			{
-				public void run() 
-				{
-					if(iceVolleyShots.containsKey(p))
-					{												
-						Location loc = p.getLocation();
-						//p.getWorld().spigot().playEffect(loc, org.bukkit.Effect.INSTANT_SPELL, 0, 0, 0.0F, 0.1F, 0.0F, 0.0F, 1, 16);
+
+        public void addParticleEffect(final Projectile p) {
+            new BukkitRunnable() {
+                public void run() {
+                    if (iceVolleyShots.containsKey(p)) {
+                        Location loc = p.getLocation();
+                        //p.getWorld().spigot().playEffect(loc, org.bukkit.Effect.INSTANT_SPELL, 0, 0, 0.0F, 0.1F, 0.0F, 0.0F, 1, 16);
                         p.getWorld().spawnParticle(Particle.SPELL_INSTANT, loc, 1, 0, 0.1, 0, 0);
-					}
-					else
-					{
-						this.cancel();
-						return;
-					}
-				}
-			}.runTaskTimer(plugin, 0, 1);
-		}  
+                    } else {
+                        this.cancel();
+                        return;
+                    }
+                }
+            }.runTaskTimer(plugin, 0, 1);
+        }
 
         private void shootIceVolleyArrow(Player player, double yaw, double pitchMultiplier, double velocityMultiplier) {
 
@@ -320,7 +312,7 @@ public class SkillIceVolley extends ActiveSkill {
 
             LivingEntity target = (LivingEntity) event.getEntity();
             plugin.getCharacterManager().getCharacter(target).addEffect(iceSlowEffect);
-            
+
             //target.getWorld().spigot().playEffect(target.getLocation().add(0, 0.5F, 0), org.bukkit.Effect.TILE_BREAK, Material.ICE.getId(), 0, 0.4F, 0.2F, 0.4F, 0.3F, 50, 16);
             target.getWorld().spawnParticle(Particle.BLOCK_CRACK, target.getLocation().add(0, 0.5, 0), 50, 0.4, 0.2, 0.4, 0.3, Bukkit.createBlockData(Material.ICE));
             target.getWorld().playSound(target.getLocation(), Sound.BLOCK_GLASS_BREAK, 7.0F, 0.7F);

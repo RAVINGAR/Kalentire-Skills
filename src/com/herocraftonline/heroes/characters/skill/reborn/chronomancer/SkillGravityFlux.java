@@ -32,11 +32,11 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
-public class SkillGravityFlux extends TargettedSkill {
+public class SkillGravityFlux extends TargettedLocationSkill {
 
     public SkillGravityFlux(Heroes plugin) {
         super(plugin, "GravityFlux");
-        setDescription("Warp the space in a $1 block radius around a target, reversing gravity for them and all of those that are nearby. "
+        setDescription("Warp the space in a $1 block radius around a target location, reversing gravity for all of those that are nearby. "
                 + "Lasts for $2 seconds. Affects both allies and enemies. Use with caution!");
         setArgumentRange(0, 0);
         setUsage("/skill gravityflux");
@@ -58,34 +58,53 @@ public class SkillGravityFlux extends TargettedSkill {
     public ConfigurationSection getDefaultConfig() {
         ConfigurationSection config = super.getDefaultConfig();
         config.set(SkillSetting.MAX_DISTANCE.node(), 14.0);
-        config.set(SkillSetting.TARGET_HIT_TOLERANCE.node(), 0.25);
+        config.set(ALLOW_TARGET_AIR_BLOCK_NODE, true);
+        config.set(TRY_GET_SOLID_BELOW_BLOCK_NODE, false);
+        config.set(MAXIMUM_FIND_SOLID_BELOW_BLOCK_HEIGHT_NODE, 0.0);
         config.set(SkillSetting.RADIUS.node(), 6.0);
-        config.set(SkillSetting.DURATION.node(), 5000);
+        config.set(SkillSetting.DURATION.node(), 8000);
+        config.set("sound-period", 2000);
         config.set("levitation-amplifier", 0);
         return config;
     }
 
     @Override
-    public SkillResult use(Hero hero, LivingEntity target, String[] args) {
+    public SkillResult use(Hero hero, Location targetLoc, String[] args) {
         Player player = hero.getPlayer();
 
         broadcastExecuteText(hero);
 
-        int duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, 5000, false);
+        long duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, 5000, false);
         double radius = SkillConfigManager.getUseSetting(hero, this, SkillSetting.RADIUS, 5.0, false);
         int amplifier = SkillConfigManager.getUseSetting(hero, this, "levitation-amplifier", 0, false);
+        long soundPeriod = SkillConfigManager.getUseSetting(hero, this, "sound-period", 2000, false);
 
-        Collection<Entity> nearbyEnts = target.getWorld().getNearbyEntities(target.getLocation(), radius, radius, radius);
+        Collection<Entity> nearbyEnts = targetLoc.getWorld().getNearbyEntities(targetLoc, radius, radius, radius);
         for (Entity ent : nearbyEnts) {
             if (!(ent instanceof LivingEntity))
                 continue;
 
-            CharacterTemplate ctTarget = plugin.getCharacterManager().getCharacter((LivingEntity) ent);
+            LivingEntity target = (LivingEntity) ent;
+            if (!hero.isAlliedTo(target) && !damageCheck(player, target))
+                continue;
+
+            CharacterTemplate ctTarget = plugin.getCharacterManager().getCharacter(target);
             if (ctTarget == null)
                 continue;
 
-            ctTarget.addEffect(new HaultGravityEffect(this, player, duration, amplifier));
+            ctTarget.addEffect(new HaultGravityEffect(this, player, soundPeriod, duration, amplifier));
         }
+
+        FireworkEffect firework = FireworkEffect.builder()
+                .flicker(false)
+                .trail(false)
+                .withColor(Color.PURPLE)
+                .withColor(Color.PURPLE)
+                .withColor(Color.BLACK)
+                .withFade(Color.BLACK)
+                .with(FireworkEffect.Type.BURST)
+                .build();
+        VisualEffect.playInstantFirework(firework, targetLoc);
 
         return SkillResult.NORMAL;
     }
@@ -94,8 +113,8 @@ public class SkillGravityFlux extends TargettedSkill {
 
         private EffectManager effectManager;
 
-        HaultGravityEffect(Skill skill, Player applier, long duration, int amplifier) {
-            super(skill, "HaultedGravity", applier, 1500, duration, null, null);
+        HaultGravityEffect(Skill skill, Player applier, long period, long duration, int amplifier) {
+            super(skill, "HaultedGravity", applier, period, duration, null, null);
 
             types.add(EffectType.DISPELLABLE);
             types.add(EffectType.HARMFUL);
@@ -121,13 +140,17 @@ public class SkillGravityFlux extends TargettedSkill {
         @Override
         public void removeFromMonster(Monster monster) {
             super.removeFromMonster(monster);
-            this.effectManager.dispose();
+
+            if (this.effectManager != null)
+                this.effectManager.dispose();
         }
 
         @Override
         public void removeFromHero(Hero hero) {
             super.removeFromHero(hero);
-            this.effectManager.dispose();
+
+            if (this.effectManager != null)
+                this.effectManager.dispose();
         }
 
         @Override
@@ -149,6 +172,7 @@ public class SkillGravityFlux extends TargettedSkill {
 
             if (this.effectManager != null)
                 this.effectManager.dispose();
+
             this.effectManager = new EffectManager(plugin);
             HelixEffect visualEffect = new HelixEffect(effectManager);
 
@@ -162,7 +186,7 @@ public class SkillGravityFlux extends TargettedSkill {
 
             visualEffect.color = Color.PURPLE;
             visualEffect.particle = Particle.REDSTONE;
-            visualEffect.particles = 10;
+            visualEffect.particles = 5;
 
             effectManager.start(visualEffect);
             effectManager.disposeOnTermination();

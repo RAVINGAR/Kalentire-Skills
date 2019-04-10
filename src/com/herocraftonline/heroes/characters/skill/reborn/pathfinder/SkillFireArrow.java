@@ -1,4 +1,4 @@
-package com.herocraftonline.heroes.characters.skill.reborn.archer;
+package com.herocraftonline.heroes.characters.skill.reborn.pathfinder;
 
 import com.herocraftonline.heroes.Heroes;
 import com.herocraftonline.heroes.api.SkillResult;
@@ -111,7 +111,7 @@ public class SkillFireArrow extends ActiveSkill {
 
             final LivingEntity target = (LivingEntity) event.getEntity();
             addSpellTarget(target, hero);
-            fplayer.playFirework(target.getWorld(), target.getLocation().add(0,2.0,0),
+            fplayer.playFirework(target.getWorld(), target.getLocation().add(0, 2.0, 0),
                     FireworkEffect.builder().flicker(false).trail(false)
                             .with(FireworkEffect.Type.BURST)
                             .withColor(Color.ORANGE)
@@ -126,8 +126,8 @@ public class SkillFireArrow extends ActiveSkill {
             }
             final Hero hero = SkillFireArrow.this.plugin.getCharacterManager().getHero((Player) event.getEntity());
             if (hero.hasEffect("FireArrowBuff")) {
-                    hero.removeEffect(hero.getEffect("FireArrowBuff"));
-                }
+                hero.removeEffect(hero.getEffect("FireArrowBuff"));
+            }
 
         }
     }

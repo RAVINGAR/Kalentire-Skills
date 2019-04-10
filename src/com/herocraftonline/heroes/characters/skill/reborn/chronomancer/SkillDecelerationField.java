@@ -70,11 +70,14 @@ public class SkillDecelerationField extends TargettedLocationSkill {
     @Override
     public ConfigurationSection getDefaultConfig() {
         ConfigurationSection config = super.getDefaultConfig();
-        config.set(SkillSetting.MAX_DISTANCE.node(), 20);
-        config.set(SkillSetting.RADIUS.node(), 16.0);
+        config.set(SkillSetting.MAX_DISTANCE.node(), 18);
+        config.set(ALLOW_TARGET_AIR_BLOCK_NODE, false);
+        config.set(TRY_GET_SOLID_BELOW_BLOCK_NODE, true);
+        config.set(MAXIMUM_FIND_SOLID_BELOW_BLOCK_HEIGHT_NODE, 7);
+        config.set(SkillSetting.RADIUS.node(), 14.0);
         config.set(SkillSetting.DURATION.node(), 10000);
-        config.set("percent-speed-decrease", 0.35);
-        config.set("projectile-velocity-multiplier", 0.5);
+        config.set("percent-speed-decrease", 0.4);
+        config.set("projectile-velocity-multiplier", 0.75);
         config.set("pulse-period", 250);
         config.set(SkillSetting.APPLY_TEXT.node(), ChatComponents.GENERIC_SKILL + "%hero% is decelerating time!");
         config.set(SkillSetting.EXPIRE_TEXT.node(), ChatComponents.GENERIC_SKILL + "%hero% is no longer decelerating time.");
@@ -150,7 +153,7 @@ public class SkillDecelerationField extends TargettedLocationSkill {
             effect.period = 1;
             effect.iterations = durationTicks;
 
-            effect.particles = 150;
+            effect.particles = 75;
             effect.particle = Particle.SPELL_MOB;
             effect.color = Color.YELLOW;
             effect.solid = false;
@@ -189,15 +192,8 @@ public class SkillDecelerationField extends TargettedLocationSkill {
                         continue;
                     if (ctTarget.hasEffect(immunityEffectName))
                         continue;
-                    if (hero.isAlliedTo(lEnt)) {
-                        // Only skip our allies if they are invulnerable.
-                        if (ctTarget.hasEffectType(EffectType.INVULNERABILITY))
-                            continue;
-                    } else {
-                        // If they AREN'T our ally, we just need to make sure that they can actually be damaged.
-                        if (!damageCheck(player, lEnt))
-                            continue;
-                    }
+                    if (!hero.isAlliedTo(lEnt) && !damageCheck(player, lEnt))
+                        continue;
 
                     ctTarget.removeEffect(ctTarget.getEffect(actualEffectName));
                     ctTarget.addEffect(new DeceleratedTimeEffect(skill, player, tempDuration, flatDecrease, projVMulti));

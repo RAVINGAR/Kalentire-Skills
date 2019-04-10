@@ -29,9 +29,7 @@ import org.bukkit.plugin.Plugin;
 import org.bukkit.util.Vector;
 import org.jetbrains.annotations.NotNull;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
+import java.util.*;
 
 public class SkillHookshot extends ActiveSkill {
     public static String skillName = "Hookshot";
@@ -98,17 +96,19 @@ public class SkillHookshot extends ActiveSkill {
     public static Location tryGetHookLocation(Heroes plugin, Hero hookOwner, Location targetLoc, double grabRadius, boolean removeHookIfFound) {
         if (targetLoc == null)
             return null;
+
         HookOwnerEffect ownerEffect = (HookOwnerEffect) hookOwner.getEffect(ownerEffectName);
         if (ownerEffect == null)
             return null;
-        Location validHookLoc = ownerEffect.tryConverToHookedLocation(targetLoc, grabRadius);
-        if (validHookLoc == null)
+
+        HookedLocationEffect validHookedLocEffect = ownerEffect.tryGetHookedLocationEffect(targetLoc, grabRadius);
+        if (validHookedLocEffect == null)
             return null;
 
         if (removeHookIfFound) {
-            ownerEffect.removeLocationHook(validHookLoc);
+            hookOwner.removeEffect(validHookedLocEffect);
         }
-        return validHookLoc;
+        return validHookedLocEffect.hookLocation;
     }
 
     public static boolean tryRemoveHook(Heroes plugin, Hero hookOwner, LivingEntity target) {
@@ -141,7 +141,7 @@ public class SkillHookshot extends ActiveSkill {
 
     // Lol.
     private static int hookLocationIndex = 0;
-    private static String getHookedLocationName() {
+    private static String getDynamicHookedLocationName() {
         hookLocationIndex++;
         if (hookLocationIndex > 500) {
             hookLocationIndex = -500;
@@ -229,7 +229,7 @@ public class SkillHookshot extends ActiveSkill {
     // Has to be static so that other skills can instantiate it.
     public static class HookOwnerEffect extends Effect {
         private List<CharacterTemplate> hookedCharacters = new ArrayList<CharacterTemplate>();
-        private List<Location> hookedLocations = new ArrayList<Location>();
+        private List<HookedLocationEffect> hookedLocations = new ArrayList<HookedLocationEffect>();
 
         HookOwnerEffect(Skill skill, Player applier) {
             super(skill, ownerEffectName, applier);
@@ -241,34 +241,39 @@ public class SkillHookshot extends ActiveSkill {
             return this.hookedCharacters.size() + this.hookedLocations.size();
         }
 
-        public void addHook(CharacterTemplate targetCT) {
-            if (!this.hookedCharacters.contains(targetCT))
-                this.hookedCharacters.add(targetCT);
-        }
-
-        public void removeHook(CharacterTemplate targetCT) {
-            this.hookedCharacters.remove(targetCT);
-        }
-
-        public Location tryConverToHookedLocation(Location location, double grabRadius) {
+        public HookedLocationEffect tryGetHookedLocationEffect(Location location, double grabRadius) {
             if (hookedLocations.isEmpty())
                 return null;
 
             double grabSquared = grabRadius * grabRadius;
-            for (Location hookedLoc : hookedLocations) {
-                if (hookedLoc.distanceSquared(location) <= grabSquared)
-                    return hookedLoc;
+            for (HookedLocationEffect locEffect : hookedLocations) {
+                if (locEffect.hookLocation.distanceSquared(location) <= grabSquared)
+                    return locEffect;
             }
             return null;
         }
 
-        public void addLocationHook(Location location) {
-            if (!this.hookedLocations.contains(location))
-                this.hookedLocations.add(location);
+        // Do not call this manually. This is only for the HookedLocationEffect to call.
+        void addHook(CharacterTemplate targetCT) {
+            if (!this.hookedCharacters.contains(targetCT))
+                this.hookedCharacters.add(targetCT);
         }
 
-        public void removeLocationHook(Location location) {
-            this.hookedLocations.remove(location);
+        // Do not call this manually. This is only for the HookedLocationEffect to call.
+        void removeHook(CharacterTemplate targetCT) {
+            this.hookedCharacters.remove(targetCT);
+        }
+
+        // Do not call this manually. This is only for the HookedLocationEffect to call.
+        void addLocationHook(HookedLocationEffect locEffect) {
+            if (!this.hookedLocations.contains(locEffect))
+                this.hookedLocations.add(locEffect);
+        }
+
+        // Do not call this manually. This is only for the HookedLocationEffect to call.
+        void removeLocationHook(HookedLocationEffect locEffect) {
+            if (this.hookedLocations.contains(locEffect))
+                this.hookedLocations.remove(locEffect);
         }
     }
 
@@ -279,7 +284,7 @@ public class SkillHookshot extends ActiveSkill {
         private EffectManager effectManager;
 
         HookedLocationEffect(Skill skill, Player applier, Location location, long duration, double snapDist) {
-            super(skill, getHookedLocationName(), applier, 1000, duration, null, null);
+            super(skill, getDynamicHookedLocationName(), applier, 1000, duration, null, null);
             this.hookLocation = location;
             this.snapDistSquared = snapDist * snapDist;
 
@@ -297,13 +302,10 @@ public class SkillHookshot extends ActiveSkill {
                 ownerEffect = new HookOwnerEffect(skill, applier);
                 hero.addEffect(ownerEffect);
             }
-            ownerEffect.addLocationHook(hookLocation);
+            ownerEffect.addLocationHook(this);
 
             this.effectManager = new EffectManager(plugin);
             LineEffect effect = getHookVisual(this.effectManager, applier, this.hookLocation);
-            effect.disappearWithOriginEntity = true;
-            effect.disappearWithTargetEntity = false;
-
             this.effectManager.start(effect);
         }
 
@@ -313,7 +315,7 @@ public class SkillHookshot extends ActiveSkill {
 
             if (hero.hasEffect(ownerEffectName)) {
                 HookOwnerEffect ownerEffect = (HookOwnerEffect) hero.getEffect(ownerEffectName);
-                ownerEffect.removeLocationHook(hookLocation);
+                ownerEffect.removeLocationHook(this);
             }
 
             if (this.effectManager != null)
@@ -471,7 +473,7 @@ public class SkillHookshot extends ActiveSkill {
 
         DynamicLocation dynamicOwnerLoc = new DynamicLocation(owner);
         effect.setDynamicOrigin(dynamicOwnerLoc);
-        effect.setLocation(targetLoc);
+        effect.setTargetLocation(targetLoc);
 
         return effect;
     }

@@ -63,11 +63,14 @@ public class SkillAccelerationField extends TargettedLocationSkill {
     @Override
     public ConfigurationSection getDefaultConfig() {
         ConfigurationSection config = super.getDefaultConfig();
-        config.set(SkillSetting.MAX_DISTANCE.node(), 20.0);
-        config.set(SkillSetting.RADIUS.node(), 16.0);
+        config.set(SkillSetting.MAX_DISTANCE.node(), 18.0);
+        config.set(ALLOW_TARGET_AIR_BLOCK_NODE, false);
+        config.set(TRY_GET_SOLID_BELOW_BLOCK_NODE, true);
+        config.set(MAXIMUM_FIND_SOLID_BELOW_BLOCK_HEIGHT_NODE, 7);
+        config.set(SkillSetting.RADIUS.node(), 14.0);
         config.set(SkillSetting.DURATION.node(), 10000);
         config.set("percent-speed-increase", 0.35);
-        config.set("projectile-velocity-multiplier", 1.35);
+        config.set("projectile-velocity-multiplier", 1.25);
         config.set("pulse-period", 250);
         config.set(SkillSetting.APPLY_TEXT.node(), ChatComponents.GENERIC_SKILL + "%hero% is accelerating time!");
         config.set(SkillSetting.EXPIRE_TEXT.node(), ChatComponents.GENERIC_SKILL + "%hero% is no longer accelerating time.");
@@ -85,7 +88,7 @@ public class SkillAccelerationField extends TargettedLocationSkill {
     }
 
     @Override
-    public SkillResult use(Hero hero, Location target, String[] args) {
+    public SkillResult use(Hero hero, Location targetLoc, String[] args) {
         Player player = hero.getPlayer();
 
         broadcastExecuteText(hero);
@@ -96,7 +99,7 @@ public class SkillAccelerationField extends TargettedLocationSkill {
         double percentIncrease = SkillConfigManager.getUseSetting(hero, this, "percent-speed-increase", 0.35, false);
         double projectileVMulti = SkillConfigManager.getUseSetting(hero, this, "projectile-velocity-multiplier", 1.35, false);
 
-        AcceleratedFieldEmitterEffect emitterEffect = new AcceleratedFieldEmitterEffect(this, player, pulsePeriod, duration, target, radius, percentIncrease, projectileVMulti);
+        AcceleratedFieldEmitterEffect emitterEffect = new AcceleratedFieldEmitterEffect(this, player, pulsePeriod, duration, targetLoc, radius, percentIncrease, projectileVMulti);
         hero.addEffect(emitterEffect);
 
         player.getWorld().playSound(player.getLocation(), Sound.BLOCK_BEACON_ACTIVATE, 2.0F, 2.0F);
@@ -143,7 +146,7 @@ public class SkillAccelerationField extends TargettedLocationSkill {
             effect.period = 1;
             effect.iterations = durationTicks;
 
-            effect.particles = 150;
+            effect.particles = 75;
             effect.particle = Particle.SPELL_MOB;
             effect.color = Color.TEAL;
             effect.solid = false;

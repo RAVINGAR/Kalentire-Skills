@@ -46,7 +46,7 @@ public class SkillChainBelt extends PassiveSkill {
     public String getDescription(Hero hero) {
         long period = SkillConfigManager.getUseSetting(hero, this, SkillSetting.PERIOD, 8000, false);
         int maxChains = SkillConfigManager.getUseSetting(hero, this, "max-chain-count", 6, false);
-        int chainLoss = SkillConfigManager.getUseSetting(hero, this, "chains-lost-on-overcap", 2, false);
+        int chainLoss = SkillConfigManager.getUseSetting(hero, this, "chains-lost-on-overcap", 1, false);
 
         return getDescription()
                 .replace("$1", maxChains + "")
@@ -113,7 +113,7 @@ public class SkillChainBelt extends PassiveSkill {
             super.applyToHero(hero);
 
             this.maxChains = SkillConfigManager.getUseSetting(hero, skill, "max-chain-count", 5, false);
-            this.lossOnOvercap = SkillConfigManager.getUseSetting(hero, skill, "chains-lost-on-overcap", 2, false);
+            this.lossOnOvercap = SkillConfigManager.getUseSetting(hero, skill, "chains-lost-on-overcap", 1, false);
             this.chainCount = this.maxChains;
 
             displayChainCountMessage();

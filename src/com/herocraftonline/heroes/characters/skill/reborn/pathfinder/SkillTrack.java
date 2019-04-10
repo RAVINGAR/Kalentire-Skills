@@ -1,4 +1,4 @@
-package com.herocraftonline.heroes.characters.skill.reborn.archer;
+package com.herocraftonline.heroes.characters.skill.reborn.pathfinder;
 
 import com.herocraftonline.heroes.Heroes;
 import com.herocraftonline.heroes.api.SkillResult;
@@ -40,11 +40,10 @@ public class SkillTrack extends ActiveSkill {
 
     @Override
     public ConfigurationSection getDefaultConfig() {
-        ConfigurationSection node = super.getDefaultConfig();
-        node.set("randomness", 50);
-        node.set("target-min-combat-level", 10);
-
-        return node;
+        ConfigurationSection config = super.getDefaultConfig();
+        config.set("randomness", 50);
+        config.set("target-min-combat-level", 10);
+        return config;
     }
 
     @Override
@@ -52,21 +51,22 @@ public class SkillTrack extends ActiveSkill {
         if (args.length < this.getMinArguments() || args.length > this.getMaxArguments()) {
             return SkillResult.INVALID_TARGET;
         }
-        
+
         Player player = hero.getPlayer();
 
         Player target = plugin.getServer().getPlayer(args[0]);
         if (target == null)
-        	return SkillResult.INVALID_TARGET;
+            return SkillResult.INVALID_TARGET;
+
         Hero targetHero = plugin.getCharacterManager().getHero(target);
         int minTargetHeroLevel = SkillConfigManager.getUseSetting(hero, this, "target-min-combat-level", 10, false);
         if (targetHero.getTieredLevel(targetHero.getHeroClass()) < minTargetHeroLevel) {
             player.sendMessage(target.getName() + " isn't powerful enough to be found...");
             return SkillResult.NORMAL;
         }
-        if(!target.getWorld().equals(player.getWorld())) {
-        	player.sendMessage(target.getName() + " is in world: " + target.getWorld().getName());
-        	return SkillResult.NORMAL;
+        if (!target.getWorld().equals(player.getWorld())) {
+            player.sendMessage(target.getName() + " is in world: " + target.getWorld().getName());
+            return SkillResult.NORMAL;
         }
 
         broadcastExecuteText(hero);
