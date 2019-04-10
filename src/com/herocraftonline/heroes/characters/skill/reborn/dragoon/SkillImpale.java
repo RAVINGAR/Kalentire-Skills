@@ -5,6 +5,7 @@ import com.herocraftonline.heroes.api.SkillResult;
 import com.herocraftonline.heroes.attributes.AttributeType;
 import com.herocraftonline.heroes.characters.Hero;
 import com.herocraftonline.heroes.characters.effects.common.SlowEffect;
+import com.herocraftonline.heroes.characters.effects.common.StunEffect;
 import com.herocraftonline.heroes.characters.skill.SkillConfigManager;
 import com.herocraftonline.heroes.characters.skill.SkillSetting;
 import com.herocraftonline.heroes.characters.skill.SkillType;
@@ -92,59 +93,32 @@ public class SkillImpale extends TargettedSkill {
         damageEntity(target, player, damage, DamageCause.ENTITY_ATTACK);
         addSpellTarget(target, hero);
 
-        // take current player direction
-        Vector playerDirection = player.getLocation().getDirection().normalize();
+        // take current player direction vector less a bit
+        Vector playerDirection = player.getLocation().getDirection().normalize().multiply(0.9);
         // move target 1 block away from direction of player
         Location behindTargetLocation = target.getEyeLocation().add(playerDirection);
+        // get block
+        Material blockBehindTarget = behindTargetLocation.getBlock().getRelative(BlockFace.SELF).getType();
 
         long duration;
         int amplitude;
-        if (behindTargetLocation.getBlock().getRelative(BlockFace.SELF).getType().isSolid()) {
-            // if something is stun
-            hero.getPlayer().sendMessage("pinned");
-            target.sendMessage("get fucked");
-            duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, 6000, false);
+        if (blockBehindTarget.isSolid()) {
+            target.sendMessage(hero.getPlayer().getDisplayName() + "has pinned you from their imapale!");
+            duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, 5000, false);
             amplitude = SkillConfigManager.getUseSetting(hero, this, "amplitude", 2, false);
         } else {
             // Add the slow effect
             duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, 3000, false);
             amplitude = SkillConfigManager.getUseSetting(hero, this, "amplitude", 2, false);
         }
-
         SlowEffect sEffect = new SlowEffect(this, player, duration, amplitude, applyText, expireText);
         plugin.getCharacterManager().getCharacter(target).addEffect(sEffect);
+
 
         player.getWorld().playSound(player.getLocation(), Sound.ENTITY_PLAYER_HURT, 8.0F, 0.4F);
 
         player.getWorld().spawnParticle(Particle.CRIT, target.getLocation().add(0, 0.5, 0), 75, 0, 0, 0, 1);
         player.getWorld().spawnParticle(Particle.BLOCK_CRACK, target.getLocation().add(0, 0.5, 0), 45, 0.3, 0.2, 0.3, 0.5, Bukkit.createBlockData(Material.NETHER_WART_BLOCK));
         return SkillResult.NORMAL;
-    }
-
-    public static Vector rotateVector(Vector v, float yawDegrees, float pitchDegrees) {
-        double yaw = Math.toRadians(-1 * (yawDegrees + 90));
-        double pitch = Math.toRadians(-pitchDegrees);
-
-        double cosYaw = Math.cos(yaw);
-        double cosPitch = Math.cos(pitch);
-        double sinYaw = Math.sin(yaw);
-        double sinPitch = Math.sin(pitch);
-
-        double initialX, initialY, initialZ;
-        double x, y, z;
-
-        // Z_Axis rotation (Pitch)
-        initialX = v.getX();
-        initialY = v.getY();
-        x = initialX * cosPitch - initialY * sinPitch;
-        y = initialX * sinPitch + initialY * cosPitch;
-
-        // Y_Axis rotation (Yaw)
-        initialZ = v.getZ();
-        initialX = x;
-        z = initialZ * cosYaw - initialX * sinYaw;
-        x = initialZ * sinYaw + initialX * cosYaw;
-
-        return new Vector(x, y, z);
     }
 }
