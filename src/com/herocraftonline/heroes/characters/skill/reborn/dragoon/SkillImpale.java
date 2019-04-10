@@ -115,7 +115,7 @@ public class SkillImpale extends TargettedSkill {
         plugin.getCharacterManager().getCharacter(target).addEffect(sEffect);
 
 
-        player.getWorld().playSound(player.getLocation(), Sound.ENTITY_PLAYER_HURT, 8.0F, 0.4F);
+        player.getWorld().playSound(player.getLocation(), Sound.ENTITY_PLAYER_HURT, 1.0F, 1.0F);
 
         player.getWorld().spawnParticle(Particle.CRIT, target.getLocation().add(0, 0.5, 0), 75, 0, 0, 0, 1);
         player.getWorld().spawnParticle(Particle.BLOCK_CRACK, target.getLocation().add(0, 0.5, 0), 45, 0.3, 0.2, 0.3, 0.5, Bukkit.createBlockData(Material.NETHER_WART_BLOCK));
