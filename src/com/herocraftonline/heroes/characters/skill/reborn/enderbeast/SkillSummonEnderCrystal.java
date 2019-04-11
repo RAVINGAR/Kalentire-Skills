@@ -89,6 +89,11 @@ public class SkillSummonEnderCrystal extends TargettedLocationSkill {
         int height = SkillConfigManager.getUseSetting(hero, this, "crystal-height", 2, false);
         int heightWithoutBaseBlock = height - 1;
 
+        Block targetBlock = targetLocation.getBlock();
+        if (targetLocation.getBlock().getType() != Material.AIR) {
+            targetBlock = targetBlock.getRelative(BlockFace.UP);
+        }
+
         SkillConstructionData constructionData = getConstructionData(player, targetLocation.getBlock(), height);
         if (constructionData == null)
             return invalidTargetWithMessage(player);
@@ -133,7 +138,7 @@ public class SkillSummonEnderCrystal extends TargettedLocationSkill {
     }
 
     private SkillResult invalidTargetWithMessage(Player player) {
-        player.sendMessage("Unable to fit an overgrowth at this location.");
+        player.sendMessage("Unable to fit an ender crystal at this location.");
         return SkillResult.INVALID_TARGET_NO_MSG;
     }
 

@@ -32,9 +32,9 @@ public class SkillCleanseSpirit extends SkillBaseHeal {
         double healing = SkillConfigManager.getUseSetting(hero, this, SkillSetting.HEALING.node(), 125, false);
         double healingIncrease = SkillConfigManager.getUseSetting(hero, this, SkillSetting.HEALING_INCREASE_PER_WISDOM.node(), 2.0, false);
         healing += (hero.getAttributeValue(AttributeType.WISDOM) * healingIncrease);
-        
+
         int effectRemovals = SkillConfigManager.getUseSetting(hero, this, "max-effect-removals", 1, false);
-        
+
         String formattedHealing = Util.decFormat.format(healing);
         String formattedSelfHealing = Util.decFormat.format(healing * Heroes.properties.selfHeal);
 
@@ -52,7 +52,7 @@ public class SkillCleanseSpirit extends SkillBaseHeal {
 
         return node;
     }
-    
+
     protected void applySoundEffects(World world, LivingEntity target) {
         world.playSound(target.getLocation(), Sound.ENTITY_EXPERIENCE_ORB_PICKUP, 0.5f, 0.7f);
     }
@@ -81,14 +81,14 @@ public class SkillCleanseSpirit extends SkillBaseHeal {
                 }
             }
         }
-        
+
         int maxRemovals = SkillConfigManager.getUseSetting(hero, this, "max-effect-removals", 1, false);
 
         for (Effect effect : hero.getEffects()) {
             // This combined with checking for DISPELLABLE and HARMFUL is so huge I'd rather split the lines. Disallow dispelling movement impediment, don't want the class countering itself.
             boolean isMovementImpeding = effect.isType(EffectType.SLOW) || effect.isType(EffectType.VELOCITY_DECREASING) ||
                     effect.isType(EffectType.WALK_SPEED_DECREASING) || effect.isType(EffectType.ROOT);
-            if (!isMovementImpeding && effect.isType(EffectType.DISPELLABLE) && effect.isType(EffectType.HARMFUL )) {
+            if (!isMovementImpeding && effect.isType(EffectType.DISPELLABLE) && effect.isType(EffectType.HARMFUL)) {
                 hero.removeEffect(effect);
                 // Just in case it's fire
                 if (effect.isType(EffectType.FIRE)) {

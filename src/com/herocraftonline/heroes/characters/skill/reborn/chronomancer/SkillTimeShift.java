@@ -12,6 +12,7 @@ import com.herocraftonline.heroes.characters.effects.Stacking;
 import com.herocraftonline.heroes.characters.effects.common.WalkSpeedPercentDecreaseEffect;
 import com.herocraftonline.heroes.characters.effects.common.WalkSpeedPercentIncreaseEffect;
 import com.herocraftonline.heroes.characters.skill.*;
+import com.herocraftonline.heroes.chat.ChatComponents;
 import com.herocraftonline.heroes.util.Util;
 import org.bukkit.*;
 import org.bukkit.configuration.ConfigurationSection;
@@ -132,17 +133,7 @@ public class SkillTimeShift extends TargettedSkill {
 
         double healing = SkillConfigManager.getUseSetting(hero, this, SkillSetting.HEALING, 20.0, false);
 
-        if (targetCT instanceof Hero) {
-            HeroRegainHealthEvent heal = new HeroRegainHealthEvent((Hero) targetCT, healing, this, hero);
-            plugin.getServer().getPluginManager().callEvent(heal);
-            if (heal.isCancelled()) {
-                player.sendMessage("Your target had their healing prevented!");
-            } else {
-                targetCT.heal(heal.getDelta());
-            }
-        } else {
-            targetCT.heal(healing);
-        }
+        targetCT.tryHeal(hero, this, healing);  // Ignore failures
 
         double speedIncrease = SkillConfigManager.getUseSetting(hero, this, "ally-percent-speed-increase", 0.1, false);
         boolean addedNewStack = targetCT.addEffectStack(

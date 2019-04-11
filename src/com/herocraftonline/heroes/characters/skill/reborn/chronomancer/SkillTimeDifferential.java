@@ -9,6 +9,7 @@ import com.herocraftonline.heroes.characters.effects.Effect;
 import com.herocraftonline.heroes.characters.effects.EffectType;
 import com.herocraftonline.heroes.characters.effects.Stacking;
 import com.herocraftonline.heroes.characters.skill.*;
+import com.herocraftonline.heroes.chat.ChatComponents;
 import com.herocraftonline.heroes.util.Util;
 import de.slikey.effectlib.EffectManager;
 import de.slikey.effectlib.effect.SphereEffect;
@@ -111,26 +112,8 @@ public class SkillTimeDifferential extends TargettedSkill {
                 if (target.getHealth() < 0  || target.isDead())
                     return;
 
-                if (targetCT instanceof Hero) {
-                    if (!tryHealHero()) {
-                        return;
-                    }
-                } else {
-                    targetCT.heal(finalHealing);
-                }
-                world.playSound(loc, Sound.BLOCK_NOTE_BLOCK_HARP, 1.0f, 1.0F);
-            }
-
-            private boolean tryHealHero() {
-                Hero targetHero = (Hero) targetCT;
-                HeroRegainHealthEvent hrhEvent = new HeroRegainHealthEvent(targetHero, finalHealing, skill, hero);
-                plugin.getServer().getPluginManager().callEvent(hrhEvent);
-                if (hrhEvent.isCancelled()) {
-                    player.sendMessage("Your target had their healing prevented!");
-                    return false;
-                }
-                targetHero.heal(hrhEvent.getDelta());
-                return true;
+                if (targetCT.tryHeal(hero, skill, finalHealing))
+                    world.playSound(loc, Sound.BLOCK_NOTE_BLOCK_HARP, 1.0f, 1.0F);
             }
         };
 

@@ -2,26 +2,24 @@ package com.herocraftonline.heroes.characters.skill.reborn.druid;
 
 import com.herocraftonline.heroes.Heroes;
 import com.herocraftonline.heroes.api.SkillResult;
-import com.herocraftonline.heroes.api.events.HeroRegainHealthEvent;
-import com.herocraftonline.heroes.attributes.AttributeType;
-import com.herocraftonline.heroes.characters.CharacterTemplate;
 import com.herocraftonline.heroes.characters.Hero;
 import com.herocraftonline.heroes.characters.effects.EffectType;
 import com.herocraftonline.heroes.characters.effects.ExpirableEffect;
 import com.herocraftonline.heroes.characters.skill.*;
-
+import com.herocraftonline.heroes.chat.ChatComponents;
+import com.herocraftonline.heroes.util.GeometryUtil;
 import de.slikey.effectlib.EffectManager;
-import de.slikey.effectlib.effect.HeartEffect;
 import de.slikey.effectlib.effect.LoveEffect;
 import de.slikey.effectlib.util.DynamicLocation;
-import org.bukkit.*;
+import org.bukkit.ChatColor;
+import org.bukkit.Location;
+import org.bukkit.Particle;
+import org.bukkit.World;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
-import org.bukkit.event.entity.EntityDamageEvent.DamageCause;
 import org.bukkit.util.Vector;
-import org.yaml.snakeyaml.error.Mark;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -40,132 +38,104 @@ public class SkillYggdrasilsTouch extends ActiveSkill {
     @Override
     public String getDescription(Hero hero) {
         double healing = SkillConfigManager.getUseSetting(hero, this, SkillSetting.HEALING, 60, false);
-        int particleradius = SkillConfigManager.getUseSetting(hero, this, SkillSetting.RADIUS, 5, false);
-        int radius = SkillConfigManager.getUseSetting(hero, this, SkillSetting.RADIUS, 5, false);
+        double radius = SkillConfigManager.getUseSetting(hero, this, SkillSetting.RADIUS, 5.0, false);
         int duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, 5000, false);
-        return getDescription().replace("$1", healing + "").replace("$2", radius + "");
+
+        return getDescription()
+                .replace("$1", healing + "")
+                .replace("$2", radius + "");
     }
 
     @Override
     public ConfigurationSection getDefaultConfig() {
-        ConfigurationSection node = super.getDefaultConfig();
-        node.set(SkillSetting.HEALING.node(), 60);
-        node.set(SkillSetting.RADIUS.node(), 5);
-        node.set(SkillSetting.DURATION.node(), 5000);
-        return node;
-    }
-
-    //Math for particle circle
-    public ArrayList<Location> circle(Location centerPoint, int particleAmount, double circleRadius) {
-        World world = centerPoint.getWorld();
-
-        double increment = (2 * Math.PI) / particleAmount;
-
-        ArrayList<Location> locations = new ArrayList<Location>();
-
-        for (int i = 0; i < particleAmount; i++) {
-            double angle = i * increment;
-            double x = centerPoint.getX() + (circleRadius * Math.cos(angle));
-            double z = centerPoint.getZ() + (circleRadius * Math.sin(angle));
-            locations.add(new Location(world, x, centerPoint.getY(), z));
-        }
-        return locations;
+        ConfigurationSection config = super.getDefaultConfig();
+        config.set(SkillSetting.HEALING.node(), 60.0);
+        config.set(SkillSetting.RADIUS.node(), 5.0);
+        config.set(SkillSetting.DURATION.node(), 5000);
+        return config;
     }
 
     @Override
     public SkillResult use(Hero hero, String[] args) {
         Player player = hero.getPlayer();
-        double healing = SkillConfigManager.getUseSetting(hero, this, SkillSetting.HEALING, 60, false);
 
-
-        int radius = SkillConfigManager.getUseSetting(hero, this, SkillSetting.RADIUS, 5, false);
-        int duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, 5000, false);
-
-
-        List<Entity> entities = hero.getPlayer().getNearbyEntities(radius, radius, radius);
-        for (Entity entity : entities) {
-            // Check to see if we've exceeded the max targets
-
-            if (!(entity instanceof LivingEntity)) {
-                continue;
-            }
-
-            LivingEntity target = (LivingEntity) entity;
-            if (!damageCheck(player, target))
-                continue;
-
-
-        }
-        final int radiusSquared = (int) Math.pow(SkillConfigManager.getUseSetting(hero, this, SkillSetting.RADIUS, 5, false), 2);
-        final Location heroLoc = player.getLocation();
         if (hero.getParty() == null) {
-            player.sendMessage(ChatColor.GRAY + "Must be in a party");
+            player.sendMessage("    " + ChatComponents.GENERIC_SKILL + "You must be in a party to use this ability!");
             return SkillResult.CANCELLED;
         }
 
         broadcastExecuteText(hero);
-        for (final Hero partyHero : hero.getParty().getMembers()) {
-            if (player.getWorld().equals(partyHero.getPlayer().getWorld())) {
-                if (partyHero.getPlayer().getLocation().distanceSquared(heroLoc) <= radiusSquared) {
 
-                    partyHero.addEffect(new MarkBuff(this, player, duration));
-                }
-            }
+        final double radius = SkillConfigManager.getUseSetting(hero, this, SkillSetting.RADIUS, 5, false);
+        final double radiusSquared = radius * radius;
+        double healing = SkillConfigManager.getUseSetting(hero, this, SkillSetting.HEALING, 60.0, false);
+        int duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, 5000, false);
+
+        final Location heroLoc = player.getLocation();
+        for (final Hero partyHero : hero.getParty().getMembers()) {
+            if (!player.getWorld().equals(partyHero.getPlayer().getWorld()))
+                continue;
+            if (!(partyHero.getPlayer().getLocation().distanceSquared(heroLoc) <= radiusSquared))
+                continue;
+
+            partyHero.addEffect(new YggdrasilsMark(this, player, duration, radius, radiusSquared, healing));
         }
+
         return SkillResult.NORMAL;
     }
 
+    public class YggdrasilsMark extends ExpirableEffect {
+        private final double radius;
+        private final double radiusSquared;
+        private final double healing;
 
-
-
-    public class MarkBuff extends ExpirableEffect {
-
-        private int radius;
-        private double healing;
         private EffectManager effectManager;
 
-        public MarkBuff(Skill skill, Player applier, long duration) {
-            super(skill, "MarkBuff", applier, duration);
+        public YggdrasilsMark(Skill skill, Player applier, long duration, double radius, double radiusSquared, double healing) {
+            super(skill, "YggdrasilsMark", applier, duration);
+
+            this.radius = radius;
+            this.radiusSquared = radiusSquared;
+            this.healing = healing;
+
+            types.add(EffectType.BENEFICIAL);
             types.add(EffectType.HEALING);
         }
 
         @Override
         public void applyToHero(Hero hero) {
             super.applyToHero(hero);
+
             this.effectManager = new EffectManager(plugin);
-            this.radius = SkillConfigManager.getUseSetting(hero, skill, SkillSetting.RADIUS, 5, false);
-            this.healing = SkillConfigManager.getUseSetting(hero, skill, SkillSetting.HEALING, 60, false);
-            heartVisual(hero.getPlayer());
+            playHeartVisual(hero.getPlayer());
         }
 
         @Override
         public void removeFromHero(Hero hero) {
             super.removeFromHero(hero);
+
             Player player = hero.getPlayer();
             // get everyone in the player's party
-            final int radiusSquared = (int) Math.pow(radius, 2);
             final Location heroLoc = player.getLocation();
             if (hero.getParty() == null) {
                 return;
             }
+
             for (final Hero partyHero : hero.getParty().getMembers()) {
-                if (player.getWorld().equals(partyHero.getPlayer().getWorld())) {
-                    if (partyHero.getPlayer().getLocation().distanceSquared(heroLoc) <= radiusSquared) {
-                        if (partyHero.hasEffect("MarkBuff")) {
-                            final HeroRegainHealthEvent hrhEvent = new HeroRegainHealthEvent(partyHero, healing, skill, hero);
-                            this.plugin.getServer().getPluginManager().callEvent(hrhEvent);
-                            if (hrhEvent.isCancelled()) {
-                                player.sendMessage(ChatColor.GRAY + "Unable to heal the target at this time!");
-                            }
-                            partyHero.heal(hrhEvent.getDelta());
-                            partyHero.getPlayer().sendMessage("healing: " + hrhEvent.getDelta());
-                            // explode
-                            for (double r = 1; r < radius; r++) {
-                                ArrayList<Location> particleLocations = circle(partyHero.getPlayer().getLocation(), 45, r / 2);
-                                for (int i = 0; i < particleLocations.size(); i++) {
-                                    partyHero.getPlayer().getWorld().spawnParticle(Particle.TOTEM, particleLocations.get(i), 1, 0, 0.1, 0, 0.1);
-                                }
-                            }
+                if (!player.getWorld().equals(partyHero.getPlayer().getWorld()))
+                    continue;
+                if (!(partyHero.getPlayer().getLocation().distanceSquared(heroLoc) <= radiusSquared))
+                    continue;
+
+                if (partyHero.hasEffect("YggdrasilsMark")) {
+                    if (!partyHero.tryHeal(hero, skill, healing))
+                        continue;
+
+                    // Our heal worked, explode
+                    for (double r = 1; r < radius; r++) {
+                        List<Location> particleLocations = GeometryUtil.circle(partyHero.getPlayer().getLocation(), 45, r / 2.0);
+                        for (Location particleLocation : particleLocations) {
+                            partyHero.getPlayer().getWorld().spawnParticle(Particle.TOTEM, particleLocation, 1, 0, 0.1, 0, 0.1);
                         }
                     }
                 }
@@ -173,8 +143,7 @@ public class SkillYggdrasilsTouch extends ActiveSkill {
         }
 
         //Visual Mark to signify all players with the heal explosion
-        public void heartVisual(LivingEntity target) {
-            //Maybe need durationTicks
+        public void playHeartVisual(LivingEntity target) {
             final int durationTicks = (int) this.getDuration() / 50;
             final int displayPeriod = 2;
 
@@ -192,9 +161,6 @@ public class SkillYggdrasilsTouch extends ActiveSkill {
 
             effectManager.start(visualEffect);
             effectManager.disposeOnTermination();
-
-
         }
-
     }
 }
