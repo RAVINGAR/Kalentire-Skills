@@ -95,6 +95,21 @@ public class SkillHookshot extends ActiveSkill {
         return SkillResult.NORMAL;
     }
 
+    public static InvalidHookTargetReason hasValidHookLocation(Heroes plugin, Hero hookOwner, Location targetLoc, double grabRadius) {
+        if (targetLoc == null)
+            return InvalidHookTargetReason.NULL_LOCATION;
+
+        HookOwnerEffect ownerEffect = (HookOwnerEffect) hookOwner.getEffect(ownerEffectName);
+        if (ownerEffect == null)
+            return InvalidHookTargetReason.NO_HOOK;
+
+        HookedLocationEffect validHookedLocEffect = ownerEffect.tryGetHookedLocationEffect(targetLoc, grabRadius);
+        if (validHookedLocEffect == null) {
+            return ownerEffect.getCurrentHookedLocationsCount() == 0 ? InvalidHookTargetReason.NO_ACTIVE_HOOKS : InvalidHookTargetReason.OUT_OF_RANGE;
+        }
+        return InvalidHookTargetReason.VALID_TARGET;
+    }
+
     public static Location tryGetHookLocation(Heroes plugin, Hero hookOwner, Location targetLoc, double grabRadius, boolean removeHookIfFound) {
         if (targetLoc == null)
             return null;
@@ -115,14 +130,14 @@ public class SkillHookshot extends ActiveSkill {
 
     public enum InvalidHookTargetReason {
         OTHER,
-        NULL_TARGET,
+        NULL_TARGET_ENTITY,
         NULL_CHARACTER,
         NO_HOOK,
-        //INVALID_LOCATION,
-        //NO_ACTIVE_HOOKS,
+        NULL_LOCATION,
+        NO_ACTIVE_HOOKS,
         INVINCIBLE_TARGET,
         //ALLIED_TARGET,
-        //OUT_OF_RANGE,
+        OUT_OF_RANGE,
         VALID_TARGET
     }
 
@@ -137,10 +152,18 @@ public class SkillHookshot extends ActiveSkill {
             case NO_HOOK:
                 text += "That target has no hook!";
                 break;
+            case NO_ACTIVE_HOOKS:
+                text += "You have no active hooks!";
+                break;
+            case OUT_OF_RANGE:
+                text += "You are aiming out of range of the hook(s)!";
+                break;
             case INVINCIBLE_TARGET:
                 text += "You cannot damage that target right now!";
                 break;
-            case NULL_TARGET:
+            case OTHER:
+            case NULL_LOCATION:
+            case NULL_TARGET_ENTITY:
             case NULL_CHARACTER:
             default:
                 text += "Invalid Target!";
@@ -150,7 +173,7 @@ public class SkillHookshot extends ActiveSkill {
 
     public static InvalidHookTargetReason tryRemoveHook(Heroes plugin, Hero hookOwner, LivingEntity target) {
         if (target == null)
-            return InvalidHookTargetReason.NULL_TARGET;
+            return InvalidHookTargetReason.NULL_TARGET_ENTITY;
 
         CharacterTemplate targetCT = plugin.getCharacterManager().getCharacter(target);
         return tryRemoveHook(hookOwner, targetCT);
@@ -276,6 +299,10 @@ public class SkillHookshot extends ActiveSkill {
 
         public int getCurrentHookCount() {
             return this.hookedCharacters.size() + this.hookedLocations.size();
+        }
+
+        public int getCurrentHookedLocationsCount() {
+            return this.hookedLocations.size();
         }
 
         public HookedLocationEffect tryGetHookedLocationEffect(Location location, double grabRadius) {

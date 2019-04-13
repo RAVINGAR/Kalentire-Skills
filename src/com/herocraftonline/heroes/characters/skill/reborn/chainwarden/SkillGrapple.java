@@ -88,6 +88,11 @@ public class SkillGrapple extends ActiveSkill {
                 broadcastExecuteText(hero);
                 grappleToLocation(hero, actualHookLoc, multiplier);
                 return SkillResult.NORMAL;
+            } else {
+                SkillHookshot.InvalidHookTargetReason invalidHookTargetReason = SkillHookshot.hasValidHookLocation(
+                        plugin, hero, targetLoc, grabRadius);
+                SkillHookshot.broadcastInvalidHookTargetText(hero, invalidHookTargetReason);
+                return SkillResult.INVALID_TARGET_NO_MSG;
             }
         }
 
