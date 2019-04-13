@@ -2,6 +2,7 @@ package com.herocraftonline.heroes.characters.skill.reborn.druid;
 
 import com.herocraftonline.heroes.Heroes;
 import com.herocraftonline.heroes.attributes.AttributeType;
+import com.herocraftonline.heroes.characters.CharacterTemplate;
 import com.herocraftonline.heroes.characters.Hero;
 import com.herocraftonline.heroes.characters.effects.Effect;
 import com.herocraftonline.heroes.characters.effects.EffectType;
@@ -69,30 +70,27 @@ public class SkillCleanseSpirit extends SkillBaseHeal {
         world.spawnParticle(Particle.VILLAGER_HAPPY, target.getLocation().add(0, 0.5, 0), 25, 0.5, 0.5, 0.5, 1);
     }
 
-    @Override
-    protected void removeEffects(Hero hero) {
-        for (Effect effect : hero.getEffects()) {
+    protected void removeEffects(Hero hero, CharacterTemplate target) {
+        for (Effect effect : target.getEffects()) {
             if (effect.isType(EffectType.DISPELLABLE) && effect.isType(EffectType.HARMFUL)) {
                 if (effect.isType(EffectType.FIRE)) {
-                    hero.removeEffect(effect);
-                    //FIXME What is the replacement for this
-                    //hero.getPlayer().getWorld().spigot().playEffect(hero.getPlayer().getLocation().add(0, 0.3, 0), org.bukkit.Effect.EXTINGUISH, 0, 0, 0, 0.4F, 0, 0.7F, 35, 16);
-                    hero.getPlayer().getWorld().playSound(hero.getPlayer().getLocation(), Sound.ENTITY_GENERIC_BURN, 0.5F, 1.0F);
+                    target.removeEffect(effect);
+                    target.getEntity().getWorld().playSound(target.getEntity().getLocation(), Sound.ENTITY_GENERIC_BURN, 0.5F, 1.0F);
                 }
             }
         }
 
         int maxRemovals = SkillConfigManager.getUseSetting(hero, this, "max-effect-removals", 1, false);
 
-        for (Effect effect : hero.getEffects()) {
+        for (Effect effect : target.getEffects()) {
             // This combined with checking for DISPELLABLE and HARMFUL is so huge I'd rather split the lines. Disallow dispelling movement impediment, don't want the class countering itself.
             boolean isMovementImpeding = effect.isType(EffectType.SLOW) || effect.isType(EffectType.VELOCITY_DECREASING) ||
                     effect.isType(EffectType.WALK_SPEED_DECREASING) || effect.isType(EffectType.ROOT);
             if (!isMovementImpeding && effect.isType(EffectType.DISPELLABLE) && effect.isType(EffectType.HARMFUL)) {
-                hero.removeEffect(effect);
+                target.removeEffect(effect);
                 // Just in case it's fire
                 if (effect.isType(EffectType.FIRE)) {
-                    hero.getPlayer().setFireTicks(0);
+                    target.getEntity().setFireTicks(0);
                 }
                 maxRemovals--;
                 if (maxRemovals == 0) {

@@ -105,7 +105,6 @@ public class SkillChainBelt extends PassiveSkill {
             super(skill, effectName, player, period);
 
             types.add(EffectType.INTERNAL);
-            types.add(EffectType.PHYSICAL);
             setPersistent(true);
         }
 

@@ -1,4 +1,4 @@
-package com.herocraftonline.heroes.characters.skill.reborn.pyromancer;
+package com.herocraftonline.heroes.characters.skill.reborn.nethermancer;
 
 import com.herocraftonline.heroes.Heroes;
 import com.herocraftonline.heroes.api.SkillResult;
@@ -38,7 +38,7 @@ public class SkillChaosOrb extends ActiveSkill {
 
     public SkillChaosOrb(Heroes plugin) {
         super(plugin, "ChaosOrb");
-        setDescription("You throw an orb of chaos that deals $1 damage and ignites the target, burning them for $2 fire tick damage over the next $3 second(s). "
+        setDescription("You throw an orb of chaos that deals $1 damage and ignites the target, dealing $2 burning damage over the next $3 second(s). "
                 + "If you are able to use Ender Pearls, you will teleport to the orb when it lands.");
         setUsage("/skill chaosorb");
         setArgumentRange(0, 0);

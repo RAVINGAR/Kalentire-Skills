@@ -43,7 +43,7 @@ public class SkillFirebolt extends ActiveSkill {
     public SkillFirebolt(Heroes plugin) {
         super(plugin, "Firebolt");
         setDescription("You shoot a bolt of fire that ignites anything it hits. "
-                + "The firebolt deals $1 damage and will ignite them, burning them for $2 fire tick damage over the next $3 second(s).");
+                + "The firebolt deals $1 damage and will ignite them, dealing $2 burning damage over the next $3 second(s).");
         setUsage("/skill firebolt");
         setArgumentRange(0, 0);
         setIdentifiers("skill firebolt");

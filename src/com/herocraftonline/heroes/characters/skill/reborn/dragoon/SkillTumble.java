@@ -1,14 +1,4 @@
-package com.herocraftonline.heroes.characters.skill.skills;
-
-import org.bukkit.Bukkit;
-import org.bukkit.configuration.ConfigurationSection;
-import org.bukkit.entity.Player;
-import org.bukkit.Sound;
-import org.bukkit.event.EventHandler;
-import org.bukkit.event.EventPriority;
-import org.bukkit.event.Listener;
-import org.bukkit.event.entity.EntityDamageEvent;
-import org.bukkit.event.entity.EntityDamageEvent.DamageCause;
+package com.herocraftonline.heroes.characters.skill.reborn.dragoon;
 
 import com.google.common.collect.Lists;
 import com.herocraftonline.heroes.Heroes;
@@ -22,6 +12,14 @@ import com.herocraftonline.heroes.characters.skill.SkillType;
 import com.herocraftonline.heroes.characters.skill.ncp.NCPFunction;
 import com.herocraftonline.heroes.characters.skill.ncp.NCPUtils;
 import com.herocraftonline.heroes.util.Util;
+import org.bukkit.Bukkit;
+import org.bukkit.configuration.ConfigurationSection;
+import org.bukkit.entity.Player;
+import org.bukkit.event.EventHandler;
+import org.bukkit.event.EventPriority;
+import org.bukkit.event.Listener;
+import org.bukkit.event.entity.EntityDamageEvent;
+import org.bukkit.event.entity.EntityDamageEvent.DamageCause;
 
 public class SkillTumble extends PassiveSkill {
 
@@ -56,13 +54,12 @@ public class SkillTumble extends PassiveSkill {
 
     @Override
     public ConfigurationSection getDefaultConfig() {
-        ConfigurationSection node = super.getDefaultConfig();
-
-        node.set("base-distance", 0);
-        node.set("distance-increase-per-dexterity-level", 0.25);
-        node.set("ncp-exemption-duration", 100);
-
-        return node;
+        ConfigurationSection config = super.getDefaultConfig();
+        config.set("base-distance", 0);
+        config.set("distance-increase-per-level", 0.16);
+        config.set("distance-increase-per-dexterity-level", 0.16);
+        config.set("ncp-exemption-duration", 0);
+        return config;
     }
 
     public class SkillEntityListener implements Listener {
@@ -73,7 +70,7 @@ public class SkillTumble extends PassiveSkill {
             this.skill = skill;
         }
 
-        @EventHandler(priority = EventPriority.LOW)
+        @EventHandler(priority = EventPriority.HIGHEST)
         public void onEntityDamage(final EntityDamageEvent event) {
             if (!(event.getEntity() instanceof Player) || event.getCause() != DamageCause.FALL) {
                 return;
@@ -84,30 +81,27 @@ public class SkillTumble extends PassiveSkill {
             }
 
             double distance = SkillConfigManager.getUseSetting(hero, skill, "base-distance", 0, false);
-            double distanceIncrease = SkillConfigManager.getUseSetting(hero, skill, "distance-increase-per-dexterity-level", 0.25, false);
-            distance += hero.getAttributeValue(AttributeType.DEXTERITY) * distanceIncrease;
+            double perLevel = SkillConfigManager.getUseSetting(hero, skill, "distance-increase-per-level", 0.16, false);
+            double perDex = SkillConfigManager.getUseSetting(hero, skill, "distance-increase-per-dexterity-level", 0.16, false);
+            distance += hero.getAttributeValue(AttributeType.DEXTERITY) * perDex;
+            distance += hero.getHeroLevel() * perLevel;
 
             double fallDistance = event.getDamage();
-
-            // Heroes.log(Level.INFO, "OriginalFallDistance: " + fallDistance + ", Tumble Fall Reduction: " + distance);
 
             fallDistance -= distance;
 
             // Let's bypass the nocheat issues...
             final double fallDamage = fallDistance;
             NCPUtils.applyExemptions(event.getEntity(), new NCPFunction() {
-                
                 @Override
-                public void execute()
-                {
+                public void execute() {
                     if (fallDamage <= 0) {
                         event.setCancelled(true);
-                    }
-                    else {
+                    } else {
                         event.setDamage(fallDamage);
                     }
                 }
-            }, Lists.newArrayList("MOVING"), SkillConfigManager.getUseSetting(hero, skill, "ncp-exemption-duration", 100, false));
+            }, Lists.newArrayList("MOVING"), SkillConfigManager.getUseSetting(hero, skill, "ncp-exemption-duration", 0, false));
         }
     }
 }

@@ -65,7 +65,6 @@ public class SkillImpale extends TargettedSkill {
         ConfigurationSection config = super.getDefaultConfig();
         config.set(SkillSetting.MAX_DISTANCE.node(), 6);
         config.set(SkillSetting.TARGET_HIT_TOLERANCE.node(), 0.25);
-        config.set("weapons", Util.shovels);
         config.set(SkillSetting.DAMAGE.node(), 50);
         config.set(SkillSetting.DAMAGE_INCREASE_PER_STRENGTH.node(), 0.0);
         config.set(SkillSetting.DURATION.node(), 3000);
@@ -78,12 +77,6 @@ public class SkillImpale extends TargettedSkill {
     @Override
     public SkillResult use(Hero hero, LivingEntity target, String[] args) {
         Player player = hero.getPlayer();
-
-        Material item = NMSHandler.getInterface().getItemInMainHand(player.getInventory()).getType();
-        if (!SkillConfigManager.getUseSetting(hero, this, "weapons", Util.shovels).contains(item.name())) {
-            player.sendMessage("You can't use " + getName() + " with that weapon!");
-            return SkillResult.FAIL;
-        }
 
         broadcastExecuteText(hero, target);
 
@@ -114,11 +107,11 @@ public class SkillImpale extends TargettedSkill {
         SlowEffect sEffect = new SlowEffect(this, player, duration, amplitude, applyText, expireText);
         plugin.getCharacterManager().getCharacter(target).addEffect(sEffect);
 
-
-        player.getWorld().playSound(player.getLocation(), Sound.ENTITY_PLAYER_HURT, 1.0F, 1.0F);
+        player.getWorld().playSound(player.getLocation(), Sound.ENTITY_GENERIC_HURT, 1.0F, 1.0F);
 
         player.getWorld().spawnParticle(Particle.CRIT, target.getLocation().add(0, 0.5, 0), 75, 0, 0, 0, 1);
         player.getWorld().spawnParticle(Particle.BLOCK_CRACK, target.getLocation().add(0, 0.5, 0), 45, 0.3, 0.2, 0.3, 0.5, Bukkit.createBlockData(Material.NETHER_WART_BLOCK));
+
         return SkillResult.NORMAL;
     }
 }

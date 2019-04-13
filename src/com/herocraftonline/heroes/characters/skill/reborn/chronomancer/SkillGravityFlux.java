@@ -51,7 +51,7 @@ public class SkillGravityFlux extends TargettedLocationSkill {
 
         return getDescription()
                 .replace("$1", Util.decFormat.format(radius))
-                .replace("$2", Util.decFormat.format((double) duration / 1000.0));
+                .replace("$2", Util.decFormat.format(duration / 1000.0));
     }
 
     @Override
@@ -62,7 +62,7 @@ public class SkillGravityFlux extends TargettedLocationSkill {
         config.set(TRY_GET_SOLID_BELOW_BLOCK_NODE, false);
         config.set(MAXIMUM_FIND_SOLID_BELOW_BLOCK_HEIGHT_NODE, 0.0);
         config.set(SkillSetting.RADIUS.node(), 6.0);
-        config.set(SkillSetting.DURATION.node(), 8000);
+        config.set(SkillSetting.DURATION.node(), 7000);
         config.set("sound-period", 2000);
         config.set("levitation-amplifier", 0);
         return config;

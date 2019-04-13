@@ -146,7 +146,7 @@ public class SkillSuperJump extends ActiveSkill {
 
     private class JumpEffect extends SafeFallEffect {
         JumpEffect(Skill skill, Player applier, long duration) {
-            super(skill, applier, duration);
+            super(skill, applier, duration, null, null);
 
             types.add(EffectType.BENEFICIAL);
             types.add(EffectType.HARMFUL);

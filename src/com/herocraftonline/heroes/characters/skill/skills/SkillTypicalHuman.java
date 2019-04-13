@@ -19,7 +19,7 @@ public class SkillTypicalHuman extends PassiveSkill {
 
     public SkillTypicalHuman(Heroes plugin) {
         super(plugin, "TypicalHuman");
-        setDescription("Passive: additional $1% damage to physical damage and $2% to health pool.");
+        setDescription("additional $1% damage to physical damage and $2% to health pool.");
         setTypes(SkillType.ABILITY_PROPERTY_PHYSICAL, SkillType.BUFFING, SkillType.MAX_HEALTH_INCREASING);
 
         Bukkit.getPluginManager().registerEvents(new TypicalHumanListener(this), plugin);

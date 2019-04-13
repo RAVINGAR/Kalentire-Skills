@@ -78,7 +78,6 @@ public class SkillSpear extends ActiveSkill {
     }
 
     private class SpearProjectile extends BasicMissile {
-
         SpearProjectile(Plugin plugin, Skill skill, Hero hero, double projectileSize, double projVelocity) {
             super(plugin, skill, hero, projectileSize, projVelocity);
 

@@ -36,7 +36,7 @@ public class SkillFirenado extends ActiveSkill {
         super(plugin, "Firenado");
         setDescription("Conjure up a tornado of pure fire. The firenado roams around and seeks out nearby targets for the next $1 second(s). "
                 + "Targets hit by the firenado are launched upwards, dealt $2 damage, and burned. "
-                + "Burning targets take $3 fire tick damage over the next $4 second(s).");
+                + "Burning targets take $3 burning damage over the next $4 second(s).");
         setUsage("/skill firenado");
         setArgumentRange(0, 0);
         setIdentifiers("skill firenado");
@@ -87,23 +87,15 @@ public class SkillFirenado extends ActiveSkill {
             ItemStack mainHand = NMSHandler.getInterface().getItemInMainHand(playerInv);
             ItemStack offHand = NMSHandler.getInterface().getItemInOffHand(playerInv);
             if ((mainHand == null || mainHand.getType() != Material.BLAZE_ROD) && (offHand == null || offHand.getType() != Material.BLAZE_ROD)) {
-                player.sendMessage("    " + ChatComponents.GENERIC_SKILL + "You are unable to cast this spell without wielding a Blaze Rod as a catalyst!");
+                player.sendMessage("    " + ChatComponents.GENERIC_SKILL + "You are unable to cast this spell without holding a Blaze Rod as a catalyst!");
                 return SkillResult.INVALID_TARGET_NO_MSG;
             }
         }
 
-        Location playerLoc = player.getLocation();
-
-        double velocity = SkillConfigManager.getUseSetting(hero, this, "tornado-velocity", 4.0, false);
+        broadcastExecuteText(hero);
 
         FirenadoMissile missile = new FirenadoMissile(this, hero);
-        Vector offset = playerLoc.getDirection().normalize().multiply(3);
-        Location missileLoc = playerLoc.clone().add(offset);
-        missileLoc.setPitch(0);
-        missile.setLocationAndSpeed(missileLoc, velocity);
         missile.fireMissile();
-
-        broadcastExecuteText(hero);
 
         return SkillResult.NORMAL;
     }
@@ -113,9 +105,11 @@ public class SkillFirenado extends ActiveSkill {
         private final Skill skill;
         private final Hero hero;
         private final Player player;
+        private final double initialVelocity;
         private final int initialDurationTicks;
         private final int maxHeatSeekingDistance;
         private final int heatSeekingIntervalTicks;
+        private final double heatSeakForcePower;
         private final double damage;
         private final int burnDuration;
         private final double burnMultipliaer;
@@ -125,7 +119,6 @@ public class SkillFirenado extends ActiveSkill {
         final EffectManager effectManager = new EffectManager(plugin);
         final TornadoEffect vEffect = new TornadoEffect(effectManager);
 
-        private double defaultSpeed;
         LivingEntity currentTarget = null;
 
         FirenadoMissile(Skill skill, Hero hero) {
@@ -136,17 +129,23 @@ public class SkillFirenado extends ActiveSkill {
             this.damage = SkillConfigManager.getUseSetting(hero, skill, SkillSetting.DAMAGE, 75.0, false);
             this.burnDuration = SkillConfigManager.getUseSetting(hero, skill, "burn-duration", 3000, false);
             this.burnMultipliaer = SkillConfigManager.getUseSetting(hero, skill, "burn-damage-multiplier", 2.0, false);
-
             this.hitUpwardsVelocity = SkillConfigManager.getUseSetting(hero, skill, "hit-upwards-velocity", 0.8, false);
+
+            Location playerLoc = player.getLocation();
+            this.initialVelocity = SkillConfigManager.getUseSetting(hero, skill, "tornado-velocity", 4.0, false);
+            Vector offset = playerLoc.getDirection().normalize().multiply(3);
+            Location missileLoc = playerLoc.clone().add(offset);
+            missileLoc.setPitch(0);
+            setLocationAndSpeed(missileLoc, initialVelocity);
+
             this.initialDurationTicks = SkillConfigManager.getUseSetting(hero, skill, "tornado-duration", 8000, false) / 50;
             this.maxHeatSeekingDistance = SkillConfigManager.getUseSetting(hero, skill, "tornado-max-heat-seeking-distance", 25, false);
+            this.heatSeakForcePower = SkillConfigManager.getUseSetting(hero, skill, "heat-seak-force-power", 0.5, false);
             this.heatSeekingIntervalTicks = (int) (this.initialDurationTicks * 0.15);
 
             double radius = SkillConfigManager.getUseSetting(hero, skill, SkillSetting.RADIUS, 4.0, false);
 
             setNoGravity();
-            setDrag(0);
-            setMass(1);
             setEntityDetectRadius(radius);
             setRemainingLife(this.initialDurationTicks);
 
@@ -160,16 +159,15 @@ public class SkillFirenado extends ActiveSkill {
             vEffect.tornadoParticle = Particle.SPELL_MOB;
             vEffect.cloudParticle = Particle.CLOUD;
             vEffect.cloudColor = FIRE_ORANGE;
-            vEffect.cloudSize = 1F;
-            vEffect.tornadoHeight = (float) radius;
-            vEffect.maxTornadoRadius = (float) radius / 2F;
+            vEffect.cloudSize = 0.5F;
+            vEffect.tornadoHeight = (float) radius * 0.5F;
+            vEffect.maxTornadoRadius = (float) radius * 0.5F;
             vEffect.asynchronous = true;
         }
 
         protected void onStart() {
             vEffect.setLocation(getLocation());
             effectManager.start(vEffect);
-            this.defaultSpeed = getVelocity().length();
         }
 
         protected void onTick() {
@@ -177,12 +175,14 @@ public class SkillFirenado extends ActiveSkill {
             vEffect.setLocation(location);
             Block block = location.getBlock();
 
+            // Reach two blocks down for fire tick blocks
             Util.setBlockOnFireIfAble(block, 0.3, true);
             Util.setBlockOnFireIfAble(block.getRelative(BlockFace.DOWN), 0.3, true);
 
+            // Add force while heat seaking, but not every single tick.
             if (getTicksLived() % this.heatSeekingIntervalTicks != 0) {
                 if (currentTarget != null)
-                    addForce(getDirection());
+                    addForce(getDirection().multiply(this.heatSeakForcePower));
                 return;
             }
 
@@ -274,7 +274,7 @@ public class SkillFirenado extends ActiveSkill {
             targetCT.addEffect(new BurningEffect(this.skill, player, burnDuration, burnMultipliaer));
 
             currentTarget = null;
-            setVelocity(getDirection().setY(0).multiply(defaultSpeed));
+            setVelocity(getDirection().multiply(initialVelocity));
         }
 
         @Override

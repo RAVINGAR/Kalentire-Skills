@@ -85,7 +85,7 @@ public class SkillOvergrowth extends TargettedLocationSkill {
             targetBlock = targetBlock.getRelative(BlockFace.UP);
         }
 
-        OvergrowthConstructionData overgrowthConstructionData = tryGetOvergrowthConstructionData(player, targetBlock, heightWithoutBaseBlock, radius);
+        OvergrowthConstructionData overgrowthConstructionData = tryGetOvergrowthConstructionData(hero, targetBlock, heightWithoutBaseBlock, radius);
         if (overgrowthConstructionData == null) {
             player.sendMessage("Unable to fit an overgrowth at this location.");
             return SkillResult.INVALID_TARGET_NO_MSG;
@@ -97,7 +97,8 @@ public class SkillOvergrowth extends TargettedLocationSkill {
         return SkillResult.NORMAL;
     }
 
-    private OvergrowthConstructionData tryGetOvergrowthConstructionData(Player player, Block startBlock, int height, int radius) {
+    private OvergrowthConstructionData tryGetOvergrowthConstructionData(Hero hero, Block startBlock, int height, int radius) {
+        Player player = hero.getPlayer();
         List<Block> conversionBlocks = new ArrayList<Block>();
         List<LivingEntity> targets = new ArrayList<LivingEntity>();
 
@@ -129,8 +130,13 @@ public class SkillOvergrowth extends TargettedLocationSkill {
                 }
             }
 
-            Collection<LivingEntity> nearbyTargets = getLivingEntitiesWithinFlatCircle(currentBlock.getLocation(), radius);
-            for (LivingEntity target : nearbyTargets) {
+            Collection<LivingEntity> currentLevelTargets = getLivingEntitiesWithinFlatCircle(currentBlock.getLocation(), radius);
+            for (LivingEntity target : currentLevelTargets) {
+                if (!hero.isAlliedTo(target) && !damageCheck(player, target)) {
+                    hitMaxValidHeight = false;
+                    validTopBlock = null;
+                    break;
+                }
                 Location entLoc = target.getLocation();
                 Block entBlock = entLoc.getBlock();
                 if (cannotGoAnyHigher(entBlock, 3)) {

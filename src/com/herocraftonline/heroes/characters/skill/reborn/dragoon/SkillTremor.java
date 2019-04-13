@@ -11,6 +11,7 @@ import com.herocraftonline.heroes.characters.skill.SkillSetting;
 import com.herocraftonline.heroes.characters.skill.SkillType;
 import com.herocraftonline.heroes.characters.skill.ncp.NCPFunction;
 import com.herocraftonline.heroes.characters.skill.ncp.NCPUtils;
+import com.herocraftonline.heroes.util.GeometryUtil;
 import org.bukkit.*;
 import org.bukkit.block.BlockFace;
 import org.bukkit.configuration.ConfigurationSection;
@@ -39,7 +40,7 @@ public class SkillTremor extends ActiveSkill {
     public String getDescription(Hero hero) {
         int radius = SkillConfigManager.getUseSetting(hero, this, SkillSetting.RADIUS, 5, false);
         int damage = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE, 50, false);
-        double damageIncrease = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE_INCREASE_PER_STRENGTH, 1.6, false);
+        double damageIncrease = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE_INCREASE_PER_STRENGTH, 0.0, false);
         damage += (int) (damageIncrease * hero.getAttributeValue(AttributeType.STRENGTH));
 
         return getDescription()
@@ -53,27 +54,11 @@ public class SkillTremor extends ActiveSkill {
         config.set(SkillSetting.DAMAGE.node(), 50);
         config.set(SkillSetting.DAMAGE_INCREASE_PER_STRENGTH.node(), 0.0);
         config.set(SkillSetting.RADIUS.node(), 7);
-        config.set("horizontal-power", 0.0);
-        config.set("vertical-power", 0.4);
-        config.set("ncp-exemption-duration", 1500);
+        config.set("horizontal-power", 1.0);
+        config.set("vertical-power", 0.35);
+        config.set("ncp-exemption-duration", 0);
         config.set(SkillSetting.DELAY.node(), 500);
         return config;
-    }
-
-    public ArrayList<Location> circle(Location centerPoint, int particleAmount, double circleRadius) {
-        World world = centerPoint.getWorld();
-
-        double increment = (2 * Math.PI) / particleAmount;
-
-        ArrayList<Location> locations = new ArrayList<Location>();
-
-        for (int i = 0; i < particleAmount; i++) {
-            double angle = i * increment;
-            double x = centerPoint.getX() + (circleRadius * Math.cos(angle));
-            double z = centerPoint.getZ() + (circleRadius * Math.sin(angle));
-            locations.add(new Location(world, x, centerPoint.getY(), z));
-        }
-        return locations;
     }
 
     @Override
@@ -83,7 +68,7 @@ public class SkillTremor extends ActiveSkill {
         int radius = SkillConfigManager.getUseSetting(hero, this, SkillSetting.RADIUS, 5, false);
 
         double damage = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE, 50, false);
-        double damageIncrease = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE_INCREASE_PER_STRENGTH, 1.125, false);
+        double damageIncrease = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE_INCREASE_PER_STRENGTH, 0.0, false);
         damage += damageIncrease * hero.getAttributeValue(AttributeType.STRENGTH);
 
         double hPower = SkillConfigManager.getUseSetting(hero, this, "horizontal-power", 2.8, false);
@@ -137,27 +122,27 @@ public class SkillTremor extends ActiveSkill {
 
             // Let's bypass the nocheat issues...
             final Vector velocity = new Vector(xDir, individualVPower, zDir);
-            NCPUtils.applyExemptions(target, new NCPFunction() {
-
-                @Override
-                public void execute() {
-                    target.setVelocity(velocity);
-                }
-            }, Lists.newArrayList("MOVING"), SkillConfigManager.getUseSetting(hero, this, "ncp-exemption-duration", 500, false));
+            long exemptionDuration = SkillConfigManager.getUseSetting(hero, this, "ncp-exemption-duration", 500, false);
+            if (exemptionDuration > 0) {
+                NCPUtils.applyExemptions(target, new NCPFunction() {
+                    @Override
+                    public void execute() {
+                        target.setVelocity(velocity);
+                    }
+                }, Lists.newArrayList("MOVING"), exemptionDuration);
+            } else {
+                target.setVelocity(velocity);
+            }
         }
 
-        //player.getWorld().playSound(player.getLocation(), Sound.HURT, 1.3F, 0.5F);
-        //player.getWorld().playEffect(player.getLocation(), Effect.EXPLOSION, 3);
         player.getWorld().spawnParticle(Particle.EXPLOSION_NORMAL, player.getLocation(), 3, 0, 0, 0, 1);
         player.getWorld().playSound(player.getLocation(), Sound.ENTITY_GENERIC_EXPLODE, 0.5F, 1.0F);
-        player.getWorld().playSound(player.getLocation(), Sound.ENTITY_EXPERIENCE_ORB_PICKUP, 0.8F, 1.0F);
-        player.getWorld().playSound(player.getLocation(), Sound.ENTITY_EXPERIENCE_ORB_PICKUP, 0.8F, 1.0F);
 
         for (double r = 1; r < 5 * 2; r++) {
-            ArrayList<Location> particleLocations = circle(player.getLocation(), 72, r / 2);
+            List<Location> particleLocations = GeometryUtil.circle(player.getLocation(), 72, r / 2);
             for (int i = 0; i < particleLocations.size(); i++) {
-                //player.getWorld().spigot().playEffect(particleLocations.get(i).add(0, 0.1, 0), Effect.TILE_BREAK, player.getLocation().getBlock().getRelative(BlockFace.DOWN).getType().getId(), 0, 0, 0.3F, 0, 0.1F, 2, 16);
-                player.getWorld().spawnParticle(Particle.BLOCK_CRACK, particleLocations.get(i).add(0, 0.1, 0), 2, 0, 0.3, 0, 0.1, player.getLocation().getBlock().getRelative(BlockFace.DOWN).getBlockData());
+                player.getWorld().spawnParticle(Particle.BLOCK_CRACK, particleLocations.get(i).add(0, 0.1, 0), 2, 0, 0.3, 0, 0.1,
+                        player.getLocation().getBlock().getRelative(BlockFace.DOWN).getBlockData());
             }
         }
 

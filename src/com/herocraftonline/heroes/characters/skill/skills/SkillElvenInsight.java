@@ -21,7 +21,7 @@ public class SkillElvenInsight extends PassiveSkill {
 
     public SkillElvenInsight(Heroes plugin) {
         super(plugin, "ElvenInsight");
-        setDescription("Passive: additional $1% magic damage and $2% projectile damage. Also provides +$3% mana.");
+        setDescription("additional $1% magic damage and $2% projectile damage. Also provides +$3% mana.");
         setTypes(SkillType.ABILITY_PROPERTY_MAGICAL, SkillType.ABILITY_PROPERTY_PROJECTILE, SkillType.MAX_MANA_INCREASING);
 
         Bukkit.getPluginManager().registerEvents(new ElvenInsightListener(this), plugin);

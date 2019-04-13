@@ -1,4 +1,4 @@
-package com.herocraftonline.heroes.characters.skill.reborn.pyromancer;
+package com.herocraftonline.heroes.characters.skill.reborn.shared;
 
 import com.herocraftonline.heroes.Heroes;
 import com.herocraftonline.heroes.api.SkillResult;
@@ -28,8 +28,6 @@ import java.util.concurrent.ThreadLocalRandom;
 
 public class SkillFireStream extends ActiveSkill {
 
-    private static String baseVictimEffectName = "FireStreamVictim";
-
     private Map<Snowball, Long> projectiles = new LinkedHashMap<Snowball, Long>(100) {
         private static final long serialVersionUID = 2329013558608752L;
 
@@ -42,7 +40,7 @@ public class SkillFireStream extends ActiveSkill {
     public SkillFireStream(Heroes plugin) {
         super(plugin, "FireStream");
         setDescription("You shoot $1 balls of fire in a stream. "
-                + "Each fireball deals $2 damage and will ignite them, burning them for $3 fire tick damage over the next $4 second(s). "
+                + "Each fireball deals $2 damage and will ignite them, dealing $3 burning damage over the next $4 second(s). "
                 + "Additional hits on the same target will deal $5% less damage per hit. The burning effect will not stack.");
         setUsage("/skill firestream");
         setArgumentRange(0, 0);
@@ -137,6 +135,7 @@ public class SkillFireStream extends ActiveSkill {
     }
 
     private String buildVictimEffectName(Player player) {
+        String baseVictimEffectName = "FireStreamVictim";
         return player.getName() + "|" + baseVictimEffectName;
     }
 
@@ -247,7 +246,8 @@ public class SkillFireStream extends ActiveSkill {
             damageEntity(targetLE, dmger, damage * effectivenessMultiplier, DamageCause.MAGIC);
 
             // Effectiveness multiplier should not apply to the combust debuff.
-            targetCT.addEffect(new BurningEffect(skill, dmger, burnDuration, true, burnMultipliaer));
+            if (effectivenessMultiplier != 1.0)
+                targetCT.addEffect(new BurningEffect(skill, dmger, burnDuration, false, burnMultipliaer));
 
             targetLE.getWorld().spawnParticle(Particle.FLAME, targetLE.getLocation(), 50, 0.2F, 0.7F, 0.2F, 16);
             targetLE.getWorld().playSound(targetLE.getLocation(), Sound.BLOCK_FIRE_AMBIENT, 7.0F, 1.0F);

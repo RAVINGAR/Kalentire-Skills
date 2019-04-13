@@ -1,4 +1,4 @@
-package com.herocraftonline.heroes.characters.skill.reborn.pyromancer;
+package com.herocraftonline.heroes.characters.skill.reborn.nethermancer;
 
 import com.herocraftonline.heroes.Heroes;
 import com.herocraftonline.heroes.api.events.WeaponDamageEvent;
@@ -28,7 +28,7 @@ public class SkillCombustingAxe extends PassiveSkill {
 
     public SkillCombustingAxe(Heroes plugin) {
         super(plugin, "CombustingAxe");
-        setDescription("Passive: Axe attacks on burning enemies will combust the target, dealing the remaining burning damage immediately at a $1% rate.");
+        setDescription("Axe attacks on burning enemies will combust the target, dealing the remaining burning damage immediately at a $1% rate.");
         setTypes(SkillType.ABILITY_PROPERTY_FIRE, SkillType.DAMAGING);
 
         Bukkit.getServer().getPluginManager().registerEvents(new SkillHeroListener(this), plugin);
@@ -90,6 +90,7 @@ public class SkillCombustingAxe extends PassiveSkill {
                 Burning burningEffect = (Burning) effect;
                 damage = burningEffect.getRemainingDamage() * damageEffectiveness;
                 targetCT.removeEffect(effect);
+                targetLE.setFireTicks(0);
                 foundBurningEffect = true;
             }
 
