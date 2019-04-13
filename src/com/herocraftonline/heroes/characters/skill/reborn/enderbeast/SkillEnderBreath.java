@@ -150,42 +150,27 @@ public class SkillEnderBreath extends SkillBaseGroundEffect {
 
         private void teleportPlayer(Player player, LivingEntity target) {
             int randomLocIndex = random.nextInt(locationsInRadius.size() - 1);
+            player.sendMessage("random: " + randomLocIndex);
 
             Location desiredLocation = locationsInRadius.get(randomLocIndex).clone();
+            player.sendMessage("desired location: "+desiredLocation);
             World targetWorld = desiredLocation.getWorld();
 
             int distance = (int) target.getLocation().distance(desiredLocation);
-//                Vector direction = distance.normalize();
-//                RayCastHit hit = nmsHandler.getNMSPhysics().rayCast(
-//                        targetWorld,
-//                        target,
-//                        target.getEyeLocation().toVector(),
-//                        desiredLocation.toVector(),
-//                        x -> x.getType().isSolid(),
-//                        x -> false);
-//
-//                if (hit != null) {
-//                    Heroes.log(Level.INFO, "Raycast Hit: " + hit.getPoint().toString());
-//                } else {
-//                    Heroes.log(Level.INFO, "Raycast Hit: null.");
-//                }
-//
-//                if (hit == null || hit.getBlock(targetWorld) == null)
-//                    return;
-//                Location newLocation = hit.getBlock(targetWorld).getLocation();
+            player.sendMessage("distance: " + distance);
             Block validFinalBlock = null;
             Block currentBlock;
 
-            Vector dir = desiredLocation.clone().subtract(target.getEyeLocation()).toVector();
+            Vector dir = desiredLocation.clone().subtract(target.getEyeLocation()).toVector().normalize();
             Location iterLoc = target.getLocation().clone().setDirection(dir);
+            player.sendMessage("start: " + iterLoc);
 
             BlockIterator iter = null;
             try {
-                iter = new BlockIterator(iterLoc, distance);
+                iter = new BlockIterator(iterLoc, 1, distance);
             } catch (IllegalStateException e) {
                 return;
             }
-
             while (iter.hasNext()) {
                 currentBlock = iter.next();
                 Material currentBlockType = currentBlock.getType();
@@ -200,8 +185,9 @@ public class SkillEnderBreath extends SkillBaseGroundEffect {
             if (validFinalBlock == null)
                 return;
 
-            Location newLocation = validFinalBlock.getLocation().clone().add(new Vector(.5, 0, .5));
+            Location newLocation = validFinalBlock.getLocation().clone();
             target.teleport(newLocation, PlayerTeleportEvent.TeleportCause.PLUGIN);
+            player.sendMessage("final location: " + target.getLocation());
             targetWorld.playEffect(newLocation, org.bukkit.Effect.ENDER_SIGNAL, 3);
             targetWorld.playSound(newLocation, Sound.ENTITY_ENDERMAN_TELEPORT, 0.6F, 1.0F);
         }
