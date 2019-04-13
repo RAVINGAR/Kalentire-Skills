@@ -95,7 +95,9 @@ public class SkillGrapple extends ActiveSkill {
         if (hit != null && hit.getEntity() != null && hit.getEntity() instanceof LivingEntity) {
             LivingEntity target = (LivingEntity) hit.getEntity();
             CharacterTemplate targetCT = plugin.getCharacterManager().getCharacter((LivingEntity) target);
-            if (SkillHookshot.tryRemoveHook(hero, targetCT)) {
+
+            SkillHookshot.InvalidHookTargetReason invalidHookTargetReason = SkillHookshot.tryRemoveHook(hero, targetCT);
+            if (invalidHookTargetReason == SkillHookshot.InvalidHookTargetReason.VALID_TARGET) {
                 // Found a valid hook target.
 
                 if (hero.isAlliedTo(target)) {

@@ -10,10 +10,12 @@ import com.herocraftonline.heroes.characters.effects.EffectType;
 import com.herocraftonline.heroes.characters.effects.PeriodicExpirableEffect;
 import com.herocraftonline.heroes.characters.skill.*;
 import com.herocraftonline.heroes.characters.skill.tools.BasicMissile;
+import com.herocraftonline.heroes.chat.ChatComponents;
 import com.herocraftonline.heroes.util.Util;
 import de.slikey.effectlib.EffectManager;
 import de.slikey.effectlib.effect.LineEffect;
 import de.slikey.effectlib.util.DynamicLocation;
+import org.bukkit.ChatColor;
 import org.bukkit.Color;
 import org.bukkit.Location;
 import org.bukkit.Particle;
@@ -111,28 +113,63 @@ public class SkillHookshot extends ActiveSkill {
         return validHookedLocEffect.hookLocation;
     }
 
-    public static boolean tryRemoveHook(Heroes plugin, Hero hookOwner, LivingEntity target) {
+    public enum InvalidHookTargetReason {
+        OTHER,
+        NULL_TARGET,
+        NULL_CHARACTER,
+        NO_HOOK,
+        //INVALID_LOCATION,
+        //NO_ACTIVE_HOOKS,
+        INVINCIBLE_TARGET,
+        //ALLIED_TARGET,
+        //OUT_OF_RANGE,
+        VALID_TARGET
+    }
+
+    // Broadcast more informative message to player, rather than "Invalid Target"
+    public static void broadcastInvalidHookTargetText(Hero hookOwner, InvalidHookTargetReason invalidHookTargetReason){
+        final Player player = hookOwner.getPlayer();
+        if (player == null || invalidHookTargetReason == InvalidHookTargetReason.VALID_TARGET)
+            return;
+
+        String text = ChatColor.GRAY + "    " + ChatComponents.GENERIC_SKILL;
+        switch (invalidHookTargetReason){
+            case NO_HOOK:
+                text += "That target has no hook!";
+                break;
+            case INVINCIBLE_TARGET:
+                text += "You cannot damage that target right now!";
+                break;
+            case NULL_TARGET:
+            case NULL_CHARACTER:
+            default:
+                text += "Invalid Target!";
+        }
+        player.sendMessage(text);
+    }
+
+    public static InvalidHookTargetReason tryRemoveHook(Heroes plugin, Hero hookOwner, LivingEntity target) {
         if (target == null)
-            return false;
+            return InvalidHookTargetReason.NULL_TARGET;
 
         CharacterTemplate targetCT = plugin.getCharacterManager().getCharacter(target);
         return tryRemoveHook(hookOwner, targetCT);
     }
 
-    public static boolean tryRemoveHook(Hero hookOwner, CharacterTemplate targetCT) {
+    public static InvalidHookTargetReason tryRemoveHook(Hero hookOwner, CharacterTemplate targetCT) {
         if (targetCT == null)
-            return false;
+            return InvalidHookTargetReason.NULL_CHARACTER;
 
         String effectName = getHookedEffectName(hookOwner.getPlayer());
         if (!targetCT.hasEffect(effectName))
-            return false;
+            return InvalidHookTargetReason.NO_HOOK;
 
         boolean isAlliedTo = hookOwner.isAlliedTo(targetCT.getEntity());
         if (!isAlliedTo && !damageCheck(hookOwner.getPlayer(), targetCT.getEntity()))
-            return false;
+            return InvalidHookTargetReason.INVINCIBLE_TARGET;
 
         targetCT.removeEffect(targetCT.getEffect(effectName));
-        return true;
+        return InvalidHookTargetReason.VALID_TARGET;
     }
 
     public static String getHookedEffectName(Player hookOwner) {

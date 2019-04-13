@@ -64,9 +64,11 @@ public class SkillYank extends TargettedSkill {
         // This is necessary for compatibility with AoE versions of this skill.
         boolean shouldBroadcast = args == null || args.length == 0 || Arrays.stream(args).noneMatch(x -> x.equalsIgnoreCase("NoBroadcast"));
 
-        if (!SkillHookshot.tryRemoveHook(plugin, hero, target)) {
-            if (shouldBroadcast)
-                return SkillResult.INVALID_TARGET;
+        SkillHookshot.InvalidHookTargetReason invalidHookTargetReason = SkillHookshot.tryRemoveHook(plugin, hero, target);
+        if (invalidHookTargetReason != SkillHookshot.InvalidHookTargetReason.VALID_TARGET) {
+            if (shouldBroadcast) {
+                SkillHookshot.broadcastInvalidHookTargetText(hero, invalidHookTargetReason);
+            }
             return SkillResult.INVALID_TARGET_NO_MSG;
         }
 
