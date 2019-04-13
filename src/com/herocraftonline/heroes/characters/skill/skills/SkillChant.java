@@ -1,6 +1,7 @@
 package com.herocraftonline.heroes.characters.skill.skills;
 
 import com.herocraftonline.heroes.Heroes;
+import com.herocraftonline.heroes.characters.CharacterTemplate;
 import com.herocraftonline.heroes.characters.Hero;
 import com.herocraftonline.heroes.characters.effects.Effect;
 import com.herocraftonline.heroes.characters.effects.EffectType;
@@ -44,11 +45,11 @@ public class SkillChant extends SkillBaseHeal {
     }
 
     @Override
-    protected void removeEffects(Hero hero) {
-        for (Effect effect : hero.getEffects()) {
+    protected void removeEffects(Hero healer, CharacterTemplate targetCT) {
+        for (Effect effect : targetCT.getEffects()) {
             if (effect.isType(EffectType.DISPELLABLE) && effect.isType(EffectType.HARMFUL)) {
                 if (effect.isType(EffectType.BLEED)) {
-                    hero.removeEffect(effect);
+                    targetCT.removeEffect(effect);
                 }
             }
         }

@@ -1,6 +1,7 @@
 package com.herocraftonline.heroes.characters.skill.pack3;
 
 import com.herocraftonline.heroes.Heroes;
+import com.herocraftonline.heroes.characters.CharacterTemplate;
 import com.herocraftonline.heroes.characters.Hero;
 import com.herocraftonline.heroes.characters.skill.SkillSetting;
 import com.herocraftonline.heroes.characters.skill.SkillType;
@@ -52,13 +53,7 @@ public class SkillRenewal extends SkillBaseHeal {
     }
 
     @Override
-    protected void removeEffects(Hero hero) {
-        /*for (Effect effect : hero.getEffects()) {
-            if (effect.isType(EffectType.DISPELLABLE) && effect.isType(EffectType.HARMFUL)) {
-                if (effect.isType(EffectType.DISEASE)) {
-                    hero.removeEffect(effect);
-                }
-            }
-        }*/
+    protected void removeEffects(Hero hero, CharacterTemplate targetCT) {
+        // No effects are removed by this Skill.
     }
 }
