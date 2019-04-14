@@ -266,8 +266,10 @@ public class SkillMysticWinds extends ActiveSkill {
 
             Hero targetHero = plugin.getCharacterManager().getHero((Player) target);
             // only works on party ?
+            /*
             if (!(hero.getParty().isPartyMember(targetHero)))
                 return;
+             */
 
             double damage = this.projectileDamage;
             CharacterTemplate targetCT = plugin.getCharacterManager().getCharacter(target);
@@ -281,13 +283,7 @@ public class SkillMysticWinds extends ActiveSkill {
             }
 
             addSpellTarget(target, hero);
-            HeroRegainHealthEvent event = new HeroRegainHealthEvent(targetHero, damage, skill, hero);
-            plugin.getServer().getPluginManager().callEvent(event);
-            if (event.isCancelled()) {
-                hero.getPlayer().sendMessage("Unable to heal the target at this time!");
-                return;
-            }
-            targetHero.heal(event.getDelta());
+            targetHero.tryHeal(hero, skill, damage);
         }
 
         private String getMultiHitEffectName(Player player) {
