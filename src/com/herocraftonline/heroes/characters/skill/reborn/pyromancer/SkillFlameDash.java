@@ -17,7 +17,9 @@ import org.bukkit.util.BlockIterator;
 import org.bukkit.util.Vector;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
+import java.util.Set;
 
 public class SkillFlameDash extends ActiveSkill {
 
@@ -93,6 +95,10 @@ public class SkillFlameDash extends ActiveSkill {
             return SkillResult.INVALID_TARGET_NO_MSG;
         }
 
+        List<Material> mustStepDownBlocks = new ArrayList<Material>(Util.transparentBlocks);
+        mustStepDownBlocks.remove(Material.FIRE);
+        mustStepDownBlocks.remove(Material.LAVA);
+
         List<Block> fireTickBlocks = new ArrayList<Block>();
         List<Block> possibleFireTickBlocks = new ArrayList<Block>();
         Block previousBlock = currentPlayerLoc.getBlock();
@@ -108,7 +114,7 @@ public class SkillFlameDash extends ActiveSkill {
             possibleFireTickBlocks.add(previousBlock);
 
             // If we hit a transparent block and there is also space below it
-            if (Util.transparentBlocks.contains(currentBlock.getType()) && Util.transparentBlocks.contains(currentBlock.getRelative(BlockFace.DOWN).getType())) {
+            if (Util.transparentBlocks.contains(currentBlock.getType()) && mustStepDownBlocks.contains(currentBlock.getRelative(BlockFace.DOWN).getType())) {
                 // We need to "step down" until we hit the limit.
                 Block stepDownCurrentBlock = currentBlock;
                 boolean foundValidFloorBlock = false;
@@ -118,7 +124,7 @@ public class SkillFlameDash extends ActiveSkill {
 
                     if (tempStepDownBlock.getType() == Material.WATER) {
                         break;
-                    } else if (Util.transparentBlocks.contains(tempStepDownBlock.getType())) {
+                    } else if (mustStepDownBlocks.contains(tempStepDownBlock.getType())) {
                         stepDownCurrentBlock = tempStepDownBlock;
                     } else {
                         foundValidFloorBlock = true;

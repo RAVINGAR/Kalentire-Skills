@@ -12,6 +12,7 @@ import com.herocraftonline.heroes.characters.skill.SkillType;
 import com.herocraftonline.heroes.characters.skill.ncp.NCPFunction;
 import com.herocraftonline.heroes.characters.skill.ncp.NCPUtils;
 import com.herocraftonline.heroes.util.GeometryUtil;
+import com.herocraftonline.heroes.util.Util;
 import org.bukkit.*;
 import org.bukkit.block.BlockFace;
 import org.bukkit.configuration.ConfigurationSection;
@@ -44,8 +45,8 @@ public class SkillTremor extends ActiveSkill {
         damage += (int) (damageIncrease * hero.getAttributeValue(AttributeType.STRENGTH));
 
         return getDescription()
-                .replace("$1", radius + "")
-                .replace("$2", damage + "");
+                .replace("$1", Util.decFormat.format(radius))
+                .replace("$2", Util.decFormat.format(damage));
     }
 
     @Override
@@ -54,8 +55,8 @@ public class SkillTremor extends ActiveSkill {
         config.set(SkillSetting.DAMAGE.node(), 50);
         config.set(SkillSetting.DAMAGE_INCREASE_PER_STRENGTH.node(), 0.0);
         config.set(SkillSetting.RADIUS.node(), 7);
-        config.set("horizontal-power", 1.0);
-        config.set("vertical-power", 0.35);
+        config.set("horizontal-power", 1.5);
+        config.set("vertical-power", 0.4);
         config.set("ncp-exemption-duration", 0);
         config.set(SkillSetting.DELAY.node(), 500);
         return config;

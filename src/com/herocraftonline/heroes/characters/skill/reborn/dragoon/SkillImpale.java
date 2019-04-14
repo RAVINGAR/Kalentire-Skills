@@ -29,7 +29,8 @@ public class SkillImpale extends TargettedSkill {
 
     public SkillImpale(Heroes plugin) {
         super(plugin, "Impale");
-        setDescription("You impale your target with your weapon, dealing $1 physical damage and slowing them for $2 second(s).");
+        setDescription("You impale your target with your weapon, dealing $1 physical damage and slowing them for $2 second(s). " +
+                "If you impale the target against a wall, they will be stunned for $3 seconds instead.");
         setUsage("/skill impale");
         setArgumentRange(0, 0);
         setIdentifiers("skill impale");
@@ -39,13 +40,16 @@ public class SkillImpale extends TargettedSkill {
     @Override
     public String getDescription(Hero hero) {
         int damage = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE, 50, false);
-        double damageIncrease = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE_INCREASE_PER_STRENGTH, 1.0, false);
+        double damageIncrease = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE_INCREASE_PER_STRENGTH, 0.0, false);
         damage += (int) (damageIncrease * hero.getAttributeValue(AttributeType.STRENGTH));
 
         int duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, 3000, false);
-        String formattedDuration = Util.decFormat.format(duration / 1000.0);
+        int stunDuration = SkillConfigManager.getUseSetting(hero, this, "pinned-stun-duration", 2000, false);
 
-        return getDescription().replace("$1", damage + "").replace("$2", formattedDuration);
+        return getDescription()
+                .replace("$1", Util.decFormat.format(damage))
+                .replace("$2", Util.decFormat.format(duration / 1000.0))
+                .replace("$2", Util.decFormat.format(stunDuration / 1000.0));
     }
 
     @Override
@@ -68,7 +72,8 @@ public class SkillImpale extends TargettedSkill {
         config.set(SkillSetting.DAMAGE.node(), 50);
         config.set(SkillSetting.DAMAGE_INCREASE_PER_STRENGTH.node(), 0.0);
         config.set(SkillSetting.DURATION.node(), 3000);
-        config.set("amplitude", 2);
+        config.set("pinned-stun-duration", 2000);
+        config.set("slow-amplitude", 2);
         config.set(SkillSetting.APPLY_TEXT.node(), ChatComponents.GENERIC_SKILL + "%target% has been slowed by %hero%'s impale!");
         config.set(SkillSetting.EXPIRE_TEXT.node(), ChatComponents.GENERIC_SKILL + "%target% is no longer slowed!");
         return config;
@@ -95,20 +100,23 @@ public class SkillImpale extends TargettedSkill {
 
         long duration;
         int amplitude;
-        if (blockBehindTarget.isSolid()) {
-            target.sendMessage(hero.getPlayer().getDisplayName() + "has pinned you from their imapale!");
-            duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, 5000, false);
-            amplitude = SkillConfigManager.getUseSetting(hero, this, "amplitude", 2, false);
+        if (blockBehindTarget.isSolid() && !Util.transparentBlocks.contains(blockBehindTarget)) {
+            // Impaled, let's stun them!
+            target.sendMessage("    " + ChatComponents.GENERIC_SKILL + hero.getPlayer().getDisplayName() + "has pinned you with their imapale!");
+            duration = SkillConfigManager.getUseSetting(hero, this, "pinned-stun-duration", 2000, false);
+
+            StunEffect effect = new StunEffect(this, player, duration);
+            plugin.getCharacterManager().getCharacter(target).addEffect(effect);
         } else {
             // Add the slow effect
             duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, 3000, false);
-            amplitude = SkillConfigManager.getUseSetting(hero, this, "amplitude", 2, false);
+            amplitude = SkillConfigManager.getUseSetting(hero, this, "slow-amplitude", 2, false);
+
+            SlowEffect effect = new SlowEffect(this, player, duration, amplitude, applyText, expireText);
+            plugin.getCharacterManager().getCharacter(target).addEffect(effect);
         }
-        SlowEffect sEffect = new SlowEffect(this, player, duration, amplitude, applyText, expireText);
-        plugin.getCharacterManager().getCharacter(target).addEffect(sEffect);
 
         player.getWorld().playSound(player.getLocation(), Sound.ENTITY_GENERIC_HURT, 1.0F, 1.0F);
-
         player.getWorld().spawnParticle(Particle.CRIT, target.getLocation().add(0, 0.5, 0), 75, 0, 0, 0, 1);
         player.getWorld().spawnParticle(Particle.BLOCK_CRACK, target.getLocation().add(0, 0.5, 0), 45, 0.3, 0.2, 0.3, 0.5, Bukkit.createBlockData(Material.NETHER_WART_BLOCK));
 

@@ -29,18 +29,18 @@ public class SkillLungingBite extends ActiveSkill {
 
     public SkillLungingBite(Heroes plugin) {
         super(plugin, "LungingBite");
-        setUsage("/skill lungingbite");
-        setIdentifiers("skill lungingbite");
-        setArgumentRange(0, 0);
         setDescription("You lunge forward with transformed jaws, biting any targets in your path and dealing $1 damage. " +
                 "You are healed by $2 for each target you kill with this ability. " +
                 "While transformed, you are healed for $1 instead and any targets caught in your jaws will be held for $3 second(s).");
+        setUsage("/skill lungingbite");
+        setIdentifiers("skill lungingbite");
+        setArgumentRange(0, 0);
         setTypes(SkillType.DAMAGING, SkillType.MOVEMENT_INCREASING, SkillType.ABILITY_PROPERTY_PHYSICAL, SkillType.AGGRESSIVE);
     }
 
     public String getDescription(Hero hero) {
         double baseDamage = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE, 35.0, true);
-        double bonusDmg = SkillConfigManager.getUseSetting(hero, this, "bonus-baseDamage-per-level", 5.0, true);
+        double bonusDmg = SkillConfigManager.getUseSetting(hero, this, "bonus-damage-per-level", 5.0, true);
         int stuckInJawsDuration = SkillConfigManager.getUseSetting(hero, this, "transform-jaws-duration", 2500, false);
 
         double damage = baseDamage + bonusDmg;

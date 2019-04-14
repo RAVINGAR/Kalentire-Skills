@@ -1,4 +1,4 @@
-package com.herocraftonline.heroes.characters.skill.reborn.shared;
+package com.herocraftonline.heroes.characters.skill.reborn.hellspawn;
 
 import com.herocraftonline.heroes.Heroes;
 import com.herocraftonline.heroes.api.SkillResult;
@@ -10,8 +10,9 @@ import com.herocraftonline.heroes.characters.effects.ExpirableEffect;
 import com.herocraftonline.heroes.characters.effects.common.BurningEffect;
 import com.herocraftonline.heroes.characters.skill.*;
 import com.herocraftonline.heroes.util.Util;
-import org.bukkit.*;
-import org.bukkit.block.Block;
+import org.bukkit.Bukkit;
+import org.bukkit.Particle;
+import org.bukkit.Sound;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.*;
 import org.bukkit.event.EventHandler;
@@ -23,28 +24,29 @@ import org.bukkit.event.entity.ProjectileHitEvent;
 import org.bukkit.projectiles.ProjectileSource;
 import org.bukkit.util.Vector;
 
-import java.util.*;
+import java.util.LinkedHashMap;
+import java.util.Map;
 import java.util.concurrent.ThreadLocalRandom;
 
-public class SkillFireStream extends ActiveSkill {
+public class SkillChaosStream extends ActiveSkill {
 
-    private Map<Snowball, Long> projectiles = new LinkedHashMap<Snowball, Long>(100) {
+    private Map<EnderPearl, Long> projectiles = new LinkedHashMap<EnderPearl, Long>(100) {
         private static final long serialVersionUID = 2329013558608752L;
 
         @Override
-        protected boolean removeEldestEntry(Map.Entry<Snowball, Long> eldest) {
+        protected boolean removeEldestEntry(Map.Entry<EnderPearl, Long> eldest) {
             return (size() > 300 || eldest.getValue() + 5000 <= System.currentTimeMillis());
         }
     };
 
-    public SkillFireStream(Heroes plugin) {
-        super(plugin, "FireStream");
-        setDescription("You shoot $1 balls of fire in a stream. "
-                + "Each fireball deals $2 damage and will ignite them, dealing $3 burning damage over the next $4 second(s). "
+    public SkillChaosStream(Heroes plugin) {
+        super(plugin, "ChaosStream");
+        setDescription("You shoot $1 orbs of chaos in a stream. "
+                + "Each orb deals $2 damage and will ignite them, dealing $3 burning damage over the next $4 second(s). "
                 + "Additional hits on the same target will deal $5% less damage per hit. The burning effect will not stack.");
-        setUsage("/skill firestream");
+        setUsage("/skill chaosstream");
         setArgumentRange(0, 0);
-        setIdentifiers("skill firestream");
+        setIdentifiers("skill chaosstream");
         setTypes(SkillType.ABILITY_PROPERTY_FIRE, SkillType.ABILITY_PROPERTY_PROJECTILE, SkillType.SILENCEABLE, SkillType.DAMAGING);
 
         Bukkit.getServer().getPluginManager().registerEvents(new SkillEntityListener(this), plugin);
@@ -80,13 +82,13 @@ public class SkillFireStream extends ActiveSkill {
     public ConfigurationSection getDefaultConfig() {
         ConfigurationSection config = super.getDefaultConfig();
         config.set(SkillSetting.DAMAGE.node(), 35);
-        config.set("burn-duration", 2000);
-        config.set("burn-damage-multiplier", 2.0);
+        config.set("burn-duration", 1000);
+        config.set("burn-damage-multiplier", 1.5);
         config.set("effectiveness-decrease-per-hit-percent", 0.20);
-        config.set("total-projectile-count", 18);
+        config.set("total-projectile-count", 15);
         config.set("projectiles-per-launch", 3);
         config.set("velocity-multiplier", 0.75);
-        config.set("launch-delay-server-ticks", 3);
+        config.set("launch-delay-server-ticks", 5);
         return config;
     }
 
@@ -98,6 +100,8 @@ public class SkillFireStream extends ActiveSkill {
         int numFireballs = SkillConfigManager.getUseSetting(hero, this, "total-projectile-count", 20, false);
         int projectilesPerLaunch = SkillConfigManager.getUseSetting(hero, this, "projectiles-per-launch", 2, false);
         int launchDelay = SkillConfigManager.getUseSetting(hero, this, "launch-delay-server-ticks", 3, false);
+        int ticksBeforeDrop = SkillConfigManager.getUseSetting(hero, this, "ticks-before-drop", 6, false);
+        final double yValue = SkillConfigManager.getUseSetting(hero, this, "y-value-drop", 0.35, false);
 
         final double randomMin = -0.1;
         final double randomMax = 0.1;
@@ -111,13 +115,22 @@ public class SkillFireStream extends ActiveSkill {
                 public void run() {
 
                     for(int launchedThisLoop = 0; launchedThisLoop < projectilesPerLaunch; launchedThisLoop++) {
-                        Snowball projectile = player.launchProjectile(Snowball.class);
+                        EnderPearl projectile = player.launchProjectile(EnderPearl.class);
 
                         Vector newVelocity = player.getLocation().getDirection().normalize()
                                 .add(new Vector(ThreadLocalRandom.current().nextDouble(randomMin, randomMax), 0, ThreadLocalRandom.current().nextDouble(randomMin, randomMax)))
                                 .multiply(mult);
                         projectile.setGravity(true);
                         projectile.setVelocity(newVelocity);
+
+                        // Nesting schedulers weeeee.
+                        Bukkit.getScheduler().scheduleSyncDelayedTask(plugin, new Runnable() {
+                            public void run() {
+                                if (!projectile.isDead()) {
+                                    projectile.setVelocity(projectile.getVelocity().setY(-yValue));
+                                }
+                            }
+                        }, ticksBeforeDrop);
 
                         projectile.setFireTicks(100);
                         projectiles.put(projectile, System.currentTimeMillis());
@@ -135,16 +148,16 @@ public class SkillFireStream extends ActiveSkill {
     }
 
     private String buildVictimEffectName(Player player) {
-        String baseVictimEffectName = "FireStreamVictim";
+        String baseVictimEffectName = "ChaosStreamVictim";
         return player.getName() + "|" + baseVictimEffectName;
     }
 
-    public class FireStreamVictimEffect extends ExpirableEffect {
+    public class ChaosStreamVictimEffect extends ExpirableEffect {
 
         private int numStacks = 1;
         private final double effectivenessDecreasePerStack;
 
-        public FireStreamVictimEffect(Skill skill, Player applier, double effectivenessDecreasePerStack) {
+        public ChaosStreamVictimEffect(Skill skill, Player applier, double effectivenessDecreasePerStack) {
             super(skill, buildVictimEffectName(applier), applier, 1000);
             this.effectivenessDecreasePerStack = effectivenessDecreasePerStack;
 
@@ -178,19 +191,12 @@ public class SkillFireStream extends ActiveSkill {
 
         @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
         public void onProjectileHit(ProjectileHitEvent event) {
-            if (!(event.getEntity() instanceof Snowball))
+            if (!(event.getEntity() instanceof EnderPearl))
                 return;
 
-            final Snowball projectile = (Snowball) event.getEntity();
+            final EnderPearl projectile = (EnderPearl) event.getEntity();
             if ((!(projectile.getShooter() instanceof Player)) || !projectiles.containsKey(projectile))
                 return;
-
-            if (event.getHitBlock() != null) {
-                Block hitBlock = event.getHitBlock();
-
-                final Block fireBlock = hitBlock.getRelative(event.getHitBlockFace());
-                Util.setBlockOnFireIfAble(fireBlock, 0.7);
-            }
 
             if (event.getHitEntity() == null) {
                 projectiles.remove(projectile);
@@ -204,7 +210,7 @@ public class SkillFireStream extends ActiveSkill {
             }
 
             Entity projectile = event.getDamager();
-            if (!(projectile instanceof Snowball) || !projectiles.containsKey(projectile)) {
+            if (!(projectile instanceof EnderPearl) || !projectiles.containsKey(projectile)) {
                 return;
             }
 
@@ -226,12 +232,12 @@ public class SkillFireStream extends ActiveSkill {
             double effectivenessMultiplier = 1.0;
             String victimEffectName = buildVictimEffectName(dmger);
             if (targetCT.hasEffect(victimEffectName)) {
-                FireStreamVictimEffect victimEffect = (FireStreamVictimEffect) targetCT.getEffect(victimEffectName);
+                ChaosStreamVictimEffect victimEffect = (ChaosStreamVictimEffect) targetCT.getEffect(victimEffectName);
                 effectivenessMultiplier = victimEffect.getCurrentEffectivenessMultiplier();
                 victimEffect.addStack();
             } else {
                 double effectivenessDecrease = SkillConfigManager.getUseSetting(hero, skill, "effectiveness-decrease-per-hit-percent", 0.20, false);
-                targetCT.addEffect(new FireStreamVictimEffect(skill, dmger, effectivenessDecrease));
+                targetCT.addEffect(new ChaosStreamVictimEffect(skill, dmger, effectivenessDecrease));
             }
 
             if (effectivenessMultiplier == 0)

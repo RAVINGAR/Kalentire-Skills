@@ -183,7 +183,7 @@ public class SkillMysticWinds extends ActiveSkill {
                         missileVisual.setLocation(eyeLocation.clone().add(eyeOffset));
                         AetherMissile missile = new AetherMissile(hero, skill, projectileRadius, pair.getLeft(), missileVisual);
                         missile.fireMissile();
-                        eyeLocation.getWorld().playSound(eyeLocation, Sound.ENTITY_PLAYER_LEVELUP, 2F, 0.5F);
+                        eyeLocation.getWorld().playSound(eyeLocation, Sound.ENTITY_PLAYER_LEVELUP, 0.5F, 0.5F);
                     }
                 }, projectileLaunchDelay * i);
             }

@@ -1,4 +1,4 @@
-package com.herocraftonline.heroes.characters.skill.reborn.nethermancer;
+package com.herocraftonline.heroes.characters.skill.reborn.hellspawn;
 
 import com.herocraftonline.heroes.Heroes;
 import com.herocraftonline.heroes.api.SkillResult;
@@ -7,7 +7,10 @@ import com.herocraftonline.heroes.api.events.WeaponDamageEvent;
 import com.herocraftonline.heroes.characters.CharacterTemplate;
 import com.herocraftonline.heroes.characters.Hero;
 import com.herocraftonline.heroes.characters.Monster;
-import com.herocraftonline.heroes.characters.effects.*;
+import com.herocraftonline.heroes.characters.effects.EffectType;
+import com.herocraftonline.heroes.characters.effects.PeriodicExpirableEffect;
+import com.herocraftonline.heroes.characters.effects.Stacking;
+import com.herocraftonline.heroes.characters.effects.StackingEffect;
 import com.herocraftonline.heroes.characters.effects.common.interfaces.HealthRegainReduction;
 import com.herocraftonline.heroes.characters.equipment.EquipMethod;
 import com.herocraftonline.heroes.characters.equipment.EquipmentChangedEvent;
@@ -19,7 +22,10 @@ import me.libraryaddict.disguise.DisguiseAPI;
 import me.libraryaddict.disguise.disguisetypes.Disguise;
 import me.libraryaddict.disguise.disguisetypes.DisguiseType;
 import me.libraryaddict.disguise.disguisetypes.MobDisguise;
-import org.bukkit.*;
+import org.bukkit.Bukkit;
+import org.bukkit.Location;
+import org.bukkit.Material;
+import org.bukkit.Sound;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.LivingEntity;
@@ -52,9 +58,10 @@ public class SkillTheWither extends ActiveSkill {
         setIdentifiers("skill thewither", "skill witherform");
         setTypes(SkillType.ABILITY_PROPERTY_WITHER, SkillType.ABILITY_PROPERTY_DARK, SkillType.FORM_ALTERING, SkillType.SILENCEABLE, SkillType.BUFFING);
 
-        if (Bukkit.getServer().getPluginManager().getPlugin("LibsDisguises") != null) {
-            disguiseApiLoaded = true;
-        }
+        // We don't really want to use disguise API I don't think...
+//        if (Bukkit.getServer().getPluginManager().getPlugin("LibsDisguises") != null) {
+//            disguiseApiLoaded = true;
+//        }
 
         Bukkit.getServer().getPluginManager().registerEvents(new SkillEffectListener(this), plugin);
     }
@@ -126,6 +133,7 @@ public class SkillTheWither extends ActiveSkill {
                 disguiseAsWitherSkelly(player);
             } else {
                 addWitherSkull(hero, player);
+                player.setFireTicks((int) (getDuration() * 50));
             }
         }
 
@@ -158,11 +166,8 @@ public class SkillTheWither extends ActiveSkill {
             disguise.setKeepDisguiseOnPlayerDeath(false);
             disguise.setEntity(player);
             disguise.setShowName(true);
-            disguise.setModifyBoundingBox(false);
             disguise.setReplaceSounds(true);
             disguise.setHearSelfDisguise(true);
-            disguise.setHideHeldItemFromSelf(true);
-            disguise.setHideArmorFromSelf(true);
             disguise.startDisguise();
         }
 
@@ -268,23 +273,23 @@ public class SkillTheWither extends ActiveSkill {
                     () -> new WitherStackEffect(skill, player, witherAmplifier, healingReduction, maxStacks));
         }
 
-        @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
-        public void onSkillUse(SkillUseEvent event) {
-            if (!event.getHero().hasEffect(effectName))
-                return;
-
-            boolean isValidType = false;
-            for (SkillType type : event.getSkill().getTypes()) {
-                if (type == SkillType.ABILITY_PROPERTY_DARK || type == SkillType.ABILITY_PROPERTY_PHYSICAL || type == SkillType.ABILITY_PROPERTY_WITHER) {
-                    isValidType = true;
-                }
-            }
-
-            if (!isValidType) {
-                event.setCancelled(true);
-                event.getHero().getPlayer().sendMessage("    " + ChatComponents.GENERIC_SKILL + "You cannot use that skill in this form!");
-            }
-        }
+//        @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
+//        public void onSkillUse(SkillUseEvent event) {
+//            if (!event.getHero().hasEffect(effectName))
+//                return;
+//
+//            boolean isValidType = false;
+//            for (SkillType type : event.getSkill().getTypes()) {
+//                if (type == SkillType.ABILITY_PROPERTY_DARK || type == SkillType.ABILITY_PROPERTY_PHYSICAL || type == SkillType.ABILITY_PROPERTY_WITHER) {
+//                    isValidType = true;
+//                }
+//            }
+//
+//            if (!isValidType) {
+//                event.setCancelled(true);
+//                event.getHero().getPlayer().sendMessage("    " + ChatComponents.GENERIC_SKILL + "You cannot use that skill in this form!");
+//            }
+//        }
 
         @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
         public void onEquipmentChanged(EquipmentChangedEvent event) {

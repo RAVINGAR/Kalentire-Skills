@@ -8,7 +8,7 @@ import com.herocraftonline.heroes.characters.skill.SkillConfigManager;
 import com.herocraftonline.heroes.characters.skill.SkillSetting;
 import com.herocraftonline.heroes.characters.skill.SkillType;
 import com.herocraftonline.heroes.characters.skill.TargettedSkill;
-import com.herocraftonline.heroes.characters.skill.reborn.chainwarden.SkillHookshot.InvalidHookTargetReason;
+import com.herocraftonline.heroes.characters.skill.reborn.chainwarden.SkillHook.InvalidHookTargetReason;
 import com.herocraftonline.heroes.util.Util;
 import org.bukkit.Color;
 import org.bukkit.Particle;
@@ -60,10 +60,10 @@ public class SkillHemorrhage extends TargettedSkill {
         // This is necessary for compatibility with AoE versions of this skill.
         boolean shouldBroadcast = args == null || args.length == 0 || Arrays.stream(args).noneMatch(x -> x.equalsIgnoreCase("NoBroadcast"));
 
-        InvalidHookTargetReason invalidHookTargetReason = SkillHookshot.tryRemoveHook(plugin, hero, target);
+        InvalidHookTargetReason invalidHookTargetReason = SkillHook.tryRemoveHook(plugin, hero, target);
         if (invalidHookTargetReason != InvalidHookTargetReason.VALID_TARGET) {
             if (shouldBroadcast) {
-                SkillHookshot.broadcastInvalidHookTargetText(hero, invalidHookTargetReason);
+                SkillHook.broadcastInvalidHookTargetText(hero, invalidHookTargetReason);
             }
             return SkillResult.INVALID_TARGET_NO_MSG;
         }

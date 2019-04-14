@@ -33,16 +33,16 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.*;
 
-public class SkillHookshot extends ActiveSkill {
-    public static String skillName = "Hookshot";
+public class SkillHook extends ActiveSkill {
+    public static String skillName = "Hook";
     public static String ownerEffectName = "HookOwner";
 
-    public SkillHookshot(Heroes plugin) {
-        super(plugin, "Hookshot");
+    public SkillHook(Heroes plugin) {
+        super(plugin, "Hook");
         setDescription("You launch a hook and chain outward at high speeds. The hook will latch onto whatever it hits for the next $1 seconds. " +
                 "Enemies will be dealt $2 damage on hit. Any targets that run over $3 blocks away will be yanked back slightly and have their hook dislodged.");
-        setUsage("/skill hookshot");
-        setIdentifiers("skill hookshot");
+        setUsage("/skill hook");
+        setIdentifiers("skill hook");
         setArgumentRange(0, 0);
         setTypes(SkillType.ABILITY_PROPERTY_PHYSICAL, SkillType.DAMAGING, SkillType.MULTI_GRESSIVE);
     }
@@ -101,11 +101,13 @@ public class SkillHookshot extends ActiveSkill {
 
         HookOwnerEffect ownerEffect = (HookOwnerEffect) hookOwner.getEffect(ownerEffectName);
         if (ownerEffect == null)
-            return InvalidHookTargetReason.NO_HOOK;
+            return InvalidHookTargetReason.OTHER;
 
         HookedLocationEffect validHookedLocEffect = ownerEffect.tryGetHookedLocationEffect(targetLoc, grabRadius);
         if (validHookedLocEffect == null) {
-            return ownerEffect.getCurrentHookedLocationsCount() == 0 ? InvalidHookTargetReason.NO_ACTIVE_HOOKS : InvalidHookTargetReason.OUT_OF_RANGE;
+            return ownerEffect.getCurrentHookedLocationsCount() == 0
+                    ? InvalidHookTargetReason.NO_ACTIVE_HOOKS
+                    : InvalidHookTargetReason.OUT_OF_RANGE;
         }
         return InvalidHookTargetReason.VALID_TARGET;
     }
@@ -209,7 +211,7 @@ public class SkillHookshot extends ActiveSkill {
         return "HookedLocation-" + hookLocationIndex;
     }
 
-    public SkillHookshot.HookProjectile createHookProjectile(Hero hero) {
+    public SkillHook.HookProjectile createHookProjectile(Hero hero) {
         double projSize = SkillConfigManager.getUseSetting(hero, this, "projectile-size", 0.25, false);
         double projVelocity = SkillConfigManager.getUseSetting(hero, this, "projectile-velocity", 20, false);
 
@@ -249,8 +251,8 @@ public class SkillHookshot extends ActiveSkill {
             if (block == null || hitFace == null)
                 return;
 
-            Location hookedLoc = block.getRelative(hitFace).getLocation();
-            HookedLocationEffect hookedEffect = new HookedLocationEffect(skill, player, hookedLoc, hookedDuration, hookLeashDistance);
+            Location hookedLoc = block.getLocation().add(0.5, 0.5, 0.5);
+            HookedLocationEffect hookedEffect = new HookedLocationEffect(skill, player, hookedLoc, (long) (hookedDuration * 0.5), hookLeashDistance);
             hero.addEffect(hookedEffect);
         }
 

@@ -11,21 +11,26 @@ import com.herocraftonline.heroes.characters.skill.tools.Missile;
 import com.herocraftonline.heroes.chat.ChatComponents;
 import com.herocraftonline.heroes.nms.NMSHandler;
 import com.herocraftonline.heroes.util.Util;
-import de.slikey.effectlib.effect.TornadoEffect;
 import de.slikey.effectlib.EffectManager;
-import org.bukkit.*;
+import de.slikey.effectlib.effect.TornadoEffect;
+import org.bukkit.Color;
+import org.bukkit.Location;
+import org.bukkit.Material;
+import org.bukkit.Particle;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
 import org.bukkit.configuration.ConfigurationSection;
-import org.bukkit.entity.*;
+import org.bukkit.entity.Entity;
+import org.bukkit.entity.LivingEntity;
+import org.bukkit.entity.Player;
 import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.PlayerInventory;
 import org.bukkit.util.Vector;
 
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
+import java.util.Set;
 
 public class SkillFirenado extends ActiveSkill {
 
@@ -71,6 +76,7 @@ public class SkillFirenado extends ActiveSkill {
         config.set("tornado-velocity", 4.0);
         config.set("tornado-duration", 8000);
         config.set("tornado-max-heat-seeking-distance", 25);
+        config.set("heat-seek-force-power", 0.2);
         config.set("tornado-visual-y-offset", 0.0);
         config.set("burn-duration", 3000);
         config.set("burn-damage-multiplier", 2.0);
@@ -105,16 +111,17 @@ public class SkillFirenado extends ActiveSkill {
         private final Skill skill;
         private final Hero hero;
         private final Player player;
-        private final double initialVelocity;
+        private final double defaultSpeed;
         private final int initialDurationTicks;
         private final int maxHeatSeekingDistance;
         private final int heatSeekingIntervalTicks;
-        private final double heatSeakForcePower;
+        private final double heatSeekForcePower;
         private final double damage;
         private final int burnDuration;
         private final double burnMultipliaer;
         private final double hitUpwardsVelocity;
-        private final HashSet<LivingEntity> hitTargets = new HashSet<LivingEntity>();
+        private final Set<LivingEntity> hitTargets = new HashSet<LivingEntity>();
+        private final Set<LivingEntity> tempIgnoreTargets = new HashSet<LivingEntity>();
 
         final EffectManager effectManager = new EffectManager(plugin);
         final TornadoEffect vEffect = new TornadoEffect(effectManager);
@@ -132,15 +139,15 @@ public class SkillFirenado extends ActiveSkill {
             this.hitUpwardsVelocity = SkillConfigManager.getUseSetting(hero, skill, "hit-upwards-velocity", 0.8, false);
 
             Location playerLoc = player.getLocation();
-            this.initialVelocity = SkillConfigManager.getUseSetting(hero, skill, "tornado-velocity", 4.0, false);
-            Vector offset = playerLoc.getDirection().normalize().multiply(3);
+            this.defaultSpeed = SkillConfigManager.getUseSetting(hero, skill, "tornado-velocity", 4.0, false);
+            Vector offset = playerLoc.getDirection().setY(0).normalize().multiply(3);
             Location missileLoc = playerLoc.clone().add(offset);
             missileLoc.setPitch(0);
-            setLocationAndSpeed(missileLoc, initialVelocity);
+            setLocationAndSpeed(missileLoc, defaultSpeed);
 
             this.initialDurationTicks = SkillConfigManager.getUseSetting(hero, skill, "tornado-duration", 8000, false) / 50;
             this.maxHeatSeekingDistance = SkillConfigManager.getUseSetting(hero, skill, "tornado-max-heat-seeking-distance", 25, false);
-            this.heatSeakForcePower = SkillConfigManager.getUseSetting(hero, skill, "heat-seak-force-power", 0.5, false);
+            this.heatSeekForcePower = SkillConfigManager.getUseSetting(hero, skill, "heat-seek-force-power", 0.5, false);
             this.heatSeekingIntervalTicks = (int) (this.initialDurationTicks * 0.15);
 
             double radius = SkillConfigManager.getUseSetting(hero, skill, SkillSetting.RADIUS, 4.0, false);
@@ -160,16 +167,18 @@ public class SkillFirenado extends ActiveSkill {
             vEffect.cloudParticle = Particle.CLOUD;
             vEffect.cloudColor = FIRE_ORANGE;
             vEffect.cloudSize = 0.5F;
-            vEffect.tornadoHeight = (float) radius * 0.5F;
+            vEffect.tornadoHeight = (float) radius;
             vEffect.maxTornadoRadius = (float) radius * 0.5F;
             vEffect.asynchronous = true;
         }
 
+        @Override
         protected void onStart() {
             vEffect.setLocation(getLocation());
             effectManager.start(vEffect);
         }
 
+        @Override
         protected void onTick() {
             Location location = getLocation();
             vEffect.setLocation(location);
@@ -182,7 +191,7 @@ public class SkillFirenado extends ActiveSkill {
             // Add force while heat seaking, but not every single tick.
             if (getTicksLived() % this.heatSeekingIntervalTicks != 0) {
                 if (currentTarget != null)
-                    addForce(getDirection().multiply(this.heatSeakForcePower));
+                    addForce(getDirection().multiply(this.heatSeekForcePower));
                 return;
             }
 
@@ -221,8 +230,16 @@ public class SkillFirenado extends ActiveSkill {
                 LivingEntity lEnt = (LivingEntity) ent;
                 if (hitTargets.contains(lEnt))
                     continue;
-                if (!damageCheck(player, lEnt))
+                if (tempIgnoreTargets.contains(lEnt))
                     continue;
+                if (hero.isAlliedTo(lEnt)) {
+                    hitTargets.add(lEnt);   // Fake a hit so we don't try this guy again.
+                    continue;
+                }
+                if (!damageCheck(player, lEnt)) {
+                    tempIgnoreTargets.add(lEnt);
+                    continue;
+                }
 
                 double distance = getLocation().distance(lEnt.getLocation());
                 if (distance < closestEntDistance) {
@@ -233,29 +250,39 @@ public class SkillFirenado extends ActiveSkill {
             return closestEntity;
         }
 
+        @Override
         protected void onFinalTick() {
             effectManager.dispose();
         }
 
-        // This didn't really work so great.
+        @Override
         protected boolean onCollideWithBlock(Block block, Vector point, BlockFace face) {
             // Make it "bounce" and go the other way.
-//            if (currentTarget == null) {
-//                Vector direction = getDirection();
-//                setLocation(getLocation().clone().subtract(direction));
-//                setDirectionAndSpeed(direction.multiply(-1), defaultSpeed);
-//            }
+            Vector direction = getDirection();
+            setLocation(getLocation().clone().subtract(direction));
+            setDirectionAndSpeed(direction.multiply(-1).setY(0), this.defaultSpeed);
+            if (currentTarget != null) {
+                tempIgnoreTargets.add(currentTarget);
+                currentTarget = null;
+            }
             return false;
         }
 
         // Don't ever "collide" with an entity
+        @Override
         protected boolean onCollideWithEntity(Entity entity) {
             return false;
         }
 
         // Hit around walls
+        @Override
         protected boolean onBlockProtectsEntity(Block block, Entity entity, Vector point, BlockFace face) {
             return false;
+        }
+
+        // Don't do anything on block hit
+        @Override
+        protected void onBlockHit(Block block, Vector hitPoint, BlockFace hitFace, Vector hitForce) {
         }
 
         @Override
@@ -274,12 +301,8 @@ public class SkillFirenado extends ActiveSkill {
             targetCT.addEffect(new BurningEffect(this.skill, player, burnDuration, burnMultipliaer));
 
             currentTarget = null;
-            setVelocity(getDirection().multiply(initialVelocity));
-        }
-
-        @Override
-        protected void onBlockHit(Block block, Vector hitPoint, BlockFace hitFace, Vector hitForce) {
-            effectManager.dispose();
+            tempIgnoreTargets.clear();
+            setVelocity(getDirection().multiply(defaultSpeed));
         }
     }
 }

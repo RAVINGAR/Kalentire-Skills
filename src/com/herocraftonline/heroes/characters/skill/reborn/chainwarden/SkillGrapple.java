@@ -83,15 +83,15 @@ public class SkillGrapple extends ActiveSkill {
 
         // If we have a valid raycast target location...
         if (targetLoc != null) {
-            Location actualHookLoc = SkillHookshot.tryGetHookLocation(plugin, hero, targetLoc, grabRadius, true);
+            Location actualHookLoc = SkillHook.tryGetHookLocation(plugin, hero, targetLoc, grabRadius, true);
             if (actualHookLoc != null) {
                 broadcastExecuteText(hero);
                 grappleToLocation(hero, actualHookLoc, multiplier);
                 return SkillResult.NORMAL;
             } else {
-                SkillHookshot.InvalidHookTargetReason invalidHookTargetReason = SkillHookshot.hasValidHookLocation(
+                SkillHook.InvalidHookTargetReason invalidHookTargetReason = SkillHook.hasValidHookLocation(
                         plugin, hero, targetLoc, grabRadius);
-                SkillHookshot.broadcastInvalidHookTargetText(hero, invalidHookTargetReason);
+                SkillHook.broadcastInvalidHookTargetText(hero, invalidHookTargetReason);
                 return SkillResult.INVALID_TARGET_NO_MSG;
             }
         }
@@ -101,8 +101,8 @@ public class SkillGrapple extends ActiveSkill {
             LivingEntity target = (LivingEntity) hit.getEntity();
             CharacterTemplate targetCT = plugin.getCharacterManager().getCharacter((LivingEntity) target);
 
-            SkillHookshot.InvalidHookTargetReason invalidHookTargetReason = SkillHookshot.tryRemoveHook(hero, targetCT);
-            if (invalidHookTargetReason == SkillHookshot.InvalidHookTargetReason.VALID_TARGET) {
+            SkillHook.InvalidHookTargetReason invalidHookTargetReason = SkillHook.tryRemoveHook(hero, targetCT);
+            if (invalidHookTargetReason == SkillHook.InvalidHookTargetReason.VALID_TARGET) {
                 // Found a valid hook target.
 
                 if (hero.isAlliedTo(target)) {
@@ -147,19 +147,31 @@ public class SkillGrapple extends ActiveSkill {
         double zDir = (targetLoc.getZ() - playerLoc.getZ()) / horizontalDivider;
         final Vector grappleVector = new Vector(xDir, yDir, zDir);
 
-        if (grappleVector.getY() < 0.5)
+        if (grappleVector.getY() < 0.5) {
             grappleVector.setY(0.4);
-
+        }
         if (locVec.getY() < playerLoc.getY()) {
             grappleVector.setY(0.4);
         }
 
-        Heroes.log(Level.INFO, "Grapple Vector: " + grappleVector.toString());
-        Heroes.log(Level.INFO, "Grapple Length: " + grappleVector.length());
+        double horizontalPower = grappleVector.clone().setY(0).length();
+        double verticalPower = grappleVector.clone().setX(0).setZ(0).length();
+
+//        double minVerticalVelocity = SkillConfigManager.getUseSetting(hero, this, "min-vertical-velocity", 0.4, false);
+//        double maxVerticalVelocity = SkillConfigManager.getUseSetting(hero, this, "max-vertical-velocity", 1.85, false);
+//        if (verticalPower < minVerticalVelocity) {
+//            locVec.setY()
+//        }
+//        if (verticalPower > maxVerticalVelocity) {
+//            locVec.setY(maxVerticalVelocity);
+//        } else
+
+        Heroes.log(Level.INFO, "Grapple Horizontal Power: " + horizontalPower);
+        Heroes.log(Level.INFO, "Grapple Vertical Power: " + verticalPower);
 
         // As long as we have Y, give them safefall
         long safeFallDuration = SkillConfigManager.getUseSetting(hero, this, "safe-fall-duration", 5000, false);
-        hero.addEffect(new SafeFallEffect(this, player, safeFallDuration));
+        hero.addEffect(new SafeFallEffect(this, player, safeFallDuration, null, null));
 
         long exemptionDuration = SkillConfigManager.getUseSetting(hero, this, "ncp-exemption-duration", 0, false);
         if (exemptionDuration > 0) {

@@ -33,23 +33,25 @@ public class SkillTumble extends PassiveSkill {
 
     @Override
     public String getDescription(Hero hero) {
+        String description = "";
 
-        String description = " ";
-
-        double distance = SkillConfigManager.getUseSetting(hero, this, "base-distance", 0, false);
-        double distanceIncrease = SkillConfigManager.getUseSetting(hero, this, "distance-increase-per-dexterity-level", 0.25, false);
-        distance += (hero.getAttributeValue(AttributeType.DEXTERITY) * distanceIncrease) + 3;
+        double distance = SkillConfigManager.getUseSetting(hero, this, "base-distance", 3, false);
+        double perLevel = SkillConfigManager.getUseSetting(hero, this, "distance-increase-per-level", 0.16, false);
+        double perDex = SkillConfigManager.getUseSetting(hero, this, "distance-increase-per-dexterity-level", 0.16, false);
+        distance += hero.getAttributeValue(AttributeType.DEXTERITY) * perDex;
+        distance += hero.getHeroLevel() * perLevel;
 
         if (distance == 3)
             description = "You aren't very good at breaking your fall, and will take full fall damage when falling down a block height greater than 3.";
         else if (distance > 0 && distance < 3)
-            description = "You are terrible at bracing yourself, and will take " + Util.decFormat.format(distance) + " additional blocks of fall damage when falling down a block height greater than 3!";
+            description = "You are terrible at bracing yourself, and will take " + Util.decFormat.format(3 - distance) + " additional blocks of fall damage when falling down a block height greater than 3!";
         else if (distance < 0)
             description = "You are extremely terrible at bracing yourself, and will take an additional " + Util.decFormat.format(3 + (distance * -1)) + " blocks of fall damage when falling down a block height greater than 3!";
         else
             description = "You are adept at bracing yourself, and will only take fall damage when falling down a block height greater than " + Util.decFormat.format(distance) + "!";
 
-        return getDescription().replace("$1", description);
+        return getDescription()
+                .replace("$1", description);
     }
 
     @Override
@@ -75,12 +77,13 @@ public class SkillTumble extends PassiveSkill {
             if (!(event.getEntity() instanceof Player) || event.getCause() != DamageCause.FALL) {
                 return;
             }
+
             Hero hero = plugin.getCharacterManager().getHero((Player) event.getEntity());
             if (!hero.hasEffect("Tumble") || hero.hasEffectType(EffectType.SAFEFALL)) {
                 return;
             }
 
-            double distance = SkillConfigManager.getUseSetting(hero, skill, "base-distance", 0, false);
+            double distance = SkillConfigManager.getUseSetting(hero, skill, "base-distance", 3, false);
             double perLevel = SkillConfigManager.getUseSetting(hero, skill, "distance-increase-per-level", 0.16, false);
             double perDex = SkillConfigManager.getUseSetting(hero, skill, "distance-increase-per-dexterity-level", 0.16, false);
             distance += hero.getAttributeValue(AttributeType.DEXTERITY) * perDex;

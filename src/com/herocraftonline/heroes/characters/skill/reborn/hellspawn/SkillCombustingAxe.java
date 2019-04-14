@@ -1,4 +1,4 @@
-package com.herocraftonline.heroes.characters.skill.reborn.nethermancer;
+package com.herocraftonline.heroes.characters.skill.reborn.hellspawn;
 
 import com.herocraftonline.heroes.Heroes;
 import com.herocraftonline.heroes.api.events.WeaponDamageEvent;

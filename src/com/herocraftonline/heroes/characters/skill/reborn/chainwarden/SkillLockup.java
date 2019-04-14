@@ -52,10 +52,10 @@ public class SkillLockup extends ActiveSkill {
     public SkillResult use(Hero hero, String[] args) {
         Player player = hero.getPlayer();
 
-        SkillHookshot hookSkill = (SkillHookshot) plugin.getSkillManager().getSkill(SkillHookshot.skillName);
+        SkillHook hookSkill = (SkillHook) plugin.getSkillManager().getSkill(SkillHook.skillName);
         if (hookSkill == null) {
-            Heroes.log(Level.SEVERE, SkillHookshot.skillName + " is missing from the server. " + getName() + " will no longer work. "
-                    + SkillHookshot.skillName + "_must_ be available to the class that has " + getName() + ".");
+            Heroes.log(Level.SEVERE, SkillHook.skillName + " is missing from the server. " + getName() + " will no longer work. "
+                    + SkillHook.skillName + "_must_ be available to the class that has " + getName() + ".");
             player.sendMessage("One of the Admins or devs broke this skill. Tell them to read the heroes logs to fix it.");
             return SkillResult.INVALID_TARGET_NO_MSG;
         }
@@ -110,7 +110,7 @@ public class SkillLockup extends ActiveSkill {
 
     private void hookTarget(Hero hero, LivingEntity target, long duration, double hookLeashDistance, double hookLeashPower) {
         CharacterTemplate targetCT = plugin.getCharacterManager().getCharacter(target);
-        SkillHookshot.HookedEffect hookedEffect = new SkillHookshot.HookedEffect(this, hero, duration, hookLeashDistance, hookLeashPower);
+        SkillHook.HookedEffect hookedEffect = new SkillHook.HookedEffect(this, hero, duration, hookLeashDistance, hookLeashPower);
         targetCT.addEffect(hookedEffect);
     }
 }

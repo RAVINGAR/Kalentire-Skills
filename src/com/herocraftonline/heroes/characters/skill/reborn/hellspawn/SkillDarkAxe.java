@@ -1,13 +1,12 @@
-package com.herocraftonline.heroes.characters.skill.reborn.nethermancer;
+package com.herocraftonline.heroes.characters.skill.reborn.hellspawn;
 
 import com.herocraftonline.heroes.Heroes;
 import com.herocraftonline.heroes.api.SkillResult;
 import com.herocraftonline.heroes.attributes.AttributeType;
 import com.herocraftonline.heroes.characters.CharacterTemplate;
 import com.herocraftonline.heroes.characters.Hero;
-import com.herocraftonline.heroes.characters.effects.common.SlowEffect;
+import com.herocraftonline.heroes.characters.effects.common.BlindEffect;
 import com.herocraftonline.heroes.characters.skill.*;
-import com.herocraftonline.heroes.chat.ChatComponents;
 import com.herocraftonline.heroes.nms.NMSHandler;
 import com.herocraftonline.heroes.util.Util;
 import org.bukkit.*;
@@ -24,7 +23,7 @@ public class SkillDarkAxe extends TargettedSkill {
         setUsage("/skill darkaxe");
         setArgumentRange(0, 0);
         setIdentifiers("skill darkaxe");
-        setTypes(SkillType.ABILITY_PROPERTY_DARK, SkillType.DAMAGING, SkillType.AGGRESSIVE, SkillType.MOVEMENT_SLOWING, SkillType.INTERRUPTING);
+        setTypes(SkillType.ABILITY_PROPERTY_DARK, SkillType.DAMAGING, SkillType.AGGRESSIVE, SkillType.BLINDING, SkillType.INTERRUPTING);
     }
 
     public String getDescription(Hero hero) {
@@ -43,11 +42,9 @@ public class SkillDarkAxe extends TargettedSkill {
         ConfigurationSection config = super.getDefaultConfig();
         config.set(SkillSetting.MAX_DISTANCE.node(), 4);
         config.set(SkillSetting.INTERRUPT_COOLDOWN.node(), 3000);
-        config.set("weapons", Util.axes);
-        config.set("amplitude", 2);
         config.set(SkillSetting.DAMAGE.node(), 60);
         config.set(SkillSetting.DAMAGE_INCREASE_PER_INTELLECT.node(), 0.0);
-        config.set(SkillSetting.DURATION.node(), 2500);
+        config.set(SkillSetting.DURATION.node(), 3000);
         return config;
     }
 
@@ -56,7 +53,7 @@ public class SkillDarkAxe extends TargettedSkill {
 
         Material item = NMSHandler.getInterface().getItemInMainHand(player.getInventory()).getType();
         if (!SkillConfigManager.getUseSetting(hero, this, "weapons", Util.axes).contains(item.name())) {
-            player.sendMessage("You can't use 1DarkAxe with that weapon!");
+            player.sendMessage("You can't use DarkAxe with that weapon!");
             return SkillResult.FAIL;
         }
 
@@ -73,10 +70,9 @@ public class SkillDarkAxe extends TargettedSkill {
         addSpellTarget(target, hero);
         damageEntity(target, player, damage, DamageCause.MAGIC);
 
-        // Create the effect and slow the target
+        // Create the effect and blind the target
         long duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, 3000, false);
-        int amplitude = SkillConfigManager.getUseSetting(hero, this, "amplitude", 2, false);
-        SlowEffect sEffect = new SlowEffect(this, player, duration, amplitude);
+        BlindEffect sEffect = new BlindEffect(this, player, duration);
         targCT.addEffect(sEffect);
 
         player.getWorld().playSound(player.getLocation(), Sound.ENTITY_PLAYER_HURT, 0.8F, 1.0F);

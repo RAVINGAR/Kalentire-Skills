@@ -51,12 +51,12 @@ public class SkillLeverage extends PassiveSkill {
                 return;
 
             Hero hero = (Hero) event.getDamager();
-            if (!hero.hasEffect(SkillHookshot.ownerEffectName))
+            if (!hero.hasEffect(SkillHook.ownerEffectName))
                 return;
             if (!hero.canUseSkill(skill))
                 return;
 
-            SkillHookshot.HookOwnerEffect ownerEffect = (SkillHookshot.HookOwnerEffect) hero.getEffect(SkillHookshot.ownerEffectName);
+            SkillHook.HookOwnerEffect ownerEffect = (SkillHook.HookOwnerEffect) hero.getEffect(SkillHook.ownerEffectName);
             if (ownerEffect == null)
                 return;
 

@@ -1,4 +1,4 @@
-package com.herocraftonline.heroes.characters.skill.reborn.nethermancer;
+package com.herocraftonline.heroes.characters.skill.reborn.hellspawn;
 
 import com.herocraftonline.heroes.Heroes;
 import com.herocraftonline.heroes.api.SkillResult;
@@ -22,7 +22,6 @@ import org.bukkit.event.entity.EntityDamageEvent.DamageCause;
 import org.bukkit.event.entity.ProjectileHitEvent;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
-import org.bukkit.util.Vector;
 
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -84,8 +83,8 @@ public class SkillDarkBolt extends ActiveSkill {
         config.set(SkillSetting.DURATION.node(), 7000);
         config.set("wither-level", 1);
         config.set("healing-reduction-percent", 0.35);
-        config.set("projectile-velocity", 1.2);
-        config.set("projectile-max-ticks-lived", 15);
+        config.set("projectile-velocity", 1.0);
+        config.set("projectile-max-ticks-lived", 10);
         config.set(SkillSetting.APPLY_TEXT.node(), ChatComponents.GENERIC_SKILL + "%target%'s begins to wither away!");
         config.set(SkillSetting.EXPIRE_TEXT.node(), ChatComponents.GENERIC_SKILL + "%target%'s is no longer withering.");
         return config;

@@ -1,4 +1,4 @@
-package com.herocraftonline.heroes.characters.skill.reborn.nethermancer;
+package com.herocraftonline.heroes.characters.skill.reborn.hellspawn;
 
 import com.herocraftonline.heroes.Heroes;
 import com.herocraftonline.heroes.api.SkillResult;
@@ -72,7 +72,7 @@ public class SkillChaosOrb extends ActiveSkill {
         config.set(SkillSetting.DAMAGE_INCREASE_PER_INTELLECT.node(), 1.25);
         config.set("burn-duration", 2000);
         config.set("burn-damage-multiplier", 2.0);
-        config.set("velocity-multiplier", 0.7);
+        config.set("velocity-multiplier", 0.75);
         config.set("ticks-before-drop", 5);
         config.set("y-value-drop", 0.35);
         return config;
