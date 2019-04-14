@@ -2,7 +2,6 @@ package com.herocraftonline.heroes.characters.skill.reborn.druid;
 
 import com.herocraftonline.heroes.Heroes;
 import com.herocraftonline.heroes.api.SkillResult;
-import com.herocraftonline.heroes.api.events.HeroRegainHealthEvent;
 import com.herocraftonline.heroes.api.events.WeaponDamageEvent;
 import com.herocraftonline.heroes.characters.CharacterTemplate;
 import com.herocraftonline.heroes.characters.Hero;
@@ -25,7 +24,6 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
-import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.util.Vector;
 
@@ -34,22 +32,18 @@ import java.util.List;
 import java.util.logging.Level;
 
 public class SkillMysticWinds extends ActiveSkill {
-
-    private static final Color FIRE_ORANGE = Color.fromRGB(226, 88, 34);
-    private static final Color FIRE_RED = Color.fromRGB(236, 60, 30);
     private static String toggleableEffectName = "FloatingMysticWinds";
 
     public SkillMysticWinds(Heroes plugin) {
         super(plugin, "MysticWinds");
         setDescription("Call $1 mystical gales of wind that will float and remain inactive around the caster for up to $2 seconds. " +
-                "If this ability is cast again within that time, it will unleash each stored missile in a stream. " +
-                "Each missile does $3 damage, increased by $4 for each number of missile you previously landed on the same target. " +
+                "If this ability is cast again within that time, it will unleash each stored stream. " +
+                "Each wind will heal $3 damage, increased by $4 for each number of winds you previously landed on the same target. " +
                 "Total healing for hitting every projectile is $5!");
         setUsage("/skill mysticwinds");
         setArgumentRange(0, 0);
         setIdentifiers("skill mysticwinds");
-        setTypes(SkillType.ABILITY_PROPERTY_MAGICAL, SkillType.SILENCEABLE, SkillType.DAMAGING, SkillType.AGGRESSIVE);
-
+        setTypes(SkillType.ABILITY_PROPERTY_MAGICAL, SkillType.SILENCEABLE, SkillType.HEALING);
         setToggleableEffectName(toggleableEffectName);
         Bukkit.getServer().getPluginManager().registerEvents(new SkillHeroListener(this), plugin);
     }
@@ -185,7 +179,8 @@ public class SkillMysticWinds extends ActiveSkill {
                         SphereEffect missileVisual = pair.getRight();
 
                         Location eyeLocation = hero.getPlayer().getEyeLocation();
-                        missileVisual.setLocation(eyeLocation.clone().add(eyeLocation.getDirection()));
+                        Vector eyeOffset = eyeLocation.getDirection().add(new Vector(0,-1,0));
+                        missileVisual.setLocation(eyeLocation.clone().add(eyeOffset));
                         AetherMissile missile = new AetherMissile(hero, skill, projectileRadius, pair.getLeft(), missileVisual);
                         missile.fireMissile();
                         eyeLocation.getWorld().playSound(eyeLocation, Sound.ENTITY_PLAYER_LEVELUP, 2F, 0.5F);
@@ -254,7 +249,7 @@ public class SkillMysticWinds extends ActiveSkill {
         }
 
         protected boolean onCollideWithEntity(Entity entity) {
-            if (!(entity instanceof LivingEntity) || entity.equals(player) || !damageCheck(player, (LivingEntity) entity))
+            if (!(entity instanceof LivingEntity) || entity.equals(player))
                 return false;
             return true;
         }
@@ -282,8 +277,8 @@ public class SkillMysticWinds extends ActiveSkill {
                 targetCT.addEffect(new MultiMissileHitEffect(skill, effectName, player, 5000));
             }
 
-            addSpellTarget(target, hero);
             targetHero.tryHeal(hero, skill, damage);
+            hero.getPlayer().sendMessage("healing: " + damage);
         }
 
         private String getMultiHitEffectName(Player player) {
