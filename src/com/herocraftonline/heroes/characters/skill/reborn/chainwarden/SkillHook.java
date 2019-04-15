@@ -390,21 +390,22 @@ public class SkillHook extends ActiveSkill {
 
         @Override
         public void tickHero(Hero hero) {
-            tryToLeashOrSnap(hero, hero.getPlayer());
+            Player player = hero.getPlayer();
+            if (player.getWorld() != hookLocation.getWorld()) {
+                hero.removeEffect(this);
+                return;
+            }
+
+            Location playerLoc = player.getLocation();
+            double distanceSquared = playerLoc.distanceSquared(hookLocation);
+            if (distanceSquared > snapDistSquared) {
+                hero.removeEffect(this);
+            }
         }
 
         @Override
         public void tickMonster(Monster monster) {
-            tryToLeashOrSnap(monster, monster.getEntity());
-        }
-
-        private void tryToLeashOrSnap(CharacterTemplate selfCT, LivingEntity self) {
-            Location playerLoc = self.getLocation();
-            Location applierLoc = applier.getLocation();
-            double distanceSquared = playerLoc.distanceSquared(applierLoc);
-            if (distanceSquared > snapDistSquared) {
-                selfCT.removeEffect(this);
-            }
+            // Won't ever happen
         }
     }
 
@@ -504,6 +505,11 @@ public class SkillHook extends ActiveSkill {
         }
 
         private void tryToLeashOrSnap(CharacterTemplate selfCT, LivingEntity self) {
+            if (self.getWorld() != applier.getWorld()) {
+                selfCT.removeEffect(this);
+                return;
+            }
+
             Location playerLoc = self.getLocation();
             Location applierLoc = applier.getLocation();
             double distanceSquared = playerLoc.distanceSquared(applierLoc);

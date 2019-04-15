@@ -114,7 +114,7 @@ public class SkillRisingLance extends ActiveSkill {
 
     private void applyJumpVelocity(LivingEntity target, Vector velocity) {
         target.setVelocity(velocity);
-        target.setFallDistance(target.getFallDistance() - 1);
+        target.setFallDistance(-1F);
     }
 
     private boolean shouldWeaken(Location targetLoc) {

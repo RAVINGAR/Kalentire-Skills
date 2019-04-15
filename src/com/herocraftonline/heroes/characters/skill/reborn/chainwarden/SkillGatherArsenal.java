@@ -156,7 +156,8 @@ public class SkillGatherArsenal extends ActiveSkill {
         @Override
         public void tickHero(Hero hero) {
             regainStamina(hero);
-            this.chainBelt.forceAddChains(this.numChainsPerTick);
+            if (this.chainBelt != null)
+                this.chainBelt.forceAddChains(this.numChainsPerTick);
             applier.getWorld().playSound(applier.getLocation(), Sound.ENTITY_PLAYER_ATTACK_SWEEP, 0.5F, 2.0F);
         }
 

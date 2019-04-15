@@ -149,7 +149,7 @@ public class SkillYank extends TargettedSkill {
         playSound(target.getWorld(), target.getLocation());
 
         if (reduceFallDamage)
-            target.setFallDistance(target.getFallDistance() - 3F);
+            target.setFallDistance(-3F);
     }
 
     private boolean shouldWeaken(Location targetLoc) {
