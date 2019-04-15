@@ -134,8 +134,6 @@ public class SkillChainBelt extends PassiveSkill {
         @Override
         public void removeFromHero(Hero hero) {
             super.removeFromHero(hero);
-
-            hero.getPlayer().sendMessage("Someone removed your chain belt, bitch.");
         }
 
         public int getCurrentChainCount() {
