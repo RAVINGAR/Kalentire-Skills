@@ -21,6 +21,8 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.entity.EntityDamageEvent.DamageCause;
 
+import java.util.logging.Level;
+
 public class SkillTumble extends PassiveSkill {
 
     public SkillTumble(Heroes plugin) {
@@ -72,7 +74,7 @@ public class SkillTumble extends PassiveSkill {
             this.skill = skill;
         }
 
-        @EventHandler(priority = EventPriority.HIGHEST)
+        @EventHandler(priority = EventPriority.LOWEST)
         public void onEntityDamage(final EntityDamageEvent event) {
             if (!(event.getEntity() instanceof Player) || event.getCause() != DamageCause.FALL) {
                 return;
@@ -93,8 +95,10 @@ public class SkillTumble extends PassiveSkill {
 
             fallDistance -= distance;
 
-            // Let's bypass the nocheat issues...
             final double fallDamage = fallDistance;
+
+            Heroes.log(Level.INFO, "Tumble - distance: " + fallDistance + ", Damage: " + fallDamage + "Tumble Distance: " + distance);
+
             NCPUtils.applyExemptions(event.getEntity(), new NCPFunction() {
                 @Override
                 public void execute() {
