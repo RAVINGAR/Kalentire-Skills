@@ -1,12 +1,15 @@
 package com.herocraftonline.heroes.characters.skill.reborn.pathfinder;
 
 import com.herocraftonline.heroes.Heroes;
+import com.herocraftonline.heroes.characters.CharacterTemplate;
 import com.herocraftonline.heroes.characters.Hero;
+import com.herocraftonline.heroes.characters.effects.ExpirableEffect;
 import com.herocraftonline.heroes.characters.skill.*;
 import com.herocraftonline.heroes.util.Util;
 import org.bukkit.Bukkit;
 import org.bukkit.Color;
 import org.bukkit.FireworkEffect;
+import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Arrow;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
@@ -21,7 +24,7 @@ public class SkillSerratedArrows extends PassiveSkill {
 
     public SkillSerratedArrows(Heroes plugin) {
         super(plugin, "SerratedArrows");
-        setDescription("Every %1% arrow you fire will shoot a Serrated Arrow, which will deal bonus damage and pierce through your targets Armor");
+        setDescription("The third arrow hit against the same target within $1s will deal $2 bonus damage and pierce through your targets Armor");
         setUsage("/skill serratedarrows");
         setArgumentRange(0, 0);
         setIdentifiers("skill serratedarrows");
@@ -32,21 +35,32 @@ public class SkillSerratedArrows extends PassiveSkill {
     @Override
     public String getDescription(Hero hero) {
         double damage = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE, 90, false);
-        String formattedDamage = Util.decFormat.format(damage);
+        long duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, 30000, false);
 
-        return getDescription().replace("$2", formattedDamage);
+        return getDescription()
+                .replace("$1", Util.decFormat.format(duration))
+                .replace("$2", Util.decFormat.format(damage));
+    }
+
+    @Override
+    public ConfigurationSection getDefaultConfig() {
+        ConfigurationSection config = super.getDefaultConfig();
+        config.set(SkillSetting.DURATION.node(), 30000);
+        config.set(SkillSetting.DAMAGE.node(), 90);
+        return config;
     }
 
     public class SkillDamageListener implements Listener {
-
         private Skill skill;
-        private int hitCount;
-
         SkillDamageListener(Skill skill) {
             this.skill = skill;
         }
 
         public void onEntityShootBow(EntityShootBowEvent event) {
+        }
+
+        private String getMultiHitEffectName(Player player) {
+            return player.getName() + "-SerratedArrows";
         }
 
         @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
@@ -63,11 +77,37 @@ public class SkillSerratedArrows extends PassiveSkill {
             final Player player = (Player) arrow.getShooter();
             final Hero hero = plugin.getCharacterManager().getHero(player);
             double damage = SkillConfigManager.getUseSetting(hero, this.skill, SkillSetting.DAMAGE, 90, false);
+            long duration = SkillConfigManager.getUseSetting(hero, this.skill, SkillSetting.DURATION, 30000, false);
 
             if (!hero.hasEffect("SerratedArrows")) {
                 return;
             }
 
+
+            LivingEntity target = (LivingEntity) event.getEntity();
+            CharacterTemplate targetCT = plugin.getCharacterManager().getCharacter(target);
+            String effectName = getMultiHitEffectName(player);
+
+            if (targetCT.hasEffect(effectName)) {
+               SerratedArrowsHitEffect serratedEffect = (SerratedArrowsHitEffect) targetCT.getEffect(effectName);
+               serratedEffect.addHit();
+               if (serratedEffect.getHitCount() == 3) {
+                   addSpellTarget(target, hero);
+                   damageEntity(target, player, damage, EntityDamageEvent.DamageCause.MAGIC, true);
+                   VisualEffect.playInstantFirework(FireworkEffect.builder()
+                           .flicker(false)
+                           .trail(false)
+                           .with(FireworkEffect.Type.BURST)
+                           .withColor(Color.WHITE)
+                           .withFade(Color.GREEN)
+                           .build(), player.getLocation().add(0, 2.0, 0));
+               }
+
+            } else {
+                targetCT.addEffect(new SerratedArrowsHitEffect(skill, effectName, player, duration));
+            }
+
+            /*
             if (hero.hasEffect("SerratedArrows")) {
                 hitCount++;
                 player.sendMessage("hit");
@@ -88,6 +128,23 @@ public class SkillSerratedArrows extends PassiveSkill {
                         .build(), player.getLocation().add(0, 2.0, 0));
                 hitCount = 0;
             }
+             */
+        }
+    }
+
+    private class SerratedArrowsHitEffect extends ExpirableEffect {
+        private int hitCount = 1;
+
+        SerratedArrowsHitEffect(Skill skill, String name, Player applier, long duration) {
+            super(skill, name, applier, duration);
+        }
+
+        private int getHitCount() {
+            return this.hitCount;
+        }
+
+        private void addHit() {
+            this.hitCount++;
         }
     }
 }
