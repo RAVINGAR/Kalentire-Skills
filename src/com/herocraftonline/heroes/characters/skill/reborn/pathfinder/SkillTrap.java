@@ -24,7 +24,7 @@ public class SkillTrap extends SkillBaseGroundEffect {
 
     public SkillTrap(Heroes plugin) {
         super(plugin, "Trap");
-        setDescription("You set a trap underneth you that lasts for $1s. The first player that sets of the tarp will be rooted for $2s");
+        setDescription("You set a trap underneath that lasts for $1s. The first player who sets of the trap will be rooted for $2s");
         setUsage("/skill trap");
         setIdentifiers("skill trap");
         setArgumentRange(0, 0);
