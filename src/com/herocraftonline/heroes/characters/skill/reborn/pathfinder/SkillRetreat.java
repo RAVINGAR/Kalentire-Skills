@@ -235,12 +235,10 @@ public class SkillRetreat extends ActiveSkill {
 
         public void particleEffect(LivingEntity target) {
 
+            /*
             EffectManager em = new EffectManager(plugin);
             Effect visualEffect = new Effect(em) {
-                Particle particle = Particle.FIREWORKS_SPARK;
-
-
-
+                Particle particle = Particle.CRIT;
                 int radius = 2;
 
                 @Override
@@ -254,17 +252,30 @@ public class SkillRetreat extends ActiveSkill {
                     }
                 }
             };
+            */
 
+            Location location = target.getEyeLocation().clone();
+            VisualEffect.playInstantFirework(FireworkEffect.builder()
+                    .flicker(true)
+                    .trail(false)
+                    .with(FireworkEffect.Type.STAR)
+                    .withColor(Color.WHITE)
+                    .withFade(Color.YELLOW)
+                    .build(), location.add(0, 2.0, 0));
+
+            /*
             visualEffect.type = de.slikey.effectlib.EffectType.REPEATING;
+            visualEffect.particleSize = 3;
+            visualEffect.color = Color.YELLOW;
             visualEffect.period = 10;
             visualEffect.iterations = 8;
 
-            Location location = target.getLocation().clone();
             visualEffect.asynchronous = true;
             visualEffect.setLocation(location);
 
             visualEffect.start();
             em.disposeOnTermination();
+            */
 
             target.getWorld().playSound(location, Sound.ENTITY_GENERIC_BURN, 0.15f, 0.0001f);
         }
