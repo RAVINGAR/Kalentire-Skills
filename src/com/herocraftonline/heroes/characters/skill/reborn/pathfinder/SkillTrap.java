@@ -33,6 +33,7 @@ public class SkillTrap extends SkillBaseGroundEffect {
 
     @Override
     public String getDescription(Hero hero) {
+        long warmUp = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DELAY, 5000, false);
         long duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, 5000, false);
         long rootDuration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.PERIOD, 500, false);
         return getDescription()
@@ -46,13 +47,13 @@ public class SkillTrap extends SkillBaseGroundEffect {
 
         node.set(SkillSetting.RADIUS.node(), 3d);
         node.set(HEIGHT_NODE, 2d);
+        node.set(SkillSetting.DELAY.node(), 5000);
         node.set(SkillSetting.DURATION.node(), 5000);
         node.set(SkillSetting.PERIOD.node(), 500);
         return node;
     }
 
-    @Override
-    public SkillResult use(Hero hero, String[] strings) {
+    @Override public SkillResult use(Hero hero, String[] strings) {
         final Player player = hero.getPlayer();
         Location playerLoc = player.getLocation();
 
@@ -75,7 +76,7 @@ public class SkillTrap extends SkillBaseGroundEffect {
             public void groundEffectTickAction(Hero hero, AreaGroundEffectEffect effect) {
                 EffectManager em = new EffectManager(plugin);
                 Effect e = new Effect(em) {
-                    int particlesPerRadius = 1;
+                    int particlesPerRadius = 3;
                     Particle particle = Particle.SWEEP_ATTACK;
 
                     @Override
@@ -92,7 +93,7 @@ public class SkillTrap extends SkillBaseGroundEffect {
 
                 Location location = effect.getLocation().clone();
                 e.setLocation(location);
-                location.getWorld().playSound(location, Sound.BLOCK_PORTAL_AMBIENT, 1F, 1F);
+                location.getWorld().playSound(location, Sound.BLOCK_PORTAL_AMBIENT, 0.5F, 0.5F);
                 e.asynchronous = true;
                 e.iterations = 1;
                 e.type = EffectType.INSTANT;
