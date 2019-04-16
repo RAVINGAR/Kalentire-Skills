@@ -24,7 +24,7 @@ public class SkillTrap extends SkillBaseGroundEffect {
 
     public SkillTrap(Heroes plugin) {
         super(plugin, "Trap");
-        setDescription("You check for something every $2 for $3");
+        setDescription("You set a trap underneth you that lasts for $1s. The first player that sets of the tarp will be rooted for $2s");
         setUsage("/skill trap");
         setIdentifiers("skill trap");
         setArgumentRange(0, 0);
@@ -34,10 +34,10 @@ public class SkillTrap extends SkillBaseGroundEffect {
     @Override
     public String getDescription(Hero hero) {
         long duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, 5000, false);
-        final long period = SkillConfigManager.getUseSetting(hero, this, SkillSetting.PERIOD, 500, false);
+        long rootDuration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.PERIOD, 500, false);
         return getDescription()
-                .replace("$2", Util.decFormat.format((double) period / 1000))
-                .replace("$3", Util.decFormat.format((double) duration / 1000));
+                .replace("$2", Util.decFormat.format((double) rootDuration / 1000))
+                .replace("$1", Util.decFormat.format((double) duration / 1000));
     }
 
     @Override
@@ -57,7 +57,6 @@ public class SkillTrap extends SkillBaseGroundEffect {
         Location playerLoc = player.getLocation();
 
         // place on ground only
-        Material standingBlockType = playerLoc.getBlock().getType();
         Material belowBlockType = playerLoc.getBlock().getRelative(BlockFace.DOWN).getType();
         if (!belowBlockType.isSolid()) {
             player.sendMessage("You must be standing on something hard to place the trap");
@@ -76,13 +75,11 @@ public class SkillTrap extends SkillBaseGroundEffect {
             public void groundEffectTickAction(Hero hero, AreaGroundEffectEffect effect) {
                 EffectManager em = new EffectManager(plugin);
                 Effect e = new Effect(em) {
-
-                    int particlesPerRadius = 3;
-                    Particle particle = Particle.REDSTONE;
+                    int particlesPerRadius = 1;
+                    Particle particle = Particle.SWEEP_ATTACK;
 
                     @Override
                     public void onRun() {
-
                         double inc = 1 / (particlesPerRadius * radius);
 
                         for (double angle = 0; angle <= 2 * Math.PI; angle += inc) {
@@ -90,41 +87,12 @@ public class SkillTrap extends SkillBaseGroundEffect {
                             display(particle, getLocation().add(v));
                             getLocation().subtract(v);
                         }
-
-                        Location originalLocation = getLocation();
-                        Color originalColor = color;
-                        color = Color.BLUE;
-
-                        int particles = (int) (2 * radius * particlesPerRadius);
-                        Vector crossXLine = new Vector(-radius * 2, 0, 0).multiply(1d / particles);
-                        Vector crossZLine = new Vector(0, 0, -radius * 2).multiply(1d / particles);
-
-                        setLocation(new Vector(radius, 0, radius / 10).toLocation(getLocation().getWorld()).add(originalLocation));
-                        for (int l = 0; l < particles; l++, getLocation().add(crossXLine)) {
-                            display(particle, getLocation());
-                        }
-
-                        setLocation(new Vector(radius / 10, 0, radius).toLocation(getLocation().getWorld()).add(originalLocation));
-                        for (int l = 0; l < particles; l++, getLocation().add(crossZLine)) {
-                            display(particle, getLocation());
-                        }
-
-                        setLocation(new Vector(radius, 0, radius / -10).toLocation(getLocation().getWorld()).add(originalLocation));
-                        for (int l = 0; l < particles; l++, getLocation().add(crossXLine)) {
-                            display(particle, getLocation());
-                        }
-
-                        setLocation(new Vector(radius / -10, 0, radius).toLocation(getLocation().getWorld()).add(originalLocation));
-                        for (int l = 0; l < particles; l++, getLocation().add(crossZLine)) {
-                            display(particle, getLocation());
-                        }
-
-                        setLocation(originalLocation);
-                        color = originalColor;
                     }
                 };
 
-                e.setLocation(effect.getLocation().clone());
+                Location location = effect.getLocation().clone();
+                e.setLocation(location);
+                location.getWorld().playSound(location, Sound.BLOCK_PORTAL_AMBIENT, 1F, 1F);
                 e.asynchronous = true;
                 e.iterations = 1;
                 e.type = EffectType.INSTANT;
@@ -145,6 +113,9 @@ public class SkillTrap extends SkillBaseGroundEffect {
                 final RootEffect effect = new RootEffect(skill, player, 100, 5000);
                 targetCT.addEffect(effect);
 
+                Location targetLocation = target.getLocation();
+                targetLocation.getWorld().playSound(targetLocation, Sound.BLOCK_WOODEN_PRESSURE_PLATE_CLICK_ON, 0.8F, 0.5F);
+                targetLocation.getWorld().playSound(targetLocation, Sound.BLOCK_WOODEN_PRESSURE_PLATE_CLICK_OFF, 0.8F, 0.5F);
                 hero.removeEffect(hero.getEffect(skill.getName()));
             }
         });
