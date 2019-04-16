@@ -100,7 +100,7 @@ public class SkillSerratedArrows extends PassiveSkill {
                            .with(FireworkEffect.Type.BURST)
                            .withColor(Color.WHITE)
                            .withFade(Color.GREEN)
-                           .build(), player.getLocation().add(0, 2.0, 0));
+                           .build(), target.getLocation().add(0, 1.0, 0));
                }
 
             } else {
@@ -145,6 +145,9 @@ public class SkillSerratedArrows extends PassiveSkill {
 
         private void addHit() {
             this.hitCount++;
+            //Currently doesn't reset properly
+            this.setDuration(getDuration());
+
         }
     }
 }

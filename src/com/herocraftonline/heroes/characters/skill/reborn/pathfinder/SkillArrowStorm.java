@@ -13,6 +13,7 @@ import com.herocraftonline.heroes.chat.ChatComponents;
 import com.herocraftonline.heroes.util.Util;
 import de.slikey.effectlib.Effect;
 import de.slikey.effectlib.EffectManager;
+import de.slikey.effectlib.effect.CloudEffect;
 import de.slikey.effectlib.util.RandomUtils;
 import org.bukkit.*;
 import org.bukkit.block.Block;
@@ -44,11 +45,11 @@ public class SkillArrowStorm extends ActiveSkill {
 
     public SkillArrowStorm(Heroes plugin) {
         super(plugin, "ArrowStorm");
-        setDescription("Summon a powerful ArrowStorm at your target location. The arrowstorm rains down several ice bolts at the target location, each dealing $1 damage and slowing any targets hit for $2 second(s).");
+        setDescription("Summon a powerful storm of arrows at your target location. Arrows storm down from the sky, dealing $1 damage and slowing any targets hit for $2 seconds.");
         setUsage("/skill ArrowStorm");
         setArgumentRange(0, 0);
         setIdentifiers("skill ArrowStorm");
-        setTypes(SkillType.ABILITY_PROPERTY_MAGICAL, SkillType.ABILITY_PROPERTY_ICE, SkillType.SILENCEABLE, SkillType.DAMAGING, SkillType.AREA_OF_EFFECT, SkillType.AGGRESSIVE);
+        setTypes(SkillType.ABILITY_PROPERTY_MAGICAL, SkillType.ABILITY_PROPERTY_PROJECTILE, SkillType.SILENCEABLE, SkillType.DAMAGING, SkillType.AREA_OF_EFFECT, SkillType.AGGRESSIVE);
 
         Bukkit.getServer().getPluginManager().registerEvents(new SkillEntityListener(this), plugin);
 
@@ -57,9 +58,6 @@ public class SkillArrowStorm extends ActiveSkill {
     @Override
     public String getDescription(Hero hero) {
         double damage = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE, 50, false);
-        double damageIncrease = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE_INCREASE_PER_DEXTERITY, 1.0, false);
-        damage += damageIncrease * hero.getAttributeValue(AttributeType.DEXTERITY);
-
         long duration = SkillConfigManager.getUseSetting(hero, this, "slow-duration", 2000, false);
 
         String formattedDuration = Util.decFormat.format(duration / 1000.0);
@@ -70,23 +68,22 @@ public class SkillArrowStorm extends ActiveSkill {
 
     @Override
     public ConfigurationSection getDefaultConfig() {
-        ConfigurationSection config = super.getDefaultConfig();
-        config.set(SkillSetting.MAX_DISTANCE.node(), 12);
-        config.set(SkillSetting.MAX_DISTANCE_INCREASE_PER_DEXTERITY.node(), 0.0);
-        config.set(SkillSetting.RADIUS.node(), 5);
-        config.set(SkillSetting.DAMAGE.node(), 15);
-        config.set(SkillSetting.DAMAGE_INCREASE_PER_DEXTERITY.node(), 0.5);
-        config.set("max-storm-height", 4);
-        config.set("downward-velocity", 0.8);
-        config.set("velocity-deviation", 0.5);
-        config.set("delay-between-firing", 0.1);
-        config.set("storm-arrows-launched", 4);
-        config.set("storm-arrows-launched-per-intellect", 0.5);
-        config.set("slow duration", 1000);
-        config.set("slow-multiplier", 1);
-        config.set(SkillSetting.APPLY_TEXT.node(), "");
-        config.set(SkillSetting.EXPIRE_TEXT.node(), "");
-        return config;
+        ConfigurationSection node = super.getDefaultConfig();
+
+        node.set(SkillSetting.MAX_DISTANCE.node(), 12);
+        node.set(SkillSetting.RADIUS.node(), 5);
+        node.set(SkillSetting.DAMAGE.node(), 15);
+        node.set("max-storm-height", 4);
+        node.set("downward-velocity", 0.8);
+        node.set("velocity-deviation", 0.5);
+        node.set("delay-between-firing", 0.1);
+        node.set("storm-arrows-launched", 4);
+        node.set("slow duration", 1000);
+        node.set("slow-multiplier", 1);
+        node.set(SkillSetting.APPLY_TEXT.node(), "");
+        node.set(SkillSetting.EXPIRE_TEXT.node(), "");
+
+        return node;
     }
 
     @Override
@@ -104,8 +101,7 @@ public class SkillArrowStorm extends ActiveSkill {
         final int radius = SkillConfigManager.getUseSetting(hero, this, SkillSetting.RADIUS, 10, false);
 
         int numstormArrows = SkillConfigManager.getUseSetting(hero, this, "storm-arrows-launched", 12, false);
-        double numstormArrowsIncrease = SkillConfigManager.getUseSetting(hero, this, "storm-arrows-launched-per-intellect", 0.325, false);
-        numstormArrows += (int) (numstormArrowsIncrease * hero.getAttributeValue(AttributeType.DEXTERITY));
+
 
         double delayBetween = SkillConfigManager.getUseSetting(hero, this, "delay-between-firing", 0.2, false);
         final double velocityDeviation = SkillConfigManager.getUseSetting(hero, this, "velocity-deviation", 0.2, false);
@@ -114,8 +110,6 @@ public class SkillArrowStorm extends ActiveSkill {
         int stormHeight = SkillConfigManager.getUseSetting(hero, this, "max-storm-height", 10, false);
 
         int maxDist = SkillConfigManager.getUseSetting(hero, this, SkillSetting.MAX_DISTANCE, 12, false);
-        double maxDistIncrease = SkillConfigManager.getUseSetting(hero, this, SkillSetting.MAX_DISTANCE_INCREASE_PER_DEXTERITY, 0.2, false);
-        maxDist += (int) (hero.getAttributeValue(AttributeType.DEXTERITY) * maxDistIncrease);
 
         Block tBlock = player.getTargetBlock((HashSet<Material>) null, maxDist);
         // Block tBlock = player.getTargetBlock(null, maxDist);
@@ -159,7 +153,7 @@ public class SkillArrowStorm extends ActiveSkill {
 
                     Arrow stormArrow = world.spawn(fLoc, Arrow.class);
                     //stormArrow.getWorld().spigot().playEffect(stormArrow.getLocation(), Effect.EXPLOSION_LARGE, 0, 0, 0.4F, 0.4F, 0.4F, 0.0F, 2, 32);
-                    //stormArrow.getWorld().spawnParticle(Particle.FIREWORKS_SPARK, stormArrow.getLocation(), 2, 0.4, 0.4, 0.4, 0);
+                    stormArrow.getWorld().spawnParticle(Particle.FIREWORKS_SPARK, stormArrow.getLocation(), 2, 0.4, 0.4, 0.4, 0);
 
                     cloudEffect(stormArrow.getLocation());
                     stormArrow.setShooter(player);
@@ -241,7 +235,7 @@ public class SkillArrowStorm extends ActiveSkill {
 
             EntityDamageByEntityEvent subEvent = (EntityDamageByEntityEvent) event;
             Entity projectile = subEvent.getDamager();
-            if (!(projectile instanceof Snowball) || !stormArrows.containsKey(projectile)) {
+            if (!(projectile instanceof Arrow) || !stormArrows.containsKey(projectile)) {
                 return;
             }
             event.setCancelled(true);
@@ -268,17 +262,17 @@ public class SkillArrowStorm extends ActiveSkill {
                 event.getEntity().setFireTicks(0);
 
                 double damage = SkillConfigManager.getUseSetting(hero, skill, SkillSetting.DAMAGE, 50, false);
-                double damageIncrease = SkillConfigManager.getUseSetting(hero, skill, SkillSetting.DAMAGE_INCREASE_PER_DEXTERITY, 1.0, false);
-                damage += (damageIncrease * hero.getAttributeValue(AttributeType.DEXTERITY));
+                double damageIncrease = SkillConfigManager.getUseSetting(hero, skill, SkillSetting.DAMAGE_INCREASE_PER_INTELLECT, 1.0, false);
+                damage += (damageIncrease * hero.getAttributeValue(AttributeType.INTELLECT));
 
                 long duration = SkillConfigManager.getUseSetting(hero, skill, "slow-duration", 2000, false);
                 int amplifier = SkillConfigManager.getUseSetting(hero, skill, "slow-multiplier", 1, false);
 
-                SlowEffect iceSlowEffect = new SlowEffect(skill, (Player) dmger, duration, amplifier, applyText, expireText);
-                iceSlowEffect.types.add(EffectType.DISPELLABLE);
-                iceSlowEffect.types.add(EffectType.ICE);
+                SlowEffect arrowSlowEffect = new SlowEffect(skill, (Player) dmger, duration, amplifier, applyText, expireText);
+                arrowSlowEffect.types.add(EffectType.DISPELLABLE);
+                arrowSlowEffect.types.add(EffectType.AREA_OF_EFFECT);
 
-                targetCT.addEffect(iceSlowEffect);
+                targetCT.addEffect(arrowSlowEffect);
                 targetCT.addEffect(new ExpirableEffect(skill, "ArrowStormAntiMultiEffect", (Player) dmger, 500));
 
                 //addSpellTarget((LivingEntity) event.getEntity(), hero);

@@ -7,8 +7,10 @@ import com.herocraftonline.heroes.characters.Monster;
 import com.herocraftonline.heroes.characters.effects.EffectType;
 import com.herocraftonline.heroes.characters.effects.ExpirableEffect;
 import com.herocraftonline.heroes.characters.effects.PeriodicExpirableEffect;
+import com.herocraftonline.heroes.characters.effects.common.InvulnerabilityEffect;
 import com.herocraftonline.heroes.characters.skill.ActiveSkill;
 import com.herocraftonline.heroes.characters.skill.Skill;
+import com.herocraftonline.heroes.characters.skill.SkillConfigManager;
 import com.herocraftonline.heroes.characters.skill.SkillSetting;
 import org.bukkit.Location;
 import org.bukkit.World;
@@ -25,11 +27,15 @@ public class SkillGiftOfEir extends ActiveSkill {
 
     @Override
     public SkillResult use(Hero hero, String[] strings) {
-        return null;
+        Player player = hero.getPlayer();
+        long duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, 5000, false);
+        hero.addEffect(new InvulnStationaryEffect(this, player, duration));
+        return SkillResult.NORMAL;
     }
 
     @Override
     public String getDescription(Hero hero) {
+       long duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, 5000, false);
         return null;
     }
 
@@ -65,9 +71,6 @@ public class SkillGiftOfEir extends ActiveSkill {
             types.add(EffectType.AREA_OF_EFFECT);
             //Maybe
             types.add(EffectType.MANA_REGEN_INCREASING);
-
-
-
         }
 
         @Override
@@ -84,6 +87,31 @@ public class SkillGiftOfEir extends ActiveSkill {
         public void tickHero(Hero hero) {
 
         }
+    }
+
+    public class InvulnStationaryEffect extends ExpirableEffect {
+
+        public InvulnStationaryEffect(Skill skill, Player applier, long duration) {
+            super(skill, "InvulnStationaryEffect", applier, duration);
+            types.add(EffectType.DISABLE);
+            types.add(EffectType.INVULNERABILITY);
+            types.add(EffectType.UNTARGETABLE);
+            types.add(EffectType.UNBREAKABLE);
+        }
+
+
+
+        public void applyToHero(Hero hero) {
+            super.applyToHero(hero);
+            InvulnerabilityEffect iEffect = new InvulnerabilityEffect(this, hero, duration);
+
+        }
+
+        public void removeFromHero(Hero hero) {
+            super.removeFromHero(hero);
+        }
+
+
     }
 }
 
