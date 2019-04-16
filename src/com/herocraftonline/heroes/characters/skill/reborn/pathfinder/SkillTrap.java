@@ -77,7 +77,7 @@ public class SkillTrap extends SkillBaseGroundEffect {
                 EffectManager em = new EffectManager(plugin);
                 Effect e = new Effect(em) {
                     int particlesPerRadius = 3;
-                    Particle particle = Particle.SWEEP_ATTACK;
+                    Particle particle = Particle.SMOKE_LARGE;
 
                     @Override
                     public void onRun() {
@@ -93,7 +93,6 @@ public class SkillTrap extends SkillBaseGroundEffect {
 
                 Location location = effect.getLocation().clone();
                 e.setLocation(location);
-                location.getWorld().playSound(location, Sound.BLOCK_PORTAL_AMBIENT, 0.5F, 0.5F);
                 e.asynchronous = true;
                 e.iterations = 1;
                 e.type = EffectType.INSTANT;
