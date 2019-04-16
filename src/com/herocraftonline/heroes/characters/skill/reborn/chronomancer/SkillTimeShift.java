@@ -101,14 +101,7 @@ public class SkillTimeShift extends TargettedSkill {
     }
 
     private SkillResult deceleratedShift(Player player, Hero hero, LivingEntity target, CharacterTemplate targetCT, int duration, int maxStacks) {
-        if (!damageCheck(player, target))
-            return SkillResult.INVALID_TARGET;
-
         broadcastExecuteText(hero, target);
-
-        double damage = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE, 20.0, false);
-        addSpellTarget(target, hero);
-        damageEntity(target, player, damage, EntityDamageEvent.DamageCause.MAGIC, false);
 
         double speedDecrease = SkillConfigManager.getUseSetting(hero, this, "enemy-percent-speed-decrease", 0.1, false);
         boolean addedNewStack = targetCT.addEffectStack(
@@ -119,7 +112,18 @@ public class SkillTimeShift extends TargettedSkill {
         if (!addedNewStack) {
             player.sendMessage(ChatColor.WHITE + "Your target is already shifted as far as they can go!");
             return SkillResult.INVALID_TARGET_NO_MSG;
+        } else {
+            DeceleratedShiftedTime effect = (DeceleratedShiftedTime) targetCT.getEffect(decelEffectName);
+            int stackCount = effect.getStackCount();
+            player.sendMessage(ChatComponents.GENERIC_SKILL + ChatColor.GOLD + targetCT.getName() + "now has shifted " + stackCount + " times!");
         }
+
+        if (!damageCheck(player, target))
+            return SkillResult.INVALID_TARGET;
+
+        double damage = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE, 20.0, false);
+        addSpellTarget(target, hero);
+        damageEntity(target, player, damage, EntityDamageEvent.DamageCause.MAGIC, false);
 
         World world = target.getWorld();
         Location location = target.getLocation();
@@ -144,6 +148,10 @@ public class SkillTimeShift extends TargettedSkill {
         if (!addedNewStack) {
             player.sendMessage(ChatColor.WHITE + "Your target is already shifted as far as they can go!");
             return SkillResult.INVALID_TARGET_NO_MSG;
+        } else {
+            AcceleratedShiftedTime effect = (AcceleratedShiftedTime) targetCT.getEffect(accelEffectName);
+            int stackCount = effect.getStackCount();
+            player.sendMessage(ChatComponents.GENERIC_SKILL + ChatColor.GOLD + targetCT.getName() + " now has shifted " + stackCount + " times!");
         }
 
         World world = target.getWorld();
