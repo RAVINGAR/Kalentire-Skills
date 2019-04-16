@@ -1,4 +1,4 @@
-package com.herocraftonline.heroes.characters.skill.reborn.shared;
+package com.herocraftonline.heroes.characters.skill.reborn.pyromancer;
 
 import com.herocraftonline.heroes.Heroes;
 import com.herocraftonline.heroes.api.SkillResult;

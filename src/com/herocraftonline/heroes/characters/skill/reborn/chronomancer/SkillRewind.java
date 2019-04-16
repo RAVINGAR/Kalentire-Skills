@@ -67,7 +67,13 @@ public class SkillRewind extends ActiveSkill implements Passive {
 
         SavedPlayerState rewoundState = effect.stateQueue.peek();
         if (rewoundState == null) {
-            return SkillResult.INVALID_TARGET;
+            player.sendMessage("You haven't recorded any time yet!");
+            return SkillResult.INVALID_TARGET_NO_MSG;
+        }
+
+        if (!rewoundState.previousLocation.getWorld().equals(player.getWorld())) {
+            player.sendMessage("Due to a flux in your space time you are unable to rewind to your previous state!");
+            return SkillResult.INVALID_TARGET_NO_MSG;
         }
 
         int healthCost = SkillConfigManager.getUseSetting(hero, this, SkillSetting.HEALTH_COST, 0, false);

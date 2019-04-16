@@ -28,8 +28,8 @@ public class SkillChainBelt extends PassiveSkill {
     public SkillChainBelt(Heroes plugin) {
         super(plugin, "ChainBelt");
         setDescription("You can hold your hooks and chains on your belt! Can hold up to $1 chains at once. " +
-                "You ready a new chain once every $2 secoonds. " +
-                "If you somehow acquire more chains than you're able to hold, you will lose $3 chain(s) ever $1 seconds instead.");
+                "You ready a new chain once every $2 second(s). " +
+                "If you somehow acquire more chains than you're able to hold, you will lose $3 chain(s) ever $1 second(s) instead.");
         setTypes(SkillType.ABILITY_PROPERTY_PHYSICAL);
     }
 

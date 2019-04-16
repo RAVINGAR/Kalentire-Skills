@@ -90,11 +90,11 @@ public class SkillSummonEnderCrystal extends TargettedLocationSkill {
         int heightWithoutBaseBlock = height - 1;
 
         Block targetBlock = targetLocation.getBlock();
-        if (targetLocation.getBlock().getType() != Material.AIR) {
+        if (!(targetLocation.getBlock().isEmpty())) {
             targetBlock = targetBlock.getRelative(BlockFace.UP);
         }
 
-        SkillConstructionData constructionData = getConstructionData(player, targetLocation.getBlock(), height);
+        SkillConstructionData constructionData = getConstructionData(player, targetBlock, heightWithoutBaseBlock);
         if (constructionData == null)
             return invalidTargetWithMessage(player);
 

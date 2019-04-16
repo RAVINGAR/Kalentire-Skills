@@ -24,6 +24,7 @@ import org.bukkit.util.Vector;
 
 public class SkillImpale extends TargettedSkill {
 
+    private String stunApplyText;
     private String applyText;
     private String expireText;
 
@@ -56,11 +57,15 @@ public class SkillImpale extends TargettedSkill {
     public void init() {
         super.init();
 
+        stunApplyText = SkillConfigManager.getRaw(this, "stun-apply-text", ChatComponents.GENERIC_SKILL + "%target% has been pinned by %hero%'s impale!")
+                .replace("%target%", "$1")
+                .replace("%hero%", "$2");
+
         applyText = SkillConfigManager.getRaw(this, SkillSetting.APPLY_TEXT, ChatComponents.GENERIC_SKILL + "%target% has been slowed by %hero%'s impale!")
                 .replace("%target%", "$1")
                 .replace("%hero%", "$2");
 
-        expireText = SkillConfigManager.getRaw(this, SkillSetting.EXPIRE_TEXT, ChatComponents.GENERIC_SKILL + "%target% is no longer slowed!")
+        expireText = SkillConfigManager.getRaw(this, SkillSetting.EXPIRE_TEXT, ChatComponents.GENERIC_SKILL + "%target% is no longer impaled!")
                 .replace("%target%", "$1");
     }
 
@@ -74,8 +79,9 @@ public class SkillImpale extends TargettedSkill {
         config.set(SkillSetting.DURATION.node(), 3000);
         config.set("pinned-stun-duration", 2000);
         config.set("slow-amplitude", 2);
+        config.set("stun-apply-text", ChatComponents.GENERIC_SKILL + "%target% has been pinned by %hero%'s impale!");
         config.set(SkillSetting.APPLY_TEXT.node(), ChatComponents.GENERIC_SKILL + "%target% has been slowed by %hero%'s impale!");
-        config.set(SkillSetting.EXPIRE_TEXT.node(), ChatComponents.GENERIC_SKILL + "%target% is no longer slowed!");
+        config.set(SkillSetting.EXPIRE_TEXT.node(), ChatComponents.GENERIC_SKILL + "%target% is no longer impaled!");
         return config;
     }
 
@@ -93,19 +99,21 @@ public class SkillImpale extends TargettedSkill {
 
         // take current player direction vector less a bit
         Vector playerDirection = player.getLocation().getDirection().normalize().multiply(0.9);
-        // move target 1 block away from direction of player
-        Location behindTargetLocation = target.getEyeLocation().add(playerDirection);
+
+        Location behindLoc = target.getEyeLocation().add(playerDirection);
+//        Location behindDoubleLoc = target.getEyeLocation().add(playerDirection.multiply(2));
+
         // get block
-        Material blockBehindTarget = behindTargetLocation.getBlock().getRelative(BlockFace.SELF).getType();
+        Material blockBehindTarget = behindLoc.getBlock().getType();
+//        Material blockDoubleBehindTarget = behindDoubleLoc.getBlock().getType();
 
         long duration;
         int amplitude;
-        if (blockBehindTarget.isSolid() && !Util.transparentBlocks.contains(blockBehindTarget)) {
+        if ((blockBehindTarget.isSolid() && !Util.transparentBlocks.contains(blockBehindTarget))) {
             // Impaled, let's stun them!
-            target.sendMessage("    " + ChatComponents.GENERIC_SKILL + hero.getPlayer().getDisplayName() + "has pinned you with their imapale!");
             duration = SkillConfigManager.getUseSetting(hero, this, "pinned-stun-duration", 2000, false);
 
-            StunEffect effect = new StunEffect(this, player, duration);
+            StunEffect effect = new StunEffect(this, player, duration, stunApplyText, expireText);
             plugin.getCharacterManager().getCharacter(target).addEffect(effect);
         } else {
             // Add the slow effect

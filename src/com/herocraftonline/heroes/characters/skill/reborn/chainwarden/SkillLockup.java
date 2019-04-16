@@ -9,6 +9,7 @@ import com.herocraftonline.heroes.characters.skill.SkillConfigManager;
 import com.herocraftonline.heroes.characters.skill.SkillSetting;
 import com.herocraftonline.heroes.characters.skill.SkillType;
 import com.herocraftonline.heroes.chat.ChatComponents;
+import com.herocraftonline.heroes.util.Util;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
@@ -22,8 +23,8 @@ import java.util.logging.Level;
 public class SkillLockup extends ActiveSkill {
     public SkillLockup(Heroes plugin) {
         super(plugin, "Lockup");
-        setDescription("You launch a hook for every chain in your chain belt to all nearby targets, instantly latching onto them and dealing $1 physical damage. " +
-                "Due to the hasty nature of deploying your entire arsenal, these chains are not attached as firmly as normal, and only last for $2 seconds. " +
+        setDescription("You launch a hook for every chain in your chain belt to all targets within $1 blocks, instantly latching onto them and dealing $2 physical damage. " +
+                "Due to the hasty nature of deploying your entire arsenal, these chains are not attached as firmly as normal, and only last for $3 seconds. " +
                 "You will also lose your grip on them more easily. Enemies will be hit first, followed by allies if you have any remaining chains left. " +
                 "Allies will not be dealt damage.");
         setUsage("/skill lockup");
@@ -33,9 +34,14 @@ public class SkillLockup extends ActiveSkill {
     }
 
     public String getDescription(Hero hero) {
+        double damage = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE, 35.0, false);
+        double radius = SkillConfigManager.getUseSetting(hero, this, SkillSetting.RADIUS, 12.0, false);
+        long duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, 5000, false);
+
         return super.getDescription()
-                .replace("$1", "FIX THIS")
-                .replace("$2", "FIX THIS");
+                .replace("$2", Util.decFormat.format(radius))
+                .replace("$2", Util.decFormat.format(damage))
+                .replace("$3", Util.decFormat.format(duration / 1000.0));
     }
 
     @Override

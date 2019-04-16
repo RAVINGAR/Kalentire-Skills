@@ -33,7 +33,7 @@ public class SkillSpear extends ActiveSkill {
         setUsage("/skill spear");
         setArgumentRange(0, 0);
         setIdentifiers("skill spear");
-        setTypes(SkillType.ABILITY_PROPERTY_PHYSICAL, SkillType.DAMAGING, SkillType.AGGRESSIVE);
+        setTypes(SkillType.ABILITY_PROPERTY_PHYSICAL, SkillType.DAMAGING, SkillType.AGGRESSIVE, SkillType.INTERRUPTING);
     }
 
     @Override
@@ -55,8 +55,9 @@ public class SkillSpear extends ActiveSkill {
         config.set("projectile-gravity", 2.5);
         config.set("projectile-max-ticks-lived", 12);
         config.set("vertical-power", 0.4);
-        config.set("horizontal-power", 1.5);
+        config.set("horizontal-power-multiplier", 1.5);
         config.set("horizontal-power-increase-per-strength", 0.0);
+        config.set("pull-delay-ticks", 4);
         config.set("ncp-exemption-duration", 0);
         return config;
     }
@@ -125,28 +126,31 @@ public class SkillSpear extends ActiveSkill {
         Location playerLoc = player.getLocation();
         Location targetLoc = target.getLocation();
 
-        double vPower = SkillConfigManager.getUseSetting(hero, this, "vertical-power", 0.4, false);
-        double hPower = SkillConfigManager.getUseSetting(hero, this, "horizontal-power", 0.5, false);
-        double hPowerIncrease = SkillConfigManager.getUseSetting(hero, this, "horizontal-power-increase-per-strength", 0.0, false);
-        hPower+= hPowerIncrease * hero.getAttributeValue(AttributeType.STRENGTH);
-
-        Vector locDiff = playerLoc.toVector().subtract(targetLoc.toVector()).normalize();
+        Vector locDiff = playerLoc.toVector().subtract(targetLoc.toVector());
         if (shouldWeaken) {
             locDiff.multiply(0.75);
         }
+
+        double vPower = SkillConfigManager.getUseSetting(hero, this, "vertical-power", 0.4, false);
         pushTargetUpwards(hero, target, vPower);
-        pullTarget(hero, target, vPower, hPower, locDiff.multiply(0.5));
+        pullTarget(hero, target, vPower, locDiff);
         playLingeringEffect(player, target);
     }
 
-    private void pullTarget(Hero hero, LivingEntity target, double vPower, double hPower, Vector locDiff) {
-        double delay = SkillConfigManager.getUseSetting(hero, this, "pull-delay", 0.2, false);
+    private void pullTarget(Hero hero, LivingEntity target, double vPower, Vector locDiff) {
+        double delay = SkillConfigManager.getUseSetting(hero, this, "pull-delay-ticks", 4, false);
+
+        double hPower = SkillConfigManager.getUseSetting(hero, this, "horizontal-power-multiplier", 0.5, false);
+        double hPowerIncrease = SkillConfigManager.getUseSetting(hero, this, "horizontal-power-increase-per-strength", 0.0, false);
+        hPower+= hPowerIncrease * hero.getAttributeValue(AttributeType.STRENGTH);
+
+        final double finalHPower = hPower;
         Bukkit.getScheduler().scheduleSyncDelayedTask(plugin, new Runnable() {
             public void run() {
-                Vector pushVector = locDiff.multiply(hPower).setY(vPower);
+                Vector pushVector = locDiff.setY(0).multiply(finalHPower).setY(vPower);
                 target.setVelocity(pushVector);
             }
-        }, (long) (delay * 20));
+        }, 4);
     }
 
     private void pushTargetUpwards(Hero hero, LivingEntity target, double vPower) {

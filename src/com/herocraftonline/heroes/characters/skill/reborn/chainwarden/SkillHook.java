@@ -65,7 +65,7 @@ public class SkillHook extends ActiveSkill {
         config.set(SkillSetting.DAMAGE.node(), 40.0);
         config.set(SkillSetting.DURATION.node(), 18000);
         config.set("projectile-size", 0.35);
-        config.set("projectile-velocity", 35.0);
+        config.set("projectile-velocity", 45.0);
         config.set("projectile-gravity", 2.5);
         config.set("projectile-max-ticks-lived", 20);
         config.set("hook-leash-distance", 25.0);

@@ -92,7 +92,7 @@ public class SkillTimeShift extends TargettedSkill {
         }
 
         int duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, 10000, false);
-        int maxStacks = SkillConfigManager.getUseSetting(hero, this, "max-stacks", 10, false);
+        int maxStacks = SkillConfigManager.getUseSetting(hero, this, "max-stacks", 5, false);
 
         if (hero.isAlliedTo(target)) {
             return acceleratedShift(player, hero, target, ctTarget, duration, maxStacks);
@@ -112,14 +112,10 @@ public class SkillTimeShift extends TargettedSkill {
         if (!addedNewStack) {
             player.sendMessage(ChatColor.WHITE + "Your target is already shifted as far as they can go!");
             return SkillResult.INVALID_TARGET_NO_MSG;
-        } else {
-            DeceleratedShiftedTime effect = (DeceleratedShiftedTime) targetCT.getEffect(decelEffectName);
-            int stackCount = effect.getStackCount();
-            player.sendMessage(ChatComponents.GENERIC_SKILL + ChatColor.GOLD + targetCT.getName() + "now has shifted " + stackCount + " times!");
         }
 
-        if (!damageCheck(player, target))
-            return SkillResult.INVALID_TARGET;
+        DeceleratedShiftedTime effect = (DeceleratedShiftedTime) targetCT.getEffect(decelEffectName);
+        player.sendMessage("    " + ChatComponents.GENERIC_SKILL + ChatColor.GOLD + targetCT.getName() + "'s time has been shifted " + effect.getStackCount() + " times!");
 
         double damage = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE, 20.0, false);
         addSpellTarget(target, hero);
@@ -135,10 +131,6 @@ public class SkillTimeShift extends TargettedSkill {
     private SkillResult acceleratedShift(Player player, Hero hero, LivingEntity target, CharacterTemplate targetCT, int duration, int maxStacks) {
         broadcastExecuteText(hero, target);
 
-        double healing = SkillConfigManager.getUseSetting(hero, this, SkillSetting.HEALING, 20.0, false);
-
-        targetCT.tryHeal(hero, this, healing);  // Ignore failures
-
         double speedIncrease = SkillConfigManager.getUseSetting(hero, this, "ally-percent-speed-increase", 0.1, false);
         boolean addedNewStack = targetCT.addEffectStack(
                 accelEffectName, this, player, duration,
@@ -148,11 +140,13 @@ public class SkillTimeShift extends TargettedSkill {
         if (!addedNewStack) {
             player.sendMessage(ChatColor.WHITE + "Your target is already shifted as far as they can go!");
             return SkillResult.INVALID_TARGET_NO_MSG;
-        } else {
-            AcceleratedShiftedTime effect = (AcceleratedShiftedTime) targetCT.getEffect(accelEffectName);
-            int stackCount = effect.getStackCount();
-            player.sendMessage(ChatComponents.GENERIC_SKILL + ChatColor.GOLD + targetCT.getName() + " now has shifted " + stackCount + " times!");
         }
+
+        double healing = SkillConfigManager.getUseSetting(hero, this, SkillSetting.HEALING, 20.0, false);
+        targetCT.tryHeal(hero, this, healing);  // Ignore failures
+
+        AcceleratedShiftedTime effect = (AcceleratedShiftedTime) targetCT.getEffect(accelEffectName);
+        player.sendMessage("    " + ChatComponents.GENERIC_SKILL + ChatColor.GOLD + targetCT.getName() + "'s time has been shifted " + effect.getStackCount() + " times!");
 
         World world = target.getWorld();
         Location location = target.getLocation();
