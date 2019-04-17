@@ -63,7 +63,7 @@ public class SkillDualWield extends PassiveSkill {
             this.skill = skill;
         }
 
-        @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
+        @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
         public void onWeaponDamage(WeaponDamageEvent event) {
             if (!(event.getDamager() instanceof Hero) || !(event.getEntity() instanceof LivingEntity))
                 return;

@@ -153,7 +153,7 @@ public class SkillDecelerationField extends TargettedLocationSkill {
             effect.period = 1;
             effect.iterations = durationTicks;
 
-            effect.particles = 75;
+            effect.particles = 35;
             effect.particle = Particle.SPELL_MOB;
             effect.color = Color.YELLOW;
             effect.solid = false;

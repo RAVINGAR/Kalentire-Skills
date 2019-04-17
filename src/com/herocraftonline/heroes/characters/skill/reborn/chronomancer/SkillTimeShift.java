@@ -21,6 +21,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
+import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 
 public class SkillTimeShift extends TargettedSkill {
 
@@ -33,6 +34,7 @@ public class SkillTimeShift extends TargettedSkill {
 
     private String accelEffectName = "AcceleratedShiftedTime";
     private String decelEffectName = "DeceleratedShiftedTime";
+    private String maxStacksErrorMessage = ChatComponents.GENERIC_SKILL + "Your target is already shifted as far as they can go!";
 
     public SkillTimeShift(Heroes plugin) {
         super(plugin, "TimeShift");
@@ -94,28 +96,30 @@ public class SkillTimeShift extends TargettedSkill {
         int duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, 10000, false);
         int maxStacks = SkillConfigManager.getUseSetting(hero, this, "max-stacks", 5, false);
 
-        if (hero.isAlliedTo(target)) {
+        if (hero.isAlliedTo(target))
             return acceleratedShift(player, hero, target, ctTarget, duration, maxStacks);
-        }
+
         return deceleratedShift(player, hero, target, ctTarget, duration, maxStacks);
     }
 
     private SkillResult deceleratedShift(Player player, Hero hero, LivingEntity target, CharacterTemplate targetCT, int duration, int maxStacks) {
-        broadcastExecuteText(hero, target);
-
         double speedDecrease = SkillConfigManager.getUseSetting(hero, this, "enemy-percent-speed-decrease", 0.1, false);
-        boolean addedNewStack = targetCT.addEffectStack(
-                decelEffectName, this, player, duration,
-                () -> new DeceleratedShiftedTime(this, player, duration, speedDecrease, maxStacks)
-        );
 
+        DeceleratedShiftedTime effect = null;
+        if (!targetCT.hasEffect(decelEffectName)) {
+            effect = new DeceleratedShiftedTime(this, player, duration, speedDecrease, maxStacks);
+            targetCT.addEffect(effect);
+        } else {
+            effect = (DeceleratedShiftedTime) targetCT.getEffect(decelEffectName);
+        }
+
+        boolean addedNewStack = effect.addStack(targetCT);
         if (!addedNewStack) {
-            player.sendMessage(ChatColor.WHITE + "Your target is already shifted as far as they can go!");
+            player.sendMessage(maxStacksErrorMessage);
             return SkillResult.INVALID_TARGET_NO_MSG;
         }
 
-        DeceleratedShiftedTime effect = (DeceleratedShiftedTime) targetCT.getEffect(decelEffectName);
-        player.sendMessage("    " + ChatComponents.GENERIC_SKILL + ChatColor.GOLD + targetCT.getName() + "'s time has been shifted " + effect.getStackCount() + " times!");
+        broadcastExecuteText(hero, target);
 
         double damage = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE, 20.0, false);
         addSpellTarget(target, hero);
@@ -129,24 +133,26 @@ public class SkillTimeShift extends TargettedSkill {
     }
 
     private SkillResult acceleratedShift(Player player, Hero hero, LivingEntity target, CharacterTemplate targetCT, int duration, int maxStacks) {
-        broadcastExecuteText(hero, target);
-
         double speedIncrease = SkillConfigManager.getUseSetting(hero, this, "ally-percent-speed-increase", 0.1, false);
-        boolean addedNewStack = targetCT.addEffectStack(
-                accelEffectName, this, player, duration,
-                () -> new AcceleratedShiftedTime(this, player, duration, speedIncrease, maxStacks)
-        );
 
+        AcceleratedShiftedTime effect = null;
+        if (!targetCT.hasEffect(accelEffectName)) {
+            effect = new AcceleratedShiftedTime(this, player, duration, speedIncrease, maxStacks);
+            targetCT.addEffect(effect);
+        } else {
+            effect = (AcceleratedShiftedTime) targetCT.getEffect(accelEffectName);
+        }
+
+        boolean addedNewStack = effect.addStack(targetCT);
         if (!addedNewStack) {
-            player.sendMessage(ChatColor.WHITE + "Your target is already shifted as far as they can go!");
+            player.sendMessage(maxStacksErrorMessage);
             return SkillResult.INVALID_TARGET_NO_MSG;
         }
 
+        broadcastExecuteText(hero, target);
+
         double healing = SkillConfigManager.getUseSetting(hero, this, SkillSetting.HEALING, 20.0, false);
         targetCT.tryHeal(hero, this, healing);  // Ignore failures
-
-        AcceleratedShiftedTime effect = (AcceleratedShiftedTime) targetCT.getEffect(accelEffectName);
-        player.sendMessage("    " + ChatComponents.GENERIC_SKILL + ChatColor.GOLD + targetCT.getName() + "'s time has been shifted " + effect.getStackCount() + " times!");
 
         World world = target.getWorld();
         Location location = target.getLocation();
@@ -156,206 +162,137 @@ public class SkillTimeShift extends TargettedSkill {
     }
 
     private class DeceleratedShiftedTime extends WalkSpeedPercentDecreaseEffect implements Stacking {
-        private final EffectStack effectStack;
+        private final int maxStacks;
         private final double decreasePerStack;
-        private boolean stackCountChanged = false;
+        private int currentStackCount;
 
         DeceleratedShiftedTime(Skill skill, Player applier, int duration, double decreasePerStack, int maxStacks) {
             super(skill, decelEffectName, applier, duration, decreasePerStack, downShiftApplyText, downShiftExpireText);
             this.decreasePerStack = decreasePerStack;
+            this.maxStacks = maxStacks;
 
             types.add(EffectType.HARMFUL);
             types.add(EffectType.DISPELLABLE);
             types.add(EffectType.TEMPORAL);
-
-            effectStack = new EffectStack(maxStacks);
-        }
-
-        @Override
-        public void applyToMonster(Monster monster) {
-            addPotionEffect(new PotionEffect(PotionEffectType.SLOW, (int) (getDuration() / 50), getStackCount()));
-            super.applyToMonster(monster);
-        }
-
-        @Override
-        public void removeFromHero(Hero hero) {
-            super.removeFromHero(hero);
-            removeAllStacks();
-        }
-
-        @Override
-        public int getStackCount() {
-            return effectStack.count();
         }
 
         @Override
         public int getMaxStacks() {
-            return effectStack.getMax();
-        }
-
-        public EffectStack.Entry getStackEntry(int index) {
-            return effectStack.get(index);
+            return maxStacks;
         }
 
         @Override
-        public int addStacks(Skill skill, Player applier, long duration, int amount) {
-            if (effectStack == null) {
-                return 0;
-            }
-
-            int added = effectStack.add(skill, applier, duration, amount);
-            if (added > 0) {
-                effectStack.resetAllStackDurationsToFull();
-                stackCountChanged = true;
-                setDuration(duration);
-            }
-            return added;
+        public int getStackCount() {
+            return currentStackCount;
         }
 
-        @Override
-        public int removeStacks(int amount) {
-            if (effectStack == null) {
-                return 0;
+        public boolean addStack(CharacterTemplate character) {
+            if (currentStackCount >= maxStacks)
+                return false;
+
+            currentStackCount++;
+            if (character instanceof Hero) {
+                // WalkSpeed only works on Players
+                setDelta(decreasePerStack * currentStackCount);
+                syncTask((Hero) character);
             }
 
-            int removed = effectStack.remove(amount);
-            if (removed > 0) {
-                stackCountChanged = true;
-            }
-            return removed;
-        }
+            this.setDuration(getDuration());
 
-        @Override
-        public int removeAllStacks() {
-            if (effectStack == null)
-                return 0;
-
-            int removed = effectStack.removeAll();
-            if (removed > 0) {
-                stackCountChanged = true;
-            }
-            return removed;
+            applier.sendMessage(ChatComponents.GENERIC_SKILL + ChatColor.WHITE + character.getEntity().getName() + "'s "
+                    + ChatColor.GOLD + "time has been shifted " + currentStackCount + " times!");
+            return true;
         }
 
         @Override
         public int refresh(CharacterTemplate character) {
-            removeExpiredStacks();
-            if (stackCountChanged) {
-                stackCountChangedOnCharacter(character);
-            }
-            return getStackCount();
-        }
-
-        void stackCountChangedOnCharacter(CharacterTemplate character) {
             if (character instanceof Hero) {
-                setDelta(decreasePerStack * getStackCount());
                 syncTask((Hero) character);
+                return 1;
             }
-//            else if (character instanceof Monster) {
-//                // Do nothing for now...
-//            }
+            return 0;
         }
 
-        private void removeExpiredStacks() {
-            if (effectStack != null && effectStack.removeExpired() > 0) {
-                stackCountChanged = true;
-            }
+        @Override
+        public int addStacks(Skill skill, Player player, long l, int i) {
+            throw new NotImplementedException();
+        }
+
+        @Override
+        public int removeStacks(int i) {
+            throw new NotImplementedException();
+        }
+
+        @Override
+        public int removeAllStacks() {
+            throw new NotImplementedException();
         }
     }
 
     private class AcceleratedShiftedTime extends WalkSpeedPercentIncreaseEffect implements Stacking {
-
-        private final EffectStack effectStack;
+        private final int maxStacks;
         private final double increasePerStack;
-        private boolean stackCountChanged = false;
+        private int currentStackCount;
 
         AcceleratedShiftedTime(Skill skill, Player applier, int duration, double increasePerStack, int maxStacks) {
             super(skill, accelEffectName, applier, duration, increasePerStack, upShiftApplyText, upShiftExpireText);
             this.increasePerStack = increasePerStack;
+            this.maxStacks = maxStacks;
 
             types.add(EffectType.BENEFICIAL);
             types.add(EffectType.DISPELLABLE);
             types.add(EffectType.TEMPORAL);
-
-            effectStack = new EffectStack(maxStacks);
-        }
-
-        @Override
-        public int getStackCount() {
-            return effectStack.count();
         }
 
         @Override
         public int getMaxStacks() {
-            return effectStack.getMax();
-        }
-
-        public EffectStack.Entry getStackEntry(int index) {
-            return effectStack.get(index);
+            return maxStacks;
         }
 
         @Override
-        public int addStacks(Skill skill, Player applier, long duration, int amount) {
-            if (effectStack == null) {
-                return 0;
-            }
-
-            int added = effectStack.add(skill, applier, duration, amount);
-            if (added > 0) {
-                effectStack.resetAllStackDurationsToFull();
-                stackCountChanged = true;
-                setDuration(duration);
-            }
-            return added;
+        public int getStackCount() {
+            return currentStackCount;
         }
 
-        @Override
-        public int removeStacks(int amount) {
-            if (effectStack == null)
-                return 0;
+        public boolean addStack(CharacterTemplate character) {
+            if (currentStackCount >= maxStacks)
+                return false;
 
-            int removed = effectStack.remove(amount);
-            if (removed > 0) {
-                stackCountChanged = true;
+            currentStackCount++;
+            if (character instanceof Hero) {
+                // WalkSpeed only works on Players
+                setDelta(increasePerStack * currentStackCount);
+                syncTask((Hero) character);
             }
-            return removed;
-        }
+            this.setDuration(getDuration());
 
-        @Override
-        public int removeAllStacks() {
-            if (effectStack == null)
-                return 0;
-
-            int removed = effectStack.removeAll();
-            if (removed > 0) {
-                stackCountChanged = true;
-            }
-            return removed;
+            applier.sendMessage(ChatComponents.GENERIC_SKILL + ChatColor.WHITE + character.getEntity().getName() + "'s "
+                    + ChatColor.GOLD + "time has been shifted " + currentStackCount + " times!");
+            return true;
         }
 
         @Override
         public int refresh(CharacterTemplate character) {
-            removeExpiredStacks();
-            if (stackCountChanged) {
-                stackCountChangedOnCharacter(character);
-            }
-            return getStackCount();
-        }
-
-        void stackCountChangedOnCharacter(CharacterTemplate character) {
             if (character instanceof Hero) {
-                setDelta(increasePerStack * getStackCount());
                 syncTask((Hero) character);
+                return 1;
             }
-//            else if (character instanceof Monster) {
-//                // Do nothing for now...
-//            }
+            return 0;
         }
 
-        private void removeExpiredStacks() {
-            if (effectStack != null && effectStack.removeExpired() > 0) {
-                stackCountChanged = true;
-            }
+        @Override
+        public int addStacks(Skill skill, Player player, long l, int i) {
+            throw new NotImplementedException();
+        }
+
+        @Override
+        public int removeStacks(int i) {
+            throw new NotImplementedException();
+        }
+
+        @Override
+        public int removeAllStacks() {
+            throw new NotImplementedException();
         }
     }
 }

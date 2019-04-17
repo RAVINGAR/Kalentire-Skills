@@ -44,7 +44,6 @@ public class SkillSummonEnderCrystal extends TargettedLocationSkill {
         setUsage("/skill summonendercrystal");
         setIdentifiers("skill summonendercrystal");
         setArgumentRange(0, 0);
-        setToggleableEffectName(toggleableEffectName);
         setTypes(SkillType.ABILITY_PROPERTY_ENDER, SkillType.ABILITY_PROPERTY_DARK, SkillType.SILENCEABLE, SkillType.BLOCK_CREATING, SkillType.HEALING);
 
         Bukkit.getServer().getPluginManager().registerEvents(new SkillBlockListener(), plugin);

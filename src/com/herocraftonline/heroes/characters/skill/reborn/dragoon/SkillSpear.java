@@ -4,6 +4,7 @@ import com.google.common.collect.Lists;
 import com.herocraftonline.heroes.Heroes;
 import com.herocraftonline.heroes.api.SkillResult;
 import com.herocraftonline.heroes.attributes.AttributeType;
+import com.herocraftonline.heroes.characters.CharacterTemplate;
 import com.herocraftonline.heroes.characters.Hero;
 import com.herocraftonline.heroes.characters.skill.*;
 import com.herocraftonline.heroes.characters.skill.ncp.NCPFunction;
@@ -129,6 +130,12 @@ public class SkillSpear extends ActiveSkill {
         Vector locDiff = playerLoc.toVector().subtract(targetLoc.toVector());
         if (shouldWeaken) {
             locDiff.multiply(0.75);
+        }
+
+        // Manually try to interrupt since we're doing custom projectile stuff
+        if (target instanceof Player) {
+            Hero targetHero = plugin.getCharacterManager().getHero((Player) target);
+            targetHero.interruptDelayedSkill();
         }
 
         double vPower = SkillConfigManager.getUseSetting(hero, this, "vertical-power", 0.4, false);

@@ -12,6 +12,7 @@ import com.herocraftonline.heroes.characters.effects.common.RootEffect;
 import com.herocraftonline.heroes.characters.effects.common.interfaces.WalkSpeedDecrease;
 import com.herocraftonline.heroes.characters.effects.common.interfaces.WalkSpeedPercentDecrease;
 import com.herocraftonline.heroes.characters.skill.*;
+import com.herocraftonline.heroes.chat.ChatComponents;
 import com.herocraftonline.heroes.nms.NMSHandler;
 import com.herocraftonline.heroes.util.Util;
 import org.bukkit.Bukkit;
@@ -65,16 +66,22 @@ public class SkillDeepWound extends TargettedSkill {
         node.set("tick-damage", 10);
         node.set("movespeed-reduction-percent", 0.2);
         node.set(SkillSetting.MAX_DISTANCE.node(), 2);
-        node.set(SkillSetting.APPLY_TEXT.node(), "%target% has been deeply wounded by %hero%!");
-        node.set(SkillSetting.EXPIRE_TEXT.node(), "%target% has recovered from their deep wound!");
+        node.set(SkillSetting.APPLY_TEXT.node(), ChatComponents.GENERIC_SKILL + "%target% has been deeply wounded by %hero%!");
+        node.set(SkillSetting.EXPIRE_TEXT.node(), ChatComponents.GENERIC_SKILL + "%target% has recovered from their deep wound!");
         return node;
     }
 
     @Override
     public void init() {
         super.init();
-        applyText = SkillConfigManager.getRaw(this, SkillSetting.APPLY_TEXT, "%target% has been deeply wounded by %hero%!").replace("%target%", "$1").replace("%hero%", "$2");
-        expireText = SkillConfigManager.getRaw(this, SkillSetting.EXPIRE_TEXT, "%target% has recovered from their deep wound.").replace("%target%", "$1");
+        applyText = SkillConfigManager.getRaw(this, SkillSetting.APPLY_TEXT,
+                ChatComponents.GENERIC_SKILL + "%target% has been deeply wounded by %hero%!")
+                .replace("%target%", "$1")
+                .replace("%hero%", "$2");
+
+        expireText = SkillConfigManager.getRaw(this, SkillSetting.EXPIRE_TEXT,
+                ChatComponents.GENERIC_SKILL + "%target% has recovered from their deep wound.")
+                .replace("%target%", "$1");
     }
 
     @Override
@@ -118,6 +125,22 @@ public class SkillDeepWound extends TargettedSkill {
             types.add(EffectType.BLEED);
             types.add(EffectType.HARMFUL);
             types.add(EffectType.WALK_SPEED_DECREASING);
+        }
+
+        @Override
+        public void applyToHero(final Hero hero) {
+            super.applyToHero(hero);
+            Bukkit.getScheduler().scheduleSyncDelayedTask(this.plugin, () -> syncTask(hero), 1L);
+        }
+
+        @Override
+        public void removeFromHero(final Hero hero) {
+            super.removeFromHero(hero);
+            Bukkit.getScheduler().scheduleSyncDelayedTask(this.plugin, () -> syncTask(hero), 1L);
+        }
+
+        private void syncTask(Hero hero) {
+            hero.resolveMovementSpeed();
         }
 
         @Override
