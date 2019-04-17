@@ -1,30 +1,25 @@
 package com.herocraftonline.heroes.characters.skill.reborn.druid;
 
+import com.comphenix.protocol.PacketType;
 import com.herocraftonline.heroes.Heroes;
 import com.herocraftonline.heroes.api.SkillResult;
 import com.herocraftonline.heroes.api.events.HeroRegainManaEvent;
 import com.herocraftonline.heroes.characters.Hero;
-import com.herocraftonline.heroes.characters.Monster;
 import com.herocraftonline.heroes.characters.effects.Effect;
 import com.herocraftonline.heroes.characters.effects.EffectType;
 import com.herocraftonline.heroes.characters.effects.ExpirableEffect;
-import com.herocraftonline.heroes.characters.effects.PeriodicExpirableEffect;
-import com.herocraftonline.heroes.characters.effects.common.InvulnerabilityEffect;
 import com.herocraftonline.heroes.characters.effects.common.RootEffect;
-import com.herocraftonline.heroes.characters.effects.common.StunEffect;
 import com.herocraftonline.heroes.characters.skill.*;
 import com.herocraftonline.heroes.chat.ChatComponents;
 import com.herocraftonline.heroes.util.Util;
+import org.bukkit.Color;
+import org.bukkit.FireworkEffect;
 import org.bukkit.Location;
-import org.bukkit.World;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
 
 import java.util.ArrayList;
-import java.util.List;
 
-// player turns invuln for 4 seconds can't mode
-// costs 30-40%
 public class SkillGiftOfEir extends ActiveSkill {
 
     private String applyText;
@@ -42,7 +37,7 @@ public class SkillGiftOfEir extends ActiveSkill {
     @Override
     public String getDescription(Hero hero) {
         int duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, 5000, false);
-        int mana = SkillConfigManager.getUseSetting(hero, this, SkillSetting.MANA, 40, false);
+        double mana = SkillConfigManager.getUseSetting(hero, this, "mana-percent-cost", 0.40, false);
         double radius = SkillConfigManager.getUseSetting(hero, this, SkillSetting.RADIUS, 5.0, false);
 
         return getDescription()
@@ -54,7 +49,7 @@ public class SkillGiftOfEir extends ActiveSkill {
     @Override
     public ConfigurationSection getDefaultConfig() {
         ConfigurationSection node = super.getDefaultConfig();
-        node.set(SkillSetting.MANA.node(), 40);
+        node.set("mana-percent-cost", 0.40);
         node.set(SkillSetting.RADIUS.node(), 5.0);
         node.set(SkillSetting.PERIOD.node(), 100);
         node.set(SkillSetting.DURATION.node(), 5000);
@@ -67,7 +62,6 @@ public class SkillGiftOfEir extends ActiveSkill {
     @Override
     public void init() {
         super.init();
-
         applyText = SkillConfigManager.getRaw(this, SkillSetting.APPLY_TEXT, ChatComponents.GENERIC_SKILL + "%hero% has become invulnerable!").replace("%hero%", "$1");
         expireText = SkillConfigManager.getRaw(this, SkillSetting.EXPIRE_TEXT, ChatComponents.GENERIC_SKILL + "%hero% is once again vulnerable!").replace("%hero%", "$1");
     }
@@ -92,52 +86,19 @@ public class SkillGiftOfEir extends ActiveSkill {
         hero.addEffect(new RootEffect(this, player, period, duration));
         hero.addEffect(new InvulnStationaryEffect(this, player, duration, applyText, expireText, radiusSquared));
 
-
-
         return SkillResult.NORMAL;
     }
-
-
     /*
-    public ArrayList<Location> circle(Location centerPoint, int particleAmount, double circleRadius) {
-        World world = centerPoint.getWorld();
+    public class ManaPoolEffect extends ExpirableEffect {
+       public ManaPool(Skill skill, Player applier, long duration, double radiusSquared) {
+           super(skill, "ManaPoolEffect", applier, duration);
+           types.add(EffectType.BENEFICIAL);
+           types.add(EffectType.AREA_OF_EFFECT);
+           types.add(EffectType.MANA_INCREASING);
+       }
+       public void applyToHero(Hero hero) {
 
-        double increment = (2 * Math.PI) / particleAmount;
-
-        ArrayList<Location> locations = new ArrayList<Location>();
-
-        for (int i = 0; i < particleAmount; i++) {
-            double angle = i * increment;
-            double x = centerPoint.getX() + (circleRadius * Math.cos(angle));
-            double z = centerPoint.getZ() + (circleRadius * Math.sin(angle));
-            locations.add(new Location(world, x, centerPoint.getY(), z));
-        }
-        return locations;
-    }
-    public class ManaShareEffect extends PeriodicExpirableEffect {
-
-        public ManaShareEffect(Skill skill, Player applier, long duration, int period) {
-            super(skill, "ManaShareEffect", applier, duration, period);
-            types.add(EffectType.BENEFICIAL);
-            types.add(EffectType.AREA_OF_EFFECT);
-            //Maybe
-            types.add(EffectType.MANA_REGEN_INCREASING);
-        }
-
-        @Override
-        public void removeFromHero(Hero hero) {
-            super.removeFromHero(hero);
-        }
-
-        @Override
-        public void tickMonster(Monster monster) {
-
-        }
-
-        @Override
-        public void tickHero(Hero hero) {
-
-        }
+       }
     }
      */
 
@@ -147,7 +108,7 @@ public class SkillGiftOfEir extends ActiveSkill {
         public InvulnStationaryEffect(Skill skill, Player applier, long duration, String applyText, String expireText, double rSquared) {
             super(skill, "InvulnStationaryEffect", applier, duration, applyText, expireText);
             radiusSquared = rSquared;
-            types.add(EffectType.DISABLE);
+//            types.add(EffectType.DISABLE);
             types.add(EffectType.INVULNERABILITY);
             types.add(EffectType.UNTARGETABLE);
             types.add(EffectType.UNBREAKABLE);
@@ -157,6 +118,13 @@ public class SkillGiftOfEir extends ActiveSkill {
 
         public void applyToHero(Hero hero) {
             super.applyToHero(hero);
+            VisualEffect.playInstantFirework(FireworkEffect.builder()
+                    .flicker(true)
+                    .trail(true)
+                    .with(FireworkEffect.Type.BALL_LARGE)
+                    .withColor(Color.AQUA)
+                    .withFade(Color.BLUE)
+                    .build(), hero.getPlayer().getLocation().add(0, 2.0, 0));
         }
 
         public void removeFromHero(Hero hero) {
@@ -168,37 +136,53 @@ public class SkillGiftOfEir extends ActiveSkill {
                 return;
             }
 
+            // get mana from hero
             double mana = hero.getMana();
             double maxMana = hero.getMaxMana();
-            double manaPercent = mana / maxMana * 100;
-            player.sendMessage("Mana%:"  + manaPercent);
-            double manaGiveth = SkillConfigManager.getUseSetting(hero, skill, SkillSetting.MANA, 40, false);
-            if (manaPercent < manaGiveth) {
-                hero.setMana(0);
+            double manaPercent = mana / maxMana;
+            double manaCost = SkillConfigManager.getUseSetting(hero, skill, "mana-percent-cost", 0.40, false);
+
+            // calculate mana cost
+            if (manaPercent < manaCost) {
+                manaCost = mana;
             } else {
-                double manaDiff = manaGiveth - manaPercent;
-                player.sendMessage("Mana% left over: " + manaDiff);
-                hero.setMana( (int) (maxMana * manaDiff));
+                manaCost = (int) (manaCost* maxMana);
             }
 
+            // apply mana cost
+            HeroRegainManaEvent hrmEvent = new HeroRegainManaEvent(hero, (int) manaCost, skill);
+            plugin.getServer().getPluginManager().callEvent(hrmEvent);
+            if (!hrmEvent.isCancelled()) {
+                hero.setMana( (int) (mana - manaCost));
+                if (hero.isVerboseMana())
+                    hero.getPlayer().sendMessage(ChatComponents.Bars.mana(hero.getMana(), hero.getMaxMana(), true));
+            }
+
+            // find part member within radius
             ArrayList<Hero> heroList = new ArrayList<>();
             for (final Hero partyHero : hero.getParty().getMembers()) {
                 if (!player.getWorld().equals(partyHero.getPlayer().getWorld()))
                     continue;
-                if ((partyHero.getPlayer().getLocation().distanceSquared(heroLoc) <= radiusSquared)) {
+                if (partyHero == hero)
+                    continue;
+                if ((partyHero.getPlayer().getLocation().distanceSquared(heroLoc) <= radiusSquared)){
                     heroList.add(partyHero);
-
                 }
             }
 
+            // don't want to divide by 0;
+            if (heroList.size() == 0)
+                return;
+
+            // give them mana
             int manaIncreaseAmount = (int) mana / heroList.size();
             player.sendMessage("party members to give mana: " + heroList.size());
             for (Hero heroChosen : heroList) {
                 heroChosen.getPlayer().sendMessage("mana given by druid: " + manaIncreaseAmount);
-                HeroRegainManaEvent hrmEvent = new HeroRegainManaEvent(heroChosen, manaIncreaseAmount, skill);
-                plugin.getServer().getPluginManager().callEvent(hrmEvent);
-                if (!hrmEvent.isCancelled()) {
-                    heroChosen.setMana(hrmEvent.getDelta() + heroChosen.getMana());
+                HeroRegainManaEvent hrmEvent2 = new HeroRegainManaEvent(heroChosen, manaIncreaseAmount, skill);
+                plugin.getServer().getPluginManager().callEvent(hrmEvent2);
+                if (!hrmEvent2.isCancelled()) {
+                    heroChosen.setMana(hrmEvent2.getDelta() + heroChosen.getMana());
 
                     if (hero.isVerboseMana())
                         heroChosen.getPlayer().sendMessage(ChatComponents.Bars.mana(heroChosen.getMana(), heroChosen.getMaxMana(), true));
