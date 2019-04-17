@@ -2,14 +2,12 @@ package com.herocraftonline.heroes.characters.skill.reborn.chronomancer;
 
 import com.herocraftonline.heroes.Heroes;
 import com.herocraftonline.heroes.api.SkillResult;
-import com.herocraftonline.heroes.api.events.HeroRegainHealthEvent;
 import com.herocraftonline.heroes.characters.CharacterTemplate;
 import com.herocraftonline.heroes.characters.Hero;
 import com.herocraftonline.heroes.characters.effects.Effect;
 import com.herocraftonline.heroes.characters.effects.EffectType;
-import com.herocraftonline.heroes.characters.effects.Stacking;
+import com.herocraftonline.heroes.characters.effects.common.interfaces.Stacked;
 import com.herocraftonline.heroes.characters.skill.*;
-import com.herocraftonline.heroes.chat.ChatComponents;
 import com.herocraftonline.heroes.util.Util;
 import de.slikey.effectlib.EffectManager;
 import de.slikey.effectlib.effect.SphereEffect;
@@ -75,7 +73,7 @@ public class SkillTimeDifferential extends TargettedSkill {
 
         return SkillResult.NORMAL;
     }
-    
+
     private void healTarget(Hero hero, CharacterTemplate targetCT) {
         final Player player = hero.getPlayer();
         double baseHealing = SkillConfigManager.getUseSetting(hero, this, SkillSetting.HEALING, 40.0, false);
@@ -86,8 +84,8 @@ public class SkillTimeDifferential extends TargettedSkill {
             if (!effect.isType(EffectType.TEMPORAL))
                 continue;
 
-            if (effect instanceof Stacking) {
-                Stacking stack = (Stacking) effect;
+            if (effect instanceof Stacked) {
+                Stacked stack = (Stacked) effect;
                 healing += (healingPerStack * stack.getStackCount());
             } else {
                 healing += healingPerStack;
@@ -109,7 +107,7 @@ public class SkillTimeDifferential extends TargettedSkill {
         visualEffect.callback = new Runnable() {
             @Override
             public void run() {
-                if (target.getHealth() < 0  || target.isDead())
+                if (target.getHealth() < 0 || target.isDead())
                     return;
 
                 if (targetCT.tryHeal(hero, skill, finalHealing))
@@ -151,8 +149,8 @@ public class SkillTimeDifferential extends TargettedSkill {
             if (!effect.isType(EffectType.TEMPORAL))
                 continue;
 
-            if (effect instanceof Stacking) {
-                Stacking stack = (Stacking) effect;
+            if (effect instanceof Stacked) {
+                Stacked stack = (Stacked) effect;
                 damage += (damagePerStack * stack.getStackCount());
             } else {
                 damage += damagePerStack;
@@ -173,7 +171,7 @@ public class SkillTimeDifferential extends TargettedSkill {
         visualEffect.callback = new Runnable() {
             @Override
             public void run() {
-                if (target.getHealth() < 0  || target.isDead())
+                if (target.getHealth() < 0 || target.isDead())
                     return;
 
                 plugin.getDamageManager().addSpellTarget(target, hero, skill);

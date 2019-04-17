@@ -2,14 +2,12 @@ package com.herocraftonline.heroes.characters.skill.reborn.hellspawn;
 
 import com.herocraftonline.heroes.Heroes;
 import com.herocraftonline.heroes.api.SkillResult;
-import com.herocraftonline.heroes.api.events.SkillUseEvent;
 import com.herocraftonline.heroes.api.events.WeaponDamageEvent;
 import com.herocraftonline.heroes.characters.CharacterTemplate;
 import com.herocraftonline.heroes.characters.Hero;
 import com.herocraftonline.heroes.characters.Monster;
 import com.herocraftonline.heroes.characters.effects.EffectType;
 import com.herocraftonline.heroes.characters.effects.PeriodicExpirableEffect;
-import com.herocraftonline.heroes.characters.effects.Stacking;
 import com.herocraftonline.heroes.characters.effects.StackingEffect;
 import com.herocraftonline.heroes.characters.effects.common.interfaces.HealthRegainReduction;
 import com.herocraftonline.heroes.characters.equipment.EquipMethod;
@@ -111,7 +109,7 @@ public class SkillTheWither extends ActiveSkill {
     public class WitherformEffect extends PeriodicExpirableEffect {
 
         WitherformEffect(Skill skill, Player applier, long duration) {
-            super(skill, effectName, applier, 250, duration, applyText, expireText);
+            super(skill, effectName, applier, 500, duration, applyText, expireText);
 
             types.add(EffectType.DISPELLABLE);
             types.add(EffectType.RESIST_FIRE);
@@ -127,7 +125,7 @@ public class SkillTheWither extends ActiveSkill {
             super.applyToHero(hero);
 
             Player player = hero.getPlayer();
-            addFireTicks(player);
+            forceFireTicks(player);
 
             if (disguiseApiLoaded) {
                 disguiseAsWitherSkelly(player);
@@ -142,7 +140,7 @@ public class SkillTheWither extends ActiveSkill {
 
         @Override
         public void tickHero(Hero hero) {
-            addFireTicks(hero.getEntity());
+            forceFireTicks(hero.getEntity());
         }
 
         @Override
@@ -155,6 +153,8 @@ public class SkillTheWither extends ActiveSkill {
             } else {
                 removeWitherSkull(player);
             }
+
+            player.setFireTicks(0);
         }
 
         private void disguiseAsWitherSkelly(Player player) {
@@ -217,12 +217,12 @@ public class SkillTheWither extends ActiveSkill {
             Util.syncInventory(player, plugin);
         }
 
-        private void addFireTicks(LivingEntity entity) {
-            entity.setFireTicks(entity.getFireTicks() + (int) (getPeriod() / 50));
+        private void forceFireTicks(LivingEntity entity) {
+            entity.setFireTicks((int)(getPeriod() / 50) + 1);
         }
     }
 
-    public class WitherStackEffect extends StackingEffect implements HealthRegainReduction, Stacking {
+    public class WitherStackEffect extends StackingEffect implements HealthRegainReduction {
 
         private final int witherAmplifier;
         private double healhReductionPerStack;
@@ -268,7 +268,7 @@ public class SkillTheWither extends ActiveSkill {
             int witherAmplifier = SkillConfigManager.getUseSetting(hero, skill, "on-hit-wither-amplifier", 3, false);
             int maxStacks = SkillConfigManager.getUseSetting(hero, skill, "on-hit-max-stacks", 6, false);
 
-            CharacterTemplate targetCT = plugin.getCharacterManager().getCharacter((LivingEntity)event.getEntity());
+            CharacterTemplate targetCT = plugin.getCharacterManager().getCharacter((LivingEntity) event.getEntity());
             targetCT.addEffectStack(player.getName() + "-WitherAttacked", skill, player, duration,
                     () -> new WitherStackEffect(skill, player, witherAmplifier, healingReduction, maxStacks));
         }

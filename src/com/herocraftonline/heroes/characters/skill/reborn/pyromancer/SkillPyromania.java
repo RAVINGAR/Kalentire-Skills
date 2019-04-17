@@ -59,14 +59,7 @@ public class SkillPyromania extends PassiveSkill {
 
     @Override
     public void apply(Hero hero) {
-        String applyText = SkillConfigManager.getRaw(this, SkillSetting.APPLY_TEXT,
-                ChatComponents.GENERIC_SKILL + "%hero% gained %skill%!")
-                .replace("%hero%", "$1").replace("%skill%", "Pyromania");
-        String unapplyText = SkillConfigManager.getRaw(this, SkillSetting.UNAPPLY_TEXT,
-                ChatComponents.GENERIC_SKILL + "%hero% lost %skill%!")
-                .replace("%hero%", "$1").replace("%skill%", "Pyromania");
-
-        PyromaniaEffect effect = new PyromaniaEffect(this, hero.getPlayer(), applyText, unapplyText);
+        PyromaniaEffect effect = new PyromaniaEffect(this, hero.getPlayer());
         hero.addEffect(effect);
     }
 
@@ -75,7 +68,7 @@ public class SkillPyromania extends PassiveSkill {
         private double increasePerFireTickSecond;
         private double maxPercentIncrease;
 
-        PyromaniaEffect(Skill skill, Player player, String applyText, String unapplyText) {
+        PyromaniaEffect(Skill skill, Player player) {
             super(skill, skill.getName(), player, applyText, unapplyText);
 
             types.add(EffectType.INTERNAL);

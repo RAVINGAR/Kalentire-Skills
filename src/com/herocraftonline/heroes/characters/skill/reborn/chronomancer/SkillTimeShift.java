@@ -2,15 +2,14 @@ package com.herocraftonline.heroes.characters.skill.reborn.chronomancer;
 
 import com.herocraftonline.heroes.Heroes;
 import com.herocraftonline.heroes.api.SkillResult;
-import com.herocraftonline.heroes.api.events.HeroRegainHealthEvent;
 import com.herocraftonline.heroes.characters.CharacterTemplate;
+import com.herocraftonline.heroes.characters.CustomNameManager;
 import com.herocraftonline.heroes.characters.Hero;
 import com.herocraftonline.heroes.characters.Monster;
-import com.herocraftonline.heroes.characters.effects.EffectStack;
 import com.herocraftonline.heroes.characters.effects.EffectType;
-import com.herocraftonline.heroes.characters.effects.Stacking;
 import com.herocraftonline.heroes.characters.effects.common.WalkSpeedPercentDecreaseEffect;
 import com.herocraftonline.heroes.characters.effects.common.WalkSpeedPercentIncreaseEffect;
+import com.herocraftonline.heroes.characters.effects.common.interfaces.Stacked;
 import com.herocraftonline.heroes.characters.skill.*;
 import com.herocraftonline.heroes.chat.ChatComponents;
 import com.herocraftonline.heroes.util.Util;
@@ -21,11 +20,8 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
-import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 
 public class SkillTimeShift extends TargettedSkill {
-
-    private static final float DEFAULT_MINECRAFT_MOVEMENT_SPEED = 0.2f;
 
     private String upShiftApplyText;
     private String upShiftExpireText;
@@ -71,12 +67,12 @@ public class SkillTimeShift extends TargettedSkill {
     @Override
     public ConfigurationSection getDefaultConfig() {
         ConfigurationSection config = super.getDefaultConfig();
-        config.set(SkillSetting.DAMAGE.node(), 20);
-        config.set(SkillSetting.HEALING.node(), 20);
+        config.set(SkillSetting.DAMAGE.node(), 25);
+        config.set(SkillSetting.HEALING.node(), 30);
         config.set("ally-percent-speed-increase", 0.05);
         config.set("enemy-percent-speed-decrease", 0.05);
         config.set("max-stacks", 5);
-        config.set(SkillSetting.DURATION.node(), 10000);
+        config.set(SkillSetting.DURATION.node(), 8000);
         return config;
     }
 
@@ -93,7 +89,7 @@ public class SkillTimeShift extends TargettedSkill {
             return SkillResult.INVALID_TARGET;
         }
 
-        int duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, 10000, false);
+        int duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, 8000, false);
         int maxStacks = SkillConfigManager.getUseSetting(hero, this, "max-stacks", 5, false);
 
         if (hero.isAlliedTo(target))
@@ -161,7 +157,7 @@ public class SkillTimeShift extends TargettedSkill {
         return SkillResult.NORMAL;
     }
 
-    private class DeceleratedShiftedTime extends WalkSpeedPercentDecreaseEffect implements Stacking {
+    private class DeceleratedShiftedTime extends WalkSpeedPercentDecreaseEffect implements Stacked {
         private final int maxStacks;
         private final double decreasePerStack;
         private int currentStackCount;
@@ -177,11 +173,17 @@ public class SkillTimeShift extends TargettedSkill {
         }
 
         @Override
+        public void applyToMonster(Monster monster) {
+            // We can't modify a monsters walk speed so this will have to do.
+            addPotionEffect(new PotionEffect(PotionEffectType.SLOW, (int) (getDuration() / 50), 1));
+
+            super.applyToMonster(monster);
+        }
+
         public int getMaxStacks() {
             return maxStacks;
         }
 
-        @Override
         public int getStackCount() {
             return currentStackCount;
         }
@@ -199,37 +201,14 @@ public class SkillTimeShift extends TargettedSkill {
 
             this.setDuration(getDuration());
 
-            applier.sendMessage(ChatComponents.GENERIC_SKILL + ChatColor.WHITE + character.getEntity().getName() + "'s "
+            applier.sendMessage("    " + ChatComponents.GENERIC_SKILL + ChatColor.WHITE + CustomNameManager.getName(character) + "'s "
                     + ChatColor.GOLD + "time has been shifted " + currentStackCount + " times!");
+
             return true;
-        }
-
-        @Override
-        public int refresh(CharacterTemplate character) {
-            if (character instanceof Hero) {
-                syncTask((Hero) character);
-                return 1;
-            }
-            return 0;
-        }
-
-        @Override
-        public int addStacks(Skill skill, Player player, long l, int i) {
-            throw new NotImplementedException();
-        }
-
-        @Override
-        public int removeStacks(int i) {
-            throw new NotImplementedException();
-        }
-
-        @Override
-        public int removeAllStacks() {
-            throw new NotImplementedException();
         }
     }
 
-    private class AcceleratedShiftedTime extends WalkSpeedPercentIncreaseEffect implements Stacking {
+    private class AcceleratedShiftedTime extends WalkSpeedPercentIncreaseEffect implements Stacked {
         private final int maxStacks;
         private final double increasePerStack;
         private int currentStackCount;
@@ -245,11 +224,17 @@ public class SkillTimeShift extends TargettedSkill {
         }
 
         @Override
+        public void applyToMonster(Monster monster) {
+            // We can't modify a monsters walk speed so this will have to do.
+            addPotionEffect(new PotionEffect(PotionEffectType.SPEED, (int) (getDuration() / 50), 1));
+
+            super.applyToMonster(monster);
+        }
+
         public int getMaxStacks() {
             return maxStacks;
         }
 
-        @Override
         public int getStackCount() {
             return currentStackCount;
         }
@@ -266,33 +251,10 @@ public class SkillTimeShift extends TargettedSkill {
             }
             this.setDuration(getDuration());
 
-            applier.sendMessage(ChatComponents.GENERIC_SKILL + ChatColor.WHITE + character.getEntity().getName() + "'s "
+            applier.sendMessage("    " + ChatComponents.GENERIC_SKILL + ChatColor.WHITE + CustomNameManager.getName(character) + "'s "
                     + ChatColor.GOLD + "time has been shifted " + currentStackCount + " times!");
+
             return true;
-        }
-
-        @Override
-        public int refresh(CharacterTemplate character) {
-            if (character instanceof Hero) {
-                syncTask((Hero) character);
-                return 1;
-            }
-            return 0;
-        }
-
-        @Override
-        public int addStacks(Skill skill, Player player, long l, int i) {
-            throw new NotImplementedException();
-        }
-
-        @Override
-        public int removeStacks(int i) {
-            throw new NotImplementedException();
-        }
-
-        @Override
-        public int removeAllStacks() {
-            throw new NotImplementedException();
         }
     }
 }
