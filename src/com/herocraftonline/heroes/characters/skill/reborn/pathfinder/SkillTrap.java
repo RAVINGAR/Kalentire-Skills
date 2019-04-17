@@ -33,21 +33,19 @@ public class SkillTrap extends SkillBaseGroundEffect {
 
     @Override
     public String getDescription(Hero hero) {
-        long warmUp = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DELAY, 5000, false);
-        long duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, 5000, false);
-        long rootDuration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.PERIOD, 500, false);
+        long warmUp = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DELAY, 3000, false);
+        long duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, 30000, false);
         return getDescription()
-                .replace("$2", Util.decFormat.format((double) rootDuration / 1000))
                 .replace("$1", Util.decFormat.format((double) duration / 1000));
     }
 
     @Override
     public ConfigurationSection getDefaultConfig() {
         ConfigurationSection node = super.getDefaultConfig();
-
         node.set(SkillSetting.RADIUS.node(), 3d);
         node.set(HEIGHT_NODE, 2d);
         node.set(SkillSetting.DELAY.node(), 5000);
+        node.set("root-duration", 2000);
         node.set(SkillSetting.DURATION.node(), 5000);
         node.set(SkillSetting.PERIOD.node(), 500);
         return node;
@@ -68,8 +66,9 @@ public class SkillTrap extends SkillBaseGroundEffect {
 
         final double radius = SkillConfigManager.getUseSetting(hero, this, SkillSetting.RADIUS, 3d, false);
         double height = SkillConfigManager.getUseSetting(hero, this, HEIGHT_NODE, 2d, false);
-        long duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, 5000, false);
+        long duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, 30000, false);
         final long period = SkillConfigManager.getUseSetting(hero, this, SkillSetting.PERIOD, 500, false);
+        long rootDuration = SkillConfigManager.getUseSetting(hero, this, "root-duration", 2000, false);
         applyAreaGroundEffectEffect(hero, period, duration, player.getLocation(), radius, height, new GroundEffectActions() {
 
             @Override
@@ -110,7 +109,7 @@ public class SkillTrap extends SkillBaseGroundEffect {
 
                 SkillTrap skill = SkillTrap.this;
                 final CharacterTemplate targetCT = plugin.getCharacterManager().getCharacter(target);
-                final RootEffect effect = new RootEffect(skill, player, 100, 5000);
+                final RootEffect effect = new RootEffect(skill, player, 100, rootDuration);
                 targetCT.addEffect(effect);
 
                 Location targetLocation = target.getLocation();
