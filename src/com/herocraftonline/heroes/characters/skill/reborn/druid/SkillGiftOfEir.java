@@ -2,6 +2,7 @@ package com.herocraftonline.heroes.characters.skill.reborn.druid;
 
 import com.herocraftonline.heroes.Heroes;
 import com.herocraftonline.heroes.api.SkillResult;
+import com.herocraftonline.heroes.api.events.HeroRegainManaEvent;
 import com.herocraftonline.heroes.characters.Hero;
 import com.herocraftonline.heroes.characters.Monster;
 import com.herocraftonline.heroes.characters.effects.Effect;
@@ -20,6 +21,7 @@ import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
 
 import java.util.ArrayList;
+import java.util.List;
 
 // player turns invuln for 4 seconds can't mode
 // costs 30-40%
@@ -84,9 +86,11 @@ public class SkillGiftOfEir extends ActiveSkill {
         }
 
         long duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, 5000, false);
+        int period = SkillConfigManager.getUseSetting(hero, this, SkillSetting.PERIOD, 100, false);
         double radius = SkillConfigManager.getUseSetting(hero, this, SkillSetting.RADIUS, 5000, false);
         double radiusSquared = radius * radius;
-        hero.addEffect(new InvulnStationaryEffect(this, player, duration, radius, radiusSquared));
+        hero.addEffect(new RootEffect(this, player, period, duration));
+        hero.addEffect(new InvulnStationaryEffect(this, player, duration, applyText, expireText, radius, radiusSquared));
 
 
 
@@ -141,9 +145,9 @@ public class SkillGiftOfEir extends ActiveSkill {
         private final double radius = 0;
         private final double radiusSquared = 0;
 
-        public InvulnStationaryEffect(Skill skill, Player applier, long duration, double radius, double radiusSquared) {
-            super(skill, "InvulnStationaryEffect", applier, duration);
-//            types.add(EffectType.DISABLE);
+        public InvulnStationaryEffect(Skill skill, Player applier, long duration, String applyText, String expireText, double radius, double radiusSquared) {
+            super(skill, "InvulnStationaryEffect", applier, duration, applyText, expireText);
+            types.add(EffectType.DISABLE);
             types.add(EffectType.INVULNERABILITY);
             types.add(EffectType.UNTARGETABLE);
             types.add(EffectType.UNBREAKABLE);
@@ -164,11 +168,41 @@ public class SkillGiftOfEir extends ActiveSkill {
                 return;
             }
 
+            double mana = hero.getMana();
+            double maxMana = hero.getMaxMana();
+            double manaPercent = mana / maxMana * 100;
+            player.sendMessage("Mana%:"  + manaPercent);
+            double manaGiveth = SkillConfigManager.getUseSetting(hero, skill, SkillSetting.MANA, 40, false);
+            if (manaPercent < manaGiveth) {
+                hero.setMana(0);
+            } else {
+                double manaDiff = manaGiveth - manaPercent;
+                player.sendMessage("Mana% left over: " + manaDiff);
+                hero.setMana( (int) (maxMana * manaDiff));
+            }
+
+            ArrayList<Hero> heroList = new ArrayList<Hero>();
             for (final Hero partyHero : hero.getParty().getMembers()) {
                 if (!player.getWorld().equals(partyHero.getPlayer().getWorld()))
                     continue;
                 if ((partyHero.getPlayer().getLocation().distanceSquared(heroLoc) <= radiusSquared)) {
+                    heroList.add(partyHero);
 
+                }
+            }
+
+            int manaIncreaseAmount = (int) mana / heroList.size();
+            player.sendMessage("party members to give mana: " + heroList.size());
+            for (Hero heroChosen : heroList)
+                heroChosen.getPlayer().sendMessage("mana given by druid: " + manaIncreaseAmount);
+                HeroRegainManaEvent hrmEvent = new HeroRegainManaEvent(hero, manaIncreaseAmount, skill);
+                plugin.getServer().getPluginManager().callEvent(hrmEvent);
+                if (!hrmEvent.isCancelled()) {
+                    hero.setMana(hrmEvent.getDelta() + hero.getMana());
+
+
+                    if (hero.isVerboseMana())
+                        player.sendMessage(ChatComponents.Bars.mana(hero.getMana(), hero.getMaxMana(), true));
                 }
             }
         }
