@@ -90,7 +90,7 @@ public class SkillGiftOfEir extends ActiveSkill {
         double radius = SkillConfigManager.getUseSetting(hero, this, SkillSetting.RADIUS, 5000, false);
         double radiusSquared = radius * radius;
         hero.addEffect(new RootEffect(this, player, period, duration));
-        hero.addEffect(new InvulnStationaryEffect(this, player, duration, applyText, expireText, radius, radiusSquared));
+        hero.addEffect(new InvulnStationaryEffect(this, player, duration, applyText, expireText, radiusSquared));
 
 
 
@@ -142,11 +142,11 @@ public class SkillGiftOfEir extends ActiveSkill {
      */
 
     public class InvulnStationaryEffect extends ExpirableEffect {
-        private final double radius = 0;
-        private final double radiusSquared = 0;
+        private final double radiusSquared;
 
-        public InvulnStationaryEffect(Skill skill, Player applier, long duration, String applyText, String expireText, double radius, double radiusSquared) {
+        public InvulnStationaryEffect(Skill skill, Player applier, long duration, String applyText, String expireText, double rSquared) {
             super(skill, "InvulnStationaryEffect", applier, duration, applyText, expireText);
+            radiusSquared = rSquared;
             types.add(EffectType.DISABLE);
             types.add(EffectType.INVULNERABILITY);
             types.add(EffectType.UNTARGETABLE);
@@ -181,7 +181,7 @@ public class SkillGiftOfEir extends ActiveSkill {
                 hero.setMana( (int) (maxMana * manaDiff));
             }
 
-            ArrayList<Hero> heroList = new ArrayList<Hero>();
+            ArrayList<Hero> heroList = new ArrayList<>();
             for (final Hero partyHero : hero.getParty().getMembers()) {
                 if (!player.getWorld().equals(partyHero.getPlayer().getWorld()))
                     continue;
@@ -193,16 +193,15 @@ public class SkillGiftOfEir extends ActiveSkill {
 
             int manaIncreaseAmount = (int) mana / heroList.size();
             player.sendMessage("party members to give mana: " + heroList.size());
-            for (Hero heroChosen : heroList)
+            for (Hero heroChosen : heroList) {
                 heroChosen.getPlayer().sendMessage("mana given by druid: " + manaIncreaseAmount);
-                HeroRegainManaEvent hrmEvent = new HeroRegainManaEvent(hero, manaIncreaseAmount, skill);
+                HeroRegainManaEvent hrmEvent = new HeroRegainManaEvent(heroChosen, manaIncreaseAmount, skill);
                 plugin.getServer().getPluginManager().callEvent(hrmEvent);
                 if (!hrmEvent.isCancelled()) {
-                    hero.setMana(hrmEvent.getDelta() + hero.getMana());
-
+                    heroChosen.setMana(hrmEvent.getDelta() + heroChosen.getMana());
 
                     if (hero.isVerboseMana())
-                        player.sendMessage(ChatComponents.Bars.mana(hero.getMana(), hero.getMaxMana(), true));
+                        heroChosen.getPlayer().sendMessage(ChatComponents.Bars.mana(heroChosen.getMana(), heroChosen.getMaxMana(), true));
                 }
             }
         }
