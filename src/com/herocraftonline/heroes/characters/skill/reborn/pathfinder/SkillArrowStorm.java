@@ -69,15 +69,14 @@ public class SkillArrowStorm extends ActiveSkill {
     @Override
     public ConfigurationSection getDefaultConfig() {
         ConfigurationSection node = super.getDefaultConfig();
-
         node.set(SkillSetting.MAX_DISTANCE.node(), 12);
         node.set(SkillSetting.RADIUS.node(), 5);
         node.set(SkillSetting.DAMAGE.node(), 15);
-        node.set("max-storm-height", 4);
-        node.set("downward-velocity", 0.8);
-        node.set("velocity-deviation", 0.5);
+        node.set("max-storm-height", 10);
+        node.set("downward-velocity", 1.0);
+        node.set("velocity-deviation", 0.0);
         node.set("delay-between-firing", 0.1);
-        node.set("storm-arrows-launched", 4);
+        node.set("storm-arrows-launched", 100);
         node.set("slow duration", 1000);
         node.set("slow-multiplier", 1);
         node.set(SkillSetting.APPLY_TEXT.node(), "");
@@ -153,7 +152,7 @@ public class SkillArrowStorm extends ActiveSkill {
 
                     Arrow stormArrow = world.spawn(fLoc, Arrow.class);
                     //stormArrow.getWorld().spigot().playEffect(stormArrow.getLocation(), Effect.EXPLOSION_LARGE, 0, 0, 0.4F, 0.4F, 0.4F, 0.0F, 2, 32);
-                    stormArrow.getWorld().spawnParticle(Particle.FIREWORKS_SPARK, stormArrow.getLocation(), 2, 0.4, 0.4, 0.4, 0);
+                    //stormArrow.getWorld().spawnParticle(Particle.FIREWORKS_SPARK, stormArrow.getLocation(), 2, 0.4, 0.4, 0.4, 0);
 
                     cloudEffect(stormArrow.getLocation());
                     stormArrow.setShooter(player);
@@ -173,7 +172,7 @@ public class SkillArrowStorm extends ActiveSkill {
         final VisualEffect firework = new VisualEffect();
         Effect visualEffect = new Effect(em) {
             public Particle cloudParticle = Particle.CLOUD;
-            public Color cloudColor = Color.LIME;
+            public Color cloudColor = Color.WHITE;
             public Particle mainParticle = Particle.REDSTONE;
             public Color mainParticleColor = Color.GREEN;
             public float cloudSize = .7f;

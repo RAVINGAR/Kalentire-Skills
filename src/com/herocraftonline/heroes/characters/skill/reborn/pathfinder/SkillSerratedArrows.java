@@ -35,7 +35,7 @@ public class SkillSerratedArrows extends PassiveSkill {
     @Override
     public String getDescription(Hero hero) {
         double damage = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE, 90, false);
-        long duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, 30000, false);
+        long duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, 5000, false);
 
         return getDescription()
                 .replace("$1", Util.decFormat.format(duration))
@@ -45,7 +45,7 @@ public class SkillSerratedArrows extends PassiveSkill {
     @Override
     public ConfigurationSection getDefaultConfig() {
         ConfigurationSection config = super.getDefaultConfig();
-        config.set(SkillSetting.DURATION.node(), 30000);
+        config.set(SkillSetting.DURATION.node(), 5000);
         config.set(SkillSetting.DAMAGE.node(), 90);
         return config;
     }
@@ -94,6 +94,7 @@ public class SkillSerratedArrows extends PassiveSkill {
                if (serratedEffect.getHitCount() == 3) {
                    addSpellTarget(target, hero);
                    damageEntity(target, player, damage, EntityDamageEvent.DamageCause.MAGIC, true);
+                   targetCT.removeEffect(serratedEffect);
                    VisualEffect.playInstantFirework(FireworkEffect.builder()
                            .flicker(false)
                            .trail(false)
@@ -145,7 +146,6 @@ public class SkillSerratedArrows extends PassiveSkill {
 
         private void addHit() {
             this.hitCount++;
-            //Currently doesn't reset properly
             this.setDuration(getDuration());
 
         }

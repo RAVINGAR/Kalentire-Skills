@@ -76,7 +76,7 @@ public class SkillRuptureShot extends ActiveSkill {
             super(skill, "ArrowRupture", applier, period, duration, tickDamage);
             this.types.add(EffectType.BLEED);
             addPotionEffect(new PotionEffect(PotionEffectType.WITHER, (int) (duration / 1000) * 20, 0), true);
-            addPotionEffect(new PotionEffect(PotionEffectType.SLOW, (int) (duration / 1000) * 20, 5), true);
+            //addPotionEffect(new PotionEffect(PotionEffectType.SLOW, (int) (duration / 1000) * 20, 5), true);
         }
 
         @Override
