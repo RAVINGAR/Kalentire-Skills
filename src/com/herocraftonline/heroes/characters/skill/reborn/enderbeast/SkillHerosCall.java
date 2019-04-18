@@ -11,7 +11,6 @@ import com.herocraftonline.heroes.characters.effects.PeriodicExpirableEffect;
 import com.herocraftonline.heroes.characters.skill.*;
 import com.herocraftonline.heroes.chat.ChatComponents;
 import com.herocraftonline.heroes.util.Util;
-import de.slikey.effectlib.util.VectorUtils;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.Particle;
@@ -27,7 +26,6 @@ import org.bukkit.util.Vector;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.logging.Level;
 
 public class SkillHerosCall extends ActiveSkill {
 
@@ -201,13 +199,13 @@ public class SkillHerosCall extends ActiveSkill {
             monster.setTargetIfAble(applier);
         }
 
-        private void faceTarget(LivingEntity victim, Location casterLocation) {
+        private void faceTarget(LivingEntity victim, Location callerLocation) {
             Location victimLocation = victim.getLocation();
-            Vector difference = casterLocation.toVector().subtract(victimLocation.toVector());
+            Vector difference = callerLocation.toVector().subtract(victimLocation.toVector());
             double angleDegrees = Math.toDegrees(victimLocation.getDirection().angle(difference));
 
             if (angleDegrees > maxAngleDegrees) {
-                Vector dir = casterLocation.clone().subtract(victim.getEyeLocation()).toVector();
+                Vector dir = callerLocation.clone().subtract(victim.getEyeLocation()).toVector();
                 Location loc = victim.getLocation().setDirection(dir);
                 victim.teleport(loc, PlayerTeleportEvent.TeleportCause.PLUGIN);
             }

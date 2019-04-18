@@ -92,12 +92,9 @@ public class SkillTumble extends PassiveSkill {
             distance += hero.getHeroLevel() * perLevel;
 
             double fallDistance = event.getDamage();
-
             fallDistance -= distance;
 
             final double fallDamage = fallDistance;
-
-            Heroes.log(Level.INFO, "Tumble - distance: " + fallDistance + ", Damage: " + fallDamage + "Tumble Distance: " + distance);
 
             NCPUtils.applyExemptions(event.getEntity(), new NCPFunction() {
                 @Override

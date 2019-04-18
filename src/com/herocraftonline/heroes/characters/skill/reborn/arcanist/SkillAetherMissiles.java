@@ -51,7 +51,6 @@ public class SkillAetherMissiles extends ActiveSkill {
         setTypes(SkillType.ABILITY_PROPERTY_MAGICAL, SkillType.SILENCEABLE, SkillType.DAMAGING, SkillType.AGGRESSIVE);
 
         setToggleableEffectName(toggleableEffectName);
-        Bukkit.getServer().getPluginManager().registerEvents(new SkillHeroListener(this), plugin);
     }
 
     @Override
@@ -97,35 +96,6 @@ public class SkillAetherMissiles extends ActiveSkill {
         int duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, 15000, false);
         hero.addEffect(new AetherMissilesEffect(this, player, duration));
         return SkillResult.NORMAL;
-    }
-
-    private class SkillHeroListener implements Listener {
-        private Skill skill;
-
-        SkillHeroListener(Skill skill) {
-            this.skill = skill;
-        }
-
-        @EventHandler(priority = EventPriority.MONITOR)
-        public void onLeftClick(PlayerInteractEvent event) {
-            if (event.getAction() != Action.LEFT_CLICK_AIR && event.getAction() != Action.LEFT_CLICK_BLOCK)
-                return;
-
-            Player player = event.getPlayer();
-            Hero hero = plugin.getCharacterManager().getHero(player);
-            if (!hero.hasEffect(toggleableEffectName))
-                return;
-
-            hero.removeEffect(hero.getEffect(toggleableEffectName));
-        }
-
-        @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
-        public void onWeaponDamage(WeaponDamageEvent event) {
-            if (event.isProjectile() || !(event.getDamager() instanceof Hero) || !(event.getDamager().hasEffect(toggleableEffectName)))
-                return;
-
-            event.getDamager().removeEffect(event.getDamager().getEffect(toggleableEffectName));
-        }
     }
 
     private class AetherMissilesEffect extends ExpirableEffect {
@@ -257,13 +227,13 @@ public class SkillAetherMissiles extends ActiveSkill {
         }
 
         protected boolean onCollideWithEntity(Entity entity) {
-            if (!(entity instanceof LivingEntity) || entity.equals(player) || !damageCheck(player, (LivingEntity) entity))
-                return false;
-            return true;
+            return entity instanceof LivingEntity && !hero.isAlliedTo((LivingEntity) entity);
         }
 
         protected void onEntityHit(Entity entity, Vector hitOrigin, Vector hitForce) {
             LivingEntity target = (LivingEntity) entity;
+            if (!damageCheck(player, (LivingEntity) entity))
+                return;
 
             double damage = this.projectileDamage;
             CharacterTemplate targetCT = plugin.getCharacterManager().getCharacter(target);
