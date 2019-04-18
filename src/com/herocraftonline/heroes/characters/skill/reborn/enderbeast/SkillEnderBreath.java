@@ -3,7 +3,10 @@ package com.herocraftonline.heroes.characters.skill.reborn.enderbeast;
 import com.herocraftonline.heroes.Heroes;
 import com.herocraftonline.heroes.api.SkillResult;
 import com.herocraftonline.heroes.characters.Hero;
-import com.herocraftonline.heroes.characters.skill.*;
+import com.herocraftonline.heroes.characters.skill.Skill;
+import com.herocraftonline.heroes.characters.skill.SkillConfigManager;
+import com.herocraftonline.heroes.characters.skill.SkillSetting;
+import com.herocraftonline.heroes.characters.skill.SkillType;
 import com.herocraftonline.heroes.characters.skill.skills.SkillBaseGroundEffect;
 import com.herocraftonline.heroes.characters.skill.tools.BasicMissile;
 import com.herocraftonline.heroes.nms.NMSHandler;
@@ -16,14 +19,17 @@ import org.bukkit.*;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
 import org.bukkit.configuration.ConfigurationSection;
-import org.bukkit.entity.*;
+import org.bukkit.entity.Entity;
+import org.bukkit.entity.LivingEntity;
+import org.bukkit.entity.Player;
 import org.bukkit.event.entity.EntityDamageEvent.DamageCause;
 import org.bukkit.event.player.PlayerTeleportEvent;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.util.BlockIterator;
 import org.bukkit.util.Vector;
 
-import java.util.*;
+import java.util.List;
+import java.util.Random;
 
 public class SkillEnderBreath extends SkillBaseGroundEffect {
 
@@ -155,10 +161,10 @@ public class SkillEnderBreath extends SkillBaseGroundEffect {
 
             // this buggy shit might lauch someone to the moon, but until that happens
             // let's prentend this code has no bugs
-            int distance = (int) target.getLocation().distance(desiredLocation);
-            player.sendMessage("distance: " + distance);
-            Vector dir = desiredLocation.clone().toVector().subtract(target.getLocation().toVector());
-            Location iterLoc = target.getLocation().clone().setDirection(dir);
+            Location targetStartLoc = target.getLocation();
+            int distance = (int) targetStartLoc.distance(desiredLocation);
+            Vector dir = desiredLocation.clone().toVector().subtract(targetStartLoc.toVector());
+            Location iterLoc = targetStartLoc.clone().setDirection(dir);
             BlockIterator iter;
             try {
                 iter = new BlockIterator(iterLoc, 1, distance);
@@ -180,8 +186,11 @@ public class SkillEnderBreath extends SkillBaseGroundEffect {
             if (validFinalBlock == null)
                 return;
 
-            Location newLocation = validFinalBlock.getLocation().clone();
+            Location newLocation = validFinalBlock.getLocation();
+            newLocation.setPitch(targetStartLoc.getPitch());
+            newLocation.setYaw(targetStartLoc.getYaw());
             target.teleport(newLocation, PlayerTeleportEvent.TeleportCause.PLUGIN);
+            
             targetWorld.playEffect(newLocation, org.bukkit.Effect.ENDER_SIGNAL, 3);
             targetWorld.playSound(newLocation, Sound.ENTITY_ENDERMAN_TELEPORT, 0.6F, 1.0F);
         }

@@ -181,7 +181,7 @@ public class SkillHerosCall extends ActiveSkill {
                 hero.removeEffect(this);
 
             Location targetLocation = applier.getLocation();
-            faceTarget(victim, targetLocation);
+            faceTargetIfNecessary(victim, targetLocation);
             pullToTarget(victim, targetLocation);
         }
 
@@ -193,13 +193,13 @@ public class SkillHerosCall extends ActiveSkill {
                 monster.removeEffect(this);
 
             Location targetLocation = applier.getLocation();
-            faceTarget(victim, targetLocation);
+            faceTargetIfNecessary(victim, targetLocation);
             pullToTarget(victim, targetLocation);
 
             monster.setTargetIfAble(applier);
         }
 
-        private void faceTarget(LivingEntity victim, Location callerLocation) {
+        private void faceTargetIfNecessary(LivingEntity victim, Location callerLocation) {
             Location victimLocation = victim.getLocation();
             Vector difference = callerLocation.toVector().subtract(victimLocation.toVector());
             double angleDegrees = Math.toDegrees(victimLocation.getDirection().angle(difference));
