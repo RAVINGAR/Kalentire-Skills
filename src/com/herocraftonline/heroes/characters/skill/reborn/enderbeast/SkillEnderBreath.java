@@ -150,31 +150,26 @@ public class SkillEnderBreath extends SkillBaseGroundEffect {
 
         private void teleportPlayer(Player player, LivingEntity target) {
             int randomLocIndex = random.nextInt(locationsInRadius.size() - 1);
-            player.sendMessage("random: " + randomLocIndex);
-
             Location desiredLocation = locationsInRadius.get(randomLocIndex).clone();
-            player.sendMessage("desired location: "+desiredLocation);
             World targetWorld = desiredLocation.getWorld();
 
+            // this buggy shit might lauch someone to the moon, but until that happens
+            // let's prentend this code has no bugs
             int distance = (int) target.getLocation().distance(desiredLocation);
             player.sendMessage("distance: " + distance);
-            Block validFinalBlock = null;
-            Block currentBlock;
-
-            Vector dir = desiredLocation.clone().subtract(target.getEyeLocation()).toVector().normalize();
+            Vector dir = desiredLocation.clone().toVector().subtract(target.getLocation().toVector());
             Location iterLoc = target.getLocation().clone().setDirection(dir);
-            player.sendMessage("start: " + iterLoc);
-
-            BlockIterator iter = null;
+            BlockIterator iter;
             try {
                 iter = new BlockIterator(iterLoc, 1, distance);
             } catch (IllegalStateException e) {
                 return;
             }
+            Block validFinalBlock = null;
+            Block currentBlock;
             while (iter.hasNext()) {
                 currentBlock = iter.next();
                 Material currentBlockType = currentBlock.getType();
-
                 if (!Util.transparentBlocks.contains(currentBlockType))
                     break;
 
@@ -187,7 +182,6 @@ public class SkillEnderBreath extends SkillBaseGroundEffect {
 
             Location newLocation = validFinalBlock.getLocation().clone();
             target.teleport(newLocation, PlayerTeleportEvent.TeleportCause.PLUGIN);
-            player.sendMessage("final location: " + target.getLocation());
             targetWorld.playEffect(newLocation, org.bukkit.Effect.ENDER_SIGNAL, 3);
             targetWorld.playSound(newLocation, Sound.ENTITY_ENDERMAN_TELEPORT, 0.6F, 1.0F);
         }
