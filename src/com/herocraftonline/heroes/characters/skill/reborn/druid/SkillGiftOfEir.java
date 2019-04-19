@@ -1,15 +1,12 @@
 package com.herocraftonline.heroes.characters.skill.reborn.druid;
 
-import com.comphenix.protocol.PacketType;
 import com.herocraftonline.heroes.Heroes;
 import com.herocraftonline.heroes.api.SkillResult;
 import com.herocraftonline.heroes.api.events.HeroRegainManaEvent;
 import com.herocraftonline.heroes.characters.Hero;
 import com.herocraftonline.heroes.characters.Monster;
+import com.herocraftonline.heroes.characters.effects.*;
 import com.herocraftonline.heroes.characters.effects.Effect;
-import com.herocraftonline.heroes.characters.effects.EffectType;
-import com.herocraftonline.heroes.characters.effects.ExpirableEffect;
-import com.herocraftonline.heroes.characters.effects.PeriodicExpirableEffect;
 import com.herocraftonline.heroes.characters.effects.common.RootEffect;
 import com.herocraftonline.heroes.characters.skill.*;
 import com.herocraftonline.heroes.chat.ChatComponents;
@@ -26,7 +23,7 @@ public class SkillGiftOfEir extends ActiveSkill {
     private String expireText;
 
     public SkillGiftOfEir(Heroes plugin) {
-        super(plugin, "GiveOfEir");
+        super(plugin, "GiftOfEir");
         setDescription("You become immobilized and invulnerable for $1 seconds. Donate $2% of your mana shared to your party members around $3 radius ");
         setUsage("/skill giftofeir");
         setArgumentRange(0, 0);
@@ -52,6 +49,7 @@ public class SkillGiftOfEir extends ActiveSkill {
         node.set("mana-percent-cost", 0.40);
         node.set(SkillSetting.RADIUS.node(), 5.0);
         node.set(SkillSetting.PERIOD.node(), 100);
+        node.set("mana-regen-tick", 1000);
         node.set(SkillSetting.DURATION.node(), 5000);
         node.set(SkillSetting.APPLY_TEXT.node(), ChatComponents.GENERIC_SKILL + "%hero% has become invulnerable!");
         node.set(SkillSetting.EXPIRE_TEXT.node(), ChatComponents.GENERIC_SKILL + "%hero% is once again vulnerable!");
@@ -83,21 +81,22 @@ public class SkillGiftOfEir extends ActiveSkill {
         int period = SkillConfigManager.getUseSetting(hero, this, SkillSetting.PERIOD, 100, false);
         double radius = SkillConfigManager.getUseSetting(hero, this, SkillSetting.RADIUS, 5000, false);
         double radiusSquared = radius * radius;
+        long period2 = SkillConfigManager.getUseSetting(hero, this, "mana-regen,tick", 1000, false);
         hero.addEffect(new RootEffect(this, player, period, duration));
-        long period2 = 1000;
         hero.addEffect(new ManaPoolEffect(this, player, period2, duration, radiusSquared));
-        hero.addEffect(new InvulnStationaryEffect(this, player, duration, applyText, expireText, radiusSquared));
+        hero.addEffect(new InvulnStationaryEffect(this, player, duration, applyText, expireText));
 
         return SkillResult.NORMAL;
     }
 
     public class ManaPoolEffect extends PeriodicExpirableEffect {
+
         private double radiusSquared;
         private double manaCost;
 
         public ManaPoolEffect(Skill skill, Player applier, long period, long duration, double rSquared) {
             super(skill, "ManaPoolEFfect", applier, period, duration);
-            radiusSquared = radiusSquared;
+            radiusSquared = rSquared;
             types.add(EffectType.BENEFICIAL);
             types.add(EffectType.AREA_OF_EFFECT);
             types.add(EffectType.MANA_INCREASING);
@@ -129,13 +128,57 @@ public class SkillGiftOfEir extends ActiveSkill {
             }
         }
 
-        public ArrayList<Location> circle(Location centerPoint, int particleAmount, double circleRadius)
+        @Override
+        public void tickMonster(Monster monster) {
+
+        }
+
+        @Override
+        public void tickHero(Hero hero) {
+            Player player = hero.getPlayer();
+            applyVisuals(player);
+            Location heroLoc = player.getLocation();
+
+            if (hero.getParty() == null) {
+                return;
+            }
+
+            ArrayList<Hero> heroList = new ArrayList<>();
+            for (Hero partyHero : hero.getParty().getMembers()) {
+                if (hero.getPlayer().equals(partyHero.getPlayer())) {
+                    continue;
+                } else if (!player.getWorld().equals(partyHero.getPlayer().getWorld())) {
+                    continue;
+                } else if ((partyHero.getPlayer().getLocation().distanceSquared(heroLoc) <= radiusSquared)) {
+                    heroList.add(partyHero);
+                }
+            }
+
+            if (heroList.size() == 0) {
+                return;
+            }
+
+            // give them mana
+            int manaIncreaseAmount = (int) manaCost / heroList.size();
+            for (Hero heroChosen : heroList) {
+                heroChosen.getPlayer().sendMessage(ChatComponents.GENERIC_SKILL + "You have received a gift of eir!");
+                HeroRegainManaEvent hrmEvent2 = new HeroRegainManaEvent(heroChosen, manaIncreaseAmount, skill);
+                plugin.getServer().getPluginManager().callEvent(hrmEvent2);
+                if (!hrmEvent2.isCancelled()) {
+                    heroChosen.setMana(hrmEvent2.getDelta() + heroChosen.getMana());
+
+                    if (hero.isVerboseMana())
+                        heroChosen.getPlayer().sendMessage(ChatComponents.Bars.mana(heroChosen.getMana(), heroChosen.getMaxMana(), true));
+                }
+            }
+        }
+        private ArrayList<Location> circle(Location centerPoint, int particleAmount, double circleRadius)
         {
             World world = centerPoint.getWorld();
 
             double increment = (2 * Math.PI) / particleAmount;
 
-            ArrayList<Location> locations = new ArrayList<Location>();
+            ArrayList<Location> locations = new ArrayList<>();
 
             for (int i = 0; i < particleAmount; i++)
             {
@@ -147,78 +190,23 @@ public class SkillGiftOfEir extends ActiveSkill {
             return locations;
         }
 
-        @Override
-        public void tickMonster(Monster monster) {
 
-        }
-
-        @Override
-        public void tickHero(Hero hero) {
-            // get players and give them mana
-            Player player = hero.getPlayer();
-            player.sendMessage("tick");
-            Location heroLoc = player.getLocation();
-
+        private void applyVisuals(Player player) {
             for (double r = 1; r < radiusSquared; r++)
             {
-                ArrayList<Location> particleLocations = circle(player.getEyeLocation(), 45,  5);
+                ArrayList<Location> particleLocations = circle(player.getLocation(), 15,  5);
                 for (int i = 0; i < particleLocations.size(); i++)
                 {
-                    player.getWorld().spawnParticle(Particle.CLOUD, particleLocations.get(i), 1, 0, 0.1, 0, 0.1);
+                    player.getWorld().spawnParticle(Particle.SPIT, particleLocations.get(i),1, 3, 0.2, 0.5, 0.2);
                 }
             }
             player.getWorld().playSound(player.getLocation(), Sound.ENTITY_GUARDIAN_AMBIENT, 1.0F, 1.2F);
-
-            /*
-            if (hero.getParty() == null) {
-                return;
-            }
-             */
-
-
-            player.sendMessage("finding party members");
-            // find part member within radius
-            ArrayList<Hero> heroList = new ArrayList<>();
-            for (Hero partyHero : hero.getParty().getMembers()) {
-                if (hero.getPlayer().equals(partyHero.getPlayer())) {
-                    player.sendMessage("canot add self");
-                } else if (!player.getWorld().equals(partyHero.getPlayer().getWorld())) {
-                    player.sendMessage("party member is not a member of your world");
-                } else if ((partyHero.getPlayer().getLocation().distanceSquared(heroLoc) <= radiusSquared)) {
-                    player.sendMessage("found a party member");
-                    heroList.add(partyHero);
-                }
-            }
-
-
-            // give them mana
-            if (heroList.size() == 0) {
-                player.sendMessage("no party members found");
-                return;
-            }
-
-            // give them mana
-            int manaIncreaseAmount = (int) manaCost / heroList.size();
-            player.sendMessage("party members to give mana: " + heroList.size());
-            for (Hero heroChosen : heroList) {
-                heroChosen.getPlayer().sendMessage("mana given by druid: " + manaIncreaseAmount);
-                HeroRegainManaEvent hrmEvent2 = new HeroRegainManaEvent(heroChosen, manaIncreaseAmount, skill);
-                plugin.getServer().getPluginManager().callEvent(hrmEvent2);
-                if (!hrmEvent2.isCancelled()) {
-                    heroChosen.getPlayer().sendMessage("received mana: " + manaIncreaseAmount);
-                    heroChosen.setMana(hrmEvent2.getDelta() + heroChosen.getMana());
-
-                    if (hero.isVerboseMana())
-                        heroChosen.getPlayer().sendMessage(ChatComponents.Bars.mana(heroChosen.getMana(), heroChosen.getMaxMana(), true));
-                }
-            }
-
-            player.sendMessage("done");
         }
+
     }
 
     public class InvulnStationaryEffect extends ExpirableEffect {
-        public InvulnStationaryEffect(Skill skill, Player applier, long duration, String applyText, String expireText, double rSquared) {
+        public InvulnStationaryEffect(Skill skill, Player applier, long duration, String applyText, String expireText) {
             super(skill, "InvulnStationaryEffect", applier, duration, applyText, expireText);
             types.add(EffectType.INVULNERABILITY);
             types.add(EffectType.UNTARGETABLE);
@@ -229,15 +217,6 @@ public class SkillGiftOfEir extends ActiveSkill {
 
         public void applyToHero(Hero hero) {
             super.applyToHero(hero);
-            /*
-            VisualEffect.playInstantFirework(FireworkEffect.builder()
-                    .flicker(false)
-                    .trail(false)
-                    .with(FireworkEffect.Type.BALL_LARGE)
-                    .withColor(Color.AQUA)
-                    .withFade(Color.BLUE)
-                    .build(), hero.getPlayer().getLocation().add(0, 2.0, 0));
-             */
         }
 
         public void removeFromHero(Hero hero) {
