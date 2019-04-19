@@ -105,7 +105,7 @@ public class SkillHook extends ActiveSkill {
 
         HookedLocationEffect validHookedLocEffect = ownerEffect.tryGetHookedLocationEffect(targetLoc, grabRadius);
         if (validHookedLocEffect == null) {
-            return ownerEffect.getCurrentHookedLocationsCount() == 0
+            return ownerEffect.getCurrentHookCount() == 0
                     ? InvalidHookTargetReason.NO_ACTIVE_HOOKS
                     : InvalidHookTargetReason.OUT_OF_RANGE;
         }
