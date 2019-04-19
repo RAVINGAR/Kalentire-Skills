@@ -25,7 +25,7 @@ public class SkillPoison extends TargettedSkill {
 
     public SkillPoison(Heroes plugin) {
         super(plugin, "Poison");
-        this.setDescription("You poison your target dealing $1 damage over $2 seconds.");
+        this.setDescription("You poison your target dealing $1 damage over $2 second(s).");
         this.setUsage("/skill poison <target>");
         this.setArgumentRange(0, 1);
         this.setIdentifiers("skill poison");

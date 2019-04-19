@@ -32,7 +32,7 @@ public class SkillBattlesong extends ActiveSkill {
 
     public SkillBattlesong(Heroes plugin) {
         super(plugin, "Battlesong");
-        setDescription("Play a song of battle for $1 seconds. While active, you regenerate $2 stamina for party members within $3 blocks every $4 seconds.");
+        setDescription("Play a song of battle for $1 second(s). While active, you regenerate $2 stamina for party members within $3 blocks every $4 second(s).");
         setArgumentRange(0, 0);
         setUsage("/skill battlesong");
         setIdentifiers("skill battlesong");

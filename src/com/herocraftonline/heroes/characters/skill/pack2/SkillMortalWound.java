@@ -37,7 +37,7 @@ public class SkillMortalWound extends TargettedSkill {
 
     public SkillMortalWound(Heroes plugin) {
         super(plugin, "MortalWound");
-        setDescription("You strike your target reducing healing by $1%, and causing them to bleed for $2 damage over $3 seconds.");
+        setDescription("You strike your target reducing healing by $1%, and causing them to bleed for $2 damage over $3 second(s).");
         setUsage("/skill mortalwound");
         setArgumentRange(0, 0);
         setIdentifiers("skill mortalwound", "skill mwound");

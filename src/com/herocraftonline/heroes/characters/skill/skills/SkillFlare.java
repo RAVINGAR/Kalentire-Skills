@@ -36,7 +36,7 @@ public class SkillFlare extends ActiveSkill
 	public SkillFlare(Heroes plugin)
 	{
 		super(plugin, "Flare");
-		setDescription("You summon a powerful Flare for 6 seconds that rains $1 bolts of flame down over a radius of $2 blocks. Each bolt deals $4 damage to any target within $5 blocks and ignites them for $6 seconds.");
+		setDescription("You summon a powerful Flare for 6 seconds that rains $1 bolts of flame down over a radius of $2 blocks. Each bolt deals $4 damage to any target within $5 blocks and ignites them for $6 second(s).");
 		setUsage("/skill Flare");
 		setArgumentRange(0, 0);
 		setIdentifiers("skill Flare");

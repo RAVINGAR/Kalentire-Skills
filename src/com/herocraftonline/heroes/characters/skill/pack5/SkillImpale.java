@@ -30,7 +30,7 @@ public class SkillImpale extends TargettedSkill {
 
     public SkillImpale(Heroes plugin) {
         super(plugin, "Impale");
-        setDescription("You impale your target with your weapon, dealing $1 physical damage and slowing them for $2 seconds.");
+        setDescription("You impale your target with your weapon, dealing $1 physical damage and slowing them for $2 second(s).");
         setUsage("/skill impale");
         setArgumentRange(0, 0);
         setIdentifiers("skill impale");
@@ -51,18 +51,17 @@ public class SkillImpale extends TargettedSkill {
 
     @Override
     public ConfigurationSection getDefaultConfig() {
-        ConfigurationSection node = super.getDefaultConfig();
-
-        node.set(SkillSetting.MAX_DISTANCE.node(), 9);
-        node.set("weapons", Util.shovels);
-        node.set(SkillSetting.DAMAGE.node(), 50);
-        node.set(SkillSetting.DAMAGE_INCREASE_PER_STRENGTH.node(), 1.0);
-        node.set(SkillSetting.DURATION.node(), 3000);
-        node.set("amplitude", 2);
-        node.set(SkillSetting.APPLY_TEXT.node(), ChatComponents.GENERIC_SKILL + "%target% has been slowed by %hero%'s impale!");
-        node.set(SkillSetting.EXPIRE_TEXT.node(), ChatComponents.GENERIC_SKILL + "%target% is no longer slowed!");
-
-        return node;
+        ConfigurationSection config = super.getDefaultConfig();
+        config.set(SkillSetting.MAX_DISTANCE.node(), 6);
+        config.set(SkillSetting.TARGET_HIT_TOLERANCE.node(), 0.25);
+        config.set("weapons", Util.shovels);
+        config.set(SkillSetting.DAMAGE.node(), 50);
+        config.set(SkillSetting.DAMAGE_INCREASE_PER_STRENGTH.node(), 0.0);
+        config.set(SkillSetting.DURATION.node(), 3000);
+        config.set("amplitude", 2);
+        config.set(SkillSetting.APPLY_TEXT.node(), ChatComponents.GENERIC_SKILL + "%target% has been slowed by %hero%'s impale!");
+        config.set(SkillSetting.EXPIRE_TEXT.node(), ChatComponents.GENERIC_SKILL + "%target% is no longer slowed!");
+        return config;
     }
 
     @Override

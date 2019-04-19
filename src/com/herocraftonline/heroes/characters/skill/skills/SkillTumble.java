@@ -27,7 +27,7 @@ public class SkillTumble extends PassiveSkill {
 
     public SkillTumble(Heroes plugin) {
         super(plugin, "Tumble");
-        setDescription("Passive: $1");
+        setDescription("$1");
         setEffectTypes(EffectType.BENEFICIAL, EffectType.PHYSICAL);
         setTypes(SkillType.ABILITY_PROPERTY_PHYSICAL);
         Bukkit.getServer().getPluginManager().registerEvents(new SkillEntityListener(this), plugin);

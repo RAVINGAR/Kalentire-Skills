@@ -39,7 +39,7 @@ public class SkillAccelerando extends ActiveSkill {
 
     public SkillAccelerando(Heroes plugin) {
         super(plugin, "Accelerando");
-        setDescription("Your song boons movement speed boost to all nearby party members for $1 seconds. The effect is removed on damage.");
+        setDescription("Your song boons movement speed boost to all nearby party members for $1 second(s). The effect is removed on damage.");
         setUsage("/skill accelerando");
         setArgumentRange(0, 0);
         setIdentifiers("skill accelerando");

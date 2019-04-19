@@ -23,7 +23,7 @@ public class SkillRoot extends TargettedSkill {
     public VisualEffect fplayer = new VisualEffect();
     public SkillRoot(Heroes plugin) {
         super(plugin, "Root");
-        setDescription("You root your target in place for $1 seconds.");
+        setDescription("You root your target in place for $1 second(s).");
         setUsage("/skill root");
         setArgumentRange(0, 0);
         setIdentifiers("skill root");

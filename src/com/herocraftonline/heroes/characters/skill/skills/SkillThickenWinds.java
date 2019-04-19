@@ -16,6 +16,7 @@ import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.util.Vector;
 
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Random;
 
 import static com.herocraftonline.heroes.util.GeometryUtil.circle;
@@ -27,7 +28,7 @@ public class SkillThickenWinds extends ActiveSkill
 	public SkillThickenWinds(Heroes plugin) 
 	{
 		super(plugin, "ThickenWinds");
-		setDescription("You thicken the winds, creating an updraft that allows your party (within 12 blocks) to float safely to the ground for $1 seconds.");
+		setDescription("You thicken the winds, creating an updraft that allows your party (within 12 blocks) to float safely to the ground for $1 second(s).");
 		setUsage("/skill thickenwinds");
 		setArgumentRange(0, 0);
 		setIdentifiers("skill thickenwinds");
@@ -91,11 +92,11 @@ public class SkillThickenWinds extends ActiveSkill
 		else hero.addEffect(new ThickenWindsEffect(this, player, duration, applyText, expireText));
 
 		Location center = player.getLocation().add(0, 0.5, 0);
-		final ArrayList<Location> windLocs = new ArrayList<Location>();
+		final List<Location> windLocs = new ArrayList<Location>();
 
 		for (int i = 1; i <= radius / 4; i++)
 		{
-			ArrayList<Location> concentric = circle(center, 12, (double) i);
+			List<Location> concentric = circle(center, 12, (double) i);
 			windLocs.addAll(concentric);
 		}
 

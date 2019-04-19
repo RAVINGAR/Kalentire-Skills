@@ -22,7 +22,7 @@ public class SkillChaoticStrength extends ActiveSkill {
 
     public SkillChaoticStrength(Heroes plugin) {
         super(plugin, "ChaoticStrength");
-        setDescription("Imbue yourself with Chaotic Strength, granting you $1 Strength, but draining your Intellect by $2 for $3 seconds.");
+        setDescription("Imbue yourself with Chaotic Strength, granting you $1 Strength, but draining your Intellect by $2 for $3 second(s).");
         setArgumentRange(0, 0);
         setUsage("/skill chaoticstrength");
         setIdentifiers("skill chaoticstrength");

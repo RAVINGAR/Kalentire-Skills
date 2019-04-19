@@ -23,7 +23,7 @@ public class SkillFog extends ActiveSkill {
 
     public SkillFog(Heroes plugin) {
         super(plugin, "Fog");
-        setDescription("You become one with the fog for $1 seconds.");
+        setDescription("You become one with the fog for $1 second(s).");
         setUsage("/skill fog");
         setArgumentRange(0, 0);
         setIdentifiers("skill fog");

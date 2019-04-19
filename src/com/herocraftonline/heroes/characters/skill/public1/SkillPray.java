@@ -1,6 +1,7 @@
 package com.herocraftonline.heroes.characters.skill.public1;
 
 import com.herocraftonline.heroes.Heroes;
+import com.herocraftonline.heroes.characters.CharacterTemplate;
 import com.herocraftonline.heroes.characters.Hero;
 import com.herocraftonline.heroes.characters.skill.SkillSetting;
 import com.herocraftonline.heroes.characters.skill.SkillType;
@@ -32,7 +33,7 @@ public class SkillPray extends SkillBaseHeal {
     }
 
     @Override
-    protected void removeEffects(Hero hero) {
+    protected void removeEffects(Hero hero, CharacterTemplate targetCT) {
         // No effects are removed by this Skill.
     }
 

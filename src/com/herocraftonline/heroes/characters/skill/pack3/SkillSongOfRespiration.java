@@ -25,7 +25,7 @@ public class SkillSongOfRespiration extends ActiveSkill {
 
     public SkillSongOfRespiration(Heroes plugin) {
         super(plugin, "SongOfRespiration");
-        setDescription("You sing a song of respiration, granting water breathing to all party members within $1 blocks for $2 seconds..");
+        setDescription("You sing a song of respiration, granting water breathing to all party members within $1 blocks for $2 second(s)..");
         setUsage("/skill songofrespiration");
         setIdentifiers("skill songofrespiration");
         setTypes(SkillType.AREA_OF_EFFECT, SkillType.BUFFING, SkillType.ABILITY_PROPERTY_AIR, SkillType.ABILITY_PROPERTY_SONG);

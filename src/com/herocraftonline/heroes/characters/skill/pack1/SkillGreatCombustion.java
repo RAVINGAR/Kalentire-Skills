@@ -29,7 +29,7 @@ public class SkillGreatCombustion extends ActiveSkill {
 
     public SkillGreatCombustion(Heroes plugin) {
         super(plugin, "GreatCombustion");
-        setDescription("Unleash a mass of condensed flame in front of you, striking up to $1 blocks away. An enemy within $2 blocks of the explosion will be dealt $3 damage and will be stunned for $4 seconds.");
+        setDescription("Unleash a mass of condensed flame in front of you, striking up to $1 blocks away. An enemy within $2 blocks of the explosion will be dealt $3 damage and will be stunned for $4 second(s).");
         setUsage("/skill greatcombustion");
         setArgumentRange(0, 0);
         setIdentifiers("skill greatcombustion");

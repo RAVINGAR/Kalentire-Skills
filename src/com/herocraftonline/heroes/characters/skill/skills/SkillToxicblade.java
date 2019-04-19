@@ -40,7 +40,7 @@ public class SkillToxicblade extends ActiveSkill {
 
     public SkillToxicblade(Heroes plugin) {
         super(plugin, "Toxicblade");
-        setDescription("Your blade which will deal an extra $1 toxic damage every $2 seconds.");
+        setDescription("Your blade which will deal an extra $1 toxic damage every $2 second(s).");
         setUsage("/skill toxicblade");
         setArgumentRange(0, 0);
         setIdentifiers("skill tblade", "skill toxicblade");

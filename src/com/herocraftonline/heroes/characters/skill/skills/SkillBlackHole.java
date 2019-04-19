@@ -26,7 +26,7 @@ public class SkillBlackHole extends ActiveSkill {
 
     public SkillBlackHole(Heroes plugin) {
         super(plugin, "BlackHole");
-        setDescription("Summon a black hole on the target location that dislocates and blinds enemies in it for $1 seconds.");
+        setDescription("Summon a black hole on the target location that dislocates and blinds enemies in it for $1 second(s).");
         setUsage("/skill blackhole");
         setArgumentRange(0, 0);
         setIdentifiers("skill blackhole");

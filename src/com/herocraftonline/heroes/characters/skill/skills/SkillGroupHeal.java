@@ -20,6 +20,7 @@ import org.bukkit.Sound;
 import org.bukkit.scheduler.BukkitRunnable;
 
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Random;
 
 import static com.herocraftonline.heroes.util.GeometryUtil.circle;
@@ -106,7 +107,7 @@ public class SkillGroupHeal extends ActiveSkill
 		//player.getWorld().spigot().playEffect(player.getLocation().add(0, 0.3, 0), Effect.FIREWORKS_SPARK, 0, 0, 7.6F, 3.3F, 7.6F, 0.3F, 200, 16);
 		player.getWorld().spawnParticle(Particle.FIREWORKS_SPARK, player.getLocation().add(0, 0.3, 0), 200, 7.6, 3.3, 7.6, 0.3);
 
-		final ArrayList<Location> particleLocations = circle(player.getLocation().add(0, 0.5, 0), 24, 8);
+		final List<Location> particleLocations = circle(player.getLocation().add(0, 0.5, 0), 24, 8);
 
 		new BukkitRunnable()
 		{

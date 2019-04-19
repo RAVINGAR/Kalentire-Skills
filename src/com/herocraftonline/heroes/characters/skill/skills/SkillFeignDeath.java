@@ -46,7 +46,7 @@ public class SkillFeignDeath extends ActiveSkill {
 
     public SkillFeignDeath(Heroes plugin) {
         super(plugin, "FeignDeath");
-        setDescription("You feign your death, displaying a deceptive message of death to nearby players. After feigning, you are invisible for $1 seconds. Moving will break the effect however.");
+        setDescription("You feign your death, displaying a deceptive message of death to nearby players. After feigning, you are invisible for $1 second(s). Moving will break the effect however.");
         setUsage("/skill feigndeath");
         setArgumentRange(0, 0);
         setIdentifiers("skill feigndeath");

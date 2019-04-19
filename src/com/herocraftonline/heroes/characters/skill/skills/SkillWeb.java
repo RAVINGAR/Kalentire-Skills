@@ -36,7 +36,7 @@ public class SkillWeb extends TargettedSkill {
 
     public SkillWeb(Heroes plugin) {
         super(plugin, "Web");
-        setDescription("You conjure a web around your target that will hinder them and any nearby targets for $1 seconds.");
+        setDescription("You conjure a web around your target that will hinder them and any nearby targets for $1 second(s).");
         setUsage("/skill web");
         setArgumentRange(0, 0);
         setIdentifiers("skill web");

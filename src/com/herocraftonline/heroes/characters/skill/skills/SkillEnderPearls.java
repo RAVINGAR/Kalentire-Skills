@@ -54,7 +54,7 @@ public class SkillEnderPearls extends PassiveSkill {
         String combatCooldownString = "";
         if (hasCombatCooldown) {
             String formattedCooldown = Util.decFormat.format(cdDuration / 1000.0);
-            combatCooldownString = "If you are in combat when throwing an ender pearl, you will not be able to throw another for " + formattedCooldown + " seconds.";
+            combatCooldownString = "If you are in combat when throwing an ender pearl, you will not be able to throw another for " + formattedCooldown + " second(s).";
         }
 
         return getDescription().replace("$1", combatCooldownString);

@@ -26,7 +26,7 @@ public class SkillQuicken extends ActiveSkill {
 
     public SkillQuicken(Heroes plugin) {
         super(plugin, "Quicken");
-        setDescription("You grant a movement speed boost to all nearby party members for $1 seconds.");
+        setDescription("You grant a movement speed boost to all nearby party members for $1 second(s).");
         setUsage("/skill quicken");
         setArgumentRange(0, 0);
         setIdentifiers("skill quicken", "skill quick");

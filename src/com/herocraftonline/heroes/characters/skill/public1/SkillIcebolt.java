@@ -40,7 +40,7 @@ public class SkillIcebolt extends ActiveSkill {
     
     public SkillIcebolt(Heroes plugin) {
         super(plugin, "Icebolt");
-        setDescription("You launch a ball of ice that deals $1 damage to your target and slows them for $2 seconds.");
+        setDescription("You launch a ball of ice that deals $1 damage to your target and slows them for $2 second(s).");
         setUsage("/skill icebolt");
         setArgumentRange(0, 0);
         setIdentifiers("skill icebolt");

@@ -31,7 +31,7 @@ public class SkillManaFreeze extends TargettedSkill {
 
     public SkillManaFreeze(Heroes plugin) {
         super(plugin, "ManaFreeze");
-        setDescription("Prevents your target from regenerating mana for $1 seconds.");
+        setDescription("Prevents your target from regenerating mana for $1 second(s).");
         setUsage("/skill manafreeze");
         setArgumentRange(0, 0);
         setIdentifiers("skill manafreeze", "skill mfreeze");

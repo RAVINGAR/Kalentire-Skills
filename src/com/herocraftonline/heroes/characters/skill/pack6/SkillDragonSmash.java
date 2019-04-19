@@ -62,7 +62,6 @@ public class SkillDragonSmash extends ActiveSkill implements Listener {
         node.set(SkillSetting.DAMAGE_INCREASE_PER_STRENGTH.node(), 1);
 
         node.set(SkillSetting.RADIUS.node(), 5);
-
         node.set("user-launch", 0.5);
         node.set("user-launch-per-dexterity", 0.1);
         node.set("user-drop", -0.5);

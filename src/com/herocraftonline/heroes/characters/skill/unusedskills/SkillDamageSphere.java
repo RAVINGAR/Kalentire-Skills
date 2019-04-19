@@ -9,6 +9,7 @@ import com.herocraftonline.heroes.characters.skill.SkillSetting;
 import com.herocraftonline.heroes.characters.skill.skills.SkillBaseSphere;
 
 import de.slikey.effectlib.util.ParticleEffect;
+import org.bukkit.Particle;
 import org.bukkit.Sound;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Entity;
@@ -23,8 +24,8 @@ public class SkillDamageSphere extends SkillBaseSphere {
 
 	public SkillDamageSphere(Heroes plugin) {
 		super(plugin, "DamageSphere");
-		setDescription("Creates a sphere of flame around the caster that lasts $2 seconds, "
-				+ "damaging enemies within a $1 block radius for %4 every $3 seconds.");
+		setDescription("Creates a sphere of flame around the caster that lasts $2 second(s), "
+				+ "damaging enemies within a $1 block radius for %4 every $3 second(s).");
 		setUsage("/skill damagesphere");
 		setIdentifiers("skill damagesphere");
 		setArgumentRange(0, 0);
@@ -75,7 +76,7 @@ public class SkillDamageSphere extends SkillBaseSphere {
 
 				@Override
 				public void sphereTickAction(Hero hero, AreaSphereEffect effect) {
-					renderSphere(hero.getPlayer().getEyeLocation(), radius, 150, ParticleEffect.FLAME);
+					renderSphere(hero.getPlayer().getEyeLocation(), radius, 150, Particle.FLAME);
 					hero.getPlayer().getWorld().playSound(hero.getPlayer().getLocation(), Sound.ENTITY_GHAST_SHOOT, 1, 0.00001f);
 				}
 

@@ -30,7 +30,7 @@ public class SkillConsecration extends SkillBaseGroundEffect {
 
 	public SkillConsecration(Heroes plugin) {
 		super(plugin, "Consecration");
-		setDescription("Marks the ground with holy power, dealing $1 damage to undead every $2 seconds for $3 seconds within $4 blocks blocks to the side and $5 blocks up and down (cylinder). " +
+		setDescription("Marks the ground with holy power, dealing $1 damage to undead every $2 second(s) for $3 second(s) within $4 blocks blocks to the side and $5 blocks up and down (cylinder). " +
 				"Allies within the area are granted movement speed. $6 $7");
 		setUsage("/skill consecration");
 		setIdentifiers("skill consecration");

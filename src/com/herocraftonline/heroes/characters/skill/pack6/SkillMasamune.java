@@ -22,8 +22,8 @@ public class SkillMasamune extends ActiveSkill {
 
     public SkillMasamune(Heroes plugin) {
         super(plugin, "Masamune");
-        // setDescription("Increase movement speed for $1 seconds and heal yourself for $2 every $3 seconds for $4 seconds. Costs $5% of your sword.");
-        setDescription("Increase movement speed for $1 seconds. Costs $2% of your sword.");
+        // setDescription("Increase movement speed for $1 second(s) and heal yourself for $2 every $3 second(s) for $4 second(s). Costs $5% of your sword.");
+        setDescription("Increase movement speed for $1 second(s). Costs $2% of your sword.");
         setUsage("/skill masamune");
         setArgumentRange(0, 0);
         setIdentifiers("skill masamune");

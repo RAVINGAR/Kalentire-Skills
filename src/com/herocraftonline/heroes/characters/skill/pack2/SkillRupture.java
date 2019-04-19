@@ -33,7 +33,7 @@ public class SkillRupture extends TargettedSkill {
 
     public SkillRupture(Heroes plugin) {
         super(plugin, "Rupture");
-        setDescription("Deal a mighty blow to your target, dealing $1 physical damage and causing them to be wounded for the next $2 seconds. Wounded targets will take $3 bleeding damage for every block that they move during the duration.");   // If a target is dealt more than $4 damage from bleeding, the effect will be removed, and the target will be slowed for $5 seconds.");
+        setDescription("Deal a mighty blow to your target, dealing $1 physical damage and causing them to be wounded for the next $2 second(s). Wounded targets will take $3 bleeding damage for every block that they move during the duration.");   // If a target is dealt more than $4 damage from bleeding, the effect will be removed, and the target will be slowed for $5 second(s).");
         setUsage("/skill rupture");
         setArgumentRange(0, 0);
         setIdentifiers("skill rupture");

@@ -118,6 +118,7 @@ public class SkillFirebolt extends ActiveSkill {
                 event.setCancelled(true);
             }
         }
+
         @EventHandler(priority = EventPriority.LOWEST, ignoreCancelled = true)
         public void onProjectileHit(ProjectileHitEvent event) {
             if(!(event.getEntity() instanceof LargeFireball)) {

@@ -1,5 +1,6 @@
 package com.herocraftonline.heroes.characters.skill.pack3;
 
+import com.herocraftonline.heroes.characters.CharacterTemplate;
 import org.bukkit.Particle;
 import org.bukkit.Sound;
 import org.bukkit.Sound;
@@ -38,10 +39,10 @@ public class SkillSacredWord extends SkillBaseHeal {
     }
 
     @Override
-    protected void removeEffects(Hero hero) {
-        for (Effect effect : hero.getEffects()) {
+    protected void removeEffects(Hero healer, CharacterTemplate targetCT) {
+        for (Effect effect : targetCT.getEffects()) {
             if (effect.isType(EffectType.BLIND) && effect.isType(EffectType.HARMFUL)) {
-                hero.removeEffect(effect);
+                targetCT.removeEffect(effect);
             }
         }
     }

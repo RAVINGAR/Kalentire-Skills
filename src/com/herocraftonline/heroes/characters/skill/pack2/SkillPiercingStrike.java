@@ -26,7 +26,7 @@ public class SkillPiercingStrike extends TargettedSkill {
         setUsage("/skill piercingstrike");
         setArgumentRange(0, 0);
         setIdentifiers("skill piercingstrike");
-        setTypes(SkillType.ABILITY_PROPERTY_PHYSICAL, SkillType.DAMAGING, SkillType.AGGRESSIVE);
+        setTypes(SkillType.ABILITY_PROPERTY_PHYSICAL, SkillType.DAMAGING, SkillType.AGGRESSIVE, SkillType.ARMOR_PIERCING);
     }
 
     @Override

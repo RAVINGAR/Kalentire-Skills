@@ -23,7 +23,7 @@ public class SkillConstrict extends TargettedSkill {
     
     public SkillConstrict(Heroes plugin) {
         super(plugin, "Constrict");
-        setDescription("You slow the target's movement & attack speed for $1 seconds.");
+        setDescription("You slow the target's movement & attack speed for $1 second(s).");
         setUsage("/skill constrict");
         setArgumentRange(0, 0);
         setIdentifiers("skill constrict");

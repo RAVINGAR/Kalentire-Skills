@@ -35,7 +35,7 @@ public class SkillJudgement extends ActiveSkill implements Listener
         super(plugin, "Judgement");
         setDescription("Applies divine judgement to targets within $1 meters. If they are an ally, they are healed based on how " +
                 "much damage they've taken in the past $2 seconds, while " +
-                "enemies are damaged based on how much damage they've dealt in the past $2 seconds. Does not affect yourself.");
+                "enemies are damaged based on how much damage they've dealt in the past $2 second(s). Does not affect yourself.");
         setUsage("/skill judgement");
         setIdentifiers("skill judgement", "skill judgment");
         setArgumentRange(0, 0);
@@ -90,7 +90,7 @@ public class SkillJudgement extends ActiveSkill implements Listener
                     cancel();
                 }
 
-                ArrayList<Location> circle = GeometryUtil.circle(p.getLocation().add(0, 0.4, 0), 32, radius);
+                List<Location> circle = GeometryUtil.circle(p.getLocation().add(0, 0.4, 0), 32, radius);
                 for (int i = 0; i < 4; i++) {
                     Location l = circle.get(index);
                     //l.getWorld().spigot().playEffect(l, Effect.INSTANT_SPELL, 0, 0, 0.0F, 0.4F, 0.0F, 0.0F, 12, 128);
@@ -172,7 +172,7 @@ public class SkillJudgement extends ActiveSkill implements Listener
             judgedEvents = newJudgedEvents;
             if (relevantEvents.isEmpty()) {
                 if (target instanceof Player){
-                    target.sendMessage(ChatComponents.GENERIC_SKILL + "You are not judged, for you have taken no action.");
+                    target.sendMessage("    " + ChatComponents.GENERIC_SKILL + "You are not judged, for you have taken no action.");
                 }
                 continue;
             }
@@ -211,7 +211,7 @@ public class SkillJudgement extends ActiveSkill implements Listener
             target.getWorld().playSound(target.getLocation(), Sound.ENTITY_LIGHTNING_BOLT_THUNDER, 1.0F, 2.0F);
             if (isAlly)
             {
-                target.sendMessage(ChatComponents.GENERIC_SKILL + "The divines heal a portion of your injuries.");
+                target.sendMessage("    " + ChatComponents.GENERIC_SKILL + "The divines heal a portion of your injuries.");
                 new BukkitRunnable() {
                     int ticks = 0;
                     int maxTicks = 5;
@@ -226,7 +226,7 @@ public class SkillJudgement extends ActiveSkill implements Listener
             else {
                 target.getWorld().playSound(target.getLocation(), Sound.ENTITY_BLAZE_AMBIENT, 1.0F, 0.5F);
                 if (target instanceof Player){
-                    target.sendMessage(ChatComponents.GENERIC_SKILL + "Divine judgement has been passed upon you!");
+                    target.sendMessage("    " + ChatComponents.GENERIC_SKILL + "Divine judgement has been passed upon you!");
                 }
             }
         }

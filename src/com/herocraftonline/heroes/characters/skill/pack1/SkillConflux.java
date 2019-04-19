@@ -40,7 +40,7 @@ public class SkillConflux extends ActiveSkill {
 
     public SkillConflux(Heroes plugin) {
         super(plugin, "Conflux");
-        setDescription("You conflux of insanity in the area, confusing targets for $1 seconds.");
+        setDescription("You conflux of insanity in the area, confusing targets for $1 second(s).");
         setUsage("/skill conflux");
         setArgumentRange(0, 0);
         setIdentifiers("skill conflux");

@@ -18,7 +18,7 @@ public class SkillSear extends TargettedSkill
 	public SkillSear(Heroes plugin)
 	{
 		super(plugin, "Sear");
-		setDescription("Use your holy book to sear your target, dealing $1 damage every 2 seconds for $2 seconds.");
+		setDescription("Use your holy book to sear your target, dealing $1 damage every 2 second(s) for $2 second(s).");
 		setUsage("/skill sear");
 		setArgumentRange(0, 0);
 		setIdentifiers(new String[] { "skill sear" });
@@ -84,13 +84,13 @@ public class SkillSear extends TargettedSkill
 		public void applyToHero(Hero hero)
 		{
 			super.applyToHero(hero);
-			hero.getPlayer().sendMessage(ChatComponents.GENERIC_SKILL + "You have been " + ChatColor.WHITE + "Seared" + ChatColor.GRAY + " by " + ChatColor.WHITE + applyH.getName() + ChatColor.GRAY + "!");
+			hero.getPlayer().sendMessage("    " + ChatComponents.GENERIC_SKILL + "You have been " + ChatColor.WHITE + "Seared" + ChatColor.GRAY + " by " + ChatColor.WHITE + applyH.getName() + ChatColor.GRAY + "!");
 		}
 
 		public void removeFromHero(Hero hero)
 		{
 			super.removeFromHero(hero);
-			hero.getPlayer().sendMessage(ChatComponents.GENERIC_SKILL+ "You are no longer seared.");
+			hero.getPlayer().sendMessage("    " + ChatComponents.GENERIC_SKILL+ "You are no longer seared.");
 		}
 		
 		public void tickHero(Hero hero)

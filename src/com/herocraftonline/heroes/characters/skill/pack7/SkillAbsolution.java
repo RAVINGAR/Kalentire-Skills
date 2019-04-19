@@ -1,5 +1,6 @@
 package com.herocraftonline.heroes.characters.skill.pack7;
 
+import com.herocraftonline.heroes.characters.CharacterTemplate;
 import org.bukkit.Particle;
 import org.bukkit.Sound;
 import org.bukkit.Sound;
@@ -54,13 +55,13 @@ public class SkillAbsolution extends SkillBaseHeal {
     }
 
     @Override
-    protected void removeEffects(Hero hero) {
-        for (Effect effect : hero.getEffects()) {
+    protected void removeEffects(Hero healer, CharacterTemplate targetCT) {
+        for (Effect effect : targetCT.getEffects()) {
             if (effect.isType(EffectType.DISPELLABLE) && effect.isType(EffectType.HARMFUL)) {
                 if (effect.isType(EffectType.DARK)) {
                 	//hero.getPlayer().getWorld().spigot().playEffect(hero.getPlayer().getLocation().add(0, 0.3, 0), org.bukkit.Effect.HAPPY_VILLAGER, 0, 0, 0.5F, 0.5F, 0.5F, 0.0F, 16, 16);
-                    hero.getPlayer().getWorld().spawnParticle(Particle.VILLAGER_ANGRY, hero.getPlayer().getLocation().add(0, 0.3, 0), 16, 0.5, 0.5, 0.5, 0);
-                    hero.removeEffect(effect);
+                    targetCT.getEntity().getWorld().spawnParticle(Particle.VILLAGER_ANGRY, targetCT.getEntity().getLocation().add(0, 0.3, 0), 16, 0.5, 0.5, 0.5, 0);
+                    targetCT.removeEffect(effect);
                 }
             }
         }

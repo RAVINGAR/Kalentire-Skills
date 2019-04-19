@@ -25,7 +25,7 @@ public class SkillEnsnare extends TargettedSkill {
 
     public SkillEnsnare(Heroes plugin) {
         super(plugin, "Ensare");
-        setDescription("You ensare your target for $1 seconds.");
+        setDescription("You ensare your target for $1 second(s).");
         setUsage("/skill ensnare");
         setArgumentRange(0, 0);
         setTypes(SkillType.ABILITY_PROPERTY_PHYSICAL, SkillType.AGGRESSIVE);

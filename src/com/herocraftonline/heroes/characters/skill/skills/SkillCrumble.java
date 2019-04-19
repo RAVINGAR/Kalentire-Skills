@@ -14,6 +14,7 @@ import org.bukkit.Sound;
 import org.bukkit.scheduler.BukkitRunnable;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import static com.herocraftonline.heroes.util.GeometryUtil.circle;
 
@@ -25,7 +26,7 @@ public class SkillCrumble extends TargettedSkill
 	public SkillCrumble(Heroes plugin) 
 	{
 		super(plugin, "Crumble");
-		setDescription("You encumber your enemy with sharp stones for six seconds. For every two blocks they move, they are stunned for 0.5 seconds.");
+		setDescription("You encumber your enemy with sharp stones for six second(s). For every two blocks they move, they are stunned for 0.5 second(s).");
 		setUsage("/skill crumble");
 		setArgumentRange(0, 0);
 		setIdentifiers("skill crumble");
@@ -50,7 +51,7 @@ public class SkillCrumble extends TargettedSkill
 	public String getDescription(Hero arg0) 
 	{
 		// What?
-		return "You encumber your enemy with sharp stones for six seconds. For every two blocks they move, they are stunned for 0.5 seconds.";
+		return "You encumber your enemy with sharp stones for six second(s). For every two blocks they move, they are stunned for 0.5 second(s).";
 	}
 
 	public void init() 
@@ -78,7 +79,7 @@ public class SkillCrumble extends TargettedSkill
 			
 			public void run()
 			{
-				ArrayList<Location> surrounding = circle(t.getLocation(), 24, 1); // This is down here to make sure it updates
+				List<Location> surrounding = circle(t.getLocation(), 24, 1); // This is down here to make sure it updates
 				if (point < surrounding.size()) // making sure we're staying within index boundaries
 				{
 					//t.getWorld().spigot().playEffect(surrounding.get(point), Effect.TILE_BREAK, Material.STONE.getId(), 0, 0.2F, 0.2F, 0.2F, 1.0F, 10, 16);

@@ -30,7 +30,7 @@ public class SkillSummonVines extends ActiveSkill
 	public SkillSummonVines(Heroes plugin) 
 	{
 		super(plugin, "SummonVines");
-		setDescription("For $1 seconds, you raise a field of thorny vines to impede and damage enemies. Enemies within $2 blocks of you will take $3 damage every $4 seconds and be slowed for $4 seconds.");
+		setDescription("For $1 seconds, you raise a field of thorny vines to impede and damage enemies. Enemies within $2 blocks of you will take $3 damage every $4 seconds and be slowed for $4 second(s).");
 		setUsage("/skill summonvines");
 		setArgumentRange(0, 0);
 		setIdentifiers("skill summonvines");

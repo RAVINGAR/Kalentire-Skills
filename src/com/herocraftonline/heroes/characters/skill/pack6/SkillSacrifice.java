@@ -20,7 +20,7 @@ public class SkillSacrifice extends ActiveSkill {
 
     public SkillSacrifice(Heroes plugin) {
         super(plugin, "Sacrifice");
-        setDescription("Sacrifice yourself in combat to increase allies' Constitution and Strength by $1 and $2 for $3 seconds.");
+        setDescription("Sacrifice yourself in combat to increase allies' Constitution and Strength by $1 and $2 for $3 second(s).");
         setArgumentRange(0, 0);
         setUsage("/skill sacrifice");
         setIdentifiers("skill sacrifice");
@@ -39,7 +39,7 @@ public class SkillSacrifice extends ActiveSkill {
         double strIncreaseScaling = SkillConfigManager.getUseSetting(hero, this, "str-increase-per-strength", 0.0, false);
         strIncrease += (int) (strIncreaseScaling * hero.getAttributeValue(AttributeType.STRENGTH));
 
-        String formattedDuration = Util.decFormat.format(duration / 1000.0);   // Convert to seconds.
+        String formattedDuration = Util.decFormat.format(duration / 1000.0);   // Convert to second(s).
 
         return getDescription().replace("$1", conIncrease + "").replace("$2", strIncrease + "").replace("3", formattedDuration);
     }

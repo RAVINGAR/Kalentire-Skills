@@ -22,7 +22,7 @@ public class SkillCallOfOrder extends SkillBaseSphere {
 
 	public SkillCallOfOrder(Heroes plugin) {
 		super(plugin, "CallOfOrder");
-		setDescription("Call upon the forces of order to heal allies within $1 for $2 every $3 seconds for $4 seconds. $5 $6");
+		setDescription("Call upon the forces of order to heal allies within $1 for $2 every $3 second(s) for $4 second(s). $5 $6");
 		setUsage("/skill calloforder");
 		setIdentifiers("skill calloforder");
 		setArgumentRange(0, 0);

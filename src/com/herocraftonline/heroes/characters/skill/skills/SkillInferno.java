@@ -37,7 +37,7 @@ public class SkillInferno extends ActiveSkill {
 
 	public SkillInferno(Heroes plugin) {
 		super(plugin, "Inferno");
-		setDescription("Unleash an inferno upon your enemies, randomly dealing spurts of $1 damage around you within a $2 block radius for the next $3 seconds.");
+		setDescription("Unleash an inferno upon your enemies, randomly dealing spurts of $1 damage around you within a $2 block radius for the next $3 second(s).");
 		setUsage("/skill inferno");
 		setArgumentRange(0, 0);
 		setIdentifiers("skill inferno");

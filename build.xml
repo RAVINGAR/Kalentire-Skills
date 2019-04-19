@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE project>
-<project name="Heroes-Skills" default="build" basedir="." xmlns:artifact="antlib:org.apache.maven.artifact.ant">
+<project name="Heroes-Skills" default="build-reborn-classes" basedir="." xmlns:artifact="antlib:org.apache.maven.artifact.ant">
     <property environment="env"/>
     <property name="build.compiler" value="extJavac" />
 
@@ -9,9 +9,9 @@
     <property name="dir.bin.path" value="com/herocraftonline/heroes/characters/skill" />
     <property name="dir.dist.path" value="${ant.project.name}/skills" />
     <property name="dir.maven.dependencies" value ="maven" />
-    <property name="used" value="com/herocraftonline/heroes/characters/skill/skills" />
-    <property name="unused" value="com/herocraftonline/heroes/characters/skill/unusedskills" />
-    <property name="packages" value="skills,pack1,pack2,pack3,pack4,pack5,pack6,pack7,pack8,public1,codari" />
+    <property name="skill-packs" value="public1,pack1,pack2,pack3,pack4,pack5,pack6,pack7,pack8,skills" />
+    <!--<property name="reborn-classes" value="arcanist,chainwarden,chronomancer,dragoon,druid,enderbeast,necromancer,pathfinder,pyromancer,professions,shared" />-->
+    <property name="reborn-classes" value="druid" />
 
     <!--Classpath used by javac compiler-->
     <path id="classpath">
@@ -29,7 +29,64 @@
         </classpath>
     </taskdef>
 
-    <target name="build">
+    <target name="build-reborn-classes">
+        <!--Create Maven Dependencies Storage Folder-->
+        <mkdir dir="${dir.maven.dependencies}" />
+
+        <!--Populate Maven Dependencies -->
+        <artifact:pom id="skillPom" file="pom.xml" />
+        <artifact:dependencies filesetId="mavenDependencies" pomRefId="skillPom" />
+        <copy todir="${dir.maven.dependencies}">
+            <fileset refid="mavenDependencies" />
+            <mapper classpathref="maven-ant-tasks.classpath"
+                    classname="org.apache.maven.artifact.ant.VersionMapper"
+                    from="${dependency.versions}" to="flatten" />
+        </copy>
+
+        <!--Pre-Cleanup-->
+        <delete dir="${dir.bin}"/>
+        <delete dir="${dir.dist}/${ant.project.name}" />
+
+        <!--Make directories required for the build-->
+        <mkdir dir="${dir.dist}" />
+        <mkdir dir="${dir.bin}" />
+
+        <for list="${reborn-classes}" param="package">
+            <sequential>
+                <mkdir dir="${dir.dist}/${dir.dist.path}" />
+                <mkdir dir="${dir.bin}/${dir.dist.path}/reborn/@{package}" />
+                <javac srcdir="src/com/herocraftonline/heroes/characters/skill/reborn/@{package}" debug="on" destdir="bin" classpathref="classpath" includeantruntime="false" encoding="utf-8" fork="yes" />
+                <antcall target="jar-skills-reborn">
+                    <param name="package" value="@{package}"/>
+                </antcall>
+                <delete dir="${dir.bin}" includes="**/*.class" excludes="**/*.jar" />
+            </sequential>
+        </for>
+    </target>
+
+    <target name="jar-skills-reborn">
+        <foreach target="jar-skill-reborn" param="file" parallel="false">
+            <fileset dir="${dir.bin}/${dir.bin.path}/reborn/${package}" includes="Skill*.class" excludes="Skill*$*.class" />
+        </foreach>
+        <delete file="${dir.bin}/skill.info" />
+    </target>
+
+    <target name="jar-skill-reborn">
+        <basename file="${file}" suffix=".class" property="classname" />
+        <echo message="${classname}" />
+    	<dirname file="${file}" property="dirname" />
+    	<echo message="${dirname}" />
+    	<basename file="${dirname}" property="package" />
+        <echo message="${package}" />
+        <echo file="${dir.bin}/skill.info" message="main-class: com.herocraftonline.heroes.characters.skill.reborn.${package}.${classname}" />
+        <jar jarfile="${dir.dist}/${dir.dist.path}/reborn/${classname}.jar" basedir="${dir.bin}" includes="${dir.bin.path}/reborn/${package}/${classname}*.class skill.info">
+            <manifest>
+                <attribute name="Class-Path" value="../../Heroes.jar" />
+            </manifest>
+        </jar>
+    </target>
+
+    <target name="build-packs">
         <!--Create Maven Dependencies Storage Folder-->
         <mkdir dir="${dir.maven.dependencies}" />
 
@@ -46,23 +103,23 @@
         <mkdir dir="${dir.dist}" />
         <mkdir dir="${dir.bin}" />
 
-    	<for list="${packages}" param="package">
-    		<sequential>
-            	<mkdir dir="${dir.dist}/${dir.dist.path}" />
+        <for list="${skill-packs}" param="package">
+            <sequential>
+                <mkdir dir="${dir.dist}/${dir.dist.path}" />
                 <mkdir dir="${dir.bin}/${dir.dist.path}/@{package}" />
                 <javac srcdir="src/com/herocraftonline/heroes/characters/skill" excludes="**/unusedskills/**" debug="on" destdir="bin" classpathref="classpath" includeantruntime="false" encoding="utf-8" fork="yes" />
                 <antcall target="jar-skills">
-                	<param name="package" value="@{package}"/>
-    			</antcall>
+                    <param name="package" value="@{package}"/>
+                </antcall>
                 <delete dir="${dir.bin}" includes="**/*.class" excludes="**/*.jar" />
                 <antcall target="zip">
                     <param name="package" value="@{package}"/>
                 </antcall>
-			</sequential>
-		</for>
+            </sequential>
+        </for>
         <delete dir="${dir.bin}"/>
-    	<delete dir="${dir.dist}/${ant.project.name}" />
-    	<delete dir="${dir.maven.dependencies}" />
+        <delete dir="${dir.dist}/${ant.project.name}" />
+        <delete dir="${dir.maven.dependencies}" />
     </target>
 
     <target name="jar-skills">
@@ -75,9 +132,9 @@
     <target name="jar-skill">
         <basename file="${file}" suffix=".class" property="classname" />
         <echo message="${classname}" />
-    	<dirname file="${file}" property="dirname" />
-    	<echo message="${dirname}" />
-    	<basename file="${dirname}" property="package" />
+        <dirname file="${file}" property="dirname" />
+        <echo message="${dirname}" />
+        <basename file="${dirname}" property="package" />
         <echo message="${package}" />
         <echo file="${dir.bin}/skill.info" message="main-class: com.herocraftonline.heroes.characters.skill.${package}.${classname}" />
         <jar jarfile="${dir.dist}/${dir.dist.path}/${classname}.jar" basedir="${dir.bin}" includes="${dir.bin.path}/${package}/${classname}*.class skill.info">
@@ -92,6 +149,5 @@
             <fileset dir="${dir.dist}" includes="*.jar"/>
             <fileset dir="${dir.dist}" includes="${dir.dist.path}/**/*.jar"/>
         </zip>
-        <delete dir="${dir.dist}/${dir.dist.path}"/>
     </target>
 </project>

@@ -28,7 +28,7 @@ public class SkillDisarm extends TargettedSkill {
 
     public SkillDisarm(Heroes plugin) {
         super(plugin, "Disarm");
-        setDescription("You disarm your target for $1 seconds.");
+        setDescription("You disarm your target for $1 second(s).");
         setUsage("/skill disarm");
         setArgumentRange(0, 0);
         setTypes(SkillType.ABILITY_PROPERTY_PHYSICAL, SkillType.AGGRESSIVE);

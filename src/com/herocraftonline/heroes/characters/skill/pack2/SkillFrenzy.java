@@ -1,5 +1,6 @@
 package com.herocraftonline.heroes.characters.skill.pack2;
 
+import org.bukkit.Bukkit;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
@@ -34,11 +35,13 @@ public class SkillFrenzy extends ActiveSkill {
 
     public SkillFrenzy(Heroes plugin) {
         super(plugin, "Frenzy");
-        setDescription("Enter a crazed Frenzy for $1 seconds. While Frenzied, you deal $2% more damage and shrug off disabling effects every $3 seconds. However, during the effect, you also take $4% more damage from all sources and suffer from severe nausea.");
+        setDescription("Enter a crazed Frenzy for $1 second(s). While Frenzied, you deal $2% more damage and shrug off disabling effects every $3 second(s). However, during the effect, you also take $4% more damage from all sources and suffer from severe nausea.");
         setUsage("/skill frenzy");
         setArgumentRange(0, 0);
         setIdentifiers("skill frenzy");
         setTypes(SkillType.BUFFING, SkillType.ABILITY_PROPERTY_PHYSICAL);
+
+        Bukkit.getServer().getPluginManager().registerEvents(new SkillHeroListener(this), plugin);
     }
 
     @Override
@@ -59,16 +62,14 @@ public class SkillFrenzy extends ActiveSkill {
 
     @Override
     public ConfigurationSection getDefaultConfig() {
-        ConfigurationSection node = super.getDefaultConfig();
-
-        node.set("nausea-amplifier", 3);
-        node.set("outgoing-damage-increase", 0.15);
-        node.set("incoming-damage-increase", 0.25);
-        node.set(SkillSetting.DURATION.node(), 8000);
-        node.set(SkillSetting.APPLY_TEXT.node(), ChatComponents.GENERIC_SKILL + "%hero% has entered a frenzy!");
-        node.set(SkillSetting.EXPIRE_TEXT.node(), ChatComponents.GENERIC_SKILL + "%hero% is no longer in a frenzy!");
-
-        return node;
+        ConfigurationSection conbfig = super.getDefaultConfig();
+        conbfig.set("nausea-amplifier", 3);
+        conbfig.set("outgoing-damage-increase", 0.15);
+        conbfig.set("incoming-damage-increase", 0.25);
+        conbfig.set(SkillSetting.DURATION.node(), 8000);
+        conbfig.set(SkillSetting.APPLY_TEXT.node(), ChatComponents.GENERIC_SKILL + "%hero% has entered a frenzy!");
+        conbfig.set(SkillSetting.EXPIRE_TEXT.node(), ChatComponents.GENERIC_SKILL + "%hero% is no longer in a frenzy!");
+        return conbfig;
     }
 
     public void init() {
@@ -99,7 +100,12 @@ public class SkillFrenzy extends ActiveSkill {
 
     public class SkillHeroListener implements Listener {
 
-        public SkillHeroListener() {}
+        private final Skill skill;
+
+        public SkillHeroListener(Skill skill) {
+
+            this.skill = skill;
+        }
 
         @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
         public void onSkillDamage(SkillDamageEvent event) {

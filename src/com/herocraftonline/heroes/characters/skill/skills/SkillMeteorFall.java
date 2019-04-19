@@ -40,7 +40,7 @@ public class SkillMeteorFall extends ActiveSkill {
 
     public SkillMeteorFall(Heroes plugin) {
         super(plugin, "MeteorFall");
-        setDescription("Summon a powerful MeteorFall at your target location. The MeteorFall rains down several meteors at the target location, each dealing $1 damage and slowing any targets hit for $2 seconds.");
+        setDescription("Summon a powerful MeteorFall at your target location. The MeteorFall rains down several meteors at the target location, each dealing $1 damage and slowing any targets hit for $2 second(s).");
         setUsage("/skill MeteorFall");
         setArgumentRange(0, 0);
         setIdentifiers("skill MeteorFall");

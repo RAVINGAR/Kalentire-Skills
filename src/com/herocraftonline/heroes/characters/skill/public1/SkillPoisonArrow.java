@@ -35,7 +35,7 @@ public class SkillPoisonArrow extends ActiveSkill {
 
     public SkillPoisonArrow(Heroes plugin) {
         super(plugin, "PoisonArrow");
-        this.setDescription("Your arrows will poison their target dealing $1 damage over $2 seconds, each arrow will drain $3 mana.");
+        this.setDescription("Your arrows will poison their target dealing $1 damage over $2 second(s), each arrow will drain $3 mana.");
         this.setUsage("/skill parrow");
         this.setArgumentRange(0, 0);
         this.setIdentifiers("skill parrow", "skill poisonarrow");

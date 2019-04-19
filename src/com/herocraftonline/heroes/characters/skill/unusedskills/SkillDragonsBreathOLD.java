@@ -37,7 +37,7 @@ public class SkillDragonsBreathOLD extends ActiveSkill {
 
     public SkillDragonsBreathOLD(Heroes plugin) {
         super(plugin, "DragonsBreath");
-        setDescription("You unleash the furious breath of a dragon for the next $1 seconds. Enemies caught in the line of fire are continuously dealt $2 damage.");
+        setDescription("You unleash the furious breath of a dragon for the next $1 second(s). Enemies caught in the line of fire are continuously dealt $2 damage.");
         setUsage("/skill dragonsbreath");
         setArgumentRange(0, 0);
         setIdentifiers("skill dragonsbreath");

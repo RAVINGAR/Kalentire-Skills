@@ -37,7 +37,7 @@ public class SkillMelodicBinding extends ActiveSkill {
 
     public SkillMelodicBinding(Heroes plugin) {
         super(plugin, "MelodicBinding");
-        setDescription("You resonate melodic bindings, pulsing for $1 damage and slowing enemies within $2 blocks for $3 seconds. Your melodic bindings pulse every $4 seconds for the next $5 seconds.");
+        setDescription("You resonate melodic bindings, pulsing for $1 damage and slowing enemies within $2 blocks for $3 second(s). Your melodic bindings pulse every $4 seconds for the next $5 second(s).");
         setUsage("/skill melodicbinding");
         setArgumentRange(0, 0);
         setIdentifiers("skill melodicbinding");

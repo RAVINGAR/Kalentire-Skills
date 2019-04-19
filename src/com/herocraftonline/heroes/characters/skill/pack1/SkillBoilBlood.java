@@ -30,7 +30,7 @@ public class SkillBoilBlood extends ActiveSkill {
 
     public SkillBoilBlood(Heroes plugin) {
         super(plugin, "BoilBlood");
-        setDescription("Boil the blood of $6 enemies within $1 blocks, dealing $2 instant damage, and doing an additional $3 damage over $4 seconds. Requires $5 Blood Union to use. Reduces Blood Union by $5.");
+        setDescription("Boil the blood of $6 enemies within $1 blocks, dealing $2 instant damage, and doing an additional $3 damage over $4 second(s). Requires $5 Blood Union to use. Reduces Blood Union by $5.");
         setUsage("/skill boilblood");
         setArgumentRange(0, 0);
         setIdentifiers("skill boilblood");

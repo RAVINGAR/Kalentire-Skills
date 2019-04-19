@@ -34,7 +34,7 @@ public class SkillSoulSpike extends SkillBaseSpike {
 
 	public SkillSoulSpike(Heroes plugin) {
 		super(plugin, "SoulSpike");
-		setDescription("Impales the target's soul with a spike of negative energy, casting them into a soul shaken state for $1 seconds, dealing $2 damage. $3 $4");
+		setDescription("Impales the target's soul with a spike of negative energy, casting them into a soul shaken state for $1 second(s), dealing $2 damage. $3 $4");
 		setUsage("/skill soulspike");
 		setIdentifiers("skill soulspike");
 		setArgumentRange(0, 0);

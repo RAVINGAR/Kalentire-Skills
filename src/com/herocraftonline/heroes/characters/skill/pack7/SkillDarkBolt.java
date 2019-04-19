@@ -49,7 +49,7 @@ public class SkillDarkBolt extends ActiveSkill {
 
     public SkillDarkBolt(Heroes plugin) {
         super(plugin, "DarkBolt");
-        setDescription("Launch a Wither Skull imbued with dark energy. The skull will explode shortly after launching, or after hitting an enemy. Enemies caught within $1 blocks of the explosion are withered for $3 seconds. Withering deals $2 instant damage, disrupts their sense of health, and weakens all incomming healing by $4%.");
+        setDescription("Launch a Wither Skull imbued with dark energy. The skull will explode shortly after launching, or after hitting an enemy. Enemies caught within $1 blocks of the explosion are withered for $3 second(s). Withering deals $2 instant damage, disrupts their sense of health, and weakens all incomming healing by $4%.");
         setUsage("/skill darkbolt");
         setArgumentRange(0, 0);
         setIdentifiers("skill darkbolt");

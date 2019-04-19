@@ -32,7 +32,7 @@ public class SkillReckoning extends ActiveSkill {
 
     public SkillReckoning(Heroes plugin) {
         super(plugin, "Reckoning");
-        setDescription("Reckon all enemies within $1 blocks, dealing $2 damage and pulling them towards you. Reckoned targets are slowed for $3 seconds. The strength of the slow is increased by your Intellect.");
+        setDescription("Reckon all enemies within $1 blocks, dealing $2 damage and pulling them towards you. Reckoned targets are slowed for $3 second(s). The strength of the slow is increased by your Intellect.");
         setUsage("/skill reckoning");
         setArgumentRange(0, 0);
         setIdentifiers("skill reckoning");

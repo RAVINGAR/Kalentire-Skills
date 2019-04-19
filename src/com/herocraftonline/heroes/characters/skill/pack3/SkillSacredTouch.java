@@ -1,6 +1,7 @@
 package com.herocraftonline.heroes.characters.skill.pack3;
 
 import com.herocraftonline.heroes.Heroes;
+import com.herocraftonline.heroes.characters.CharacterTemplate;
 import com.herocraftonline.heroes.characters.Hero;
 import com.herocraftonline.heroes.characters.effects.Effect;
 import com.herocraftonline.heroes.characters.effects.EffectType;
@@ -38,16 +39,16 @@ public class SkillSacredTouch extends SkillBaseHeal {
     }
 
     @Override
-    protected void removeEffects(Hero hero) {
-        hero.getPlayer().setFireTicks(0);
-        for (Effect effect : hero.getEffects()) {
+    protected void removeEffects(Hero healer, CharacterTemplate targetCT) {
+        for (Effect effect : targetCT.getEffects()) {
             if (effect.isType(EffectType.DISPELLABLE) && effect.isType(EffectType.HARMFUL)) {
                 if (effect.isType(EffectType.FIRE)) {
-                    hero.removeEffect(effect);
-                    hero.getPlayer().getWorld().playSound(hero.getPlayer().getLocation(), Sound.ENTITY_GENERIC_BURN, 1.6F, 1.3F);
+                    targetCT.removeEffect(effect);
+                    targetCT.getEntity().getWorld().playSound(targetCT.getEntity().getLocation(), Sound.ENTITY_GENERIC_BURN, 1.6F, 1.3F);
                 }
             }
         }
+        targetCT.getEntity().setFireTicks(0);
     }
 
     protected void applySoundEffects(World world, LivingEntity target) {

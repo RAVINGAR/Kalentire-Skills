@@ -22,7 +22,7 @@ public class SkillSuffocate extends TargettedSkill
 {
 	public SkillSuffocate(Heroes plugin) {
 		super(plugin, "Suffocate");
-		setDescription("Suffocates your target (within 4 blocks) with dirt, dealing $1 damage and silencing them for 2.5 seconds.");
+		setDescription("Suffocates your target (within 4 blocks) with dirt, dealing $1 damage and silencing them for 2.5 second(s).");
 		setUsage("/skill suffocate");
 		setArgumentRange(0, 0);
 		setIdentifiers("skill suffocate");

@@ -42,7 +42,7 @@ public class SkillShurikens extends PassiveSkill {
 
     public SkillShurikens(Heroes plugin) {
         super(plugin, "Shurikens");
-        setDescription("Right click with a shear in hand to throw $1 $2 damage and can be thrown every $3 seconds.");
+        setDescription("Right click with a shear in hand to throw $1 $2 damage and can be thrown every $3 second(s).");
         setArgumentRange(0, 0);
         setTypes(SkillType.AGGRESSIVE, SkillType.DAMAGING, SkillType.ABILITY_PROPERTY_PROJECTILE, SkillType.UNBINDABLE);
 

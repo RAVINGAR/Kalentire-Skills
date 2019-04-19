@@ -1,11 +1,22 @@
 package com.herocraftonline.heroes.characters.skill.pack7;
 
+import com.herocraftonline.heroes.Heroes;
+import com.herocraftonline.heroes.api.SkillResult;
+import com.herocraftonline.heroes.characters.Hero;
+import com.herocraftonline.heroes.characters.effects.EffectType;
+import com.herocraftonline.heroes.characters.effects.ExpirableEffect;
+import com.herocraftonline.heroes.characters.skill.*;
+import com.herocraftonline.heroes.chat.ChatComponents;
+import com.herocraftonline.heroes.util.Util;
+import me.libraryaddict.disguise.DisguiseAPI;
+import me.libraryaddict.disguise.disguisetypes.DisguiseType;
+import me.libraryaddict.disguise.disguisetypes.MobDisguise;
 import org.bukkit.Bukkit;
 import org.bukkit.Sound;
 import org.bukkit.configuration.ConfigurationSection;
+import org.bukkit.entity.EntityType;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
-import org.bukkit.Sound;
 import org.bukkit.entity.Projectile;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
@@ -16,27 +27,9 @@ import org.bukkit.event.entity.EntityTargetEvent;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 
-import pgDev.bukkit.DisguiseCraft.DisguiseCraft;
-import pgDev.bukkit.DisguiseCraft.api.DisguiseCraftAPI;
-import pgDev.bukkit.DisguiseCraft.disguise.Disguise;
-import pgDev.bukkit.DisguiseCraft.disguise.DisguiseType;
-
-import com.herocraftonline.heroes.Heroes;
-import com.herocraftonline.heroes.api.SkillResult;
-import com.herocraftonline.heroes.characters.Hero;
-import com.herocraftonline.heroes.characters.effects.EffectType;
-import com.herocraftonline.heroes.characters.effects.ExpirableEffect;
-import com.herocraftonline.heroes.characters.skill.ActiveSkill;
-import com.herocraftonline.heroes.characters.skill.Skill;
-import com.herocraftonline.heroes.characters.skill.SkillConfigManager;
-import com.herocraftonline.heroes.characters.skill.SkillSetting;
-import com.herocraftonline.heroes.characters.skill.SkillType;
-import com.herocraftonline.heroes.chat.ChatComponents;
-import com.herocraftonline.heroes.util.Util;
-
 public class SkillBecomeDeath extends ActiveSkill {
 
-    DisguiseCraftAPI dcAPI;
+    private boolean disguiseApiLoaded = false;
     private String applyText;
     private String expireText;
 
@@ -49,8 +42,8 @@ public class SkillBecomeDeath extends ActiveSkill {
         setTypes(SkillType.SILENCEABLE, SkillType.BUFFING, SkillType.ABILITY_PROPERTY_DARK, SkillType.FORM_ALTERING);
         Bukkit.getServer().getPluginManager().registerEvents(new SkillEntityListener(), plugin);
 
-        if (Bukkit.getServer().getPluginManager().getPlugin("DisguiseCraft") != null) {
-            dcAPI = DisguiseCraft.getAPI();
+        if (Bukkit.getServer().getPluginManager().getPlugin("LibsDisguises") != null) {
+            disguiseApiLoaded = true;
         }
     }
 
@@ -149,14 +142,14 @@ public class SkillBecomeDeath extends ActiveSkill {
         private boolean attackedMobs = false;
 
         public BecomeDeathEffect(Skill skill, Player applier, long duration) {
-            super(skill, "BecomeDeath", applier, duration);
+            super(skill, "BecomeDeath", applier, duration, applyText, expireText);
 
             types.add(EffectType.BENEFICIAL);
             types.add(EffectType.DARK);
             types.add(EffectType.MAGIC);
             types.add(EffectType.WATER_BREATHING);
 
-            addPotionEffect(new PotionEffect(PotionEffectType.WATER_BREATHING, (int) (duration / 1000) * 20, 0), false);
+            addPotionEffect(new PotionEffect(PotionEffectType.WATER_BREATHING, (int) (duration / 1000) * 20, 0));
         }
 
         @Override
@@ -164,19 +157,18 @@ public class SkillBecomeDeath extends ActiveSkill {
             super.applyToHero(hero);
             Player player = hero.getPlayer();
 
-            if (dcAPI != null) {
-                if (dcAPI.isDisguised(player)) {
-                    Disguise disguise = dcAPI.getDisguise(player).clone();
-                    disguise.setType(DisguiseType.Zombie);
-                    dcAPI.changePlayerDisguise(player, disguise);
-                }
-                else {
-                    Disguise disguise = new Disguise(dcAPI.newEntityID(), DisguiseType.Zombie);
-                    dcAPI.disguisePlayer(player, disguise);
-                }
-            }
+            if (disguiseApiLoaded) {
+                if (!DisguiseAPI.isDisguised(player))
+                    DisguiseAPI.undisguiseToAll(player);
 
-            broadcast(player.getLocation(), "    " + applyText, player.getName());
+                //DisguiseAPI.constructDisguise(Zombie.class, true, true, true);
+                MobDisguise disguise = new MobDisguise(DisguiseType.getType(EntityType.ZOMBIE), true);
+                disguise.setHearSelfDisguise(true);
+                disguise.setKeepDisguiseOnPlayerDeath(false);
+                disguise.setHideHeldItemFromSelf(true);
+                disguise.setHideArmorFromSelf(true);
+                disguise.addPlayer(player);
+            }
         }
 
         @Override
@@ -184,12 +176,10 @@ public class SkillBecomeDeath extends ActiveSkill {
             super.removeFromHero(hero);
             Player player = hero.getPlayer();
 
-            if (dcAPI != null) {
-                if (dcAPI.isDisguised(player))
-                    dcAPI.undisguisePlayer(player);
+            if (disguiseApiLoaded) {
+                if (DisguiseAPI.isDisguised(player))
+                    DisguiseAPI.undisguiseToAll(player);
             }
-
-            broadcast(player.getLocation(), "    " + expireText, player.getName());
         }
 
         public boolean hasAttackedMobs() {

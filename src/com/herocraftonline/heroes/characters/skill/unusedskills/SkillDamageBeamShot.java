@@ -16,10 +16,7 @@ import de.slikey.effectlib.EffectManager;
 import de.slikey.effectlib.EffectType;
 import de.slikey.effectlib.effect.LineEffect;
 import de.slikey.effectlib.util.ParticleEffect;
-import org.bukkit.Color;
-import org.bukkit.Location;
-import org.bukkit.Material;
-import org.bukkit.Sound;
+import org.bukkit.*;
 import org.bukkit.block.Block;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.LivingEntity;
@@ -102,7 +99,7 @@ public class SkillDamageBeamShot extends SkillBaseBeamShot {
 				Location travelSoundLoc = shot.getBounds().getCenter().toLocation(origin.getWorld());
 				origin.getWorld().playSound(travelSoundLoc, Sound.ENTITY_GENERIC_BURN, 0.05f, 0.2f);
 
-				renderBeamShotFrame(origin, shot, ParticleEffect.FLAME, Color.ORANGE, (int) (shot.getPoint1().distanceSquared(shot.getPoint2()) * 10), 3, 32, 0.5, 1);
+				renderBeamShotFrame(origin, shot, Particle.FLAME, Color.ORANGE, (int) (shot.getPoint1().distanceSquared(shot.getPoint2()) * 10), 3, 32, 0.5, 1);
 
 				/*boolean render = false;
 				Vector originV = origin.toVector();

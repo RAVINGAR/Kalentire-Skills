@@ -10,7 +10,6 @@ import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
-import org.bukkit.Sound;
 import org.bukkit.entity.SmallFireball;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -24,6 +23,7 @@ import org.bukkit.util.Vector;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 
 import static com.herocraftonline.heroes.util.GeometryUtil.circle;
 
@@ -33,7 +33,7 @@ public class SkillCombustion extends ActiveSkill {
 
     public SkillCombustion(Heroes plugin) {
         super(plugin, "Combustion");
-        setDescription("You unleash a wave of destruction, hurling 18 fireballs in a ring around you. Targets hit will be dealt $1 damage and stunned for 1.5 seconds.");
+        setDescription("You unleash a wave of destruction, hurling 18 fireballs in a ring around you. Targets hit will be dealt $1 damage and stunned for 1.5 second(s).");
         setUsage("/skill combustion");
         setArgumentRange(0, 0);
         setIdentifiers("skill combustion");
@@ -58,7 +58,7 @@ public class SkillCombustion extends ActiveSkill {
         Player player = hero.getPlayer();
         Location launchLoc = player.getLocation().add(0, 0.5, 0);
         //ArrayList<Location> launchLocs = circle(player.getLocation().add(0, 0.5, 0), (int) 1.5, 1);
-        ArrayList<Location> ring = circle(player.getLocation().add(0, 0.5, 0), 18, 1);
+        List<Location> ring = circle(player.getLocation().add(0, 0.5, 0), 18, 1);
         for (Location destination : ring) {
             //Location destination = ring.get(1);
             double dX = launchLoc.getX() - destination.getX();

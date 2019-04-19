@@ -39,7 +39,7 @@ public class SkillEnvenom extends ActiveSkill {
 
     public SkillEnvenom(Heroes plugin) {
         super(plugin, "Envenom");
-        setDescription("Apply a deadly venom to your melee weapon and arrows for $1 seconds. While active, your attacks cause great pain to your enemies, dealing an extra $2 damage to the target.");
+        setDescription("Apply a deadly venom to your melee weapon and arrows for $1 second(s). While active, your attacks cause great pain to your enemies, dealing an extra $2 damage to the target.");
         setUsage("/skill envenom");
         setArgumentRange(0, 0);
         setIdentifiers("skill envenom");

@@ -22,7 +22,7 @@ public class SkillSonicBoom extends ActiveSkill {
 
     public SkillSonicBoom(Heroes plugin) {
         super(plugin, "SonicBoom");
-        this.setDescription("You creat a clap of thunder dealing $3 magic damage and silencing everyone within $1 blocks for $2 seconds.");
+        this.setDescription("You creat a clap of thunder dealing $3 magic damage and silencing everyone within $1 blocks for $2 second(s).");
         this.setUsage("/skill sonicboom");
         this.setArgumentRange(0, 0);
         this.setIdentifiers("skill sonicboom");

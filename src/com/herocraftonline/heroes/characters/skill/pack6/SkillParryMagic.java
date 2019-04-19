@@ -29,7 +29,7 @@ public class SkillParryMagic extends ActiveSkill {
 
     public SkillParryMagic(Heroes plugin) {
         super(plugin, "ParryMagic");
-        setDescription("You parry the next magical attack within $1 seconds.");
+        setDescription("You parry the next magical attack within $1 second(s).");
         setUsage("/skill parrymagic");
         setArgumentRange(0, 0);
         setIdentifiers("skill parrymagic", "skill pmagic");

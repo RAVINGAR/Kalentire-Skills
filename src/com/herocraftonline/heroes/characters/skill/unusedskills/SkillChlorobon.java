@@ -27,7 +27,7 @@ public class SkillChlorobon extends TargettedSkill {
 
     public SkillChlorobon(Heroes plugin) {
         super(plugin, "Chlorobon");
-        setDescription("You restore $1 health to the target over $2 seconds.");
+        setDescription("You restore $1 health to the target over $2 second(s).");
         setUsage("/skill chlorobon <target>");
         setArgumentRange(0, 1);
         setIdentifiers("skill chlorobon");

@@ -31,7 +31,7 @@ public class SkillHarmtouch extends TargettedSkill {
 
     public SkillHarmtouch(Heroes plugin) {
         super(plugin, "Harmtouch");
-        setDescription("You deal $1 dark damage to the target, slowing them and reducing their healing by $2% for $3 seconds.");
+        setDescription("You deal $1 dark damage to the target, slowing them and reducing their healing by $2% for $3 second(s).");
         setUsage("/skill harmtouch");
         setArgumentRange(0, 0);
         setIdentifiers("skill harmtouch");

@@ -31,7 +31,7 @@ public class SkillFistOfJin extends PassiveSkill {
 
     public SkillFistOfJin(Heroes plugin) {
         super(plugin, "FistOfJin");
-        setDescription("Passive: Each of your melee strikes restore $1 health to you, and $2 health to party members within $3 blocks. You cannot heal more than once per $4 seconds.");
+        setDescription("Each of your melee strikes restore $1 health to you, and $2 health to party members within $3 blocks. You cannot heal more than once per $4 second(s).");
         setTypes(SkillType.SILENCEABLE, SkillType.HEALING, SkillType.AREA_OF_EFFECT);
         setEffectTypes(EffectType.HEALING, EffectType.BENEFICIAL, EffectType.MAGIC);
 

@@ -32,7 +32,7 @@ public class SkillFlashFreeze
 
     public SkillFlashFreeze(Heroes plugin) {
         super(plugin, "FlashFreeze");
-        setDescription("You encase your target in a block of ice for $1 seconds. During this time they cannot attack or be damaged.");
+        setDescription("You encase your target in a block of ice for $1 second(s). During this time they cannot attack or be damaged.");
         setUsage("/skill flashfreeze");
         setArgumentRange(0, 0);
         setIdentifiers("skill flashfreeze");

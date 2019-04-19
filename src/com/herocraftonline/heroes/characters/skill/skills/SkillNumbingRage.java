@@ -22,7 +22,7 @@ public class SkillNumbingRage
 
     public SkillNumbingRage(Heroes plugin) {
         super(plugin, "NumbingRage");
-        setDescription("You ignore all fire and bleed damage for $1 seconds. This also exstinguises fire ticks.");
+        setDescription("You ignore all fire and bleed damage for $1 second(s). This also exstinguises fire ticks.");
         setUsage("/skill numbingrage");
         setArgumentRange(0, 0);
         setIdentifiers(new String[]{"skill numbingrage"});

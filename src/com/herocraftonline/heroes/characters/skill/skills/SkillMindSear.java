@@ -30,7 +30,7 @@ public class SkillMindSear extends ActiveSkill
 	public SkillMindSear(Heroes plugin) 
 	{
 		super(plugin, "MindSear");
-		setDescription("Shatter the minds of all enemies within $2 blocks, dealing $1 damage and rooting them in place for $3 seconds.");
+		setDescription("Shatter the minds of all enemies within $2 blocks, dealing $1 damage and rooting them in place for $3 second(s).");
 		setUsage("/skill mindsear");
 		setArgumentRange(0, 0);
 		setIdentifiers("skill mindsear");

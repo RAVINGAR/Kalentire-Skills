@@ -41,7 +41,7 @@ public class SkillBarrier extends ActiveSkill {
 
 	public SkillBarrier(Heroes plugin) {
 		super(plugin, "Barrier");
-		setDescription("Create a protective barrier around yourself for $1 seconds. The barrier allows you to retaliate against all incoming melee attacks, disarming them for $2 seconds, and dealing $3% of your weapon damage to them.");
+		setDescription("Create a protective barrier around yourself for $1 second(s). The barrier allows you to retaliate against all incoming melee attacks, disarming them for $2 seconds, and dealing $3% of your weapon damage to them.");
 		setUsage("/skill barrier");
 		setArgumentRange(0, 0);
 		setIdentifiers("skill barrier");

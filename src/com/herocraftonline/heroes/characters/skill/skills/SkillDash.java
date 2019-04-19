@@ -32,7 +32,7 @@ public class SkillDash extends ActiveSkill
         setUsage("/skill dash");
         setIdentifiers("skill dash");
         setArgumentRange(0, 0);
-        setDescription("You dash forward, dealing $1 damage to all enemies in your path and knocking them back. Deals an extra $2 damage to airborne enemies and knocks them back further. Dash speed increases with Dexterity.");
+        setDescription("You transform and dash forward, dealing $1 damage to all enemies in your path and knocking them back. Deals an extra $2 damage to airborne enemies and knocks them back further. Dash speed increases with Dexterity.");
         setTypes(SkillType.DAMAGING, SkillType.MOVEMENT_INCREASING, SkillType.ABILITY_PROPERTY_PHYSICAL);
     }
 

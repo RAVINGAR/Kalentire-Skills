@@ -1,5 +1,6 @@
 package com.herocraftonline.heroes.characters.skill.skills;
 
+import com.herocraftonline.heroes.characters.CharacterTemplate;
 import org.bukkit.configuration.ConfigurationSection;
 
 import com.herocraftonline.heroes.Heroes;
@@ -31,7 +32,7 @@ public class SkillBandage extends SkillBaseHeal {
     }
 
     @Override
-    protected void removeEffects(Hero hero) {
-
+    protected void removeEffects(Hero hero, CharacterTemplate targetCT) {
+        // No effects are removed by this Skill.
     }
 }

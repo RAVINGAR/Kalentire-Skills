@@ -31,7 +31,7 @@ public class SkillFlametouch extends ActiveSkill
 	public SkillFlametouch(Heroes plugin)
 	{
 		super(plugin, "Flametouch");
-		setDescription("Imbues your strikes with fire for $1 seconds, causing you to deal $2 more damage and igniting your target for 2 seconds.");
+		setDescription("Imbues your strikes with fire for $1 second(s), causing you to deal $2 more damage and igniting your target for 2 second(s).");
 		setUsage("/skill flametouch");
 		setArgumentRange(0, 0);
 		setIdentifiers("skill flametouch");
@@ -171,7 +171,7 @@ public class SkillFlametouch extends ActiveSkill
 					damage += SkillConfigManager.getUseSetting(hero, skill, SkillSetting.DAMAGE_INCREASE_PER_INTELLECT, 0.1, false)
 							* hero.getAttributeValue(AttributeType.INTELLECT);
 					addSpellTarget(target, hero);
-					damageEntity(target, hero.getPlayer(), damage, DamageCause.FIRE, false);
+					damageEntity(target, hero.getPlayer(), damage, DamageCause.MAGIC, false);
 					
 					target.setFireTicks(40);
 	

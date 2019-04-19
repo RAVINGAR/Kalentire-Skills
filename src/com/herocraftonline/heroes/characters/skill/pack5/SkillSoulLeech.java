@@ -29,7 +29,7 @@ public class SkillSoulLeech extends TargettedSkill {
 
     public SkillSoulLeech(Heroes plugin) {
         super(plugin, "SoulLeech");
-        setDescription("Leech the soul of your target, dealing $1 damage over $2 seconds. After expiring, the effect will restore your health for $3% of the damage dealt.");
+        setDescription("Leech the soul of your target, dealing $1 damage over $2 second(s). After expiring, the effect will restore your health for $3% of the damage dealt.");
         setUsage("/skill soulleech");
         setArgumentRange(0, 0);
         setIdentifiers("skill soulleech");

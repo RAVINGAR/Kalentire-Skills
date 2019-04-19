@@ -36,7 +36,7 @@ public class SkillSageTotem extends SkillBaseTotem implements Listener {
         setArgumentRange(0,0);
         setUsage("/skill sagetotem");
         setIdentifiers("skill sagetotem");
-        setDescription("Places a sage totem at target location that enlightens party members in a $1 radius, increasing Wisdom by $2. Lasts for $3 seconds.");
+        setDescription("Places a sage totem at target location that enlightens party members in a $1 radius, increasing Wisdom by $2. Lasts for $3 second(s).");
         setTypes(SkillType.BUFFING, SkillType.ABILITY_PROPERTY_MAGICAL, SkillType.SILENCEABLE, SkillType.AREA_OF_EFFECT);
         material = Material.GLOWSTONE;
         plugin.getServer().getPluginManager().registerEvents(this, plugin);

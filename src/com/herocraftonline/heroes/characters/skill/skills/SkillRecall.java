@@ -1,31 +1,5 @@
 package com.herocraftonline.heroes.characters.skill.skills;
 
-import java.util.List;
-import java.util.Set;
-import java.util.logging.Level;
-
-//import com.palmergames.bukkit.towny.exceptions.NotRegisteredException;
-//import com.palmergames.bukkit.towny.object.TownBlock;
-//import com.palmergames.bukkit.towny.object.TownyPermission;
-//import com.palmergames.bukkit.towny.object.TownyUniverse;
-//import com.palmergames.bukkit.towny.utils.PlayerCacheUtil;
-//import com.palmergames.bukkit.util.BukkitTools;
-import com.herocraftonline.townships.users.TownshipsUser;
-import com.herocraftonline.townships.users.UserManager;
-import org.apache.commons.lang.StringUtils;
-import org.bukkit.*;
-import org.bukkit.block.Block;
-import org.bukkit.configuration.ConfigurationSection;
-import org.bukkit.configuration.MemoryConfiguration;
-import org.bukkit.entity.Player;
-import org.bukkit.Sound;
-import org.bukkit.event.EventHandler;
-import org.bukkit.event.Listener;
-import org.bukkit.event.player.PlayerJoinEvent;
-import org.bukkit.event.player.PlayerQuitEvent;
-import org.bukkit.inventory.ItemStack;
-import org.bukkit.inventory.meta.ItemMeta;
-
 import com.google.common.io.ByteArrayDataOutput;
 import com.google.common.io.ByteStreams;
 import com.herocraftonline.heroes.Heroes;
@@ -37,7 +11,30 @@ import com.herocraftonline.heroes.characters.skill.SkillConfigManager;
 import com.herocraftonline.heroes.characters.skill.SkillSetting;
 import com.herocraftonline.heroes.characters.skill.SkillType;
 import com.herocraftonline.heroes.nms.NMSHandler;
+import com.herocraftonline.townships.users.TownshipsUser;
+import com.herocraftonline.townships.users.UserManager;
+import com.sk89q.worldedit.bukkit.BukkitAdapter;
+import com.sk89q.worldguard.LocalPlayer;
+import com.sk89q.worldguard.WorldGuard;
 import com.sk89q.worldguard.bukkit.WorldGuardPlugin;
+import com.sk89q.worldguard.protection.flags.Flags;
+import com.sk89q.worldguard.protection.regions.RegionContainer;
+import com.sk89q.worldguard.protection.regions.RegionQuery;
+import org.apache.commons.lang.StringUtils;
+import org.bukkit.*;
+import org.bukkit.configuration.ConfigurationSection;
+import org.bukkit.configuration.MemoryConfiguration;
+import org.bukkit.entity.Player;
+import org.bukkit.event.EventHandler;
+import org.bukkit.event.Listener;
+import org.bukkit.event.player.PlayerJoinEvent;
+import org.bukkit.event.player.PlayerQuitEvent;
+import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.ItemMeta;
+
+import java.util.List;
+import java.util.Set;
+import java.util.logging.Level;
 
 public class SkillRecall extends ActiveSkill implements Listener {
 
@@ -63,8 +60,7 @@ public class SkillRecall extends ActiveSkill implements Listener {
             if (Bukkit.getServer().getPluginManager().getPlugin("Townships") != null) {
                 townships = true;
             }
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             Heroes.log(Level.SEVERE, "SkillRecall: Could not get WorldGuard or Townships plugins! Region checking may not work!");
         }
 
@@ -88,14 +84,13 @@ public class SkillRecall extends ActiveSkill implements Listener {
     }
 
     public ConfigurationSection getDefaultConfig() {
-        ConfigurationSection node = super.getDefaultConfig();
-
-        node.set(SkillSetting.NO_COMBAT_USE.node(), true);
-        node.set(SkillSetting.DELAY.node(), 10000);
-        node.set(SkillSetting.REAGENT.node(), 331);
-        node.set(SkillSetting.REAGENT_COST.node(), 10);
-
-        return node;
+        ConfigurationSection config = super.getDefaultConfig();
+        config.set("ignore-region-plugins", false);
+        config.set(SkillSetting.NO_COMBAT_USE.node(), true);
+        config.set(SkillSetting.DELAY.node(), 10000);
+        config.set(SkillSetting.REAGENT.node(), 331);
+        config.set(SkillSetting.REAGENT_COST.node(), 10);
+        return config;
     }
 
     public SkillResult use(Hero hero, String[] args) {
@@ -120,12 +115,12 @@ public class SkillRecall extends ActiveSkill implements Listener {
             // Get the uses on the Runestone and ensure it is greater than 1
             String usesString = loreData.get(1);
             usesString = usesString.toLowerCase();
-    
+
             // Strip the usesString of the "Uses:" text.
             int currentIndexLocation = usesString.indexOf(":", 0) + 2;  // Set the start point
             int endIndexLocation = usesString.length();                 // Get the end point for grabbing remaining uses data
             String currentUsesString = usesString.substring(currentIndexLocation, endIndexLocation);
-    
+
             // Strip the currentUsesString of the "max uses" text.
             currentIndexLocation = 0;
             endIndexLocation = currentUsesString.indexOf("/", 0);
@@ -133,7 +128,7 @@ public class SkillRecall extends ActiveSkill implements Listener {
                 // There is a possible maximum uses located within the usesString
                 currentUsesString = currentUsesString.substring(currentIndexLocation, endIndexLocation);
             }
-    
+
             if (!isValidUses(currentUsesString, player)) {
                 player.sendMessage("Runestone Contains Invalid Location Data.");
                 return SkillResult.FAIL;
@@ -200,7 +195,7 @@ public class SkillRecall extends ActiveSkill implements Listener {
             endIndexLocation = locationString.indexOf(",", currentIndexLocation);                   // Get the end point for grabbing y location data
             String yString = locationString.substring(currentIndexLocation, endIndexLocation);
 
-            // Get the z coord data 
+            // Get the z coord data
             currentIndexLocation = endIndexLocation + 2;                                            // Set the start point
             endIndexLocation = locationString.length();                                             // Get the end point for grabbing z location data
             String zString = locationString.substring(currentIndexLocation, endIndexLocation);
@@ -249,8 +244,7 @@ public class SkillRecall extends ActiveSkill implements Listener {
                 forwardTeleport(hero, skillSettings) : doTeleport(hero, skillSettings, true);
     }
 
-    private SkillResult forwardTeleport(final Hero hero, ConfigurationSection skillSettings)
-    {
+    private SkillResult forwardTeleport(final Hero hero, ConfigurationSection skillSettings) {
         ByteArrayDataOutput recallRequest = ByteStreams.newDataOutput();
         recallRequest.writeUTF("Connect");
         recallRequest.writeUTF(skillSettings.getString("server"));
@@ -263,8 +257,7 @@ public class SkillRecall extends ActiveSkill implements Listener {
             hero.setSkillSetting(this, "rs-z", skillSettings.getString("z"));
             hero.setSkillSetting(this, "rs-yaw", skillSettings.getString("yaw"));
             hero.setSkillSetting(this, "rs-pitch", skillSettings.getString("pitch"));
-        }
-        else {
+        } else {
             hero.setSkillSetting(this, "pending-teleport", "recall");
         }
 
@@ -294,8 +287,7 @@ public class SkillRecall extends ActiveSkill implements Listener {
         return SkillResult.NORMAL;
     }
 
-    private SkillResult doTeleport(Hero hero, ConfigurationSection skillSettings, boolean isDeparting)
-    {
+    private SkillResult doTeleport(Hero hero, ConfigurationSection skillSettings, boolean isDeparting) {
         final Player player = hero.getPlayer();
 
         // Validate world checks
@@ -312,16 +304,16 @@ public class SkillRecall extends ActiveSkill implements Listener {
         double[] xyzyp;
         try {
             xyzyp = SkillMark.createLocationData(skillSettings);
-        }
-        catch (IllegalArgumentException e) {
+        } catch (IllegalArgumentException e) {
             player.sendMessage("Your recall location is improperly set!");
             return SkillResult.SKIP_POST_USAGE;
         }
 
+        boolean ignoreRegionPlugins = skillSettings.getBoolean("ignore-region-plugins");
         Location teleportLocation = new Location(world, xyzyp[0], xyzyp[1], xyzyp[2], (float) xyzyp[3], (float) xyzyp[4]);
 
         // Validate Towny
-        if(towny) {
+        if (towny && !ignoreRegionPlugins) {
            /* // Check if the block in question is a Town Block, don't want Towny perms to interfere if we're not in a town... just in case.
             TownBlock tBlock = TownyUniverse.getTownBlock(teleportLocation);
             if(tBlock != null) {
@@ -347,7 +339,7 @@ public class SkillRecall extends ActiveSkill implements Listener {
         }
 
         // Validate Townships
-        if (townships) {
+        if (townships && !ignoreRegionPlugins) {
             TownshipsUser user = UserManager.fromOfflinePlayer(player);
             if (!user.canBuild(teleportLocation)) {
                 player.sendMessage("You cannot Recall to a Region you have no access to!");
@@ -356,8 +348,12 @@ public class SkillRecall extends ActiveSkill implements Listener {
         }
 
         // Validate WorldGuard
-        if (worldguard) {
-            if (!wgp.canBuild(player, teleportLocation)) {
+        if (worldguard && !ignoreRegionPlugins) {
+            LocalPlayer wgPlayer = wgp.wrapPlayer(player);
+            RegionContainer container = WorldGuard.getInstance().getPlatform().getRegionContainer();
+            com.sk89q.worldedit.util.Location wgTeleportLoc = BukkitAdapter.adapt(teleportLocation);
+            RegionQuery query = container.createQuery();
+            if (!query.testState(wgTeleportLoc, wgPlayer, Flags.BUILD)) {
                 player.sendMessage("You cannot Recall to a Region you have no access to!");
                 return SkillResult.FAIL;
             }
@@ -365,7 +361,7 @@ public class SkillRecall extends ActiveSkill implements Listener {
 
         if (isDeparting) {
             broadcastExecuteText(hero);
-    
+
             player.getWorld().playSound(player.getLocation(), Sound.ENTITY_WITHER_SPAWN, 0.5F, 1.0F);
             //hero.getPlayer().getWorld().spigot().playEffect(player.getLocation(), Effect.COLOURED_DUST, 0, 0, 0.2F, 1.0F, 0.2F, 0.0F, 50, 12);
             hero.getPlayer().getWorld().spawnParticle(Particle.REDSTONE, player.getLocation(), 50, 0.2, 1, 0.2, 0, new Particle.DustOptions(Color.ORANGE, 1));
@@ -400,8 +396,7 @@ public class SkillRecall extends ActiveSkill implements Listener {
             if ("recall".equals(skillSettings.getString("pending-teleport"))) {
                 hero.setSkillSetting(this, "pending-teleport", "none");
                 teleportSettings = skillSettings;
-            }
-            else if ("runestone".equals(skillSettings.getString("pending-teleport"))) {
+            } else if ("runestone".equals(skillSettings.getString("pending-teleport"))) {
                 hero.setSkillSetting(this, "pending-teleport", "none");
                 teleportSettings = new MemoryConfiguration();
                 teleportSettings.set("server", skillSettings.getString("rs-server"));
@@ -448,13 +443,13 @@ public class SkillRecall extends ActiveSkill implements Listener {
     }
 
     private boolean isRemoteServerLocation(ConfigurationSection skillSettings) {
-        
+
         return skillSettings != null && StringUtils.isNotEmpty(skillSettings.getString("server"))
                 && !skillSettings.getString("server").equals(plugin.getServerName())
                 && plugin.getServerNames().contains(skillSettings.getString("server"));
     }
 
-	private boolean isValidUses(String uses, Player player) {
+    private boolean isValidUses(String uses, Player player) {
         if (uses.equals("unlimited")) {
             return true;
         }
@@ -462,38 +457,32 @@ public class SkillRecall extends ActiveSkill implements Listener {
         try {
             Integer.parseInt(uses);
             return true;
-        }
-        catch (Exception ex) {
+        } catch (Exception ex) {
             broadcast(player.getLocation(), "Tried to parse an invalid integar. Not valid.");  // DEBUG
             return false;
         }
     }
 
-    class Info<T>
-    {
+    class Info<T> {
         private final static long TIMEOUT = 10 * 1000; // 10s
-    
+
         private final long timeStamp;
         private final T info;
-    
-        public Info(final T info)
-        {
+
+        public Info(final T info) {
             timeStamp = System.currentTimeMillis();
             this.info = info;
         }
-    
-        public T getInfo()
-        {
+
+        public T getInfo() {
             return info;
         }
 
-        public boolean isExpired()
-        {
+        public boolean isExpired() {
             return System.currentTimeMillis() - timeStamp > TIMEOUT;
         }
 
-        public boolean isNotExpired()
-        {
+        public boolean isNotExpired() {
             return !isExpired();
         }
     }

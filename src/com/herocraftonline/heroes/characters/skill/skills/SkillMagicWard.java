@@ -30,7 +30,7 @@ public class SkillMagicWard extends ActiveSkill {
 
     public SkillMagicWard(Heroes plugin) {
         super(plugin, "MagicWard");
-        setDescription("Create a Magical Ward on yourself for the next $1 seconds. While active, you reduce incoming magic damage by $2%. You must be holding a Shield for this effect to work.");
+        setDescription("Create a Magical Ward on yourself for the next $1 second(s). While active, you reduce incoming magic damage by $2%. You must be holding a Shield for this effect to work.");
         setArgumentRange(0, 0);
         setUsage("/skill magicward");
         setIdentifiers("skill magicward", "skill rayshield");

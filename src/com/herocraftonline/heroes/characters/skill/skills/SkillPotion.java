@@ -58,7 +58,7 @@ public class SkillPotion extends PassiveSkill {
 
 
         for (PotionEffectType type : PotionEffectType.values()) {
-            if(type == null)
+            if (type == null)
                 continue; // Docs for .values() say can be any order and contain null, which it totally does
 
             String potionName = type.getName();
@@ -72,7 +72,7 @@ public class SkillPotion extends PassiveSkill {
             node.set("allow.LINGERING-" + potionName, false);
             node.set("cooldown.LINGERING-" + potionName, 180000);
 
-            if(tierIIPotions.contains(potionName)) {
+            if (tierIIPotions.contains(potionName)) {
                 node.set("allow." + potionName + "-II", false);
                 node.set("cooldown." + potionName + "-II", 180000);
 
@@ -94,7 +94,7 @@ public class SkillPotion extends PassiveSkill {
 
     // Convenience method to pass an effect rather than the duration
     public static int getPotionDuration(PotionEffect effect, double intensity) {
-        return getPotionDuration(effect.getDuration(),  intensity, false);
+        return getPotionDuration(effect.getDuration(), intensity, false);
     }
 
     // More overloads, effect and specified millis
@@ -106,10 +106,11 @@ public class SkillPotion extends PassiveSkill {
     public static int getPotionDuration(int duration, double intensity) {
         return getPotionDuration(duration, intensity, false);
     }
+
     // Calculates the duration of a Splash potion based on its intensity
     // returns input if convertMillis is false, attempt to convert ticks to millis if true.
     public static int getPotionDuration(int duration, double intensity, boolean convertMillis) {
-        int calcDuration = (int)(intensity * duration + 0.5D); // Code for this from Spigot
+        int calcDuration = (int) (intensity * duration + 0.5D); // Code for this from Spigot
         return convertMillis ? calcDuration * 50 : calcDuration; // Divide by 20 for seconds then multiply by 1000 for millis. This comes out to *50
     }
 
@@ -121,68 +122,67 @@ public class SkillPotion extends PassiveSkill {
             this.skill = skill;
         }
 
-
-
         // PlayerItemConsume listener for accurate knowledge of when a potion is drank, rather than just when it's clicked.
         @EventHandler(priority = EventPriority.LOWEST, ignoreCancelled = true)
         public void onPlayerItemConsume(PlayerItemConsumeEvent event) {
-            if(event.getItem().getType() == Material.POTION) {
-                ItemStack item = event.getItem();
-                Player player = event.getPlayer();
+            if (event.getItem().getType() != Material.POTION)
+                return;
 
-                if(!(item.getItemMeta() instanceof PotionMeta)) {
-                    event.setCancelled(true);
-                    player.sendMessage("This Potion has no PotionMeta - please report this for investigation!");
-                    return; // I don't trust this not to happen
-                }
+            ItemStack item = event.getItem();
+            Player player = event.getPlayer();
 
-                PotionMeta pMeta = (PotionMeta) item.getItemMeta();
-
-                // Add custom effects, then add the effect as defined by the Base PotionData
-                List<PotionEffect> effects = new ArrayList<>(pMeta.getCustomEffects());
-
-                PotionEffect vanillaEffect = getPotionEffect(pMeta.getBasePotionData()); // Get vanilla effect
-                if(vanillaEffect != null)
-                    effects.add(vanillaEffect); // Vanilla effect can be null; apply if not null
-
-                if(!canUsePotion(player, effects, 0)) {
-                    event.setCancelled(true);
-                    return;
-                }
-
-                List<PotionEffect> normalEffects = new ArrayList<>(effects); // Just in case there are effects we don't handle, I'd rather not ignore them
-
-
-                for(PotionEffect effect : effects) {
-                    if(processPotionEffectEvent(player, effect))
-                        normalEffects.remove(effect);
-                }
-
-                if(!effects.equals(normalEffects)) { // If we did stuff with the potion, apply any remaining normal effects and make sure it's a bottle now.
-                    for(PotionEffect effect : normalEffects)
-                        applyVanillaEffect(player, effect);
-
-                    PlayerInventory pInventory = player.getInventory();
-
-                    // We need to check the hands for the potion we just drank in order to change it; the event just gives us the item.
-                    // Potion drinking goes primary hand, then secondary. Check them in that order, too.
-                    if (item.equals(NMSHandler.getInterface().getItemInMainHand(pInventory)))
-                        NMSHandler.getInterface().setItemInMainHand(pInventory, new ItemStack(Material.GLASS_BOTTLE));
-                    else if (item.equals(NMSHandler.getInterface().getItemInOffHand(pInventory)))
-                        NMSHandler.getInterface().setItemInOffHand(pInventory, new ItemStack(Material.GLASS_BOTTLE));
-                    else if (player.getInventory().contains(item)) { // Triggers in case of magic or code that makes the current potion invalid, but another one exists.
-                        PlayerInventory inventory = player.getInventory();
-                        inventory.setItem(inventory.first(item), new ItemStack(Material.GLASS_BOTTLE));
-                        Heroes.log(Level.WARNING, "User had no or different potion in hand slots when used, another existed!");
-                    }
-                    else // Triggers in cases of magic or code that makes the current bottle invalid, but another one does not exist.
-                        Heroes.log(Level.WARNING, "User had no or different potion in hand slots when used, another did NOT exist!");
-
-                    event.setItem(new ItemStack(Material.GLASS_BOTTLE)); // In case something un-cancels it, though it'll glitch a tad.
-                    event.setCancelled(true); // This prevents the aforementioned glitch.
-                }
+            if (!(item.getItemMeta() instanceof PotionMeta)) {
+                event.setCancelled(true);
+                player.sendMessage("This Potion has no PotionMeta - please report this for investigation!");
+                return; // I don't trust this not to happen
             }
-            // Not a potion, no care was given that day
+
+            PotionMeta pMeta = (PotionMeta) item.getItemMeta();
+
+            // Add custom effects, then add the effect as defined by the Base PotionData
+            List<PotionEffect> effects = new ArrayList<>(pMeta.getCustomEffects());
+
+            PotionEffect vanillaEffect = getPotionEffect(pMeta.getBasePotionData()); // Get vanilla effect
+            if (vanillaEffect != null)
+                effects.add(vanillaEffect); // Vanilla effect can be null; apply if not null
+
+            if (!canUsePotion(player, effects, 0)) {
+                event.setCancelled(true);
+                return;
+            }
+
+            List<PotionEffect> normalEffects = new ArrayList<>(effects); // Just in case there are effects we don't handle, I'd rather not ignore them
+
+            for (PotionEffect effect : effects) {
+                if (processPotionEffectEvent(player, effect))
+                    normalEffects.remove(effect);
+            }
+
+            if (!effects.equals(normalEffects)) { // If we did stuff with the potion, apply any remaining normal effects and make sure it's a bottle now.
+                for (PotionEffect effect : normalEffects)
+                    applyVanillaEffect(player, effect);
+
+                PlayerInventory pInventory = player.getInventory();
+
+                // We need to check the hands for the potion we just drank in order to change it; the event just gives us the item.
+                // Potion drinking goes primary hand, then secondary. Check them in that order, too.
+                if (item.equals(NMSHandler.getInterface().getItemInMainHand(pInventory))) {
+                    NMSHandler.getInterface().setItemInMainHand(pInventory, new ItemStack(Material.GLASS_BOTTLE));
+                } else if (item.equals(NMSHandler.getInterface().getItemInOffHand(pInventory))) {
+                    NMSHandler.getInterface().setItemInOffHand(pInventory, new ItemStack(Material.GLASS_BOTTLE));
+                } else if (player.getInventory().contains(item)) {
+                    // Triggers in case of magic or code that makes the current potion invalid, but another one exists.
+                    PlayerInventory inventory = player.getInventory();
+                    inventory.setItem(inventory.first(item), new ItemStack(Material.GLASS_BOTTLE));
+                    Heroes.log(Level.WARNING, "User had no or different potion in hand slots when used, another existed!");
+                } else {
+                    // Triggers in cases of magic or code that makes the current bottle invalid, but another one does not exist.
+                    Heroes.log(Level.WARNING, "User had no or different potion in hand slots when used, another did NOT exist!");
+                }
+
+                event.setItem(new ItemStack(Material.GLASS_BOTTLE)); // In case something un-cancels it, though it'll glitch a tad.
+                event.setCancelled(true); // This prevents the aforementioned glitch.
+            }
         }
 
         // Determines from all the effects on a potion, whether its use is permitted and checks/sets cooldowns.
@@ -200,18 +200,18 @@ public class SkillPotion extends PassiveSkill {
             Map<String, Long> cooldowns = new HashMap<>();
 
             // loop 1 to check every potion is allowed
-            for(PotionEffect effect : effects) {
+            for (PotionEffect effect : effects) {
                 // get the potion type info
                 String potionType = effect.getType().getName();
                 String potionName = potionType;
 
                 // splash and lingering are similar, but mutually exclusive technically
-                if(potionStyle == 1)
+                if (potionStyle == 1)
                     potionName = "SPLASH-" + potionName;
-                else if(potionStyle == 2)
+                else if (potionStyle == 2)
                     potionName = "LINGERING-" + potionName;
 
-                if(tierIIPotions.contains(potionType) && effect.getAmplifier() > 0)
+                if (tierIIPotions.contains(potionType) && effect.getAmplifier() > 0)
                     potionName += "-II"; // III and higher count as II, and non-II potions always count as I, for sanity reasons.
 
                 // see if the player can use this type of potion
@@ -231,14 +231,14 @@ public class SkillPotion extends PassiveSkill {
 
                 // store cooldowns to a map so we're sure all of them are allowed before setting any
                 long cooldown = SkillConfigManager.getUseSetting(hero, skill, "cooldown." + potionName, 180000, true);
-                if(!cooldowns.containsKey(potionType) || cooldowns.get(potionType) < cooldown) {
+                if (!cooldowns.containsKey(potionType) || cooldowns.get(potionType) < cooldown) {
                     cooldowns.put(potionType, cooldown);
                 }
 
             }
 
             // loop 2 to set potion cooldowns, since they're okay to use
-            for(String potionType : cooldowns.keySet()) {
+            for (String potionType : cooldowns.keySet()) {
                 long time = System.currentTimeMillis();
                 hero.setCooldown(potionType, time + cooldowns.get(potionType));
             }
@@ -256,7 +256,7 @@ public class SkillPotion extends PassiveSkill {
             List<PotionEffect> effects = new ArrayList<>(cloud.getCustomEffects()); // Get custom effects
 
             PotionEffect vanillaEffect = getPotionEffect(cloud.getBasePotionData()); // Get vanilla effect
-            if(vanillaEffect != null)
+            if (vanillaEffect != null)
                 effects.add(vanillaEffect); // Vanilla effect can be null; apply if not null
 
             List<PotionEffect> normalEffects = new ArrayList<>(effects); // Just in case there are effects we don't handle, I'd rather not ignore them.
@@ -267,10 +267,10 @@ public class SkillPotion extends PassiveSkill {
             int cloudDurationOnUse = cloud.getDurationOnUse();
 
 
-            for(LivingEntity entity : event.getAffectedEntities()) {
+            for (LivingEntity entity : event.getAffectedEntities()) {
 
-                for(PotionEffect effect : effects) {
-                    if(processPotionEffectEvent(entity, effect, true) && firstLoop) {
+                for (PotionEffect effect : effects) {
+                    if (processPotionEffectEvent(entity, effect, true) && firstLoop) {
                         normalEffects.remove(effect); // On first run, remove all handled effects from this list for comparison.
                     }
                 }
@@ -283,7 +283,7 @@ public class SkillPotion extends PassiveSkill {
                 // The usages of .remove() are part of said code, but I'm not sure if they'll work as intended when used partway through.
                 if (cloudRadiusOnUse != 0.0F) {
                     cloud.setRadius(cloud.getRadius() + cloudRadiusOnUse);
-                    if(cloud.getRadius() < 0/5F) {
+                    if (cloud.getRadius() < 0 / 5F) {
                         cloud.remove();
                         break;
                     }
@@ -311,7 +311,7 @@ public class SkillPotion extends PassiveSkill {
             List<PotionEffect> effects = new ArrayList<>(pMeta.getCustomEffects()); // Get custom effects
 
             PotionEffect vanillaEffect = getPotionEffect(pMeta.getBasePotionData()); // Get vanilla effect
-            if(vanillaEffect != null)
+            if (vanillaEffect != null)
                 effects.add(vanillaEffect); // Vanilla effect can be null; apply if not null
 
 
@@ -319,16 +319,16 @@ public class SkillPotion extends PassiveSkill {
 
             boolean firstLoop = true; // The easiest way to determine first loop without duplicating the entire loop code.
 
-            for(LivingEntity entity : event.getAffectedEntities()) {
+            for (LivingEntity entity : event.getAffectedEntities()) {
                 double intensity = event.getIntensity(entity);
 
-                for(PotionEffect effect : effects) {
-                    if(processPotionEffectEvent(entity, effect, intensity) && firstLoop) {
+                for (PotionEffect effect : effects) {
+                    if (processPotionEffectEvent(entity, effect, intensity) && firstLoop) {
                         normalEffects.remove(effect); // On first run, remove all handled effects from this list for comparison.
                     }
                 }
 
-                if(firstLoop && effects.equals(normalEffects)) // On first run, check if we did anything and if not, stop.
+                if (firstLoop && effects.equals(normalEffects)) // On first run, check if we did anything and if not, stop.
                     return;
 
                 for (PotionEffect effect : normalEffects) {
@@ -345,14 +345,14 @@ public class SkillPotion extends PassiveSkill {
         public void onProjectileLaunch(ProjectileLaunchEvent event) {
             Projectile projectile = event.getEntity();
 
-            if(!(projectile instanceof ThrownPotion) || !(projectile.getShooter() instanceof Player))
+            if (!(projectile instanceof ThrownPotion) || !(projectile.getShooter() instanceof Player))
                 return;
 
             ThrownPotion thrownPotion = (ThrownPotion) projectile;
             Player player = (Player) projectile.getShooter();
             ItemStack potionItem = thrownPotion.getItem();
 
-            if(!(potionItem.getItemMeta() instanceof PotionMeta)) {
+            if (!(potionItem.getItemMeta() instanceof PotionMeta)) {
                 event.setCancelled(true);
                 player.sendMessage("This Potion has no PotionMeta - please report this for investigation!");
                 return; // I don't trust this not to happen
@@ -364,16 +364,16 @@ public class SkillPotion extends PassiveSkill {
             List<PotionEffect> effects = new ArrayList<>(pMeta.getCustomEffects());
 
             PotionEffect vanillaEffect = getPotionEffect(pMeta.getBasePotionData()); // Get vanilla effect
-            if(vanillaEffect != null)
+            if (vanillaEffect != null)
                 effects.add(vanillaEffect); // Vanilla effect can be null; apply if not null
 
             // ThrownPotion only includes Splash and Lingering, as of 1.9.
             // Checking Lingering is arbitrary, could check splash instead, but assume the other since there's just two.
-            if(!canUsePotion(player, effects, thrownPotion instanceof LingeringPotion ? 2 : 1)) {
+            if (!canUsePotion(player, effects, thrownPotion instanceof LingeringPotion ? 2 : 1)) {
                 event.setCancelled(true);
 
                 // In Creative, potions aren't consumed on use, so this just spams potion drops
-                if(player.getGameMode() != GameMode.CREATIVE)
+                if (player.getGameMode() != GameMode.CREATIVE)
                     player.getWorld().dropItem(player.getLocation(), potionItem);
             }
         }
@@ -403,11 +403,9 @@ public class SkillPotion extends PassiveSkill {
                 }
 
                 return (Boolean) customPotionMethod.invoke(skill, entity, effect, intensity, lingering);
-            }
-            catch(IllegalAccessException ex) {
+            } catch (IllegalAccessException ex) {
                 return false;
-            }
-            catch(InvocationTargetException ex) {
+            } catch (InvocationTargetException ex) {
                 ex.printStackTrace(); // An error in the execution of the method should probably still be printed
                 return false;
             }
@@ -436,7 +434,7 @@ public class SkillPotion extends PassiveSkill {
             double instantLingerMult = 0.5;
             double durationLingerMult = 0.25;
 
-            if(lingering) {
+            if (lingering) {
                 CharacterTemplate ct = plugin.getCharacterManager().getCharacter(entity);
                 if (ct instanceof Hero) {
                     Hero hero = (Hero) ct;
@@ -449,35 +447,33 @@ public class SkillPotion extends PassiveSkill {
                 }
             }
 
-            if(type.isInstant()) { // Code for instant pot detection from Spigot, though it assumes only HARM/HEAL it accounts for undead
+            if (type.isInstant()) { // Code for instant pot detection from Spigot, though it assumes only HARM/HEAL it accounts for undead
                 boolean undead = Util.isUndead(plugin, entity);
 
-                if((!type.getName().equals("HEAL") || undead) && (!type.getName().equals("HARM") || !undead)) { // Can't do a type == PotionEffectType.HARM/HEAL for some odd reason
-                    if(type.getName().equals("HARM") && !undead || type.getName().equals("HEAL") && undead) { // Damage potion effect
+                if ((!type.getName().equals("HEAL") || undead) && (!type.getName().equals("HARM") || !undead)) { // Can't do a type == PotionEffectType.HARM/HEAL for some odd reason
+                    if (type.getName().equals("HARM") && !undead || type.getName().equals("HEAL") && undead) { // Damage potion effect
                         double damage = Math.floor(intensity * (double) (6 << effect.getAmplifier()) + 0.5D);
-                        if(lingering)
+                        if (lingering)
                             damage *= instantLingerMult;
 
                         entity.damage(damage); // This fires an EntityDamageEvent on its own, not necessary to fire an event like it is with Healing
                     }
-                }
-                else { // Healing potion effect
-                    if(entity.getHealth() <= 0.0) return; // Not good to run a RegainHealthEvent on a dead thing
+                } else { // Healing potion effect
+                    if (entity.getHealth() <= 0.0) return; // Not good to run a RegainHealthEvent on a dead thing
                     double healing = Math.floor(intensity * (double) (4 << effect.getAmplifier()) + 0.5D);
-                    if(lingering)
+                    if (lingering)
                         healing *= instantLingerMult;
 
                     EntityRegainHealthEvent event = new EntityRegainHealthEvent(entity, healing, EntityRegainHealthEvent.RegainReason.MAGIC); // Logic for health calculation taken from Spigot
                     Bukkit.getPluginManager().callEvent(event);
 
-                    if(!event.isCancelled()) {
+                    if (!event.isCancelled()) {
                         double healed = entity.getHealth() + event.getAmount();
                         double max = entity.getMaxHealth();
                         entity.setHealth(healed <= max ? healed : max);
                     }
                 }
-            }
-            else { // Not instant, just apply the effect with a properly trimmed duration
+            } else { // Not instant, just apply the effect with a properly trimmed duration
                 int duration = getPotionDuration(effect, intensity);
                 if (lingering)
                     duration *= durationLingerMult;
@@ -506,17 +502,17 @@ public class SkillPotion extends PassiveSkill {
             PotionType type = data.getType();
             PotionEffectType effectType = type.getEffectType();
 
-            if(effectType == null)
+            if (effectType == null)
                 return null; // Type can be null, so forward that null onward
 
             boolean upgraded = type.isUpgradeable() && data.isUpgraded();
             boolean extended = type.isExtendable() && data.isExtended();
             int duration = potionDurations.containsKey(effectType.getName()) ? potionDurations.get(effectType.getName()) : 90000; // 4500 seconds
 
-            if(upgraded)
+            if (upgraded)
                 duration *= 0.5; // 1/2 duration
-            if(extended)
-                duration *= (8.0/3.0); // 8/3 duration
+            if (extended)
+                duration *= (8.0 / 3.0); // 8/3 duration
 
             // According to Vanilla commands, it's 0 and 1 for intensity
             return new PotionEffect(effectType, duration, upgraded ? 1 : 0);
@@ -568,6 +564,7 @@ public class SkillPotion extends PassiveSkill {
         potionDurations.put("INVISIBILITY", 3600);
         potionDurations.put("NIGHT_VISION", 3600);
 
+
         // These remaining effects have no default, as they aren't on potions. Only applies on the base effect of a potion.
         // Using 0:45 as a default for negative effects, 3:00 as a default for positive effects.
         potionDurations.put("FAST_DIGGING", 3600);
@@ -585,6 +582,7 @@ public class SkillPotion extends PassiveSkill {
         potionDurations.put("CONFUSION", 900);
         potionDurations.put("GLOWING", 900);
         potionDurations.put("WATER_BREATHING", 3600);
+        potionDurations.put("DOLPHINS_GRACE", 3600);
 
         // Cache the reflection for later efficiency since it'll get called a large amount. Blame soren if this is bad.
         Skill skill = Heroes.getInstance().getSkillManager().getSkill("CustomPotion");
@@ -592,8 +590,7 @@ public class SkillPotion extends PassiveSkill {
             Class<?> skillClass = skill.getClass();
             try {
                 customPotionMethod = skillClass.getDeclaredMethod("applyPotionEffect", LivingEntity.class, PotionEffect.class, double.class, boolean.class);
-            }
-            catch (NoSuchMethodException ex) {
+            } catch (NoSuchMethodException ex) {
                 // This space intentionally left blank.
             }
         }

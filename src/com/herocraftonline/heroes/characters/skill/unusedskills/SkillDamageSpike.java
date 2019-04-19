@@ -10,6 +10,7 @@ import com.herocraftonline.heroes.characters.skill.SkillType;
 import com.herocraftonline.heroes.characters.skill.skills.SkillBaseSpike;
 
 import de.slikey.effectlib.util.ParticleEffect;
+import org.bukkit.Particle;
 import org.bukkit.Sound;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.LivingEntity;
@@ -57,7 +58,7 @@ public class SkillDamageSpike extends SkillBaseSpike {
 
 			broadcastExecuteText(hero, livingEntity);
 
-			renderSpike(livingEntity.getLocation(), 3, 0.5, ParticleEffect.FLAME);
+			renderSpike(livingEntity.getLocation(), 3, 0.5, Particle.FLAME);
 
 			double damage = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE, 200d, false);
 			damage += SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE_INCREASE_PER_INTELLECT, 2d, false) * hero.getAttributeValue(AttributeType.INTELLECT);

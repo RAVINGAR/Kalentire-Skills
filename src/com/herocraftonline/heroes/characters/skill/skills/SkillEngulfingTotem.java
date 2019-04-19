@@ -31,7 +31,7 @@ public class SkillEngulfingTotem extends SkillBaseTotem {
         setArgumentRange(0,0);
         setUsage("/skill engulfingtotem");
         setIdentifiers("skill engulfingtotem");
-        setDescription("Places an engulfing totem at target location that reduces the dexterity of non-partied entites in a $1 radius by $2. Lasts for $3 seconds.");
+        setDescription("Places an engulfing totem at target location that reduces the dexterity of non-partied entites in a $1 radius by $2. Lasts for $3 second(s).");
         setTypes(SkillType.MOVEMENT_SLOWING, SkillType.ABILITY_PROPERTY_MAGICAL, SkillType.SILENCEABLE, SkillType.AGGRESSIVE, SkillType.AREA_OF_EFFECT);
         material = Material.SOUL_SAND;
         afflictedTargets = new HashMap<Hero, List<LivingEntity>>();
@@ -116,7 +116,7 @@ public class SkillEngulfingTotem extends SkillBaseTotem {
     
     @Override
     public ConfigurationSection getSpecificDefaultConfig(ConfigurationSection node) {
-        node.set(SkillSetting.APPLY_TEXT.node(), ChatComponents.GENERIC_SKILL + "    " + "$1 is engulfed by a totem's power!");
+        node.set(SkillSetting.APPLY_TEXT.node(), ChatComponents.GENERIC_SKILL + "   " + "$1 is engulfed by a totem's power!");
         node.set(SkillSetting.EXPIRE_TEXT.node(), ChatComponents.GENERIC_SKILL + "$1 is no longer engulfed by a totem's power.");
         node.set("dexterity-reduce-amount", 3);
         node.set("slowness-amplitude", 2);

@@ -24,7 +24,7 @@ public class SkillWarcry
 
     public SkillWarcry(Heroes plugin) {
         super(plugin, "Warcry");
-        setDescription("The Barbarian readies himself for battle, increasing his movement speed and armor for $1 seconds.");
+        setDescription("The Barbarian readies himself for battle, increasing his movement speed and armor for $1 second(s).");
         setUsage("/skill warcry");
         setArgumentRange(0, 0);
         setIdentifiers(new String[]{"skill warcry"});

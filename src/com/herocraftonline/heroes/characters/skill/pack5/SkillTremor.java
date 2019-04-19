@@ -1,18 +1,5 @@
 package com.herocraftonline.heroes.characters.skill.pack5;
 
-import java.util.ArrayList;
-import java.util.List;
-
-import org.bukkit.*;
-import org.bukkit.block.BlockFace;
-import org.bukkit.configuration.ConfigurationSection;
-import org.bukkit.entity.Entity;
-import org.bukkit.entity.LivingEntity;
-import org.bukkit.entity.Player;
-import org.bukkit.Sound;
-import org.bukkit.event.entity.EntityDamageEvent.DamageCause;
-import org.bukkit.util.Vector;
-
 import com.google.common.collect.Lists;
 import com.herocraftonline.heroes.Heroes;
 import com.herocraftonline.heroes.api.SkillResult;
@@ -24,10 +11,21 @@ import com.herocraftonline.heroes.characters.skill.SkillSetting;
 import com.herocraftonline.heroes.characters.skill.SkillType;
 import com.herocraftonline.heroes.characters.skill.ncp.NCPFunction;
 import com.herocraftonline.heroes.characters.skill.ncp.NCPUtils;
+import org.bukkit.*;
+import org.bukkit.block.BlockFace;
+import org.bukkit.configuration.ConfigurationSection;
+import org.bukkit.entity.Entity;
+import org.bukkit.entity.LivingEntity;
+import org.bukkit.entity.Player;
+import org.bukkit.event.entity.EntityDamageEvent.DamageCause;
+import org.bukkit.util.Vector;
 
-public class SkillTremor extends ActiveSkill{
+import java.util.ArrayList;
+import java.util.List;
 
-	public SkillTremor(Heroes plugin) {
+public class SkillTremor extends ActiveSkill {
+
+    public SkillTremor(Heroes plugin) {
         super(plugin, "Tremor");
         setDescription("Strike the ground with a powerful tremor, affecting all targets within $1 blocks. All targets hit with the tremor are dealt $2 physical damage and knocked back a great distance.");
         setUsage("/skill tremor");
@@ -61,24 +59,22 @@ public class SkillTremor extends ActiveSkill{
 
         return node;
     }
-    
-    public ArrayList<Location> circle(Location centerPoint, int particleAmount, double circleRadius)
-	{
-		World world = centerPoint.getWorld();
 
-		double increment = (2 * Math.PI) / particleAmount;
+    public ArrayList<Location> circle(Location centerPoint, int particleAmount, double circleRadius) {
+        World world = centerPoint.getWorld();
 
-		ArrayList<Location> locations = new ArrayList<Location>();
+        double increment = (2 * Math.PI) / particleAmount;
 
-		for (int i = 0; i < particleAmount; i++)
-		{
-			double angle = i * increment;
-			double x = centerPoint.getX() + (circleRadius * Math.cos(angle));
-			double z = centerPoint.getZ() + (circleRadius * Math.sin(angle));
-			locations.add(new Location(world, x, centerPoint.getY(), z));
-		}
-		return locations;
-	}
+        ArrayList<Location> locations = new ArrayList<Location>();
+
+        for (int i = 0; i < particleAmount; i++) {
+            double angle = i * increment;
+            double x = centerPoint.getX() + (circleRadius * Math.cos(angle));
+            double z = centerPoint.getZ() + (circleRadius * Math.sin(angle));
+            locations.add(new Location(world, x, centerPoint.getY(), z));
+        }
+        return locations;
+    }
 
     @Override
     public SkillResult use(Hero hero, String[] args) {
@@ -142,12 +138,10 @@ public class SkillTremor extends ActiveSkill{
             // Let's bypass the nocheat issues...
             final Vector velocity = new Vector(xDir, individualVPower, zDir);
             NCPUtils.applyExemptions(target, new NCPFunction() {
-                
+
                 @Override
-                public void execute()
-                {
+                public void execute() {
                     target.setVelocity(velocity);
-                    
                 }
             }, Lists.newArrayList("MOVING"), SkillConfigManager.getUseSetting(hero, this, "ncp-exemption-duration", 500, false));
         }
@@ -158,16 +152,14 @@ public class SkillTremor extends ActiveSkill{
         player.getWorld().playSound(player.getLocation(), Sound.ENTITY_GENERIC_EXPLODE, 0.5F, 1.0F);
         player.getWorld().playSound(player.getLocation(), Sound.ENTITY_EXPERIENCE_ORB_PICKUP, 0.8F, 1.0F);
         player.getWorld().playSound(player.getLocation(), Sound.ENTITY_EXPERIENCE_ORB_PICKUP, 0.8F, 1.0F);
-        
-        for (double r = 1; r < 5 * 2; r++)
-		{
-			ArrayList<Location> particleLocations = circle(player.getLocation(), 72, r / 2);
-			for (int i = 0; i < particleLocations.size(); i++)
-			{
-				//player.getWorld().spigot().playEffect(particleLocations.get(i).add(0, 0.1, 0), Effect.TILE_BREAK, player.getLocation().getBlock().getRelative(BlockFace.DOWN).getType().getId(), 0, 0, 0.3F, 0, 0.1F, 2, 16);
+
+        for (double r = 1; r < 5 * 2; r++) {
+            ArrayList<Location> particleLocations = circle(player.getLocation(), 72, r / 2);
+            for (int i = 0; i < particleLocations.size(); i++) {
+                //player.getWorld().spigot().playEffect(particleLocations.get(i).add(0, 0.1, 0), Effect.TILE_BREAK, player.getLocation().getBlock().getRelative(BlockFace.DOWN).getType().getId(), 0, 0, 0.3F, 0, 0.1F, 2, 16);
                 player.getWorld().spawnParticle(Particle.BLOCK_CRACK, particleLocations.get(i).add(0, 0.1, 0), 2, 0, 0.3, 0, 0.1, player.getLocation().getBlock().getRelative(BlockFace.DOWN).getBlockData());
-			}
-		}
+            }
+        }
 
         return SkillResult.NORMAL;
     }

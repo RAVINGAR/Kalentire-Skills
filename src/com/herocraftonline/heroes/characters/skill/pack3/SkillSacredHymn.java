@@ -1,5 +1,6 @@
 package com.herocraftonline.heroes.characters.skill.pack3;
 
+import com.herocraftonline.heroes.characters.CharacterTemplate;
 import org.bukkit.Particle;
 import org.bukkit.Sound;
 import org.bukkit.World;
@@ -35,8 +36,8 @@ public class SkillSacredHymn extends SkillBaseHeal {
     }
 
     @Override
-    protected void removeEffects(Hero hero) {
-        
+    protected void removeEffects(Hero hero, CharacterTemplate targetCT) {
+        // No effects are removed by this Skill.
     }
     
     protected void applySoundEffects(World world, LivingEntity target) {

@@ -20,7 +20,7 @@ public class SkillBitterComfort extends PassiveSkill {
 
     public SkillBitterComfort(Heroes plugin) {
         super(plugin, "BitterComfort");
-        setDescription("Passive: additional $1% projectile damage and +$2% stamina regen.");
+        setDescription("additional $1% projectile damage and +$2% stamina regen.");
         setTypes(SkillType.ABILITY_PROPERTY_PROJECTILE, SkillType.STAMINA_INCREASING);
 
         Bukkit.getPluginManager().registerEvents(new BitterComfortListener(this), plugin);
@@ -106,13 +106,13 @@ public class SkillBitterComfort extends PassiveSkill {
     }
 
     @Override
-    protected void apply(Hero hero) {
+    public void apply(Hero hero) {
         addBitterComfortEffect(hero);
         hero.resolveStaminaRegen();
     }
 
     @Override
-    protected void unapply(Hero hero) {
+    public void unapply(Hero hero) {
         //Remove effect
         super.unapply(hero);
         hero.resolveStaminaRegen();

@@ -17,7 +17,7 @@ public class SkillSafefall extends ActiveSkill {
 
     public SkillSafefall(Heroes plugin) {
         super(plugin, "Safefall");
-        setDescription("You float safely to the ground for $1 seconds.");
+        setDescription("You float safely to the ground for $1 second(s).");
         setUsage("/skill safefall");
         setArgumentRange(0, 0);
         setIdentifiers("skill safefall");

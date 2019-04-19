@@ -62,7 +62,7 @@ public class SkillSuperJump extends ActiveSkill {
             super(skill, "Jump", applier, duration);
             this.types.add(EffectType.BENEFICIAL);
             this.types.add(EffectType.PHYSICAL);
-            this.addPotionEffect(new PotionEffect(PotionEffectType.JUMP, 20 * duration / 1000, 5), false);
+            this.addPotionEffect(new PotionEffect(PotionEffectType.JUMP, 20 * duration / 1000, 5));
         }
     }
 }

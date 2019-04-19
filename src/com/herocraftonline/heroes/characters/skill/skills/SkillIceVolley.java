@@ -58,7 +58,7 @@ public class SkillIceVolley extends ActiveSkill {
 
     public SkillIceVolley(Heroes plugin) {
         super(plugin, "IceVolley");
-        setDescription("Prepare an array of ice infused arrows. After use, your next next shot fired within $1 seconds will fire up to $2 arrows at once! Any target hit these arrows will be slowed for $3 seconds.");
+        setDescription("Prepare an array of ice infused arrows. After use, your next next shot fired within $1 seconds will fire up to $2 arrows at once! Any target hit these arrows will be slowed for $3 second(s).");
         setUsage("/skill icevolley");
         setArgumentRange(0, 0);
         setIdentifiers("skill icevolley");

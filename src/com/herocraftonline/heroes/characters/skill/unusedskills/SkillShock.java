@@ -27,7 +27,7 @@ public class SkillShock extends TargettedSkill {
 
     public SkillShock(Heroes plugin) {
         super(plugin, "Shock");
-        setDescription("Creates a storm around your target, dealing $1 damage to nearby targets every $2 seconds for $3 seconds");
+        setDescription("Creates a storm around your target, dealing $1 damage to nearby targets every $2 second(s) for $3 second(s)");
         setUsage("/skill shock");
         setArgumentRange(0, 0);
         setIdentifiers("skill shock");

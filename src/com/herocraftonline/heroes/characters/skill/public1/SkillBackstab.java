@@ -6,6 +6,7 @@ import com.herocraftonline.heroes.api.events.WeaponDamageEvent;
 import com.herocraftonline.heroes.attributes.AttributeType;
 import com.herocraftonline.heroes.characters.CustomNameManager;
 import com.herocraftonline.heroes.characters.Hero;
+import com.herocraftonline.heroes.characters.effects.EffectType;
 import com.herocraftonline.heroes.characters.skill.*;
 import com.herocraftonline.heroes.nms.NMSHandler;
 import com.herocraftonline.heroes.util.Util;
@@ -113,11 +114,11 @@ public class SkillBackstab extends ActiveSkill {
                 continue;
             }
 
-            int baseDamage = 0;
+            double baseDamage = 0.0;
             if (plugin.getDamageManager().getHighestItemDamage(hero, weapon) == null){
                 Heroes.log(Level.WARNING, "SkillBackstab: " + weaponName + " has no damage set.");
             } else {
-                baseDamage = plugin.getDamageManager().getHighestItemDamage(hero, weapon).intValue();
+                baseDamage = plugin.getDamageManager().getHighestItemDamage(hero, weapon);
             }
 
             backstabDamage = baseDamage * backstabDamageModifier;
@@ -169,7 +170,7 @@ public class SkillBackstab extends ActiveSkill {
 
                 // Sneak for ambush, nosneak for backstab.
                 boolean allowVanillaSneaking = SkillConfigManager.getUseSetting(hero, skill, "allow-vanilla-sneaking", false);
-                if (hero.hasEffect("Sneak") || (allowVanillaSneaking && player.isSneaking())) {
+                if (hero.hasEffectType(EffectType.SNEAK) || (allowVanillaSneaking && player.isSneaking())) {
                     chance = SkillConfigManager.getUseSetting(hero, skill, "ambush-chance", -1.0, false);
 
                     damageModifier = SkillConfigManager.getUseSetting(hero, skill, "ambush-bonus", 0.85, false);

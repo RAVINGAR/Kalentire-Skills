@@ -20,7 +20,7 @@ public class SkillSinisterUrge extends PassiveSkill {
 
     public SkillSinisterUrge(Heroes plugin) {
         super(plugin, "SinisterUrge");
-        setDescription("Passive: additional $1% projectile damage and +$2% mana regen.");
+        setDescription("additional $1% projectile damage and +$2% mana regen.");
         setTypes(SkillType.ABILITY_PROPERTY_PROJECTILE, SkillType.MANA_INCREASING);
 
         Bukkit.getPluginManager().registerEvents(new SinisterUrgeListener(this), plugin);
@@ -106,13 +106,13 @@ public class SkillSinisterUrge extends PassiveSkill {
     }
 
     @Override
-    protected void apply(Hero hero) {
+    public void apply(Hero hero) {
         addSinisterUrgeEffect(hero);
         hero.resolveManaRegen();
     }
 
     @Override
-    protected void unapply(Hero hero) {
+    public void unapply(Hero hero) {
         //Remove effect
         super.unapply(hero);
         hero.resolveManaRegen();

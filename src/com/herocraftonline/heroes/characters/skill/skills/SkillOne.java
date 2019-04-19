@@ -18,7 +18,7 @@ public class SkillOne extends ActiveSkill {
 
     public SkillOne(Heroes plugin) {
         super(plugin, "One");
-        setDescription("You gain a burst of speed for $1 seconds.");
+        setDescription("You gain a burst of speed for $1 second(s).");
         setUsage("/skill one");
         setArgumentRange(0, 0);
         setIdentifiers("skill one");
@@ -33,6 +33,12 @@ public class SkillOne extends ActiveSkill {
         node.set("apply-text", "%hero% gained a burst of speed!");
         node.set("expire-text", "%hero% returned to normal speed!");
         return node;
+    }
+
+    @Override
+    public String getDescription(Hero hero) {
+        int duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, 1, false);
+        return getDescription().replace("$1", duration / 1000 + "");
     }
 
     @Override
@@ -54,11 +60,5 @@ public class SkillOne extends ActiveSkill {
         hero.addEffect(new QuickenEffect(this, getName(), hero.getPlayer(), duration, multiplier, applyText, expireText));
 
         return SkillResult.NORMAL;
-    }
-
-    @Override
-    public String getDescription(Hero hero) {
-        int duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, 1, false);
-        return getDescription().replace("$1", duration / 1000 + "");
     }
 }

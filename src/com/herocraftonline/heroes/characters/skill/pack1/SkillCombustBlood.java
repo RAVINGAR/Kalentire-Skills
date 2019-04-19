@@ -32,7 +32,7 @@ public class SkillCombustBlood extends TargettedSkill {
 
     public SkillCombustBlood(Heroes plugin) {
         super(plugin, "CombustBlood");
-        setDescription("Boil the blood of your target, dealing $1 dark damage. If you have Blood Union $2 or greater, the target will bleed, taking an additional $3 damage over $4 seconds. Increases Blood Union by 1.");
+        setDescription("Boil the blood of your target, dealing $1 dark damage. If you have Blood Union $2 or greater, the target will bleed, taking an additional $3 damage over $4 second(s). Increases Blood Union by 1.");
         setUsage("/skill combustblood");
         setArgumentRange(0, 0);
         setIdentifiers("skill combustblood");

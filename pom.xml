@@ -4,7 +4,7 @@
     <groupId>com.herocraftonline.heroes</groupId>
     <artifactId>Heroes-Skills</artifactId>
     <packaging>jar</packaging>
-    <version>0.4.0-SNAPSHOT</version>
+    <version>1.5.0-REBORN-SNAPSHOT</version>
     <name>Heroes-Skills</name>
     <url>http://www.herocraftonline.com</url>
 
@@ -56,6 +56,18 @@
 
     <repositories>
         <repository>
+            <id>maven-repo</id>
+            <url>http://repo1.maven.org/maven2</url>
+        </repository>
+        <repository>
+            <id>sk89q-repo</id>
+            <url>http://maven.sk89q.com/repo/</url>
+        </repository>
+        <repository>
+            <id>md_5-public</id>
+            <url>http://repo.md-5.net/content/groups/public/</url>
+        </repository>
+        <repository>
             <id>heroes-repo</id>
             <url>http://nexus.hc.to/content/groups/herocraft/</url>
         </repository>
@@ -65,17 +77,22 @@
         <dependency>
             <groupId>com.herocraftonline.heroes</groupId>
             <artifactId>Heroes</artifactId>
-            <version>1.9.0-SNAPSHOT</version>
+            <version>1.9.2-SNAPSHOT</version>
         </dependency>
         <dependency>
             <groupId>com.herocraftonline.heroes</groupId>
             <artifactId>heroes-bukkit-compat-base</artifactId>
-            <version>1.9.0-SNAPSHOT</version>
+            <version>1.9.2-SNAPSHOT</version>
+        </dependency>
+        <dependency>
+            <groupId>com.herocraftonline.heroes</groupId>
+            <artifactId>heroes-bukkit-compat-v1_13_R2</artifactId>
+            <version>1.9.2-SNAPSHOT</version>
         </dependency>
         <dependency>
             <groupId>org.spigotmc</groupId>
             <artifactId>spigot</artifactId>
-            <version>1.13.1-R0.1-SNAPSHOT</version>
+            <version>1.13.2-R0.1-SNAPSHOT</version>
         </dependency>
         <dependency>
             <groupId>junit</groupId>
@@ -86,30 +103,33 @@
         <dependency>
             <groupId>net.milkbowl.vault</groupId>
             <artifactId>VaultAPI</artifactId>
-            <version>1.6</version>
+            <version>1.7</version>
             <type>jar</type>
         </dependency>
         <dependency>
-            <groupId>com.sk89q</groupId>
-            <artifactId>worldguard</artifactId>
-            <version>6.1</version>
+            <groupId>com.sk89q.worldguard</groupId>
+            <artifactId>worldguard-legacy</artifactId>
+            <version>7.0.0-SNAPSHOT</version>
         </dependency>
-        <dependency>
-            <groupId>com.google.code.gson</groupId>
-            <artifactId>gson</artifactId>
-            <version>2.3.1</version>
-            <type>pom</type>
-        </dependency>
-
         <dependency>
             <groupId>mc.alk.tracker</groupId>
             <artifactId>BattleTracker</artifactId>
             <version>2.5.5.1</version>
         </dependency>
+        <!--<dependency>-->
+        <!--<groupId>pgDev.bukkit.DisguiseCraft</groupId>-->
+        <!--<artifactId>DisguiseCraft</artifactId>-->
+        <!--<version>4.9</version>-->
+        <!--</dependency>-->
         <dependency>
-            <groupId>pgDev.bukkit.DisguiseCraft</groupId>
-            <artifactId>DisguiseCraft</artifactId>
-            <version>4.9</version>
+            <groupId>LibsDisguises</groupId>
+            <artifactId>LibsDisguises</artifactId>
+            <version>9.8.0</version>
+        </dependency>
+        <dependency>
+            <groupId>net.elseland.xikage</groupId>
+            <artifactId>MythicMobs</artifactId>
+            <version>4.0.1</version>
         </dependency>
         <dependency>
             <groupId>com.griefcraft.lwc</groupId>
