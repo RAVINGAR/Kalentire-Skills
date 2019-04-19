@@ -34,7 +34,7 @@ public class SkillSoulSpike extends SkillBaseSpike {
 
 	public SkillSoulSpike(Heroes plugin) {
 		super(plugin, "SoulSpike");
-		setDescription("Impales the target's soul with a spike of negative energy, casting them into a soul shaken state for $1 second(s), dealing $2 damage. $3 $4");
+		setDescription("Impales the target's soul with a spike of negative energy, casting them into a soul shaken state for $1 second(s), dealing $2 damage.");
 		setUsage("/skill soulspike");
 		setIdentifiers("skill soulspike");
 		setArgumentRange(0, 0);
@@ -48,14 +48,9 @@ public class SkillSoulSpike extends SkillBaseSpike {
 		double damage = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE, 250d, false);
 		damage += SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE_INCREASE_PER_INTELLECT, 1d, false) * hero.getAttributeValue(AttributeType.INTELLECT);
 
-		int mana = SkillConfigManager.getUseSetting(hero, this, SkillSetting.MANA, 0, false);
-		long cooldown = SkillConfigManager.getUseSetting(hero, this, SkillSetting.COOLDOWN, 0, false);
-
 		return getDescription()
 				.replace("$1", duration + "")
-				.replace("$2", Util.decFormat.format(damage))
-				.replace("$3", mana > 0 ? "Mana: " + mana : "")
-				.replace("$4", cooldown > 0 ? "C: " + Util.decFormat.format((double) cooldown / 1000) : "");
+				.replace("$2", Util.decFormat.format(damage));
 	}
 
 	@Override

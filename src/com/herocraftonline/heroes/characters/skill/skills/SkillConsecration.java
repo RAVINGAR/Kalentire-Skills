@@ -31,11 +31,12 @@ public class SkillConsecration extends SkillBaseGroundEffect {
 	public SkillConsecration(Heroes plugin) {
 		super(plugin, "Consecration");
 		setDescription("Marks the ground with holy power, dealing $1 damage to undead every $2 second(s) for $3 second(s) within $4 blocks blocks to the side and $5 blocks up and down (cylinder). " +
-				"Allies within the area are granted movement speed. $6 $7");
+				"Allies within the area are granted movement speed.");
 		setUsage("/skill consecration");
 		setIdentifiers("skill consecration");
 		setArgumentRange(0, 0);
-		setTypes(SkillType.ABILITY_PROPERTY_MAGICAL, SkillType.MULTI_GRESSIVE, SkillType.AREA_OF_EFFECT, SkillType.DAMAGING, SkillType.NO_SELF_TARGETTING, SkillType.SILENCEABLE, SkillType.MOVEMENT_INCREASING);
+		setTypes(SkillType.ABILITY_PROPERTY_MAGICAL, SkillType.MULTI_GRESSIVE, SkillType.AREA_OF_EFFECT, SkillType.DAMAGING,
+				SkillType.NO_SELF_TARGETTING, SkillType.SILENCEABLE, SkillType.MOVEMENT_INCREASING);
 	}
 
 	@Override
@@ -48,17 +49,12 @@ public class SkillConsecration extends SkillBaseGroundEffect {
 		final double damageTick = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE_TICK, 100d, false)
 				+ SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE_TICK_INCREASE_PER_INTELLECT, 2d, false) * hero.getAttributeValue(AttributeType.INTELLECT);
 
-		int mana = SkillConfigManager.getUseSetting(hero, this, SkillSetting.MANA, 0, false);
-		long cooldown = SkillConfigManager.getUseSetting(hero, this, SkillSetting.COOLDOWN, 0, false);
-
 		return getDescription()
 				.replace("$1", Util.decFormat.format(damageTick))
 				.replace("$2", Util.decFormat.format((double) period / 1000))
 				.replace("$3", Util.decFormat.format((double) duration / 1000))
 				.replace("$4", Util.decFormat.format(radius))
-				.replace("$5", Util.decFormat.format(height))
-				.replace("$6", mana > 0 ? "Mana: " + mana : "")
-				.replace("$7", cooldown > 0 ? "C: " + Util.decFormat.format((double) cooldown / 1000) : "");
+				.replace("$5", Util.decFormat.format(height));
 	}
 
 	@Override

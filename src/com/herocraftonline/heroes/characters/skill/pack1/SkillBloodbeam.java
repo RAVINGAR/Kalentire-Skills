@@ -27,7 +27,7 @@ public class SkillBloodbeam extends SkillBaseBeam {
 
 	public SkillBloodbeam(Heroes plugin) {
 		super(plugin, "BloodBeam");
-		setDescription("Surging with blood, you fire off a beam that deals $1 damage to everything in its path. $2 $3");
+		setDescription("Surging with blood, you fire off a beam that deals $1 damage to everything in its path.");
 		setUsage("/skill bloodbeam");
 		setArgumentRange(0, 0);
 		setIdentifiers("skill bloodbeam");
@@ -40,13 +40,8 @@ public class SkillBloodbeam extends SkillBaseBeam {
 		double beamDamageIncrease = SkillConfigManager.getUseSetting(hero, SkillBloodbeam.this, SkillSetting.DAMAGE_INCREASE_PER_INTELLECT, 5d, false);
 		beamDamage += hero.getAttributeValue(AttributeType.INTELLECT) * beamDamageIncrease;
 
-		int mana = SkillConfigManager.getUseSetting(hero, this, SkillSetting.MANA, 0, false);
-		long cooldown = SkillConfigManager.getUseSetting(hero, this, SkillSetting.COOLDOWN, 0, false);
-
 		return getDescription()
-				.replace("$1", Util.decFormat.format(beamDamage))
-				.replace("$2", mana > 0 ? "Mana: " + mana : "")
-				.replace("$3", cooldown > 0 ? "C: " + Util.decFormat.format((double) cooldown / 1000) : "");
+				.replace("$1", Util.decFormat.format(beamDamage));
 	}
 
 	@Override

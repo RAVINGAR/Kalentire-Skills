@@ -30,7 +30,7 @@ public class SkillDesecration extends SkillBaseGroundEffect {
 	public SkillDesecration(Heroes plugin) {
 		super(plugin, "Desecration");
 		setDescription("Marks the ground with unholy power, dealing $1 damage every $2 second(s) for $3 second(s) within $4 blocks to the side and $5 blocks up and down (cylinder). " +
-				"Enemies within the area are slowed. $6 $7");
+				"Enemies within the area are slowed.");
 		setUsage("/skill desecration");
 		setIdentifiers("skill desecration");
 		setArgumentRange(0, 0);
@@ -47,17 +47,12 @@ public class SkillDesecration extends SkillBaseGroundEffect {
 		final double damageTick = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE_TICK, 100d, false)
 				+ SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE_TICK_INCREASE_PER_INTELLECT, 2d, false) * hero.getAttributeValue(AttributeType.INTELLECT);
 
-		int mana = SkillConfigManager.getUseSetting(hero, this, SkillSetting.MANA, 0, false);
-		long cooldown = SkillConfigManager.getUseSetting(hero, this, SkillSetting.COOLDOWN, 0, false);
-
 		return getDescription()
 				.replace("$1", Util.decFormat.format(damageTick))
 				.replace("$2", Util.decFormat.format((double) period / 1000))
 				.replace("$3", Util.decFormat.format((double) duration / 1000))
 				.replace("$4", Util.decFormat.format(radius))
-				.replace("$5", Util.decFormat.format(height))
-				.replace("$6", mana > 0 ? "Mana: " + mana : "")
-				.replace("$7", cooldown > 0 ? "C: " + Util.decFormat.format((double) cooldown / 1000) : "");
+				.replace("$5", Util.decFormat.format(height));
 	}
 
 	@Override
