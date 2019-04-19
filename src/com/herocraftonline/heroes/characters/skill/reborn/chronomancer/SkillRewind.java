@@ -30,8 +30,8 @@ public class SkillRewind extends ActiveSkill implements Passive {
         super(plugin, "Rewind");
         setDescription("You rewind in $1 second(s) in time, returning your stats and location to what they were back then.");
         setUsage("/skill rewind");
-        setArgumentRange(0, 0);
         setIdentifiers("skill rewind");
+        setArgumentRange(0, 0);
         setTypes(SkillType.BUFFING, SkillType.ABILITY_PROPERTY_TEMPORAL, SkillType.SILENCEABLE);
 
         Bukkit.getServer().getPluginManager().registerEvents(new SkillListener(), plugin);
@@ -51,6 +51,32 @@ public class SkillRewind extends ActiveSkill implements Passive {
         config.set("rewind-duration", 3000);
         config.set("record-period", 250);
         return config;
+    }
+
+    @Override
+    public void tryApplying(Hero hero) {
+        Player player = hero.getPlayer();
+        if (hero.canUseSkill(this)) {
+            if (hero.hasEffect(trackerEffectName)) {
+                hero.removeEffect(hero.getEffect(trackerEffectName));
+            }
+            this.apply(hero);
+        } else {
+            this.unapply(hero);
+        }
+    }
+
+    @Override
+    public void apply(Hero hero) {
+        int rewindDuration = SkillConfigManager.getUseSetting(hero, this, "rewind-duration", 3000, false);
+        int recordPeriod = SkillConfigManager.getUseSetting(hero, this, "record-period", 250, false);
+        RewindTrackerEffect effect = new RewindTrackerEffect(this, recordPeriod, rewindDuration);
+        hero.addEffect(effect);
+    }
+
+    @Override
+    public void unapply(Hero hero) {
+        hero.removeEffect(hero.getEffect(trackerEffectName));
     }
 
     @Override
@@ -109,6 +135,7 @@ public class SkillRewind extends ActiveSkill implements Passive {
             super(skill, trackerEffectName, period);
 
             types.add(EffectType.INTERNAL);
+            setPersistent(true);
 
             stateQueue = EvictingQueue.create(rewindDuration / period);
         }
@@ -148,33 +175,6 @@ public class SkillRewind extends ActiveSkill implements Passive {
         public int previousStamina;
         public float fallDistance;
         public Location previousLocation;
-    }
-
-    @Override
-    public void tryApplying(Hero hero) {
-        Player player = hero.getPlayer();
-        if (hero.canUseSkill(this)) {
-            if (hero.hasEffect(this.getName())) {
-                hero.removeEffect(hero.getEffect(this.getName()));
-            }
-            this.apply(hero);
-        } else {
-            this.unapply(hero);
-        }
-    }
-
-    @Override
-    public void apply(Hero hero) {
-        int rewindDuration = SkillConfigManager.getUseSetting(hero, this, "rewind-duration", 3000, false);
-        int recordPeriod = SkillConfigManager.getUseSetting(hero, this, "record-period", 250, false);
-        RewindTrackerEffect effect = new RewindTrackerEffect(this, recordPeriod, rewindDuration);
-        effect.setPersistent(true);
-        hero.addEffect(effect);
-    }
-
-    @Override
-    public void unapply(Hero hero) {
-        hero.removeEffect(hero.getEffect(trackerEffectName));
     }
 
     public class SkillListener implements Listener {

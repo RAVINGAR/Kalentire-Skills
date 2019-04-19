@@ -14,6 +14,7 @@ import de.slikey.effectlib.util.RandomUtils;
 import org.bukkit.Color;
 import org.bukkit.Location;
 import org.bukkit.Particle;
+import org.bukkit.Sound;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
 import org.bukkit.configuration.ConfigurationSection;
@@ -25,7 +26,6 @@ import org.bukkit.plugin.Plugin;
 import org.bukkit.util.Vector;
 
 import java.util.Collection;
-import java.util.List;
 
 public class SkillGreatFireball extends ActiveSkill {
 
@@ -34,8 +34,7 @@ public class SkillGreatFireball extends ActiveSkill {
 
     public SkillGreatFireball(Heroes plugin) {
         super(plugin, "GreatFireball");
-        setDescription("Conjure up a massive orb of pure fire. The orb seeks out nearby entities and lasts for $1 second(s). "
-                + "Targets hit by the magmaOrb are launched upwards and dealt $2 damage");
+        setDescription("Conjure up a massive orb of pure fire. The orb deals $1 damage to any target hit and ");
         setUsage("/skill greatfireball");
         setIdentifiers("skill greatfireball");
         setArgumentRange(0, 0);
@@ -52,30 +51,16 @@ public class SkillGreatFireball extends ActiveSkill {
     @Override
     public ConfigurationSection getDefaultConfig() {
         ConfigurationSection config = super.getDefaultConfig();
-        config.set(SkillSetting.DAMAGE.node(), 80.0);
-        config.set(SkillSetting.RADIUS.node(), 4.0);
-        config.set("projectile-size", 0.5);
+        config.set(SkillSetting.DAMAGE.node(), 45.0);
+        config.set("explosion-damage", 25.0);
+        config.set("explosion-radius", 4.0);
+        config.set("fire-tick-ground-radius", 2.5);
+        config.set("projectile-size", 0.65);
         config.set("projectile-velocity", 35.0);
-        config.set("projectile-gravity", 5.0);
-        config.set("projectile-max-ticks-lived", 20);
+        config.set("projectile-gravity", 22.05675);
+        config.set("projectile-max-ticks-lived", 30);
         return config;
     }
-
-//    @Override
-//    public void onWarmup(Hero hero) {
-//        super.onWarmup(hero);
-//
-//        int warmupTime = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DELAY, 1, false);
-//        int warmupTicks = warmupTime / 50;
-//
-//        double radius = SkillConfigManager.getUseSetting(hero, this, "projectile-radius", 4.0, false) * 2;  // Double it for the warmup visual
-//        double decreasePerTick = radius / warmupTicks;
-//
-//        final EffectManager effectManager = new EffectManager(plugin);
-//        GreatFireballVisualEffect vEffect = new GreatFireballVisualEffect(effectManager, radius, decreasePerTick);
-//        vEffect.setLocation(hero.getPlayer().getLocation());
-//        effectManager.start(vEffect);
-//    }
 
     @Override
     public SkillResult use(Hero hero, String[] args) {
@@ -94,6 +79,7 @@ public class SkillGreatFireball extends ActiveSkill {
     class GreatFireballMissile extends BasicMissile {
         private double explosionDamage;
         private double explosionRadius;
+        private final double fireTickGroundRadius;
 
         GreatFireballMissile(Plugin plugin, Skill skill, Hero hero, double projectileSize, double projVelocity) {
             super(plugin, skill, hero, projectileSize, projVelocity);
@@ -102,16 +88,21 @@ public class SkillGreatFireball extends ActiveSkill {
             setGravity(SkillConfigManager.getUseSetting(hero, skill, "projectile-gravity", 5.0, false));
             this.damage = SkillConfigManager.getUseSetting(hero, skill, SkillSetting.DAMAGE, 45.0, false);
             this.explosionDamage = SkillConfigManager.getUseSetting(hero, skill, "explosion-damage", 25.0, false);
-            this.explosionRadius = SkillConfigManager.getUseSetting(hero, skill, "explosion-radius", 3.5, false);
+            this.explosionRadius = SkillConfigManager.getUseSetting(hero, skill, "explosion-radius", 4.0, false);
+            this.fireTickGroundRadius = SkillConfigManager.getUseSetting(hero, skill, "fire-tick-ground-radius", 2.5, false);
             this.visualEffect = new GreatFireballVisualEffect(this.effectManager, projectileSize, 0);
         }
 
-//        private Effect getHookVisual(EffectManager effectManager, Player player, Location location) {
-//            SphereEffect effect = new SphereEffect(effectManager);
-//            effect.color = Color.ORANGE;
-//            effect.radius = this.getEntityDetectRadius();
-//            return effect;
-//        }
+        @Override
+        protected void onTick() {
+            if (this.getTicksLived() % 2 == 0 && this.visualEffect != null) {
+                this.visualEffect.setLocation(this.getLocation());
+            }
+
+            if (this.getTicksLived() % 4 == 0) {
+                getWorld().playSound(getLocation(), Sound.ENTITY_GHAST_SHOOT, 0.5F, 0.5F);
+            }
+        }
 
         protected void onFinalTick() {
             effectManager.dispose();
@@ -139,9 +130,11 @@ public class SkillGreatFireball extends ActiveSkill {
         }
 
         private void performExplosion() {
-            for (Location loc : GeometryUtil.getPerfectCircle(getLocation(), (int) this.explosionRadius, (int) this.explosionRadius, false, true, 0)) {
-                Util.setBlockOnFireIfAble(loc.getBlock(), 0.8);
+            for (Location loc : GeometryUtil.getPerfectCircle(getLocation(), (int) this.fireTickGroundRadius, (int) this.fireTickGroundRadius, false, true, 0)) {
+                Util.setBlockOnFireIfAble(loc.getBlock(), 0.7);
             }
+
+            getWorld().playSound(getLocation(), Sound.ENTITY_GENERIC_EXPLODE, 1.0F, 0.8F);
 
             Collection<Entity> nearbyEnts = getWorld().getNearbyEntities(getLocation(), this.explosionRadius, this.explosionRadius, this.explosionRadius);
             for (Entity ent : nearbyEnts) {
@@ -185,14 +178,14 @@ public class SkillGreatFireball extends ActiveSkill {
             this.primaryRadius = radius;
             this.primaryRadiusDecrease = decreasePerTick / this.period;
             this.primaryYOffset = 0.0D;
-            this.primaryParticleCount = 25;
+            this.primaryParticleCount = 10;
 
             this.secondaryParticle = Particle.SPELL_MOB;
             this.secondaryColor = FIRE_ORANGE;
             this.secondaryRadius = secondaryRadiusMultiplier(radius);
             this.secondaryRadiusDecrease = secondaryRadiusMultiplier(decreasePerTick) / this.period;
             this.secondaryYOffset = 0.0D;
-            this.secondaryParticleCount = 75;
+            this.secondaryParticleCount = 20;
         }
 
         public void onRun() {
@@ -225,7 +218,7 @@ public class SkillGreatFireball extends ActiveSkill {
             Location location = this.getLocation();
             location.add(0.0D, yOffset, 0.0D);
 
-            for(int i = 0; i < particleCount; ++i) {
+            for (int i = 0; i < particleCount; ++i) {
                 Vector vector = RandomUtils.getRandomVector().multiply(radiusToUse);
                 location.add(vector);
                 this.display(particle, location, color);

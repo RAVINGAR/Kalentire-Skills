@@ -166,7 +166,7 @@ public class SkillFirenado extends ActiveSkill {
             vEffect.tornadoParticle = Particle.SPELL_MOB;
             vEffect.cloudParticle = Particle.CLOUD;
             vEffect.cloudColor = FIRE_ORANGE;
-            vEffect.cloudSize = 0.5F;
+            vEffect.cloudSize = 0.25F;
             vEffect.tornadoHeight = (float) radius;
             vEffect.maxTornadoRadius = (float) radius * 0.5F;
             vEffect.asynchronous = true;
