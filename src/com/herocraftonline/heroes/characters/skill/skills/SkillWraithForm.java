@@ -95,14 +95,14 @@ public class SkillWraithForm extends ActiveSkill {
             player.getWorld().playSound(player.getLocation(), Sound.ENTITY_BLAZE_DEATH, 1.0f, 0.5f);
 //            player.getWorld().spigot().playEffect(player.getLocation().add(0, 1, 0), Effect.LARGE_SMOKE, 0, 0,
 //                    0.3f, 1.0f, 0.3f, 0.2f, 55, 128);
-            player.getWorld().spawnParticle(Particle.SMOKE_LARGE, player.getLocation().add(0, 1, 0), 55, 0.3, 1, 0.3, 0.2, true);
+            player.getWorld().spawnParticle(Particle.SMOKE_LARGE, player.getLocation().add(0, 1, 0), 55, 0.3, 1, 0.3, 0.2, null,true);
             final Hero h = hero;
             new BukkitRunnable() {
                 public void run() {
                     if (!h.hasEffect(EFFECT_NAME)) cancel();
 //                    player.getWorld().spigot().playEffect(player.getLocation().add(0, 1, 0), Effect.LARGE_SMOKE, 0, 0,
 //                            2.3f, 0.5f, 2.3f, 0.0f, 15, 128);
-                    player.getWorld().spawnParticle(Particle.SMOKE_LARGE, player.getLocation().add(0, 1, 0), 15, 2.3, 0.5, 2.3, 0, true);
+                    player.getWorld().spawnParticle(Particle.SMOKE_LARGE, player.getLocation().add(0, 1, 0), 15, 2.3, 0.5, 2.3, 0, null,true);
                     player.setFoodLevel(0);
                     player.addPotionEffect(new PotionEffect(PotionEffectType.SPEED, 10, 0, true, false));
                     // player.addPotionEffect(new PotionEffect(PotionEffectType.INVISIBILITY, 20, 0, true, false));
@@ -118,7 +118,7 @@ public class SkillWraithForm extends ActiveSkill {
             player.getWorld().playSound(player.getLocation(), Sound.ENTITY_BLAZE_AMBIENT, 1.0f, 0.5f);
 //            player.getWorld().spigot().playEffect(player.getLocation().add(0, 1, 0), Effect.LARGE_SMOKE, 0, 0,
 //                    0.3f, 1.0f, 0.3f, 0.2f, 55, 128);
-            player.getWorld().spawnParticle(Particle.SMOKE_LARGE, player.getLocation().add(0, 1,0), 55, 0.3, 1, 0.3, 0.2, true);
+            player.getWorld().spawnParticle(Particle.SMOKE_LARGE, player.getLocation().add(0, 1,0), 55, 0.3, 1, 0.3, 0.2, null, true);
         }
     }
 

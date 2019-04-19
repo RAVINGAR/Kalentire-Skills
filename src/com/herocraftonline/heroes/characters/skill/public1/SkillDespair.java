@@ -68,7 +68,7 @@ public class SkillDespair extends ActiveSkill {
         node.set(SkillSetting.DURATION_INCREASE_PER_CHARISMA.node(), 50);
         node.set(SkillSetting.APPLY_TEXT.node(), ChatComponents.GENERIC_SKILL + "%hero% has blinded %target% with %skill%!");
         node.set(SkillSetting.EXPIRE_TEXT.node(), ChatComponents.GENERIC_SKILL + "%hero% has recovered their sight!");
-        node.set(SkillSetting.REAGENT.node(), 367);
+        node.set(SkillSetting.REAGENT.node(), "ROTTEN_FLESH");
         node.set(SkillSetting.REAGENT_COST.node(), 1);
 
         return node;
@@ -136,7 +136,7 @@ public class SkillDespair extends ActiveSkill {
 			for (int i = 0; i < particleLocations.size(); i++)
 			{
 				//player.getWorld().spigot().playEffect(particleLocations.get(i), Effect.SPELL, 0, 0, 0, 0.1F, 0, 0.0F, 1, 16);
-                player.getWorld().spawnParticle(Particle.SPELL, particleLocations.get(i), 1, 0, 0.1, 0, 0);
+                player.getWorld().spawnParticle(Particle.SPELL, particleLocations.get(i), 1, 0, 0.1, 0, 0, null, true);
 			}
 		}
 

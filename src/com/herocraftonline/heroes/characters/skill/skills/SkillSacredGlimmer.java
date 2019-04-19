@@ -28,7 +28,7 @@ public class SkillSacredGlimmer extends SkillBaseBeam {
 	public SkillSacredGlimmer(Heroes plugin) {
 		super(plugin, "SacredGlimmer");
 		//TODO Description change
-		setDescription("You summon the calling of order to project a beam that heals $1 health in its path. $2 $3");
+		setDescription("You summon the calling of order to project a beam that heals $1 health in its path.");
 		setUsage("/skill sacredglimmer");
 		setArgumentRange(0, 0);
 		setIdentifiers("skill sacredglimmer");
@@ -41,13 +41,8 @@ public class SkillSacredGlimmer extends SkillBaseBeam {
 		double beamHealIncrease = SkillConfigManager.getUseSetting(hero, SkillSacredGlimmer.this, SkillSetting.HEALING_INCREASE_PER_WISDOM, 1d, false);
 		beamHeal += hero.getAttributeValue(AttributeType.WISDOM) * beamHealIncrease;
 
-		int mana = SkillConfigManager.getUseSetting(hero, this, SkillSetting.MANA, 0, false);
-		long cooldown = SkillConfigManager.getUseSetting(hero, this, SkillSetting.COOLDOWN, 0, false);
-
 		return getDescription()
-				.replace("$1", Util.decFormat.format(beamHeal))
-				.replace("$2", mana > 0 ? "Mana: " + mana : "")
-				.replace("$3", cooldown > 0 ? "C: " + Util.decFormat.format((double) cooldown / 1000) : "");
+				.replace("$1", Util.decFormat.format(beamHeal));
 	}
 
 	@Override

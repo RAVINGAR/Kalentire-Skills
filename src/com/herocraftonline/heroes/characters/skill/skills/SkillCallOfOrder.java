@@ -22,7 +22,7 @@ public class SkillCallOfOrder extends SkillBaseSphere {
 
 	public SkillCallOfOrder(Heroes plugin) {
 		super(plugin, "CallOfOrder");
-		setDescription("Call upon the forces of order to heal allies within $1 for $2 every $3 second(s) for $4 second(s). $5 $6");
+		setDescription("Call upon the forces of order to heal allies within $1 for $2 every $3 second(s) for $4 second(s).");
 		setUsage("/skill calloforder");
 		setIdentifiers("skill calloforder");
 		setArgumentRange(0, 0);
@@ -39,16 +39,11 @@ public class SkillCallOfOrder extends SkillBaseSphere {
 		healTick = getScaledHealing(hero, healTick);
 		healTick += SkillConfigManager.getUseSetting(hero, this, SkillSetting.HEALING_TICK_INCREASE_PER_WISDOM, 2d, false) * hero.getAttributeValue(AttributeType.WISDOM);
 
-		int mana = SkillConfigManager.getUseSetting(hero, this, SkillSetting.MANA, 0, false);
-		long cooldown = SkillConfigManager.getUseSetting(hero, this, SkillSetting.COOLDOWN, 0, false);
-
 		return getDescription()
 				.replace("$1", Util.decFormat.format(radius))
 				.replace("$2", Util.decFormat.format(healTick))
 				.replace("$3", Util.decFormat.format((double) period / 1000))
-				.replace("$4", Util.decFormat.format((double) duration / 1000))
-				.replace("$5", mana > 0 ? "Mana: " + mana : "")
-				.replace("$6", cooldown > 0 ? "C: " + Util.decFormat.format((double) cooldown / 1000) : "");
+				.replace("$4", Util.decFormat.format((double) duration / 1000));
 	}
 
 	@Override

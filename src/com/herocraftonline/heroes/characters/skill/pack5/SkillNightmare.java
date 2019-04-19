@@ -30,7 +30,7 @@ public class SkillNightmare extends SkillBaseSpike {
 
 	public SkillNightmare(Heroes plugin) {
 		super(plugin, "Nightmare");
-		setDescription("Impales the target with a spike of darkness casting them into a nightmarish state, dealing $1 damage per $2 second(s) for $3 second(s). $3 $4");
+		setDescription("Impales the target with a spike of darkness casting them into a nightmarish state, dealing $1 damage per $2 second(s) for $3 second(s).");
 		setUsage("/skill nightmare");
 		setIdentifiers("skill nightmare");
 		setArgumentRange(0, 0);
@@ -45,15 +45,10 @@ public class SkillNightmare extends SkillBaseSpike {
 		double damage = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE_TICK, 250d, false);
 		damage += SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE_TICK_INCREASE_PER_INTELLECT, 1d, false) * hero.getAttributeValue(AttributeType.INTELLECT);
 
-		int mana = SkillConfigManager.getUseSetting(hero, this, SkillSetting.MANA, 0, false);
-		long cooldown = SkillConfigManager.getUseSetting(hero, this, SkillSetting.COOLDOWN, 0, false);
-
 		return getDescription()
                 .replace("$1", Util.decFormat.format(damage))
                 .replace("$2", Util.decFormat.format((double) period / 1000))
-				.replace("$3", Util.decFormat.format((double) duration / 1000))
-				.replace("$4", mana > 0 ? "Mana: " + mana : "")
-				.replace("$5", cooldown > 0 ? "C: " + Util.decFormat.format((double) cooldown / 1000) : "");
+				.replace("$3", Util.decFormat.format((double) duration / 1000));
 	}
 
 	@Override

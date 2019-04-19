@@ -27,7 +27,7 @@ public class SkillInfernoBlade extends SkillBaseSpike {
 
 	public SkillInfernoBlade(Heroes plugin) {
 		super(plugin, "InfernoBlade");
-		setDescription("Impales the target with a spike of fire silencing them for $1 seconds, dealing $2 damage. $3 $4");
+		setDescription("Impales the target with a spike of fire silencing them for $1 seconds, dealing $2 damage.");
 		setUsage("/skill infernoblade");
 		setIdentifiers("skill infernoblade");
 		setArgumentRange(0, 0);
@@ -41,14 +41,9 @@ public class SkillInfernoBlade extends SkillBaseSpike {
 		double damage = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE, 250d, false);
 		damage += SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE_INCREASE_PER_INTELLECT, 1d, false) * hero.getAttributeValue(AttributeType.INTELLECT);
 
-		int mana = SkillConfigManager.getUseSetting(hero, this, SkillSetting.MANA, 0, false);
-		long cooldown = SkillConfigManager.getUseSetting(hero, this, SkillSetting.COOLDOWN, 0, false);
-
 		return getDescription()
 				.replace("$1", Util.decFormat.format((double) duration / 1000))
-				.replace("$2", Util.decFormat.format(damage))
-				.replace("$3", mana > 0 ? "Mana: " + mana : "")
-				.replace("$4", cooldown > 0 ? "C: " + Util.decFormat.format((double) cooldown / 1000) : "");
+				.replace("$2", Util.decFormat.format(damage));
 	}
 
 	@Override

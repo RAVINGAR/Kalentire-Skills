@@ -44,6 +44,8 @@ public class SkillBlink extends ActiveSkill {
         ConfigurationSection config = super.getDefaultConfig();
         config.set(SkillSetting.MAX_DISTANCE.node(), 6);
         config.set(SkillSetting.MAX_DISTANCE_INCREASE_PER_INTELLECT.node(), 0.15);
+        config.set(SkillSetting.REAGENT.node(), Material.GUNPOWDER.name());
+        config.set(SkillSetting.REAGENT_COST.node(), 3);
         return config;
     }
 

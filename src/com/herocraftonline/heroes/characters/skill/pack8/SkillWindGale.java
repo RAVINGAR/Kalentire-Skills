@@ -133,7 +133,9 @@ public class SkillWindGale extends ActiveSkill {
                         for (Location location : locations) {
                             location.getWorld().playSound(location, Sound.ENTITY_GENERIC_BURN, 0.25F, 1.0F);
                             //location.getWorld().spigot().playEffect(location, Effect.CLOUD, 0, 0, 0, 0, 0, 0.1F, 25, 16);
-                            location.getWorld().spawnParticle(Particle.CLOUD, 25, 0, 0, 0, 0.1);
+                            location.getWorld().spawnParticle(Particle.CLOUD, location,
+                                    25, //count
+                                     0, 0, 0, 0.1, null, true);
                         }
 
 

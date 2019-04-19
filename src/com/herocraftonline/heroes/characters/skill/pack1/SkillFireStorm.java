@@ -24,7 +24,7 @@ public class SkillFireStorm extends SkillBaseSphere {
 
 	public SkillFireStorm(Heroes plugin) {
 		super(plugin, "FireStorm");
-		setDescription("Call upon a storm of fire to damage and knock back enemies within $1 blocks for $2 every $3 seconds for $4 second(s). $5 $6");
+		setDescription("Call upon a storm of fire to damage and knock back enemies within $1 blocks for $2 every $3 seconds for $4 second(s).");
 		setUsage("/skill firestorm");
 		setIdentifiers("skill firestorm");
 		setArgumentRange(0, 0);
@@ -40,16 +40,11 @@ public class SkillFireStorm extends SkillBaseSphere {
 		final double damageTick = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE_TICK, 100d, false)
 				+ SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE_TICK_INCREASE_PER_INTELLECT, 2d, false) * hero.getAttributeValue(AttributeType.INTELLECT);
 
-		int mana = SkillConfigManager.getUseSetting(hero, this, SkillSetting.MANA, 0, false);
-		long cooldown = SkillConfigManager.getUseSetting(hero, this, SkillSetting.COOLDOWN, 0, false);
-
 		return getDescription()
 				.replace("$1", Util.decFormat.format(radius))
 				.replace("$2", Util.decFormat.format(damageTick))
 				.replace("$3", Util.decFormat.format((double) period / 1000))
-				.replace("$4", Util.decFormat.format((double) duration / 1000))
-				.replace("$5", mana > 0 ? "Mana: " + mana : "")
-				.replace("$6", cooldown > 0 ? "C: " + Util.decFormat.format((double) cooldown / 1000) : "");
+				.replace("$4", Util.decFormat.format((double) duration / 1000));
 	}
 
 	@Override

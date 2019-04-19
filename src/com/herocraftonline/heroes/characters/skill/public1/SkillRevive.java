@@ -1,8 +1,6 @@
 package com.herocraftonline.heroes.characters.skill.public1;
 
-import org.bukkit.Effect;
-import org.bukkit.Location;
-import org.bukkit.Sound;
+import org.bukkit.*;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
 import org.bukkit.Sound;
@@ -35,7 +33,7 @@ public class SkillRevive extends ActiveSkill {
         ConfigurationSection node = super.getDefaultConfig();
 
         node.set(SkillSetting.DELAY.node(), 10000);
-        node.set(SkillSetting.REAGENT.node(), 38);
+        node.set(SkillSetting.REAGENT.node(), "POPPY");
         node.set(SkillSetting.REAGENT_COST.node(), 1);
 
         return node;
@@ -43,6 +41,9 @@ public class SkillRevive extends ActiveSkill {
 
     @Override
     public SkillResult use(Hero hero, String[] args) {
+        if (args.length < this.getMinArguments() || args.length > this.getMaxArguments()) {
+            return SkillResult.INVALID_TARGET;
+        }
         Player player = hero.getPlayer();
         Player target = plugin.getServer().getPlayer(args[0]);
 
