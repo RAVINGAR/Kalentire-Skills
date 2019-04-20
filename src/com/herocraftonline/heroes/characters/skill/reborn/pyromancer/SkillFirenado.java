@@ -71,15 +71,15 @@ public class SkillFirenado extends ActiveSkill {
     public ConfigurationSection getDefaultConfig() {
         ConfigurationSection config = super.getDefaultConfig();
         config.set(SkillSetting.DAMAGE.node(), 75);
-        config.set("require-blaze-rod", true);
+        config.set("burn-duration", 4000);
+        config.set("burn-damage-multiplier", 2.0);
+        config.set("require-blaze-rod", false);
         config.set("hit-upwards-velocity", 0.8);
         config.set("tornado-velocity", 4.0);
         config.set("tornado-duration", 8000);
         config.set("tornado-max-heat-seeking-distance", 25);
         config.set("heat-seek-force-power", 0.2);
         config.set("tornado-visual-y-offset", 0.0);
-        config.set("burn-duration", 3000);
-        config.set("burn-damage-multiplier", 2.0);
         return config;
     }
 
@@ -113,7 +113,8 @@ public class SkillFirenado extends ActiveSkill {
         private final Player player;
         private final double defaultSpeed;
         private final int initialDurationTicks;
-        private final int maxHeatSeekingDistance;
+        private final double maxHeatSeekingDistance;
+        private final double maxHeatSeekingDistanceSquared;
         private final int heatSeekingIntervalTicks;
         private final double heatSeekForcePower;
         private final double damage;
@@ -146,7 +147,8 @@ public class SkillFirenado extends ActiveSkill {
             setLocationAndSpeed(missileLoc, defaultSpeed);
 
             this.initialDurationTicks = SkillConfigManager.getUseSetting(hero, skill, "tornado-duration", 8000, false) / 50;
-            this.maxHeatSeekingDistance = SkillConfigManager.getUseSetting(hero, skill, "tornado-max-heat-seeking-distance", 25, false);
+            this.maxHeatSeekingDistance = SkillConfigManager.getUseSetting(hero, skill, "tornado-max-heat-seeking-distance", 25.0, false);
+            this.maxHeatSeekingDistanceSquared = maxHeatSeekingDistance * maxHeatSeekingDistance;
             this.heatSeekForcePower = SkillConfigManager.getUseSetting(hero, skill, "heat-seek-force-power", 0.5, false);
             this.heatSeekingIntervalTicks = (int) (this.initialDurationTicks * 0.15);
 
@@ -164,6 +166,7 @@ public class SkillFirenado extends ActiveSkill {
             vEffect.showTornado = true;
             vEffect.tornadoColor = FIRE_RED;
             vEffect.tornadoParticle = Particle.SPELL_MOB;
+            vEffect.distance = 0.375D * 3.0;
             vEffect.cloudParticle = Particle.CLOUD;
             vEffect.cloudColor = FIRE_ORANGE;
             vEffect.cloudSize = 0.25F;
@@ -184,16 +187,19 @@ public class SkillFirenado extends ActiveSkill {
             vEffect.setLocation(location);
             Block block = location.getBlock();
 
+            if (getTicksLived() % this.heatSeekingIntervalTicks != 0) {
+                if (currentTarget != null) {
+                    // Add force while heat seaking, but not every single tick.
+                    addForce(getDirection().multiply(this.heatSeekForcePower));
+                }
+                return;
+            }
+
+            // We're at our desired tick interval.
+
             // Reach two blocks down for fire tick blocks
             Util.setBlockOnFireIfAble(block, 0.3, true);
             Util.setBlockOnFireIfAble(block.getRelative(BlockFace.DOWN), 0.3, true);
-
-            // Add force while heat seaking, but not every single tick.
-            if (getTicksLived() % this.heatSeekingIntervalTicks != 0) {
-                if (currentTarget != null)
-                    addForce(getDirection().multiply(this.heatSeekForcePower));
-                return;
-            }
 
             flipColors();
             LivingEntity target = getClosestEntity();
@@ -220,7 +226,7 @@ public class SkillFirenado extends ActiveSkill {
         }
 
         private LivingEntity getClosestEntity() {
-            double closestEntDistance = 9999;
+            double closestEntDistanceSquared = 99999999;
             LivingEntity closestEntity = null;
 
             Collection<Entity> nearbyEnts = getWorld().getNearbyEntities(getLocation(), maxHeatSeekingDistance, maxHeatSeekingDistance * 0.5, maxHeatSeekingDistance);
@@ -241,10 +247,10 @@ public class SkillFirenado extends ActiveSkill {
                     continue;
                 }
 
-                double distance = getLocation().distance(lEnt.getLocation());
-                if (distance < closestEntDistance) {
+                double distSquared = getLocation().distanceSquared(lEnt.getLocation());
+                if (distSquared <= closestEntDistanceSquared) {
                     closestEntity = lEnt;
-                    closestEntDistance = distance;
+                    closestEntDistanceSquared = distSquared;
                 }
             }
             return closestEntity;
@@ -257,14 +263,16 @@ public class SkillFirenado extends ActiveSkill {
 
         @Override
         protected boolean onCollideWithBlock(Block block, Vector point, BlockFace face) {
+            Location location = getLocation();
+
             // Make it "bounce" and go the other way.
             Vector direction = getDirection();
-            setLocation(getLocation().clone().subtract(direction));
-            setDirectionAndSpeed(direction.multiply(-1).setY(0), this.defaultSpeed);
-            if (currentTarget != null) {
-                tempIgnoreTargets.add(currentTarget);
-                currentTarget = null;
-            }
+            setLocation(location.clone().subtract(direction));
+            setDirectionAndSpeed(direction.multiply(-1).setY(0.5), this.defaultSpeed);
+//            if (currentTarget != null) {
+//                tempIgnoreTargets.add(currentTarget);
+//                currentTarget = null;
+//            }
             return false;
         }
 

@@ -100,8 +100,6 @@ public class SkillRetreat extends ActiveSkill {
 
     static {
         requiredMaterials = new HashSet<>();
-        requiredMaterials.add(Material.LEGACY_STATIONARY_WATER);
-        requiredMaterials.add(Material.LEGACY_STATIONARY_LAVA);
         requiredMaterials.add(Material.WATER);
         requiredMaterials.add(Material.LAVA);
         requiredMaterials.add(Material.AIR);
