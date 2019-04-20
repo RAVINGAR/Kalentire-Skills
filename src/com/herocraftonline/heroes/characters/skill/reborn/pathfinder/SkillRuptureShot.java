@@ -58,7 +58,8 @@ public class SkillRuptureShot extends ActiveSkill {
     public void init() {
         super.init();
         setUseText("%hero% imbues their arrows with rupture!".replace("%hero%", "$1"));
-        applyText = SkillConfigManager.getRaw(this, SkillSetting.APPLY_TEXT, "%target% is ruptured!").replace("%target%", "$1");
+        applyText = SkillConfigManager.getRaw(this, SkillSetting.APPLY_TEXT, "%target% is ruptured!")
+                .replace("%target%", "$1").replace("%hero%","$2");
         expireText = SkillConfigManager.getRaw(this, SkillSetting.EXPIRE_TEXT, "%target% has recovered from the rupture!").replace("%target%", "$1");
     }
 
@@ -107,15 +108,14 @@ public class SkillRuptureShot extends ActiveSkill {
         @Override
         public void applyToMonster(Monster monster) {
             super.applyToMonster(monster);
-            broadcast(monster.getEntity().getLocation(), "    " + applyText, CustomNameManager.getName(monster));
+            broadcast(monster.getEntity().getLocation(), "    " + applyText, CustomNameManager.getName(monster), applier.getName());
         }
 
         @Override
         public void applyToHero(Hero hero) {
             super.applyToHero(hero);
             Player player = hero.getPlayer();
-            broadcast(player.getLocation(), "    " + applyText, player.getName());
-
+            broadcast(player.getLocation(), "    " + applyText, player.getName(), applier.getName());
         }
 
         @Override
