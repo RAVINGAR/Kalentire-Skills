@@ -83,7 +83,6 @@ public class SkillCombust extends TargettedSkill {
             target.setFireTicks(0);
         }
 
-        damage+= addedDamage;
         if (addedDamage > 0) {
             double maximumBurningDamage = SkillConfigManager.getUseSetting(hero, this, "maximum-burning-damage", 100.0, false);
             if (addedDamage > maximumBurningDamage) {
@@ -91,6 +90,7 @@ public class SkillCombust extends TargettedSkill {
             }
             hero.getPlayer().sendMessage(ChatComponents.GENERIC_SKILL + ChatColor.GOLD + "Combust Burning Damage: " + addedDamage);
         }
+        damage+= addedDamage;
 
         addSpellTarget(target, hero);
         damageEntity(target, hero.getPlayer(), damage, EntityDamageEvent.DamageCause.MAGIC);

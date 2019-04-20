@@ -11,8 +11,7 @@ import com.herocraftonline.heroes.characters.effects.common.StunEffect;
 import com.herocraftonline.heroes.characters.skill.*;
 import com.herocraftonline.heroes.characters.skill.ncp.NCPFunction;
 import com.herocraftonline.heroes.characters.skill.ncp.NCPUtils;
-import de.slikey.effectlib.Effect;
-import de.slikey.effectlib.EffectManager;
+import com.herocraftonline.heroes.chat.ChatComponents;
 import org.bukkit.*;
 import org.bukkit.block.BlockFace;
 import org.bukkit.configuration.ConfigurationSection;
@@ -50,9 +49,10 @@ public class SkillRetreat extends ActiveSkill {
         super(plugin, "Retreat");
         setDescription("Retreat from your enemies, your next arrow will stun your enemy. ");
         setUsage("/skill retreat");
-        setArgumentRange(0, 0);
         setIdentifiers("skill retreat");
+        setArgumentRange(0, 0);
         setTypes(SkillType.VELOCITY_INCREASING, SkillType.ABILITY_PROPERTY_PROJECTILE, SkillType.AGGRESSIVE, SkillType.STUNNING);
+
         Bukkit.getServer().getPluginManager().registerEvents(new SkillDamageListener(this), plugin);
     }
 
@@ -63,27 +63,29 @@ public class SkillRetreat extends ActiveSkill {
 
     @Override
     public ConfigurationSection getDefaultConfig() {
-        ConfigurationSection node = super.getDefaultConfig();
-        node.set(SkillSetting.DURATION.node(), 1500);
-        node.set("horizontal-power", 0.5);
-        node.set("vertical-power", 0.5);
-        return node;
+        ConfigurationSection config = super.getDefaultConfig();
+        config.set(SkillSetting.DURATION.node(), 6000);
+        config.set("stun-duration", 1500);
+        config.set("horizontal-power", 0.5);
+        config.set("vertical-power", 0.5);
+        config.set("ncp-exemption-duration", 0);
+        return config;
     }
 
     @Override
     public void init() {
         super.init();
-        setUseText("%hero% retreats and his next arrow will stun his target".replace("%hero%", "$1"));
-        stunReadyText = SkillConfigManager.getRaw(this, SkillSetting.APPLY_TEXT.node(), "%target% is stunned!").replace("%target%", "$1");
+
+        stunReadyText = SkillConfigManager.getRaw(this, SkillSetting.APPLY_TEXT.node(),
+                ChatComponents.GENERIC_SKILL + "%target% is stunned!")
+                .replace("%target%", "$1");
     }
 
     @Override
     public SkillResult use(Hero hero, String[] args) {
         final Player player = hero.getPlayer();
-        if (hero.hasEffect("RetreatBuff")) {
-            hero.removeEffect(hero.getEffect("RetreatBuff"));
-            return SkillResult.SKIP_POST_USAGE;
-        }
+
+        broadcastExecuteText(hero);
 
         Location playerLoc = player.getLocation();
         Material belowMat = playerLoc.getBlock().getRelative(BlockFace.DOWN).getType();
@@ -93,7 +95,6 @@ public class SkillRetreat extends ActiveSkill {
         long duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, 1500, false);
         hero.addEffect(new RetreatBuff(this, player, duration));
 
-        broadcastExecuteText(hero);
         player.getWorld().playSound(player.getLocation(), Sound.ENTITY_ENDER_DRAGON_FLAP, 4.0F, 1.0F);
 
         return SkillResult.NORMAL;
@@ -174,8 +175,9 @@ public class SkillRetreat extends ActiveSkill {
 
     public class RetreatBuff extends ExpirableEffect {
 
-        public RetreatBuff(Skill skill, Player applier, long duration) {
+        RetreatBuff(Skill skill, Player applier, long duration) {
             super(skill, "RetreatBuff", applier, duration);
+
             types.add(EffectType.BENEFICIAL);
         }
 
@@ -200,6 +202,7 @@ public class SkillRetreat extends ActiveSkill {
             if (event.isCancelled() || !(event.getEntity() instanceof Player) || !(event.getProjectile() instanceof Arrow)) {
                 return;
             }
+
             Hero hero = plugin.getCharacterManager().getHero((Player) event.getEntity());
             if (hero.hasEffect("RetreatBuff")) {
                 stunArrows.put((Arrow) event.getProjectile(), System.currentTimeMillis());
@@ -227,33 +230,14 @@ public class SkillRetreat extends ActiveSkill {
             Hero hero = plugin.getCharacterManager().getHero(player);
 
             // Stun the target
-            long duration = SkillConfigManager.getUseSetting(hero, skill, SkillSetting.DURATION, 1500, false);
+            long duration = SkillConfigManager.getUseSetting(hero, skill, "stun-duration", 1500, false);
             StunEffect retreatStunEffect = new StunEffect(skill, player, duration, stunReadyText, stunExpireText);
             LivingEntity target = (LivingEntity) event.getEntity();
             plugin.getCharacterManager().getCharacter(target).addEffect(retreatStunEffect);
-            particleEffect(target);
+            playParticleEffect(target);
         }
 
-        public void particleEffect(LivingEntity target) {
-
-            /*
-            EffectManager em = new EffectManager(plugin);
-            Effect visualEffect = new Effect(em) {
-                Particle particle = Particle.CRIT;
-                int radius = 2;
-
-                @Override
-                public void onRun() {
-                    for (double z = -radius; z <= radius; z += 0.33) {
-                        for (double x = -radius; x <= radius; x += 0.33) {
-                            if (x * x + z * z <= radius * radius) {
-                                display(particle, getLocation().clone().add(x, 0, z));
-                            }
-                        }
-                    }
-                }
-            };
-            */
+        private void playParticleEffect(LivingEntity target) {
 
             Location location = target.getEyeLocation().clone();
             VisualEffect.playInstantFirework(FireworkEffect.builder()
@@ -263,20 +247,6 @@ public class SkillRetreat extends ActiveSkill {
                     .withColor(Color.WHITE)
                     .withFade(Color.YELLOW)
                     .build(), location.add(0, 2.0, 0));
-
-            /*
-            visualEffect.type = de.slikey.effectlib.EffectType.REPEATING;
-            visualEffect.particleSize = 3;
-            visualEffect.color = Color.YELLOW;
-            visualEffect.period = 10;
-            visualEffect.iterations = 8;
-
-            visualEffect.asynchronous = true;
-            visualEffect.setLocation(location);
-
-            visualEffect.start();
-            em.disposeOnTermination();
-            */
 
             target.getWorld().playSound(location, Sound.ENTITY_GENERIC_BURN, 0.15f, 0.0001f);
         }
