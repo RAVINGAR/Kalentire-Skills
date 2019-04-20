@@ -64,6 +64,9 @@ public class SkillRetreat extends ActiveSkill {
     @Override
     public ConfigurationSection getDefaultConfig() {
         ConfigurationSection node = super.getDefaultConfig();
+        node.set(SkillSetting.DURATION.node(), 1500);
+        node.set("horizontal-power", 0.5);
+        node.set("vertical-power", 0.5);
         return node;
     }
 
@@ -87,7 +90,7 @@ public class SkillRetreat extends ActiveSkill {
 
         performBackflip(hero, player, belowMat);
 
-        long duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, 4000, false);
+        long duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, 1500, false);
         hero.addEffect(new RetreatBuff(this, player, duration));
 
         broadcastExecuteText(hero);
@@ -226,7 +229,7 @@ public class SkillRetreat extends ActiveSkill {
             Hero hero = plugin.getCharacterManager().getHero(player);
 
             // Stun the target
-            long duration = SkillConfigManager.getUseSetting(hero, skill, SkillSetting.DURATION, 5000, false);
+            long duration = SkillConfigManager.getUseSetting(hero, skill, SkillSetting.DURATION, 1500, false);
             StunEffect retreatStunEffect = new StunEffect(skill, player, duration, stunReadyText, stunExpireText);
             LivingEntity target = (LivingEntity) event.getEntity();
             plugin.getCharacterManager().getCharacter(target).addEffect(retreatStunEffect);

@@ -82,9 +82,9 @@ public class SkillGiftOfEir extends ActiveSkill {
         double radius = SkillConfigManager.getUseSetting(hero, this, SkillSetting.RADIUS, 5000, false);
         double radiusSquared = radius * radius;
         long period2 = SkillConfigManager.getUseSetting(hero, this, "mana-regen,tick", 1000, false);
-        hero.addEffect(new RootEffect(this, player, period, duration));
+        hero.addEffect(new RootEffect(this, player, period, duration, null ,null));
         hero.addEffect(new ManaPoolEffect(this, player, period2, duration, radiusSquared));
-        hero.addEffect(new InvulnStationaryEffect(this, player, duration, applyText, expireText));
+        hero.addEffect(new InvulnStationaryEffect(this, player, duration, null, expireText));
 
         return SkillResult.NORMAL;
     }
@@ -197,10 +197,19 @@ public class SkillGiftOfEir extends ActiveSkill {
                 ArrayList<Location> particleLocations = circle(player.getLocation(), 15,  5);
                 for (int i = 0; i < particleLocations.size(); i++)
                 {
-                    player.getWorld().spawnParticle(Particle.SPIT, particleLocations.get(i),1, 3, 0.2, 0.5, 0.2);
+                    Particle.DustOptions dustOptions = new Particle.DustOptions(Color.AQUA, 2);
+                    player.getWorld().spawnParticle(Particle.REDSTONE, particleLocations.get(i),1, 3, 0.2, 0.5, 0.2, dustOptions);
                 }
             }
-            player.getWorld().playSound(player.getLocation(), Sound.ENTITY_GUARDIAN_AMBIENT, 1.0F, 1.2F);
+            player.getWorld().playSound(player.getLocation(), Sound.BLOCK_BEACON_AMBIENT, 1.0F, 1.2F);
+            Location location = player.getLocation().clone();
+            VisualEffect.playInstantFirework(FireworkEffect.builder()
+                    .flicker(true)
+                    .trail(false)
+                    .with(FireworkEffect.Type.BURST)
+                    .withColor(Color.TEAL)
+                    .withFade(Color.AQUA)
+                    .build(), location.add(0, 2.0, 0));
         }
 
     }
