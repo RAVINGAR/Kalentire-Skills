@@ -12,6 +12,7 @@ import com.herocraftonline.heroes.characters.skill.*;
 import com.herocraftonline.heroes.chat.ChatComponents;
 import com.herocraftonline.heroes.util.Util;
 import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
 import org.bukkit.Color;
 import org.bukkit.FireworkEffect;
 import org.bukkit.configuration.ConfigurationSection;
@@ -27,7 +28,9 @@ public class SkillCombust extends TargettedSkill {
 
     public SkillCombust(Heroes plugin) {
         super(plugin, "Combust");
-        setDescription("You Combust an enemy, absorbing all of their current fire ticks, dealing $1 damage in addition to all of the absorbed burning damage at a $2% increase rate.");
+        setDescription("You Combust an enemy, absorbing all of their current fire ticks, " +
+                "dealing $1 damage in addition to all of the absorbed burning damage at a $2% increase rate. " +
+                "The maximum amount of damage gained from burning effects is $3");
         setUsage("/skill combust");
         setIdentifiers("skill combust");
         setArgumentRange(0, 0);
@@ -37,16 +40,19 @@ public class SkillCombust extends TargettedSkill {
     public String getDescription(Hero hero) {
         double damage = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE, 25.0, false);
         double damageEffectiveness = SkillConfigManager.getUseSetting(hero, this, "burning-damage-effectiveness", 1.5, false);
+        double maximumBurningDamage = SkillConfigManager.getUseSetting(hero, this, "maximum-burning-damage", 100.0, false);
 
         return getDescription()
                 .replace("$1", Util.decFormat.format(damage))
-                .replace("$2", Util.decFormat.format(damageEffectiveness * 100));
+                .replace("$2", Util.decFormat.format(damageEffectiveness * 100))
+                .replace("$3", Util.decFormat.format(maximumBurningDamage));
     }
 
     public ConfigurationSection getDefaultConfig() {
         ConfigurationSection config = super.getDefaultConfig();
         config.set(SkillSetting.DAMAGE.node(), 25.0);
         config.set("burning-damage-effectiveness", 1.5);
+        config.set("maximum-burning-damage", 100.0);
         return config;
     }
 
@@ -78,15 +84,20 @@ public class SkillCombust extends TargettedSkill {
         }
 
         damage+= addedDamage;
-        if (addedDamage > 0)
-            hero.getPlayer().sendMessage(ChatComponents.GENERIC_SKILL + "Combust Burning Damage: " + addedDamage);
+        if (addedDamage > 0) {
+            double maximumBurningDamage = SkillConfigManager.getUseSetting(hero, this, "maximum-burning-damage", 100.0, false);
+            if (addedDamage > maximumBurningDamage) {
+                addedDamage = maximumBurningDamage;
+            }
+            hero.getPlayer().sendMessage(ChatComponents.GENERIC_SKILL + ChatColor.GOLD + "Combust Burning Damage: " + addedDamage);
+        }
 
         addSpellTarget(target, hero);
         damageEntity(target, hero.getPlayer(), damage, EntityDamageEvent.DamageCause.MAGIC);
 
         FireworkEffect firework = FireworkEffect.builder()
                 .flicker(false)
-                .trail(true)
+                .trail(false)
                 .withColor(Color.RED)
                 .withColor(Color.RED)
                 .withColor(Color.ORANGE)

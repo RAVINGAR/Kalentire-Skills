@@ -2,6 +2,7 @@ package com.herocraftonline.heroes.characters.skill.reborn.pathfinder;
 
 import com.herocraftonline.heroes.Heroes;
 import com.herocraftonline.heroes.api.SkillResult;
+import com.herocraftonline.heroes.characters.CharacterTemplate;
 import com.herocraftonline.heroes.characters.CustomNameManager;
 import com.herocraftonline.heroes.characters.Hero;
 import com.herocraftonline.heroes.characters.Monster;
@@ -44,6 +45,8 @@ public class SkillRuptureShot extends ActiveSkill {
         node.set(SkillSetting.DURATION.node(), 10000); // milliseconds
         node.set(SkillSetting.PERIOD.node(), 2000); // 2 seconds in milliseconds
         node.set("mana-per-shot", 1); // How much mana for each attack
+        node.set("mana-drain", 50); // How much mana to drain on hit
+        node.set("stamina-drain", 100); // How much stamina to drain on hit
         node.set("tick-damage", 2);
         node.set(SkillSetting.USE_TEXT.node(), "%hero% imbues their arrows with rupture!");
         node.set(SkillSetting.APPLY_TEXT.node(), "%target% is ruptured!");
@@ -71,12 +74,34 @@ public class SkillRuptureShot extends ActiveSkill {
     }
 
     public class ArrowRupture extends PeriodicDamageEffect {
+        private int staminaDrain;
+        private int manaDrain;
 
-        public ArrowRupture(Skill skill, long period, long duration, double tickDamage, Player applier) {
+        public ArrowRupture(Skill skill, long period, long duration, double tickDamage, Player applier, int sDrain, int mDrain) {
             super(skill, "ArrowRupture", applier, period, duration, tickDamage);
             this.types.add(EffectType.BLEED);
+            staminaDrain = sDrain;
+            manaDrain = mDrain;
             addPotionEffect(new PotionEffect(PotionEffectType.WITHER, (int) (duration / 1000) * 20, 0), true);
             //addPotionEffect(new PotionEffect(PotionEffectType.SLOW, (int) (duration / 1000) * 20, 5), true);
+        }
+        @Override
+        public void tickHero(Hero hero) {
+            int targetStam = hero.getStamina();
+            if (targetStam > staminaDrain) {
+                hero.setStamina(targetStam - staminaDrain);
+                hero.getPlayer().sendMessage("you lost " + staminaDrain + " due to rupture");
+            } else {
+                hero.setStamina(0);
+            }
+
+            int targetMana = hero.getMana();
+            if (targetMana > manaDrain) {
+                hero.getPlayer().sendMessage("you lost " + manaDrain + " due to rupture");
+                hero.setMana(targetMana - manaDrain);
+            } else {
+                hero.setStamina(0);
+            }
         }
 
         @Override
@@ -90,6 +115,7 @@ public class SkillRuptureShot extends ActiveSkill {
             super.applyToHero(hero);
             Player player = hero.getPlayer();
             broadcast(player.getLocation(), "    " + applyText, player.getName());
+
         }
 
         @Override
@@ -149,7 +175,9 @@ public class SkillRuptureShot extends ActiveSkill {
                 long duration = SkillConfigManager.getUseSetting(hero, skill, "rupture-duration", 10000, false);
                 long period = SkillConfigManager.getUseSetting(hero, skill, SkillSetting.PERIOD, 2000, true);
                 int tickDamage = SkillConfigManager.getUseSetting(hero, skill, "tick-damage", 2, false);
-                plugin.getCharacterManager().getCharacter(target).addEffect(new ArrowRupture(skill, period, duration, tickDamage, player));
+                int staminaDrain = SkillConfigManager.getUseSetting(hero, skill, "stamina-drain", 100, false);
+                int manaDrain = SkillConfigManager.getUseSetting(hero, skill, "mana-drain", 50, false);
+                plugin.getCharacterManager().getCharacter(target).addEffect(new ArrowRupture(skill, period, duration, tickDamage, player, staminaDrain, manaDrain));
             }
         }
 

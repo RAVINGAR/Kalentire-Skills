@@ -2,9 +2,6 @@ package com.herocraftonline.heroes.characters.skill.reborn.arcanist;
 
 import com.herocraftonline.heroes.Heroes;
 import com.herocraftonline.heroes.api.SkillResult;
-import com.herocraftonline.heroes.api.events.CharacterDamageEvent;
-import com.herocraftonline.heroes.api.events.SkillDamageEvent;
-import com.herocraftonline.heroes.api.events.WeaponDamageEvent;
 import com.herocraftonline.heroes.characters.Hero;
 import com.herocraftonline.heroes.characters.effects.EffectType;
 import com.herocraftonline.heroes.characters.effects.ExpirableEffect;
@@ -23,13 +20,11 @@ import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityDamageEvent;
 
-import java.util.logging.Level;
-
 public class SkillManaShield extends ActiveSkill {
 
     private static Color MANA_BLUE = Color.fromRGB(0, 191, 255);
 
-    private final String toggleableEffectName = "ManaShield";
+    private final String effectName = "ManaShield";
     private String applyText;
     private String expireText;
 
@@ -43,7 +38,6 @@ public class SkillManaShield extends ActiveSkill {
         setIdentifiers("skill manashield", "skill mshield");
         setTypes(SkillType.BUFFING, SkillType.SILENCEABLE, SkillType.MANA_DECREASING);
 
-        setToggleableEffectName(toggleableEffectName);
         Bukkit.getServer().getPluginManager().registerEvents(new SkillHeroListener(this), plugin);
     }
 
@@ -98,7 +92,7 @@ public class SkillManaShield extends ActiveSkill {
         private SphereEffect visualEffect;
 
         public ManaShieldEffect(Skill skill, Player applier, long duration) {
-            super(skill, toggleableEffectName, applier, duration, applyText, expireText);
+            super(skill, effectName, applier, duration, applyText, expireText);
 
             types.add(EffectType.DISPELLABLE);
             types.add(EffectType.BENEFICIAL);
@@ -162,7 +156,7 @@ public class SkillManaShield extends ActiveSkill {
 
             Player player = (Player) event.getEntity();
             Hero hero = plugin.getCharacterManager().getHero(player);
-            if (!hero.hasEffect(toggleableEffectName))
+            if (!hero.hasEffect(effectName))
                 return;
 
             double newDamage = getAdjustment(hero, event.getDamage());
@@ -182,7 +176,7 @@ public class SkillManaShield extends ActiveSkill {
             if (mana < manaCost) {
                 Location location = hero.getPlayer().getLocation();
                 location.getWorld().playSound(location, Sound.BLOCK_GLASS_BREAK, 1.0f, 1.0F);
-                hero.removeEffect(hero.getEffect(toggleableEffectName));
+                hero.removeEffect(hero.getEffect(effectName));
                 return -1.0;
             } else {
                 mana -= manaCost;

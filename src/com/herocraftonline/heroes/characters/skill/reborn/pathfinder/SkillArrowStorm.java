@@ -237,6 +237,8 @@ public class SkillArrowStorm extends ActiveSkill {
             if (!(projectile instanceof Arrow) || !stormArrows.containsKey(projectile)) {
                 return;
             }
+
+            event.setDamage(0.0);
             event.setCancelled(true);
             stormArrows.remove(projectile);
 
@@ -257,8 +259,6 @@ public class SkillArrowStorm extends ActiveSkill {
                     event.setCancelled(true);
                     return;
                 }
-
-                event.getEntity().setFireTicks(0);
 
                 double damage = SkillConfigManager.getUseSetting(hero, skill, SkillSetting.DAMAGE, 50, false);
                 double damageIncrease = SkillConfigManager.getUseSetting(hero, skill, SkillSetting.DAMAGE_INCREASE_PER_INTELLECT, 1.0, false);
