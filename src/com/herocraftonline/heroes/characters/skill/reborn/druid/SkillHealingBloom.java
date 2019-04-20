@@ -21,7 +21,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.util.Vector;
 
 public class SkillHealingBloom extends ActiveSkill {
-    private EffectManager effectManager;
+    
 
     public SkillHealingBloom(Heroes plugin) {
         super(plugin, "HealingBloom");
@@ -87,6 +87,7 @@ public class SkillHealingBloom extends ActiveSkill {
                     if (member.getPlayer().getLocation().distanceSquared(playerLocation) <= radiusSquared) {
                         // Add the effect
                         member.addEffect(new PeriodicHealEffect(this, "HealingBloom", player, period, duration, healing));
+                        playHoTVisual(member.getEntity(), duration);
                     }
                 }
             }
@@ -94,13 +95,14 @@ public class SkillHealingBloom extends ActiveSkill {
         else {
             // Add the effect to just the player
             hero.addEffect(new PeriodicHealEffect(this, "HealingBloom", player, period, duration, healing));
+            playHoTVisual(hero.getEntity(), duration);
 
         }
 
         return SkillResult.NORMAL;
     }
-    public void playHoTVisual(LivingEntity target) {
-
+    public void playHoTVisual(LivingEntity target, int duration) {
+         EffectManager effectManager = th;
         final int durationTicks = (int) duration / 50;
         final int displayPeriod = 2;
 
@@ -109,7 +111,7 @@ public class SkillHealingBloom extends ActiveSkill {
         visualEffect.setDynamicOrigin(dynamicLoc);
         visualEffect.disappearWithOriginEntity = true;
 
-        visualEffect.particle = Particle.TOTEM;
+        visualEffect.particle = Particle.VILLAGER_HAPPY;
         visualEffect.period = displayPeriod;
         visualEffect.particleSize = 15;
 
