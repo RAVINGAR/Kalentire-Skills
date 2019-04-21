@@ -16,6 +16,7 @@ import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.Sound;
 import org.bukkit.configuration.ConfigurationSection;
+import org.bukkit.entity.Damageable;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
@@ -117,8 +118,11 @@ public class SkillTransform extends ActiveSkill {
             double newHealth = player.getHealth() - healthDrainTick;
             if (newHealth < 1)
                 hero.removeEffect(this);
-            else
-                player.setHealth(newHealth);
+            else {
+                // Trying to disable screen shake. It isn't working.
+                Damageable playerDamageable = (Damageable) player;
+                playerDamageable.setHealth(newHealth);
+            }
         }
 
         @Override

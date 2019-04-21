@@ -197,16 +197,16 @@ public class SkillGiftOfEir extends ActiveSkill {
             return locations;
         }
 
-
         private void applyVisuals(Player player) {
             for (double r = 1; r < radiusSquared; r++) {
                 ArrayList<Location> particleLocations = circle(player.getLocation(), 15, 5);
-                for (int i = 0; i < particleLocations.size(); i++)
-                    player.getWorld().spawnParticle(Particle.REDSTONE, particleLocations.get(i), 1, 3, 0.2, 0.5, 0.2, Color.AQUA);
+                for (int i = 0; i < particleLocations.size(); i++) {
+//                    player.getWorld().spawnParticle(Particle.REDSTONE, particleLocations.get(i), 1, 3, 0.2, 0.5, 0.2, Color.AQUA);
+                    player.getWorld().spigot().playEffect(particleLocations.get(i), org.bukkit.Effect.COLOURED_DUST, 0, 0, 0.0F, 1.0F, 1.0F, 1.0F, 5, 2);
+                }
             }
 //            player.getWorld().playSound(player.getLocation(), Sound.BLOCK_BEACON_AMBIENT, 1.0F, 1.2F);
         }
-
     }
 
     public class InvulnStationaryEffect extends ExpirableEffect {

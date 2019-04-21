@@ -123,7 +123,7 @@ public class SkillTimeShift extends TargettedSkill {
 
         World world = target.getWorld();
         Location location = target.getLocation();
-        world.spawnParticle(Particle.REDSTONE, location, 5, 0.6, 1, 0.6, 0, Color.YELLOW);
+        world.spigot().playEffect(location, Effect.COLOURED_DUST, 0, 0, 1.0F, 1.0F, 0.0F, 1.0F, 5, 2);
 //        world.playSound(location, Sound.BLOCK_BEACON_DEACTIVATE, 0.5F, 2.0F);
         return SkillResult.NORMAL;
     }
@@ -152,7 +152,7 @@ public class SkillTimeShift extends TargettedSkill {
 
         World world = target.getWorld();
         Location location = target.getLocation();
-        world.spawnParticle(Particle.REDSTONE, location, 5, 0.6, 1, 0.6, 0, Color.TEAL);
+        world.spigot().playEffect(location, Effect.COLOURED_DUST, 0, 0, 0.0F, 0.5450F, 0.5450F, 1.0F, 5, 2);
 //        world.playSound(location, Sound.BLOCK_BEACON_ACTIVATE, 1.0F, 1.7F);
         return SkillResult.NORMAL;
     }

@@ -44,15 +44,13 @@ public class SkillRejuvenate extends TargettedSkill {
     }
 
     public ConfigurationSection getDefaultConfig() {
-        ConfigurationSection node = super.getDefaultConfig();
-
-        node.set(SkillSetting.MAX_DISTANCE.node(), 10);
-        node.set(SkillSetting.DURATION.node(), 20000);
-        node.set(SkillSetting.PERIOD.node(), 2000);
-        node.set(SkillSetting.HEALING_TICK.node(), 10);
-        node.set(SkillSetting.HEALING_INCREASE_PER_WISDOM.node(), 0.25);
-
-        return node;
+        ConfigurationSection config = super.getDefaultConfig();
+        config.set(SkillSetting.MAX_DISTANCE.node(), 10);
+        config.set(SkillSetting.DURATION.node(), 20000);
+        config.set(SkillSetting.PERIOD.node(), 2000);
+        config.set(SkillSetting.HEALING_TICK.node(), 10);
+        config.set(SkillSetting.HEALING_INCREASE_PER_WISDOM.node(), 0.25);
+        return config;
     }
 
     @Override
