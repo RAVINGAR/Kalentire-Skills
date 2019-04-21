@@ -86,13 +86,13 @@
         </dependency>
         <dependency>
             <groupId>com.herocraftonline.heroes</groupId>
-            <artifactId>heroes-bukkit-compat-v1_13_R2</artifactId>
-            <version>1.9.2-SNAPSHOT</version>
+            <artifactId>heroes-bukkit-compat-v1_12_R1</artifactId>
+            <version>1.9.2-LEGACY-SNAPSHOT</version>
         </dependency>
         <dependency>
             <groupId>org.spigotmc</groupId>
             <artifactId>spigot</artifactId>
-            <version>1.13.2-R0.1-SNAPSHOT</version>
+            <version>1.12.2-R0.1-SNAPSHOT</version>
         </dependency>
         <dependency>
             <groupId>junit</groupId>
