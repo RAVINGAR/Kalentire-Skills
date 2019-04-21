@@ -11,10 +11,7 @@ import com.herocraftonline.heroes.util.GeometryUtil;
 import de.slikey.effectlib.EffectManager;
 import de.slikey.effectlib.effect.LoveEffect;
 import de.slikey.effectlib.util.DynamicLocation;
-import org.bukkit.ChatColor;
-import org.bukkit.Location;
-import org.bukkit.Particle;
-import org.bukkit.World;
+import org.bukkit.*;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
@@ -31,7 +28,7 @@ public class SkillYggdrasilsTouch extends ActiveSkill {
         setDescription("You mark all nearby Allies with Yggdrasil's touch. After a short period Yggdrasil's touch explodes and heals you and all nearby allies");
         setUsage("/skill yggdrasilstouch");
         setArgumentRange(0, 0);
-        setIdentifiers("skill yggdrassilstouch");
+        setIdentifiers("skill yggdrasilstouch", "skill ytouch");
         setTypes(SkillType.HEALING, SkillType.AREA_OF_EFFECT, SkillType.SILENCEABLE);
     }
 
@@ -151,8 +148,8 @@ public class SkillYggdrasilsTouch extends ActiveSkill {
             DynamicLocation dynamicLoc = new DynamicLocation(target);
             visualEffect.setDynamicOrigin(dynamicLoc);
             visualEffect.disappearWithOriginEntity = true;
-
-            visualEffect.particle = Particle.TOTEM;
+            visualEffect.color = Color.fromRGB(145 ,178, 71);
+            visualEffect.particle = Particle.REDSTONE;
             visualEffect.period = displayPeriod;
             visualEffect.particleSize = 15;
 
