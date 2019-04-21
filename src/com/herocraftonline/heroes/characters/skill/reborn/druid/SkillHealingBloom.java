@@ -2,7 +2,6 @@ package com.herocraftonline.heroes.characters.skill.reborn.druid;
 
 import com.herocraftonline.heroes.Heroes;
 import com.herocraftonline.heroes.api.SkillResult;
-import com.herocraftonline.heroes.attributes.AttributeType;
 import com.herocraftonline.heroes.characters.Hero;
 import com.herocraftonline.heroes.characters.effects.PeriodicHealEffect;
 import com.herocraftonline.heroes.characters.skill.ActiveSkill;
@@ -21,7 +20,6 @@ import org.bukkit.entity.Player;
 import org.bukkit.util.Vector;
 
 public class SkillHealingBloom extends ActiveSkill {
-    
 
     public SkillHealingBloom(Heroes plugin) {
         super(plugin, "HealingBloom");
@@ -40,7 +38,6 @@ public class SkillHealingBloom extends ActiveSkill {
 
         double healing = SkillConfigManager.getUseSetting(hero, this, SkillSetting.HEALING_TICK, 17, false);
         healing = getScaledHealing(hero, healing);
-
 
         String formattedHealing = Util.decFormat.format(healing * ((double) duration / (double) period));
         String formattedSelfHealing = Util.decFormat.format((healing * ((double) duration / (double) period)) * Heroes.properties.selfHeal);
@@ -87,22 +84,22 @@ public class SkillHealingBloom extends ActiveSkill {
                     if (member.getPlayer().getLocation().distanceSquared(playerLocation) <= radiusSquared) {
                         // Add the effect
                         member.addEffect(new PeriodicHealEffect(this, "HealingBloom", player, period, duration, healing));
-                        playHoTVisual(member.getEntity(), duration);
+                        playVisuals(member.getEntity(), duration);
                     }
                 }
             }
-        }
-        else {
+        } else {
             // Add the effect to just the player
             hero.addEffect(new PeriodicHealEffect(this, "HealingBloom", player, period, duration, healing));
-            playHoTVisual(hero.getEntity(), duration);
+            playVisuals(hero.getEntity(), duration);
 
         }
 
         return SkillResult.NORMAL;
     }
-    public void playHoTVisual(LivingEntity target, int duration) {
-         EffectManager effectManager = th;
+
+    public void playVisuals(LivingEntity target, int duration) {
+        EffectManager effectManager = new EffectManager(plugin);
         final int durationTicks = (int) duration / 50;
         final int displayPeriod = 2;
 
@@ -121,6 +118,4 @@ public class SkillHealingBloom extends ActiveSkill {
         effectManager.start(visualEffect);
         effectManager.disposeOnTermination();
     }
-
-
 }
