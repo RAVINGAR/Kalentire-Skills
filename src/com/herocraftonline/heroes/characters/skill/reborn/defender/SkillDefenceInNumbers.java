@@ -12,6 +12,7 @@ import com.herocraftonline.heroes.characters.effects.PeriodicEffect;
 import com.herocraftonline.heroes.characters.party.HeroParty;
 import com.herocraftonline.heroes.characters.skill.*;
 import com.herocraftonline.heroes.util.Util;
+import org.bukkit.Bukkit;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -26,6 +27,7 @@ public class SkillDefenceInNumbers extends PassiveSkill {
         super(plugin, "DefenceInNumbers");
         setDescription("While in a party reduces the incoming damage to the party by $1% per ally$2$3.$4$5 Allies must be within $6 blocks to be effected. The effect is reapplied every $7s.");
         setTypes(SkillType.BUFFING, SkillType.AREA_OF_EFFECT, SkillType.ABILITY_PROPERTY_PHYSICAL, SkillType.ABILITY_PROPERTY_MAGICAL);
+        Bukkit.getServer().getPluginManager().registerEvents(new DefenceInNumbersListener(this), plugin);
     }
 
     @Override
@@ -147,6 +149,12 @@ public class SkillDefenceInNumbers extends PassiveSkill {
 
     public class DefenceInNumbersListener implements Listener {
 
+        private Skill skill;
+
+        public DefenceInNumbersListener(Skill skill) {
+            this.skill = skill;
+        }
+
         @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
         public void onLeaveParty(HeroLeavePartyEvent event){
             Hero joiningHero = event.getHero();
@@ -179,7 +187,6 @@ public class SkillDefenceInNumbers extends PassiveSkill {
                 return;
 
             Player defendingPlayer = defendingHero.getPlayer();
-            Skill skill = SkillDefenceInNumbers.this;
 
             int requiredAllyNumber = SkillConfigManager.getUseSetting(defendingHero, skill, "required-ally-number", 0,true);
             long period = SkillConfigManager.getUseSetting(defendingHero, skill, SkillSetting.PERIOD.node(), 5000,false);
@@ -211,7 +218,7 @@ public class SkillDefenceInNumbers extends PassiveSkill {
                 return;
 
             Hero hero = (Hero) event.getEntity();
-            int requiredAllyNumber = SkillConfigManager.getUseSetting(hero, SkillDefenceInNumbers.this,
+            int requiredAllyNumber = SkillConfigManager.getUseSetting(hero, skill,
                     "required-ally-number", 0,true);
             if (hero.hasEffect("DefenceInNumbers") && hero.getParty().getMembers().size() >= requiredAllyNumber){
                 event.setDamage(event.getDamage() * getIncomingMultiplier(hero));
@@ -227,7 +234,7 @@ public class SkillDefenceInNumbers extends PassiveSkill {
                 return;
 
             Hero hero = (Hero) event.getEntity();
-            int requiredAllyNumber = SkillConfigManager.getUseSetting(hero, SkillDefenceInNumbers.this,
+            int requiredAllyNumber = SkillConfigManager.getUseSetting(hero, skill,
                     "required-ally-number", 0,true);
             if (hero.hasEffect("DefenceInNumbers") && hero.getParty().getMembers().size() >= requiredAllyNumber){
                 event.setDamage(event.getDamage() * getIncomingMultiplier(hero));
