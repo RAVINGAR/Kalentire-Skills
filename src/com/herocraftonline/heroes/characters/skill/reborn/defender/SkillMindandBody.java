@@ -6,7 +6,10 @@ import com.herocraftonline.heroes.characters.Hero;
 import com.herocraftonline.heroes.characters.effects.Effect;
 import com.herocraftonline.heroes.characters.effects.EffectType;
 import com.herocraftonline.heroes.characters.effects.common.SpeedEffect;
-import com.herocraftonline.heroes.characters.skill.*;
+import com.herocraftonline.heroes.characters.skill.SkillConfigManager;
+import com.herocraftonline.heroes.characters.skill.SkillSetting;
+import com.herocraftonline.heroes.characters.skill.SkillType;
+import com.herocraftonline.heroes.characters.skill.TargettedSkill;
 import org.bukkit.Sound;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.LivingEntity;
@@ -27,7 +30,7 @@ public class SkillMindandBody extends TargettedSkill {
     public String getDescription(Hero hero) {
         return getDescription();
     }
-    
+
     @Override
     public ConfigurationSection getDefaultConfig() {
         ConfigurationSection node = super.getDefaultConfig();
@@ -57,8 +60,8 @@ public class SkillMindandBody extends TargettedSkill {
         // Remove impeding effects if any
         boolean removed = false;
         for (Effect effect : targetHero.getEffects()) {
-            if (effect.isType(EffectType.SLOW) || effect.isType(EffectType.VELOCITY_DECREASING)
-                    || effect.isType(EffectType.WALK_SPEED_DECREASING) || effect.isType(EffectType.ROOT)) {
+            if (effect.isType(EffectType.DISPELLABLE) && (effect.isType(EffectType.SLOW) || effect.isType(EffectType.VELOCITY_DECREASING)
+                    || effect.isType(EffectType.WALK_SPEED_DECREASING) || effect.isType(EffectType.ROOT))) {
                 removed = true;
                 targetHero.removeEffect(effect);
             }
@@ -73,12 +76,10 @@ public class SkillMindandBody extends TargettedSkill {
                 broadcastExecuteText(hero, targetPlayer);
                 targetPlayer.getWorld().playSound(targetPlayer.getLocation(), Sound.ENTITY_BAT_DEATH, 0.8F, 1.0F);
             }
-        }
-        else {
+        } else {
             player.sendMessage("There is no effect impeding " + (selfTarget ? "your" : "their") + " movement!");
             return SkillResult.INVALID_TARGET_NO_MSG;
         }
         return SkillResult.NORMAL;
     }
-
 }
