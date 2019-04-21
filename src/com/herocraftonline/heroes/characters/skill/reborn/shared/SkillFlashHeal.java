@@ -73,7 +73,7 @@ public class SkillFlashHeal extends TargettedSkill {
         // silence
         int duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, 5000, false);
         SilenceEffect silence = new SilenceEffect(this, hero.getPlayer(), duration);
-        player.getWorld().playSound(hero.getPlayer().getLocation(), Sound.ENTITY_ENDERMAN_TELEPORT , 0.8F, 1.0F);
+        player.getWorld().playSound(hero.getPlayer().getLocation(), Sound.ENTITY_ENDERMEN_TELEPORT , 0.8F, 1.0F);
         targetHero.addEffect(silence);
 
         return SkillResult.NORMAL;

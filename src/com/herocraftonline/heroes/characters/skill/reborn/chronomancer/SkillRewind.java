@@ -124,7 +124,7 @@ public class SkillRewind extends ActiveSkill implements Passive {
 
     private void playTeleportEffect(Location preTeleportLoc) {
         preTeleportLoc.getWorld().playEffect(preTeleportLoc, Effect.ENDER_SIGNAL, 3);
-        preTeleportLoc.getWorld().playSound(preTeleportLoc, Sound.BLOCK_BEACON_ACTIVATE, 2.0F, 0.7F);
+//        preTeleportLoc.getWorld().playSound(preTeleportLoc, Sound.BLOCK_BEACON_ACTIVATE, 2.0F, 0.7F);
     }
 
     private class RewindTrackerEffect extends PeriodicEffect {

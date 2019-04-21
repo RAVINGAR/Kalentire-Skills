@@ -29,7 +29,6 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.entity.EntityDamageEvent.DamageCause;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.util.Vector;
-import org.jetbrains.annotations.NotNull;
 
 import java.util.*;
 
@@ -90,7 +89,7 @@ public class SkillHook extends ActiveSkill {
         HookProjectile missile = createHookProjectile(hero);
         missile.fireMissile();
 
-        player.getWorld().playSound(player.getLocation(), Sound.ITEM_TRIDENT_RIPTIDE_2, 1.0F, 0.7F);
+//        player.getWorld().playSound(player.getLocation(), Sound.ITEM_TRIDENT_RIPTIDE_2, 1.0F, 0.7F);
 
         return SkillResult.NORMAL;
     }
@@ -261,7 +260,7 @@ public class SkillHook extends ActiveSkill {
             if (!(entity instanceof LivingEntity))
                 return;
 
-            player.getWorld().playSound(player.getLocation(), Sound.ITEM_TRIDENT_HIT, 0.5F, 0.5F);
+//            player.getWorld().playSound(player.getLocation(), Sound.ITEM_TRIDENT_HIT, 0.5F, 0.5F);
 
             LivingEntity target = (LivingEntity)entity;
             CharacterTemplate targetCT = plugin.getCharacterManager().getCharacter(target);
@@ -284,7 +283,7 @@ public class SkillHook extends ActiveSkill {
             hookedEffect.types.add(EffectType.HARMFUL);
             targetCT.addEffect(hookedEffect);
 
-            player.getWorld().spawnParticle(Particle.REDSTONE, target.getEyeLocation(), 5, 0.5F, 0.25F, 0.3F, 1.0F, new Particle.DustOptions(Color.RED, 1));
+            player.getWorld().spawnParticle(Particle.REDSTONE, target.getEyeLocation(), 5, 0.5F, 0.25F, 0.3F, 1.0F);
         }
     }
 
@@ -550,7 +549,6 @@ public class SkillHook extends ActiveSkill {
         return effect;
     }
 
-    @NotNull
     private static LineEffect getBaseHookVisual(EffectManager effectManager) {
         LineEffect effect = new LineEffect(effectManager);
         effect.particle = Particle.CRIT_MAGIC;

@@ -24,7 +24,6 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.util.Vector;
-import org.jetbrains.annotations.NotNull;
 
 public class SkillSpear extends ActiveSkill {
 
@@ -74,7 +73,7 @@ public class SkillSpear extends ActiveSkill {
         SpearProjectile missile = new SpearProjectile(plugin, this, hero, projSize, projVelocity);
         missile.fireMissile();
 
-        player.getWorld().playSound(player.getLocation(), Sound.ITEM_TRIDENT_RIPTIDE_3, 1.0F, 0.7F);
+//        player.getWorld().playSound(player.getLocation(), Sound.ITEM_TRIDENT_RIPTIDE_3, 1.0F, 0.7F);
 
         return SkillResult.NORMAL;
     }
@@ -220,7 +219,6 @@ public class SkillSpear extends ActiveSkill {
         return effect;
     }
 
-    @NotNull
     private LineEffect getBaseSpearVisual(EffectManager effectManager) {
         LineEffect effect = new LineEffect(effectManager);
         effect.particle = Particle.CRIT;

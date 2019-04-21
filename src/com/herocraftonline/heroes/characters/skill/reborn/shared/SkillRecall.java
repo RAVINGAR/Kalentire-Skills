@@ -13,13 +13,7 @@ import com.herocraftonline.heroes.characters.skill.SkillType;
 import com.herocraftonline.heroes.nms.NMSHandler;
 import com.herocraftonline.townships.users.TownshipsUser;
 import com.herocraftonline.townships.users.UserManager;
-import com.sk89q.worldedit.bukkit.BukkitAdapter;
-import com.sk89q.worldguard.LocalPlayer;
-import com.sk89q.worldguard.WorldGuard;
 import com.sk89q.worldguard.bukkit.WorldGuardPlugin;
-import com.sk89q.worldguard.protection.flags.Flags;
-import com.sk89q.worldguard.protection.regions.RegionContainer;
-import com.sk89q.worldguard.protection.regions.RegionQuery;
 import org.apache.commons.lang.StringUtils;
 import org.bukkit.*;
 import org.bukkit.configuration.ConfigurationSection;
@@ -85,7 +79,7 @@ public class SkillRecall extends ActiveSkill implements Listener {
 
     public ConfigurationSection getDefaultConfig() {
         ConfigurationSection config = super.getDefaultConfig();
-        config.set("ignore-region-plugins", false);
+        config.set("ignore-build-permissions", false);
         config.set(SkillSetting.NO_COMBAT_USE.node(), true);
         config.set(SkillSetting.DELAY.node(), 10000);
         config.set(SkillSetting.REAGENT.node(), 331);
@@ -309,11 +303,11 @@ public class SkillRecall extends ActiveSkill implements Listener {
             return SkillResult.SKIP_POST_USAGE;
         }
 
-        boolean ignoreRegionPlugins = skillSettings.getBoolean("ignore-region-plugins");
-        Location teleportLocation = new Location(world, xyzyp[0], xyzyp[1], xyzyp[2], (float) xyzyp[3], (float) xyzyp[4]);
+        boolean ignoreBuildPermissions = skillSettings.getBoolean("ignore-build-permissions");
+        Location teleLoc = new Location(world, xyzyp[0], xyzyp[1], xyzyp[2], (float) xyzyp[3], (float) xyzyp[4]);
 
         // Validate Towny
-        if (towny && !ignoreRegionPlugins) {
+        if (towny && !ignoreBuildPermissions) {
            /* // Check if the block in question is a Town Block, don't want Towny perms to interfere if we're not in a town... just in case.
             TownBlock tBlock = TownyUniverse.getTownBlock(teleportLocation);
             if(tBlock != null) {
@@ -339,21 +333,17 @@ public class SkillRecall extends ActiveSkill implements Listener {
         }
 
         // Validate Townships
-        if (townships && !ignoreRegionPlugins) {
+        if (townships && !ignoreBuildPermissions) {
             TownshipsUser user = UserManager.fromOfflinePlayer(player);
-            if (!user.canBuild(teleportLocation)) {
+            if (!user.canBuild(teleLoc)) {
                 player.sendMessage("You cannot Recall to a Region you have no access to!");
                 return SkillResult.FAIL;
             }
         }
 
         // Validate WorldGuard
-        if (worldguard && !ignoreRegionPlugins) {
-            LocalPlayer wgPlayer = wgp.wrapPlayer(player);
-            RegionContainer container = WorldGuard.getInstance().getPlatform().getRegionContainer();
-            com.sk89q.worldedit.util.Location wgTeleportLoc = BukkitAdapter.adapt(teleportLocation);
-            RegionQuery query = container.createQuery();
-            if (!query.testState(wgTeleportLoc, wgPlayer, Flags.BUILD)) {
+        if (worldguard && !ignoreBuildPermissions) {
+            if (!wgp.canBuild(player, teleLoc)) {
                 player.sendMessage("You cannot Recall to a Region you have no access to!");
                 return SkillResult.FAIL;
             }
@@ -364,7 +354,7 @@ public class SkillRecall extends ActiveSkill implements Listener {
 
             player.getWorld().playSound(player.getLocation(), Sound.ENTITY_WITHER_SPAWN, 0.5F, 1.0F);
             //hero.getPlayer().getWorld().spigot().playEffect(player.getLocation(), Effect.COLOURED_DUST, 0, 0, 0.2F, 1.0F, 0.2F, 0.0F, 50, 12);
-            hero.getPlayer().getWorld().spawnParticle(Particle.REDSTONE, player.getLocation(), 50, 0.2, 1, 0.2, 0, new Particle.DustOptions(Color.ORANGE, 1));
+            hero.getPlayer().getWorld().spawnParticle(Particle.REDSTONE, player.getLocation(), 50, 0.2, 1, 0.2, 0, Color.ORANGE);
         }
 
         // Removed for now until I have time to properly test it.
@@ -377,11 +367,11 @@ public class SkillRecall extends ActiveSkill implements Listener {
         //     }
         // }, 5L);
 
-        player.teleport(teleportLocation);
+        player.teleport(teleLoc);
 
-        teleportLocation.getWorld().playSound(teleportLocation, Sound.ENTITY_WITHER_SPAWN, 0.5F, 1.0F);
+        teleLoc.getWorld().playSound(teleLoc, Sound.ENTITY_WITHER_SPAWN, 0.5F, 1.0F);
         //teleportLocation.getWorld().spigot().playEffect(teleportLocation, Effect.COLOURED_DUST, 0, 0, 0.2F, 1.0F, 0.2F, 0.0F, 50, 12);
-        hero.getPlayer().getWorld().spawnParticle(Particle.REDSTONE, player.getLocation(), 50, 0.2, 1, 0.2, 0, new Particle.DustOptions(Color.ORANGE, 1));
+        hero.getPlayer().getWorld().spawnParticle(Particle.REDSTONE, player.getLocation(), 50, 0.2, 1, 0.2, 0, Color.ORANGE);
 
         return SkillResult.NORMAL;
     }

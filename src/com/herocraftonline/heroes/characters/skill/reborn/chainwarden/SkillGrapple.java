@@ -185,7 +185,7 @@ public class SkillGrapple extends ActiveSkill {
             player.setVelocity(grappleVector);
         }
 
-        player.getWorld().playSound(playerLoc, Sound.ENTITY_MAGMA_CUBE_JUMP, 0.8F, 1.0F);
+        player.getWorld().playSound(playerLoc, Sound.ENTITY_MAGMACUBE_JUMP, 0.8F, 1.0F);
     }
 
     private boolean shouldWeaken(Location targetLoc) {

@@ -157,7 +157,7 @@ public class SkillFeatheredShot extends ActiveSkill {
             types.add(EffectType.DISPELLABLE);
             types.add(EffectType.HARMFUL);
 
-            addPotionEffect(new PotionEffect(PotionEffectType.SLOW_FALLING, (int) (duration / 1000 * 20), slowFallAmplifier));
+//            addPotionEffect(new PotionEffect(PotionEffectType.SLOW_FALLING, (int) (duration / 1000 * 20), slowFallAmplifier));
             addPotionEffect(new PotionEffect(PotionEffectType.JUMP, (int) (duration / 1000 * 20), jumpBoostAmplifier));
         }
     }

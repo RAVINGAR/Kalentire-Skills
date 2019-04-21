@@ -63,7 +63,7 @@ public class SkillBolt extends TargettedSkill {
         float lightningVolume = (float) SkillConfigManager.getUseSetting(hero, this, "lightning-volume", 0.5F, false);
 
         target.getWorld().spigot().strikeLightningEffect(target.getLocation(), true);
-        target.getWorld().playSound(target.getLocation(), Sound.ENTITY_LIGHTNING_BOLT_THUNDER, lightningVolume, 1.0F);
+        target.getWorld().playSound(target.getLocation(), Sound.ENTITY_LIGHTNING_THUNDER, lightningVolume, 1.0F);
         plugin.getDamageManager().addSpellTarget(target, hero, this);
         damageEntity(target, player, damage, DamageCause.MAGIC, false);
 

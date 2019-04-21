@@ -93,18 +93,18 @@ public class SkillBlink extends ActiveSkill {
         }
 
         if (validFinalBlock != null) {
-            Location teleportLocation = validFinalBlock.getLocation().clone();
-            teleportLocation.add(new Vector(.5, 0, .5));
+            Location teleportLoc = validFinalBlock.getLocation().clone();
+            teleportLoc.add(new Vector(.5, 0, .5));
 
             // Set the blink location yaw/pitch to that of the player
-            teleportLocation.setPitch(loc.getPitch());
-            teleportLocation.setYaw(loc.getYaw());
+            teleportLoc.setPitch(loc.getPitch());
+            teleportLoc.setYaw(loc.getYaw());
 
-            player.getWorld().spawnParticle(Particle.REDSTONE, player.getLocation(), 45, 0.6, 1, 0.6, 0.2, new Particle.DustOptions(Color.FUCHSIA, 1));
-            player.teleport(teleportLocation);
+            player.getWorld().spawnParticle(Particle.REDSTONE, player.getLocation(), 45, 0.6, 1, 0.6, 0.2, Color.FUCHSIA);
+            player.teleport(teleportLoc);
             player.getWorld().playEffect(loc, Effect.ENDER_SIGNAL, 3);
-            player.getWorld().spawnParticle(Particle.REDSTONE, player.getLocation(), 45, 0.6, 1, 0.6, 0.2, new Particle.DustOptions(Color.FUCHSIA, 1));
-            player.getWorld().playSound(loc, Sound.ENTITY_ENDERMAN_TELEPORT, 0.8F, 1.0F);
+            player.getWorld().spawnParticle(Particle.REDSTONE, player.getLocation(), 45, 0.6, 1, 0.6, 0.2, Color.FUCHSIA);
+            player.getWorld().playSound(loc, Sound.ENTITY_ENDERMEN_TELEPORT, 0.8F, 1.0F);
 
             return SkillResult.NORMAL;
         } else {

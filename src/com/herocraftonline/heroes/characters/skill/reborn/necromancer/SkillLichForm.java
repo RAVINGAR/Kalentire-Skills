@@ -34,7 +34,7 @@ import java.util.logging.Level;
 
 public class SkillLichForm extends ActiveSkill {
     private static String toggleableEffectName = "LichForm";
-    private static final Material noDisguiseLibTransformMaterial = Material.SKELETON_SKULL;
+    private static final Material noDisguiseLibTransformMaterial = Material.SKULL;
 
     private boolean disguiseApiLoaded = false;
     private String applyText;

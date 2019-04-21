@@ -126,7 +126,9 @@ public class SkillImpale extends TargettedSkill {
 
         player.getWorld().playSound(player.getLocation(), Sound.ENTITY_GENERIC_HURT, 1.0F, 1.0F);
         player.getWorld().spawnParticle(Particle.CRIT, target.getLocation().add(0, 0.5, 0), 75, 0, 0, 0, 1);
-        player.getWorld().spawnParticle(Particle.BLOCK_CRACK, target.getLocation().add(0, 0.5, 0), 45, 0.3, 0.2, 0.3, 0.5, Bukkit.createBlockData(Material.NETHER_WART_BLOCK));
+        player.getWorld().spawnParticle(Particle.BLOCK_CRACK, target.getLocation().add(0, 0.5, 0), 45, 0.3, 0.2, 0.3, 0.5
+//                ,Bukkit.createBlockData(Material.NETHER_WART_BLOCK)
+        );
 
         return SkillResult.NORMAL;
     }

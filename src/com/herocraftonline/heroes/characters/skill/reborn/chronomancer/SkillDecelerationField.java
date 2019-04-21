@@ -109,7 +109,7 @@ public class SkillDecelerationField extends TargettedLocationSkill {
         DeceleratedFieldEmitterEffect emitterEffect = new DeceleratedFieldEmitterEffect(this, player, pulsePeriod, duration, location, radius, percentDecrease, projectileVMulti);
         hero.addEffect(emitterEffect);
 
-        player.getWorld().playSound(player.getLocation(), Sound.BLOCK_BEACON_DEACTIVATE, 2.0F, 0.533F);
+//        player.getWorld().playSound(player.getLocation(), Sound.BLOCK_BEACON_DEACTIVATE, 2.0F, 0.533F);
 
         return SkillResult.NORMAL;
     }

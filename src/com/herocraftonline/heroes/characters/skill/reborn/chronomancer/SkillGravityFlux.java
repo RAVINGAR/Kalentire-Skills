@@ -156,13 +156,13 @@ public class SkillGravityFlux extends TargettedLocationSkill {
         @Override
         public void tickMonster(Monster monster) {
             LivingEntity ent = monster.getEntity();
-            ent.getWorld().playSound(ent.getLocation(), Sound.BLOCK_BEACON_AMBIENT, 1.4F, 2F);
+//            ent.getWorld().playSound(ent.getLocation(), Sound.BLOCK_BEACON_AMBIENT, 1.4F, 2F);
         }
 
         @Override
         public void tickHero(Hero hero) {
             Player player = hero.getPlayer();
-            player.getWorld().playSound(player.getLocation(), Sound.BLOCK_BEACON_AMBIENT, 1.4F, 2F);
+//            player.getWorld().playSound(player.getLocation(), Sound.BLOCK_BEACON_AMBIENT, 1.4F, 2F);
         }
 
         private void applyVisuals(LivingEntity target) {

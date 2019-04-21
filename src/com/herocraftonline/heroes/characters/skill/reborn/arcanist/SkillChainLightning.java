@@ -16,7 +16,6 @@ import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.entity.EntityDamageEvent.DamageCause;
 import org.bukkit.util.Vector;
-import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -138,7 +137,7 @@ public class SkillChainLightning extends TargettedSkill {
         }
 
         private void playVisualEffects(LivingEntity from, LivingEntity to) {
-            to.getWorld().playSound(to.getLocation(), Sound.ENTITY_LIGHTNING_BOLT_THUNDER, lightningVolume, 1.8F);
+            to.getWorld().playSound(to.getLocation(), Sound.ENTITY_LIGHTNING_THUNDER, lightningVolume, 1.8F);
 
             double randomX = ThreadLocalRandom.current().nextDouble(-0.035, 0.035);
             double randomZ = ThreadLocalRandom.current().nextDouble(-0.035, 0.035);
@@ -164,7 +163,6 @@ public class SkillChainLightning extends TargettedSkill {
             effectManager.start(bottom);
         }
 
-        @NotNull
         private LineEffect getBaseLightningEffect(double randomX, double randomZ) {
             LineEffect lightning = new LineEffect(effectManager);
             lightning.offset = new Vector(0, -0.5, 0);

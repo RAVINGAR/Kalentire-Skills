@@ -14,7 +14,9 @@ import org.bukkit.*;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
 import org.bukkit.configuration.ConfigurationSection;
-import org.bukkit.entity.*;
+import org.bukkit.entity.EnderCrystal;
+import org.bukkit.entity.EntityType;
+import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
@@ -25,7 +27,6 @@ import org.bukkit.event.entity.EntityExplodeEvent;
 import org.bukkit.event.hanging.HangingBreakEvent;
 import org.bukkit.event.server.PluginDisableEvent;
 import org.bukkit.util.BlockIterator;
-import org.bukkit.util.BoundingBox;
 import org.bukkit.util.Vector;
 
 import java.util.*;
@@ -381,12 +382,9 @@ public class SkillSummonEnderCrystal extends TargettedLocationSkill {
         @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
         public void onHangingBreak(HangingBreakEvent event) {
             Block block = event.getEntity().getLocation().getBlock();
-            BoundingBox box = event.getEntity().getBoundingBox();
 
             List<Block> activeBlocks = getAllActiveBlocksIncludingEnderCrystals();
-            if (activeBlocks.contains(block)
-                    || activeBlocks.stream().anyMatch((changedBlock) -> changedBlock.getBoundingBox().contains(box))
-                    || activeBlocks.stream().anyMatch((changedBlock) -> box.contains(changedBlock.getBoundingBox()))) {
+            if (activeBlocks.contains(block)) {
                 event.setCancelled(true);
             }
         }

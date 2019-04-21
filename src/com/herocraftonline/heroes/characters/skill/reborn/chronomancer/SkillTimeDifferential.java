@@ -17,7 +17,6 @@ import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.entity.EntityDamageEvent.DamageCause;
-import org.jetbrains.annotations.NotNull;
 
 public class SkillTimeDifferential extends TargettedSkill {
 
@@ -110,8 +109,9 @@ public class SkillTimeDifferential extends TargettedSkill {
                 if (target.getHealth() < 0 || target.isDead())
                     return;
 
+                // TODO: Better sound.
                 if (targetCT.tryHeal(hero, skill, finalHealing))
-                    world.playSound(loc, Sound.BLOCK_NOTE_BLOCK_HARP, 1.0f, 1.0F);
+                    world.playSound(loc, Sound.BLOCK_NOTE_HARP, 1.0f, 1.0F);
             }
         };
 
@@ -119,7 +119,6 @@ public class SkillTimeDifferential extends TargettedSkill {
         em.disposeOnTermination();
     }
 
-    @NotNull
     private SphereEffect buildBaseVisualEffect(EffectManager em, LivingEntity target, int delaySeconds) {
         SphereEffect visualEffect = new SphereEffect(em);
 

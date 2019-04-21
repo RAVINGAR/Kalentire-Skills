@@ -100,7 +100,7 @@ public class SkillLungingBite extends ActiveSkill {
 
         final Vector velocity = player.getLocation().getDirection().clone().setY(0.0D).multiply(speedMult + boost);
         player.getWorld().spawnParticle(Particle.CLOUD, player.getLocation(), 25, 0, 0.1, 0, 0.5);
-        player.getWorld().playSound(player.getLocation(), Sound.ENTITY_ENDER_DRAGON_FLAP, 1.0F, 1.0F);
+        player.getWorld().playSound(player.getLocation(), Sound.ENTITY_ENDERDRAGON_FLAP, 1.0F, 1.0F);
 
         final ArrayList<LivingEntity> lungeEntitiesToHit = new ArrayList<>();
         Skill skill = this;
@@ -129,7 +129,7 @@ public class SkillLungingBite extends ActiveSkill {
                     lungeEntitiesToHit.add(target);
 
                     damageEntity(target, player, damage, EntityDamageEvent.DamageCause.ENTITY_ATTACK, false);
-                    player.getWorld().playSound(player.getLocation(), Sound.ENTITY_PHANTOM_BITE, 1.0F, 1.0F);
+                    player.getWorld().playSound(player.getLocation(), Sound.ENTITY_EVOCATION_FANGS_ATTACK, 1.0F, 1.0F);
 
                     if (target.isDead()) {
                         hero.heal(damage / 2);

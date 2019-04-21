@@ -126,7 +126,9 @@ public class SkillGust extends TargettedSkill {
 
         broadcastExecuteText(hero, target);
         
-        target.getWorld().spawnParticle(Particle.BLOCK_CRACK, target.getLocation(), 75, 0.2, 0.2, 0.2, 0.1, Bukkit.createBlockData(Material.DIRT));
+        target.getWorld().spawnParticle(Particle.BLOCK_CRACK, target.getLocation(), 75, 0.2, 0.2, 0.2, 0.1
+//                , Bukkit.createBlockData(Material.DIRT)
+        );
         target.getWorld().playSound(target.getLocation(), Sound.BLOCK_GRAVEL_HIT, 7.0F, 0.6F);
 
         return SkillResult.NORMAL;

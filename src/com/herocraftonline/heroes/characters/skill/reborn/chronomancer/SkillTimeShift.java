@@ -123,8 +123,8 @@ public class SkillTimeShift extends TargettedSkill {
 
         World world = target.getWorld();
         Location location = target.getLocation();
-        world.spawnParticle(Particle.REDSTONE, location, 45, 0.6, 1, 0.6, 0, new Particle.DustOptions(Color.YELLOW, 1));
-        world.playSound(location, Sound.BLOCK_BEACON_DEACTIVATE, 0.5F, 2.0F);
+        world.spawnParticle(Particle.REDSTONE, location, 5, 0.6, 1, 0.6, 0, Color.YELLOW);
+//        world.playSound(location, Sound.BLOCK_BEACON_DEACTIVATE, 0.5F, 2.0F);
         return SkillResult.NORMAL;
     }
 
@@ -152,8 +152,8 @@ public class SkillTimeShift extends TargettedSkill {
 
         World world = target.getWorld();
         Location location = target.getLocation();
-        world.spawnParticle(Particle.REDSTONE, location, 45, 0.6, 1, 0.6, 0, new Particle.DustOptions(Color.TEAL, 1));
-        world.playSound(location, Sound.BLOCK_BEACON_ACTIVATE, 1.0F, 1.7F);
+        world.spawnParticle(Particle.REDSTONE, location, 5, 0.6, 1, 0.6, 0, Color.TEAL);
+//        world.playSound(location, Sound.BLOCK_BEACON_ACTIVATE, 1.0F, 1.7F);
         return SkillResult.NORMAL;
     }
 

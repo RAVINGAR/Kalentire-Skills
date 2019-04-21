@@ -12,6 +12,7 @@ import com.herocraftonline.heroes.characters.skill.*;
 import com.herocraftonline.heroes.util.Util;
 import org.bukkit.*;
 import org.bukkit.block.Block;
+import org.bukkit.block.BlockFace;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.*;
 import org.bukkit.event.EventHandler;
@@ -188,7 +189,8 @@ public class SkillFireStream extends ActiveSkill {
             if (event.getHitBlock() != null) {
                 Block hitBlock = event.getHitBlock();
 
-                final Block fireBlock = hitBlock.getRelative(event.getHitBlockFace());
+                Vector directionCameFrom = projectile.getLocation().getDirection().normalize().multiply(-1);
+                final Block fireBlock = hitBlock.getRelative(directionCameFrom.getBlockX(), directionCameFrom.getBlockY(), directionCameFrom.getBlockZ());
                 Util.setBlockOnFireIfAble(fireBlock, 0.7);
             }
 

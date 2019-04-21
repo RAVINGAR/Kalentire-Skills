@@ -27,7 +27,6 @@ import org.bukkit.event.hanging.HangingBreakEvent;
 import org.bukkit.event.player.PlayerTeleportEvent;
 import org.bukkit.event.server.PluginDisableEvent;
 import org.bukkit.util.BlockIterator;
-import org.bukkit.util.BoundingBox;
 import org.bukkit.util.Vector;
 
 import java.util.*;
@@ -404,14 +403,14 @@ public class SkillOvergrowth extends TargettedLocationSkill {
                 boolean isUpperLevel = block.getY() >= (data.getTopY() - (data.getDistance() * 0.15d));
 
                 if (isTopLevel) {
-                    block.setType(Material.OAK_LEAVES);
+                    block.setType(Material.LEAVES);
                 } else {
                     int chance = random.nextInt(100);
                     if (chance >= 20) {
                         if (isUpperLevel) {
-                            block.setType(Material.OAK_LEAVES);
+                            block.setType(Material.LEAVES);
                         } else if (isBlockWithinFlatCircle(block, data.getCenterFor(block), (int) (data.radius * 0.60))) {
-                            block.setType(Material.OAK_WOOD);
+                            block.setType(Material.LOG);
                         } else {
                             continue;
                         }
@@ -533,11 +532,12 @@ public class SkillOvergrowth extends TargettedLocationSkill {
             @EventHandler(priority = EventPriority.LOWEST, ignoreCancelled = true)
             public void onHangingBreak(HangingBreakEvent event) {
                 Block block = event.getEntity().getLocation().getBlock();
-                BoundingBox box = event.getEntity().getBoundingBox();
+//                BoundingBox box = event.getEntity().getBoundingBox();
 
                 if (changedBlocks.contains(block)
-                        || changedBlocks.stream().anyMatch((changedBlock)-> changedBlock.getBoundingBox().contains(box))
-                        || changedBlocks.stream().anyMatch((changedBlock)-> box.contains(changedBlock.getBoundingBox()))) {
+//                        || changedBlocks.stream().anyMatch((changedBlock)-> changedBlock.getBoundingBox().contains(box))
+//                        || changedBlocks.stream().anyMatch((changedBlock)-> box.contains(changedBlock.getBoundingBox()))
+                ) {
                     event.setCancelled(true);
                 }
             }

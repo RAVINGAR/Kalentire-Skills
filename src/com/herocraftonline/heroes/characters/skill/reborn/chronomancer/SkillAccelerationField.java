@@ -102,7 +102,7 @@ public class SkillAccelerationField extends TargettedLocationSkill {
         AcceleratedFieldEmitterEffect emitterEffect = new AcceleratedFieldEmitterEffect(this, player, pulsePeriod, duration, targetLoc, radius, percentIncrease, projectileVMulti);
         hero.addEffect(emitterEffect);
 
-        player.getWorld().playSound(player.getLocation(), Sound.BLOCK_BEACON_ACTIVATE, 2.0F, 2.0F);
+//        player.getWorld().playSound(player.getLocation(), Sound.BLOCK_BEACON_ACTIVATE, 2.0F, 2.0F);
 
         return SkillResult.NORMAL;
     }

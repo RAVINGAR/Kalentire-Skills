@@ -143,7 +143,7 @@ public class SkillAetherOrb extends ActiveSkill {
             orbVisual.asynchronous = true;
 
             effectManager.start(orbVisual);
-            orbLocation.getWorld().playSound(orbLocation, Sound.ENTITY_ILLUSIONER_CAST_SPELL, 0.15f, 0.0001f);
+            orbLocation.getWorld().playSound(orbLocation, Sound.ENTITY_ILLUSION_ILLAGER_CAST_SPELL, 0.15f, 0.0001f);
         }
 
         @Override

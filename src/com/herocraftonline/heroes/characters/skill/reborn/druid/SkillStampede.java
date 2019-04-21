@@ -38,7 +38,7 @@ public class SkillStampede extends ActiveSkill {
 
     private final String minionEffectName = "Stampede";
     private boolean disguiseApiLoaded;
-    private final EntityType animalArray[] = {EntityType.COW, EntityType.PIG, EntityType.LLAMA, EntityType.SHEEP, EntityType.TURTLE};
+    private final EntityType animalArray[] = {EntityType.COW, EntityType.PIG, EntityType.LLAMA, EntityType.SHEEP, EntityType.STRAY, EntityType.OCELOT};
 
     public SkillStampede(Heroes plugin) {
         super(plugin, "Stampede");

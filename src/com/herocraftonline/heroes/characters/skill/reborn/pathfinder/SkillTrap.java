@@ -113,8 +113,8 @@ public class SkillTrap extends SkillBaseGroundEffect {
                 targetCT.addEffect(effect);
 
                 Location targetLocation = target.getLocation();
-                targetLocation.getWorld().playSound(targetLocation, Sound.BLOCK_WOODEN_PRESSURE_PLATE_CLICK_ON, 0.8F, 0.5F);
-                targetLocation.getWorld().playSound(targetLocation, Sound.BLOCK_WOODEN_PRESSURE_PLATE_CLICK_OFF, 0.8F, 0.5F);
+                targetLocation.getWorld().playSound(targetLocation, Sound.BLOCK_WOOD_PRESSUREPLATE_CLICK_ON, 0.8F, 0.5F);
+                targetLocation.getWorld().playSound(targetLocation, Sound.BLOCK_WOOD_PRESSUREPLATE_CLICK_OFF, 0.8F, 0.5F);
                 hero.removeEffect(hero.getEffect(skill.getName()));
             }
         });

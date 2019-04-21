@@ -1,37 +1,31 @@
 package com.herocraftonline.heroes.characters.skill.reborn.enderbeast;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.logging.Level;
-
+import com.herocraftonline.heroes.Heroes;
+import com.herocraftonline.heroes.api.SkillResult;
+import com.herocraftonline.heroes.characters.Hero;
 import com.herocraftonline.heroes.characters.effects.EffectType;
 import com.herocraftonline.heroes.characters.effects.PeriodicEffect;
-import com.herocraftonline.heroes.characters.effects.common.WalkSpeedIncreaseEffect;
-import com.herocraftonline.heroes.characters.equipment.*;
+import com.herocraftonline.heroes.characters.equipment.EquipMethod;
+import com.herocraftonline.heroes.characters.equipment.EquipmentChangedEvent;
+import com.herocraftonline.heroes.characters.equipment.EquipmentType;
 import com.herocraftonline.heroes.characters.skill.*;
 import com.herocraftonline.heroes.chat.ChatComponents;
 import com.herocraftonline.heroes.util.Util;
-import com.herocraftonline.heroes.characters.equipment.EquipmentChangedEvent;
-import org.bukkit.*;
-import org.bukkit.configuration.ConfigurationSection;
-import org.bukkit.entity.Entity;
-import org.bukkit.entity.LivingEntity;
-import org.bukkit.entity.Player;
+import org.bukkit.Bukkit;
+import org.bukkit.Location;
+import org.bukkit.Material;
 import org.bukkit.Sound;
+import org.bukkit.configuration.ConfigurationSection;
+import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
-import org.bukkit.event.entity.EntityDamageEvent.DamageCause;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.PlayerInventory;
 import org.bukkit.inventory.meta.ItemMeta;
-import org.bukkit.potion.PotionEffect;
-import org.bukkit.potion.PotionEffectType;
-import org.bukkit.util.Vector;
-import com.herocraftonline.heroes.Heroes;
-import com.herocraftonline.heroes.api.SkillResult;
-import com.herocraftonline.heroes.characters.Hero;
+
+import java.util.logging.Level;
 
 public class SkillTransform extends ActiveSkill {
 
@@ -134,7 +128,7 @@ public class SkillTransform extends ActiveSkill {
             Player player = hero.getPlayer();
             PlayerInventory inventory = player.getInventory();
 
-            ItemStack transformedHead = new ItemStack(Material.DRAGON_HEAD);
+            ItemStack transformedHead = new ItemStack(Material.SKULL_ITEM, 1, (short) 5);
             ItemMeta itemmeta = transformedHead.getItemMeta();
             itemmeta.setDisplayName("Transformed");
             itemmeta.setUnbreakable(true);
@@ -188,7 +182,7 @@ public class SkillTransform extends ActiveSkill {
         @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
         public void onEquipmentChanged(EquipmentChangedEvent event) {
             if (event.getType() != EquipmentType.HELMET || event.getOldArmorPiece() == null
-                    || event.getOldArmorPiece().getType() != Material.DRAGON_HEAD
+                    || event.getOldArmorPiece().getType() != Material.SKULL_ITEM
                     || event.getMethod() == EquipMethod.EXPIRING_SKILL_EFFECT) {
                 return;
             }

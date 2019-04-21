@@ -104,8 +104,8 @@ public class SkillDragonSmash extends ActiveSkill implements Listener {
 
         hero.addEffect(new MidDragonSmashEffect(this, player));
 
-        player.playSound(player.getLocation(), Sound.ENTITY_ENDER_DRAGON_FLAP, 0.5f, 0.5f);
-        player.playSound(player.getLocation(), Sound.ENTITY_PHANTOM_FLAP, 0.5f, 0.5f);
+        player.playSound(player.getLocation(), Sound.ENTITY_ENDERDRAGON_FLAP, 0.5f, 0.5f);
+//        player.playSound(player.getLocation(), Sound.ENTITY_PHANTOM_FLAP, 0.5f, 0.5f);
 
         Vector currentVelocity = player.getVelocity();
         player.setVelocity(new Vector(currentVelocity.getX(), currentVelocity.getY() + vPowerUp, currentVelocity.getZ()));

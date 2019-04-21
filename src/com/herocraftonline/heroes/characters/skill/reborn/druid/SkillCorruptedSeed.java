@@ -20,7 +20,6 @@ import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.util.Vector;
-import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
 
@@ -163,7 +162,6 @@ public class SkillCorruptedSeed extends TargettedSkill {
             }
         }
 
-        @NotNull
         private void particleExplodeEffect(LivingEntity target, Color color) {
             EffectManager em = new EffectManager(plugin);
             SphereEffect visualEffect = new SphereEffect(em);
@@ -174,7 +172,7 @@ public class SkillCorruptedSeed extends TargettedSkill {
             final int displayPeriod = 2;
             final double baseRadius = 0.5;
             final double perTickModifier = (double) durationTicks / (double) displayPeriod;
-            final double radiusGain = (radius+1 - baseRadius) / perTickModifier;
+            final double radiusGain = (radius + 1 - baseRadius) / perTickModifier;
 
             DynamicLocation dynamicLoc = new DynamicLocation(target);
             visualEffect.setDynamicOrigin(dynamicLoc);
@@ -192,7 +190,6 @@ public class SkillCorruptedSeed extends TargettedSkill {
             em.disposeOnTermination();
         }
 
-        @NotNull
         private void particleExplodeGreenEffect(LivingEntity target, Color color) {
             EffectManager em = new EffectManager(plugin);
             SphereEffect visualEffect = new SphereEffect(em);
@@ -202,7 +199,7 @@ public class SkillCorruptedSeed extends TargettedSkill {
             final int displayPeriod = 2;
             final double baseRadius = 0.5;
             final double perTickModifier = (double) durationTicks / (double) displayPeriod;
-            final double radiusGain = (radius+1 - baseRadius) / perTickModifier;
+            final double radiusGain = (radius + 1 - baseRadius) / perTickModifier;
 
             DynamicLocation dynamicLoc = new DynamicLocation(target);
             visualEffect.setDynamicOrigin(dynamicLoc);

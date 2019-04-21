@@ -12,7 +12,6 @@ import com.herocraftonline.heroes.characters.skill.reborn.chainwarden.SkillHook.
 import com.herocraftonline.heroes.util.Util;
 import org.bukkit.Color;
 import org.bukkit.Particle;
-import org.bukkit.Particle.DustOptions;
 import org.bukkit.Sound;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.LivingEntity;
@@ -24,7 +23,6 @@ import java.util.Arrays;
 
 public class SkillHemorrhage extends TargettedSkill {
     public static final String skillName = "Hemorrhage";
-    private static final DustOptions exitParticleOptions = new Particle.DustOptions(Color.RED, 2);
 
     public SkillHemorrhage(Heroes plugin) {
         super(plugin, "Hemorrhage");
@@ -85,7 +83,7 @@ public class SkillHemorrhage extends TargettedSkill {
         player.getWorld().playSound(player.getLocation(), Sound.ENTITY_SQUID_HURT, 0.4F, 1.0F);
         // 1.0F is default
         float exitParticleDisplaySpeed = 1.5F;
-        player.getWorld().spawnParticle(Particle.REDSTONE, target.getEyeLocation(), 15, 0.25F, 0.15F, 0.4F, exitParticleDisplaySpeed, exitParticleOptions);
+        player.getWorld().spawnParticle(Particle.REDSTONE, target.getEyeLocation(), 15, 0.25F, 0.15F, 0.4F, exitParticleDisplaySpeed);
 
         return SkillResult.NORMAL;
     }

@@ -145,7 +145,8 @@ public class SkillDualWield extends PassiveSkill {
             addSpellTarget(target, hero);
             damageEntity(target, applier, damage, EntityDamageEvent.DamageCause.ENTITY_ATTACK, false);
 
-            nmsHandler.sendPlayerAnimationPacket(applier, 3);
+            //TODO: Re-Implement in Heroes Reborn Legacy
+//            nmsHandler.sendPlayerAnimationPacket(applier, 3);
             target.getWorld().playSound(target.getLocation(), Sound.ENTITY_GENERIC_HURT, 0.8F, 1.0F);
         }
     }

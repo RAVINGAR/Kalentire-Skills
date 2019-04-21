@@ -192,7 +192,7 @@ public class SkillEnderBreath extends SkillBaseGroundEffect {
             target.teleport(newLocation, PlayerTeleportEvent.TeleportCause.PLUGIN);
             
             targetWorld.playEffect(newLocation, org.bukkit.Effect.ENDER_SIGNAL, 3);
-            targetWorld.playSound(newLocation, Sound.ENTITY_ENDERMAN_TELEPORT, 0.6F, 1.0F);
+            targetWorld.playSound(newLocation, Sound.ENTITY_ENDERMEN_TELEPORT, 0.6F, 1.0F);
         }
 
         @Override

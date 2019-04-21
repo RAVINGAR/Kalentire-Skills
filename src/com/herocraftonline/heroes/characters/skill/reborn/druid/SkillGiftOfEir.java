@@ -5,8 +5,10 @@ import com.herocraftonline.heroes.api.SkillResult;
 import com.herocraftonline.heroes.api.events.HeroRegainManaEvent;
 import com.herocraftonline.heroes.characters.Hero;
 import com.herocraftonline.heroes.characters.Monster;
-import com.herocraftonline.heroes.characters.effects.*;
 import com.herocraftonline.heroes.characters.effects.Effect;
+import com.herocraftonline.heroes.characters.effects.EffectType;
+import com.herocraftonline.heroes.characters.effects.ExpirableEffect;
+import com.herocraftonline.heroes.characters.effects.PeriodicExpirableEffect;
 import com.herocraftonline.heroes.characters.effects.common.RootEffect;
 import com.herocraftonline.heroes.characters.skill.*;
 import com.herocraftonline.heroes.chat.ChatComponents;
@@ -80,7 +82,7 @@ public class SkillGiftOfEir extends ActiveSkill {
         int period = SkillConfigManager.getUseSetting(hero, this, SkillSetting.PERIOD, 1000, false);
         double radius = SkillConfigManager.getUseSetting(hero, this, SkillSetting.RADIUS, 5000, false);
         double radiusSquared = radius * radius;
-        hero.addEffect(new RootEffect(this, player, 100, duration, null ,null));
+        hero.addEffect(new RootEffect(this, player, 100, duration, null, null));
         hero.addEffect(new ManaPoolEffect(this, player, period, duration, radiusSquared));
         hero.addEffect(new InvulnStationaryEffect(this, player, duration, null, expireText));
         Location location = player.getLocation().clone();
@@ -178,16 +180,15 @@ public class SkillGiftOfEir extends ActiveSkill {
                 }
             }
         }
-        private ArrayList<Location> circle(Location centerPoint, int particleAmount, double circleRadius)
-        {
+
+        private ArrayList<Location> circle(Location centerPoint, int particleAmount, double circleRadius) {
             World world = centerPoint.getWorld();
 
             double increment = (2 * Math.PI) / particleAmount;
 
             ArrayList<Location> locations = new ArrayList<>();
 
-            for (int i = 0; i < particleAmount; i++)
-            {
+            for (int i = 0; i < particleAmount; i++) {
                 double angle = i * increment;
                 double x = centerPoint.getX() + (circleRadius * Math.cos(angle));
                 double z = centerPoint.getZ() + (circleRadius * Math.sin(angle));
@@ -198,17 +199,12 @@ public class SkillGiftOfEir extends ActiveSkill {
 
 
         private void applyVisuals(Player player) {
-            for (double r = 1; r < radiusSquared; r++)
-            {
-                ArrayList<Location> particleLocations = circle(player.getLocation(), 15,  5);
+            for (double r = 1; r < radiusSquared; r++) {
+                ArrayList<Location> particleLocations = circle(player.getLocation(), 15, 5);
                 for (int i = 0; i < particleLocations.size(); i++)
-                {
-                    Particle.DustOptions dustOptions = new Particle.DustOptions(Color.AQUA, 2);
-                    player.getWorld().spawnParticle(Particle.REDSTONE, particleLocations.get(i),1, 3, 0.2, 0.5, 0.2, dustOptions);
-                }
+                    player.getWorld().spawnParticle(Particle.REDSTONE, particleLocations.get(i), 1, 3, 0.2, 0.5, 0.2, Color.AQUA);
             }
-            player.getWorld().playSound(player.getLocation(), Sound.BLOCK_BEACON_AMBIENT, 1.0F, 1.2F);
-
+//            player.getWorld().playSound(player.getLocation(), Sound.BLOCK_BEACON_AMBIENT, 1.0F, 1.2F);
         }
 
     }

@@ -95,7 +95,7 @@ public class SkillRetreat extends ActiveSkill {
         long duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, 1500, false);
         hero.addEffect(new RetreatBuff(this, player, duration));
 
-        player.getWorld().playSound(player.getLocation(), Sound.ENTITY_ENDER_DRAGON_FLAP, 4.0F, 1.0F);
+        player.getWorld().playSound(player.getLocation(), Sound.ENTITY_ENDERDRAGON_FLAP, 4.0F, 1.0F);
 
         return SkillResult.NORMAL;
     }
@@ -107,7 +107,7 @@ public class SkillRetreat extends ActiveSkill {
         requiredMaterials.add(Material.WATER);
         requiredMaterials.add(Material.LAVA);
         requiredMaterials.add(Material.AIR);
-        requiredMaterials.add(Material.LEGACY_LEAVES);  //TODO: Add every other leaf type maybe?
+        requiredMaterials.add(Material.LEAVES);
         requiredMaterials.add(Material.SOUL_SAND);
     }
 
@@ -121,8 +121,8 @@ public class SkillRetreat extends ActiveSkill {
 
         boolean weakenVelocity = false;
         switch (belowMat) {
-            case LEGACY_WATER:
-            case LEGACY_STATIONARY_LAVA:
+            case STATIONARY_LAVA:
+            case STATIONARY_WATER:
             case WATER:
             case LAVA:
             case SOUL_SAND:

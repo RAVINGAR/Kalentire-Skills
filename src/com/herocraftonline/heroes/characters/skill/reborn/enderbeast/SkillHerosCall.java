@@ -113,7 +113,7 @@ public class SkillHerosCall extends ActiveSkill {
                 continue;
 
             CharacterTemplate targetCT = plugin.getCharacterManager().getCharacter(target);
-            target.getWorld().spawnParticle(Particle.SQUID_INK, target.getLocation().add(0, 1, 0), 5, 1.0F, 0.5F, 1.0F, 0);
+//            target.getWorld().spawnParticle(Particle.SQUID_INK, target.getLocation().add(0, 1, 0), 5, 1.0F, 0.5F, 1.0F, 0);
             if (targetCT.hasEffect(debuffEffectName))
                 targetCT.removeEffect(hero.getEffect(debuffEffectName));
 
@@ -127,8 +127,7 @@ public class SkillHerosCall extends ActiveSkill {
 
         hero.addEffect(new HeroicCallingEffect(this, player, duration + 1000, actualCallTargets));
 
-        //player.getWorld().playSound(player.getLocation(), Sound.ENTITY_WOLF_HOWL, 0.5F, 0.8F);
-        player.getWorld().playSound(player.getLocation(), Sound.ENTITY_ENDER_DRAGON_AMBIENT, 0.5f, 0.5f);
+        player.getWorld().playSound(player.getLocation(), Sound.ENTITY_ENDERDRAGON_AMBIENT, 0.5f, 0.5f);
 
         return SkillResult.NORMAL;
     }

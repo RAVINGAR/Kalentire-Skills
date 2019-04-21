@@ -18,10 +18,6 @@ import com.herocraftonline.heroes.characters.equipment.EquipmentType;
 import com.herocraftonline.heroes.characters.skill.*;
 import com.herocraftonline.heroes.chat.ChatComponents;
 import com.herocraftonline.heroes.util.Util;
-import me.libraryaddict.disguise.DisguiseAPI;
-import me.libraryaddict.disguise.disguisetypes.Disguise;
-import me.libraryaddict.disguise.disguisetypes.DisguiseType;
-import me.libraryaddict.disguise.disguisetypes.MobDisguise;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -130,7 +126,7 @@ public class SkillTheWither extends ActiveSkill {
             forceFireTicks(player);
 
             if (disguiseApiLoaded) {
-                disguiseAsWitherSkelly(player);
+//                disguiseAsWitherSkelly(player);
             } else {
                 addWitherSkull(hero, player);
                 player.setFireTicks((int) (getRemainingTime() * 50));
@@ -151,7 +147,7 @@ public class SkillTheWither extends ActiveSkill {
 
             Player player = hero.getPlayer();
             if (disguiseApiLoaded) {
-                removeDisguise(player);
+//                removeDisguise(player);
             } else {
                 removeWitherSkull(player);
             }
@@ -164,32 +160,32 @@ public class SkillTheWither extends ActiveSkill {
             player.setFireTicks(-1);
         }
 
-        private void disguiseAsWitherSkelly(Player player) {
-            if (DisguiseAPI.isDisguised(player)) {
-                removeDisguise(player);
-            }
-
-            MobDisguise disguise = new MobDisguise(DisguiseType.getType(EntityType.WITHER_SKELETON), true);
-            disguise.setKeepDisguiseOnPlayerDeath(false);
-            disguise.setEntity(player);
-            disguise.setShowName(true);
-            disguise.setReplaceSounds(true);
-            disguise.setHearSelfDisguise(true);
-            disguise.startDisguise();
-        }
-
-        private void removeDisguise(Player player) {
-            if (DisguiseAPI.isDisguised(player)) {
-                Disguise disguise = DisguiseAPI.getDisguise(player);
-                disguise.stopDisguise();
-                disguise.removeDisguise();
-            }
-        }
+//        private void disguiseAsWitherSkelly(Player player) {
+//            if (DisguiseAPI.isDisguised(player)) {
+//                removeDisguise(player);
+//            }
+//
+//            MobDisguise disguise = new MobDisguise(DisguiseType.getType(EntityType.WITHER_SKELETON), true);
+//            disguise.setKeepDisguiseOnPlayerDeath(false);
+//            disguise.setEntity(player);
+//            disguise.setShowName(true);
+//            disguise.setReplaceSounds(true);
+//            disguise.setHearSelfDisguise(true);
+//            disguise.startDisguise();
+//        }
+//
+//        private void removeDisguise(Player player) {
+//            if (DisguiseAPI.isDisguised(player)) {
+//                Disguise disguise = DisguiseAPI.getDisguise(player);
+//                disguise.stopDisguise();
+//                disguise.removeDisguise();
+//            }
+//        }
 
         private void addWitherSkull(Hero hero, Player player) {
             PlayerInventory inventory = player.getInventory();
 
-            ItemStack transformedHead = new ItemStack(Material.WITHER_SKELETON_SKULL);
+            ItemStack transformedHead = new ItemStack(Material.SKULL_ITEM, 1, (short) 1);
             ItemMeta itemMeta = transformedHead.getItemMeta();
             itemMeta.setDisplayName("Wither Form");
             itemMeta.setUnbreakable(true);
@@ -301,7 +297,7 @@ public class SkillTheWither extends ActiveSkill {
         @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
         public void onEquipmentChanged(EquipmentChangedEvent event) {
             if (event.getType() != EquipmentType.HELMET || event.getOldArmorPiece() == null
-                    || event.getOldArmorPiece().getType() != Material.WITHER_SKELETON_SKULL
+                    || event.getOldArmorPiece().getType() != Material.SKULL_ITEM
                     || event.getMethod() == EquipMethod.EXPIRING_SKILL_EFFECT) {
                 return;
             }

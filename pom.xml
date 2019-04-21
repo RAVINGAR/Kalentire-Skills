@@ -4,7 +4,7 @@
     <groupId>com.herocraftonline.heroes</groupId>
     <artifactId>Heroes-Skills</artifactId>
     <packaging>jar</packaging>
-    <version>1.5.0-REBORN-SNAPSHOT</version>
+    <version>1.5.0-LEGACY-SNAPSHOT</version>
     <name>Heroes-Skills</name>
     <url>http://www.herocraftonline.com</url>
 
@@ -67,22 +67,22 @@
             <id>md_5-public</id>
             <url>http://repo.md-5.net/content/groups/public/</url>
         </repository>
-        <repository>
-            <id>heroes-repo</id>
-            <url>http://nexus.hc.to/content/groups/herocraft/</url>
-        </repository>
+        <!--<repository>-->
+            <!--<id>heroes-repo</id>-->
+            <!--<url>http://nexus.hc.to/content/groups/herocraft/</url>-->
+        <!--</repository>-->
     </repositories>
 
     <dependencies>
         <dependency>
             <groupId>com.herocraftonline.heroes</groupId>
             <artifactId>Heroes</artifactId>
-            <version>1.9.2-SNAPSHOT</version>
+            <version>1.9.2-LEGACY-SNAPSHOT</version>
         </dependency>
         <dependency>
             <groupId>com.herocraftonline.heroes</groupId>
             <artifactId>heroes-bukkit-compat-base</artifactId>
-            <version>1.9.2-SNAPSHOT</version>
+            <version>1.9.2-LEGACY-SNAPSHOT</version>
         </dependency>
         <dependency>
             <groupId>com.herocraftonline.heroes</groupId>
@@ -107,9 +107,9 @@
             <type>jar</type>
         </dependency>
         <dependency>
-            <groupId>com.sk89q.worldguard</groupId>
-            <artifactId>worldguard-legacy</artifactId>
-            <version>7.0.0-SNAPSHOT</version>
+            <groupId>com.sk89q</groupId>
+            <artifactId>worldguard</artifactId>
+            <version>6.1</version>
         </dependency>
         <dependency>
             <groupId>mc.alk.tracker</groupId>

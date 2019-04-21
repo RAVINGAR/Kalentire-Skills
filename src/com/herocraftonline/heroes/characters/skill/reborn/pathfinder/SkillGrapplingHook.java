@@ -272,7 +272,7 @@ public class SkillGrapplingHook extends ActiveSkill {
         }
 
         // Grapple!
-        player.getWorld().playSound(playerLoc, Sound.ENTITY_MAGMA_CUBE_JUMP, 0.8F, 1.0F);
+        player.getWorld().playSound(playerLoc, Sound.ENTITY_MAGMACUBE_JUMP, 0.8F, 1.0F);
 
         long exemptionDuration = SkillConfigManager.getUseSetting(hero, this, "ncp-exemption-duration", 0, false);
         if (exemptionDuration > 0) {
@@ -316,7 +316,7 @@ public class SkillGrapplingHook extends ActiveSkill {
         final Vector vec = new Vector(xDir, 0, zDir).multiply(multiplier).setY(0.7);
 
         // Grapple!
-        player.getWorld().playSound(playerLoc, Sound.ENTITY_MAGMA_CUBE_JUMP, 0.8F, 1.0F);
+        player.getWorld().playSound(playerLoc, Sound.ENTITY_MAGMACUBE_JUMP, 0.8F, 1.0F);
         // Let's bypass the nocheat issues...
         NCPUtils.applyExemptions(player, new NCPFunction() {
 
