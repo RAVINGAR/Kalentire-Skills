@@ -1,0 +1,165 @@
+package com.herocraftonline.heroes.characters.skill.skills;
+
+import com.herocraftonline.heroes.Heroes;
+import com.herocraftonline.heroes.api.SkillResult;
+import com.herocraftonline.heroes.attributes.AttributeType;
+import com.herocraftonline.heroes.characters.Hero;
+import com.herocraftonline.heroes.characters.skill.ActiveSkill;
+import com.herocraftonline.heroes.characters.skill.Skill;
+import com.herocraftonline.heroes.characters.skill.SkillConfigManager;
+import com.herocraftonline.heroes.characters.skill.SkillSetting;
+import com.herocraftonline.heroes.characters.skill.SkillType;
+import java.util.HashMap;
+import java.util.Map;
+
+import org.bukkit.*;
+import org.bukkit.configuration.ConfigurationSection;
+import org.bukkit.entity.Entity;
+import org.bukkit.entity.LivingEntity;
+import org.bukkit.entity.Player;
+import org.bukkit.Sound;
+import org.bukkit.entity.Sheep;
+import org.bukkit.event.EventHandler;
+import org.bukkit.event.EventPriority;
+import org.bukkit.event.Listener;
+import org.bukkit.event.entity.EntityDamageEvent;
+import org.bukkit.event.entity.EntityDeathEvent;
+import org.bukkit.event.player.PlayerShearEntityEvent;
+
+public class SkillPlagueBomb
+  extends ActiveSkill
+{
+  private Map<Integer, Player> plagueBombs;
+  
+  public SkillPlagueBomb(Heroes plugin)
+  {
+    super(plugin, "PlagueBomb");
+    setDescription("Throw out a sheep that explodes!");
+    setUsage("/skill plaguebomb");
+    setArgumentRange(0, 0);
+    setIdentifiers("skill plaguebomb");
+    
+    plagueBombs = new HashMap<>();
+    setTypes(SkillType.DAMAGING, SkillType.ABILITY_PROPERTY_MAGICAL);
+    Bukkit.getServer().getPluginManager().registerEvents(new PlagueBombListener(this), plugin);
+  }
+  
+  public ConfigurationSection getDefaultConfig()
+  {
+    ConfigurationSection node = super.getDefaultConfig();
+    node.set(SkillSetting.DAMAGE.node(), 250);
+    node.set(SkillSetting.DAMAGE_INCREASE_PER_INTELLECT.node(), 5);
+    node.set(SkillSetting.RADIUS.node(), 5);
+    node.set("sheep-velocity", 1);
+    node.set("sheep-duration", 10000);
+    return node;
+  }
+  
+  public String getDescription(Hero hero)
+  {
+    return getDescription();
+  }
+  
+  public SkillResult use(Hero hero, String[] args)
+  {
+    Player player = hero.getPlayer();
+    
+    long sheepMultiplier = SkillConfigManager.getUseSetting(hero, this, "sheep-velocity", 1, false);
+    double sheepDuration = SkillConfigManager.getUseSetting(hero, this, "sheep-duration", 10000, false);
+    
+    final Sheep sheep = (Sheep)player.getWorld().spawn(player.getEyeLocation(), Sheep.class);
+    plagueBombs.put(sheep.getEntityId(), player);
+    sheep.setMaxHealth(1000.0D);
+    sheep.setHealth(1000.0D);
+    sheep.setCustomName(ChatColor.DARK_RED + "PlagueBomb");
+    sheep.setVelocity(player.getLocation().getDirection().normalize().multiply((float)sheepMultiplier));
+    
+    Bukkit.getScheduler().scheduleSyncDelayedTask(plugin, new Runnable()
+    {
+      public void run()
+      {
+        if (!sheep.isDead()) {
+          sheepBomb(sheep);
+        }
+      }
+    }, (long) sheepDuration / 1000L * 20L);
+    
+    return SkillResult.NORMAL;
+  }
+  
+  public void sheepBomb(Sheep sheep)
+  {
+    Player player = plagueBombs.get(sheep.getEntityId());
+    Hero hero = plugin.getCharacterManager().getHero(player);
+    sheep.setColor(DyeColor.BLUE);
+    //sheep.getWorld().playEffect(sheep.getLocation(), Effect.EXPLOSION_HUGE, 3);
+    sheep.getWorld().spawnParticle(Particle.EXPLOSION_HUGE, sheep.getLocation(), 3);
+    sheep.getWorld().playSound(sheep.getLocation(), Sound.ENTITY_GENERIC_EXPLODE, 0.8F, 1.0F);
+    sheep.damage(1000.0D);
+    plagueBombs.remove(sheep.getEntityId());
+    
+    int radius = SkillConfigManager.getUseSetting(hero, this, SkillSetting.RADIUS, 5, false);
+    double damage = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE, 250, false);
+    double damageIncrease = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE_INCREASE_PER_INTELLECT, 5, false);
+    damage += damageIncrease * hero.getAttributeValue(AttributeType.INTELLECT);
+    for (Entity entity : sheep.getNearbyEntities(radius, radius, radius)) {
+      if ((entity instanceof LivingEntity))
+      {
+        LivingEntity target = (LivingEntity)entity;
+        if (damageCheck(player, target))
+        {
+          addSpellTarget(target, hero);
+          damageEntity(target, player, damage, EntityDamageEvent.DamageCause.MAGIC);
+        }
+      }
+    }
+  }
+  
+  private class PlagueBombListener
+    implements Listener
+  {
+    private Skill skill;
+    
+    public PlagueBombListener(Skill skill)
+    {
+      this.skill = skill;
+    }
+    
+    @EventHandler(priority=EventPriority.MONITOR)
+    public void onShear(PlayerShearEntityEvent event)
+    {
+      if ((event.getEntity() instanceof Sheep))
+      {
+        Sheep sheep = (Sheep)event.getEntity();
+        if (plagueBombs.containsKey(sheep.getEntityId())) {
+                event.setCancelled(true);
+        }
+      }
+    }
+    
+    @EventHandler(priority=EventPriority.MONITOR)
+    public void onEntityDeath(EntityDeathEvent event)
+    {
+      if ((event.getEntity() instanceof Sheep))
+      {
+        Sheep sheep = (Sheep)event.getEntity();
+        if (plagueBombs.containsKey(sheep.getEntityId())) {
+          sheepBomb(sheep);
+        }
+      }
+    }
+    
+    @EventHandler(priority=EventPriority.MONITOR)
+    public void onEntityDamage(EntityDamageEvent event)
+    {
+      if ((event.getEntity() instanceof Sheep))
+      {
+        Sheep sheep = (Sheep)event.getEntity();
+        if ((plagueBombs.containsKey(sheep.getEntityId())) &&
+          (!sheep.isDead())) {
+          event.setDamage(1000.0D);
+        }
+      }
+    }
+  }
+}
