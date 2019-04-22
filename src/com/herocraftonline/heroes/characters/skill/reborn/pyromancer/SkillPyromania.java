@@ -120,13 +120,11 @@ public class SkillPyromania extends PassiveSkill {
                 return;
 
             PyromaniaEffect effect = (PyromaniaEffect) event.getDamager().getEffect(skill.getName());
-            Heroes.log(Level.INFO, "Pyromania burn damage increase: " + effect.getDamageIncrease());
             if (effect.getDamageIncrease() <= 0.0)
                 return;
 
             double newDamage = event.getDamage() * (1.0 + effect.getDamageIncrease());
             double damageDifference = (newDamage - event.getDamage());
-            Heroes.log(Level.INFO, "Pyromania - PreDamage: " + event.getDamage() + ", New Damage: " + newDamage);
             if (damageDifference <= 0.0)
                 return;
 

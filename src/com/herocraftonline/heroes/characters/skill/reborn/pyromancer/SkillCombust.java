@@ -88,7 +88,7 @@ public class SkillCombust extends TargettedSkill {
             if (addedDamage > maximumBurningDamage) {
                 addedDamage = maximumBurningDamage;
             }
-            hero.getPlayer().sendMessage(ChatComponents.GENERIC_SKILL + ChatColor.GOLD + "Combust Burning Damage: " + addedDamage);
+            hero.getPlayer().sendMessage("    " + ChatComponents.GENERIC_SKILL + ChatColor.GOLD + "Combust Burning Damage: " + addedDamage);
         }
         damage+= addedDamage;
 

@@ -16,6 +16,8 @@ import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.entity.EntityDamageEvent.DamageCause;
 
+import java.util.logging.Level;
+
 public class SkillPiercingStrike extends TargettedSkill {
 
     public SkillPiercingStrike(Heroes plugin) {

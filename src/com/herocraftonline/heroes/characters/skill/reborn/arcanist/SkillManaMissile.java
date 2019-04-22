@@ -19,6 +19,7 @@ import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
+import org.bukkit.event.Event;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
@@ -91,19 +92,20 @@ public class SkillManaMissile extends PassiveSkill {
                 return;
 
             fireProjectile(player, hero);
+            event.setUseItemInHand(Event.Result.DENY);
         }
 
-        @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
-        public void onWeaponDamage(WeaponDamageEvent event) {
-            if (event.isProjectile() || !(event.getDamager() instanceof Hero))
-                return;
-
-            Hero hero = ((Hero) event.getDamager());
-            if (!validateCanCast(hero))
-                return;
-
-            fireProjectile(hero.getPlayer(), hero);
-        }
+//        @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
+//        public void onWeaponDamage(WeaponDamageEvent event) {
+//            if (event.isProjectile() || !(event.getDamager() instanceof Hero))
+//                return;
+//
+//            Hero hero = ((Hero) event.getDamager());
+//            if (!validateCanCast(hero))
+//                return;
+//
+//            fireProjectile(hero.getPlayer(), hero);
+//        }
 
         private void fireProjectile(Player player, Hero hero) {
             double projSize = SkillConfigManager.getUseSetting(hero, skill, "projectile-size", 0.25, false);

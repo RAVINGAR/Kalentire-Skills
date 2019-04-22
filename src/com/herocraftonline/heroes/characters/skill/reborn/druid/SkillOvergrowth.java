@@ -426,7 +426,8 @@ public class SkillOvergrowth extends TargettedLocationSkill {
                 Location onPillarLoc = new Location(entLoc.getWorld(), entLoc.getX(), data.getTopY() + 1, entLoc.getZ(), entLoc.getYaw(), entLoc.getPitch());
                 entity.teleport(onPillarLoc, PlayerTeleportEvent.TeleportCause.PLUGIN);
                 if (entity instanceof Player) {
-                    entity.sendMessage(ChatComponents.GENERIC_SKILL + ChatColor.GOLD + "You've been transported onto an Overgrowth! Stay on the tree to avoid fall damage!");
+                    entity.sendMessage("    " + ChatComponents.GENERIC_SKILL + ChatColor.GOLD + "You've been caught by an Overgrowth! " +
+                            "Stay on the tree to avoid fall damage!");
                 }
             }
         }

@@ -1,5 +1,13 @@
 package com.herocraftonline.heroes.characters.skill.reborn.shared;
 
+import com.herocraftonline.heroes.Heroes;
+import com.herocraftonline.heroes.characters.Hero;
+import com.herocraftonline.heroes.characters.effects.EffectType;
+import com.herocraftonline.heroes.characters.effects.ExpirableEffect;
+import com.herocraftonline.heroes.characters.skill.*;
+import com.herocraftonline.heroes.chat.ChatComponents;
+import com.herocraftonline.heroes.nms.NMSHandler;
+import com.herocraftonline.heroes.util.Util;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
@@ -9,7 +17,6 @@ import org.bukkit.block.BlockFace;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.EnderPearl;
 import org.bukkit.entity.Player;
-import org.bukkit.Sound;
 import org.bukkit.event.Event.Result;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
@@ -21,19 +28,6 @@ import org.bukkit.event.player.PlayerTeleportEvent;
 import org.bukkit.event.player.PlayerTeleportEvent.TeleportCause;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.util.Vector;
-
-import com.herocraftonline.heroes.Heroes;
-import com.herocraftonline.heroes.characters.Hero;
-import com.herocraftonline.heroes.characters.effects.EffectType;
-import com.herocraftonline.heroes.characters.effects.ExpirableEffect;
-import com.herocraftonline.heroes.characters.skill.PassiveSkill;
-import com.herocraftonline.heroes.characters.skill.Skill;
-import com.herocraftonline.heroes.characters.skill.SkillConfigManager;
-import com.herocraftonline.heroes.characters.skill.SkillSetting;
-import com.herocraftonline.heroes.characters.skill.SkillType;
-import com.herocraftonline.heroes.chat.ChatComponents;
-import com.herocraftonline.heroes.nms.NMSHandler;
-import com.herocraftonline.heroes.util.Util;
 
 public class SkillEnderPearls extends PassiveSkill {
 
@@ -99,14 +93,17 @@ public class SkillEnderPearls extends PassiveSkill {
 
             if (itemInHand.getType() == Material.ENDER_PEARL) {
                 if (!hero.canUseSkill(skill)) {
-                    player.sendMessage("You are not trained to use Ender Pearls!");
+                    player.sendMessage("    " + ChatComponents.GENERIC_SKILL + "You are not trained to use Ender Pearls!");
                     event.setUseItemInHand(Result.DENY);
                     return;
                 }
 
                 if (hero.hasEffect("EnderPearlUsageCooldownEffect")) {
                     long remainingTime = ((ExpirableEffect) hero.getEffect("EnderPearlUsageCooldownEffect")).getRemainingTime();
-                    player.sendMessage("    " + ChatComponents.GENERIC_SKILL + "You must wait " + ChatColor.WHITE + Util.decFormatCDs.format(remainingTime / 1000.0) + ChatColor.GRAY + "s before you can throw another Ender Pearl.");
+
+                    player.sendMessage("    " + ChatComponents.GENERIC_SKILL + "You must wait " + ChatColor.WHITE
+                            + Util.decFormatCDs.format(remainingTime / 1000.0) + ChatColor.GRAY + "s before you can throw another Ender Pearl.");
+
                     event.setUseItemInHand(Result.DENY);
                     return;
                 }
@@ -128,15 +125,13 @@ public class SkillEnderPearls extends PassiveSkill {
                     if (Util.interactableBlocks.contains(event.getClickedBlock().getType())) {
                         // Dealing with an interactable block. Let them interact with that block instead of throwing the ender pearl.
                         event.setUseItemInHand(Result.DENY);
-                    }
-                    else {
+                    } else {
                         if (applyCooldown) {
                             // The ender pearl will be used in this case. Let's add the cooldown effect to them.
                             hero.addEffect(cdEffect);
                         }
                     }
-                }
-                else {
+                } else {
                     // AIR BLOCK. NO BLOCK VALIDATION
 
                     if (applyCooldown) {
@@ -172,7 +167,7 @@ public class SkillEnderPearls extends PassiveSkill {
                 event.setCancelled(true);       // Cancel the event because we don't want players to be dealt "ender pearl damage"
 
                 Hero hero = plugin.getCharacterManager().getHero(event.getPlayer());
-                if (hero.hasEffectType(EffectType.ROOT)) {
+                if (hero.hasEffectType(EffectType.ROOT) || hero.hasEffectType(EffectType.DISABLE)) {
                     event.getPlayer().sendMessage("    " + ChatComponents.GENERIC_SKILL + "You cannot teleport while rooted!");
                     return;
                 }
@@ -200,8 +195,7 @@ public class SkillEnderPearls extends PassiveSkill {
                             teleportLoc = teleportLoc.subtract(0, 1, 0);
                             teleportLocBlock = teleportLoc.getBlock();
                             teleportLocBlockType = teleportLocBlock.getType();
-                        }
-                        else
+                        } else
                             break;
                     }
                     i++;
@@ -236,7 +230,6 @@ public class SkillEnderPearls extends PassiveSkill {
         }
     }
 
-    // Effect required for implementing an internal cooldown on healing
     private class CooldownEffect extends ExpirableEffect {
         public CooldownEffect(Skill skill, Player applier, long duration) {
             super(skill, "EnderPearlUsageCooldownEffect", applier, duration);

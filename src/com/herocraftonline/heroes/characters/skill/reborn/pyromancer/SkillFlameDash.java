@@ -7,6 +7,7 @@ import com.herocraftonline.heroes.characters.skill.ActiveSkill;
 import com.herocraftonline.heroes.characters.skill.SkillConfigManager;
 import com.herocraftonline.heroes.characters.skill.SkillSetting;
 import com.herocraftonline.heroes.characters.skill.SkillType;
+import com.herocraftonline.heroes.chat.ChatComponents;
 import com.herocraftonline.heroes.util.Util;
 import org.bukkit.*;
 import org.bukkit.block.Block;
@@ -53,14 +54,14 @@ public class SkillFlameDash extends ActiveSkill {
         Player player = hero.getPlayer();
         Location playerLoc = player.getLocation();
         if (playerLoc.getBlockY() > playerLoc.getWorld().getMaxHeight() || playerLoc.getBlockY() < 1) {
-            player.sendMessage("The void prevents you from flame dashing!");
+            player.sendMessage("    " + ChatComponents.GENERIC_SKILL + "The void prevents you from flame dashing!");
             return SkillResult.FAIL;
         }
 
         Material standingBlockType = playerLoc.getBlock().getType();
         Material belowBlockType = playerLoc.getBlock().getRelative(BlockFace.DOWN).getType();
         if (standingBlockType == Material.WATER || belowBlockType == Material.WATER) {
-            player.sendMessage("You cannot flame dash in water!");
+            player.sendMessage("    " + ChatComponents.GENERIC_SKILL + "You cannot flame dash in water!");
             return SkillResult.FAIL;
         }
 
@@ -91,7 +92,7 @@ public class SkillFlameDash extends ActiveSkill {
         try {
             iter = new BlockIterator(world, currentPlayerLoc.toVector(), direction.setY(0), 0, maxDistance);
         } catch (IllegalStateException e) {
-            player.sendMessage("There was an error getting your blink location!");
+            player.sendMessage("    " + ChatComponents.GENERIC_SKILL + "There was an error getting your blink location!");
             return SkillResult.INVALID_TARGET_NO_MSG;
         }
 
@@ -186,7 +187,7 @@ public class SkillFlameDash extends ActiveSkill {
         }
 
         if (failed) {
-            player.sendMessage("No location to flame dash to.");
+            player.sendMessage("    " + ChatComponents.GENERIC_SKILL + "No location to flame dash to.");
             return SkillResult.INVALID_TARGET_NO_MSG;
         }
 

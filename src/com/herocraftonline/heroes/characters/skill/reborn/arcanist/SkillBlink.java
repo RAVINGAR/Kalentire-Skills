@@ -1,5 +1,6 @@
 package com.herocraftonline.heroes.characters.skill.reborn.arcanist;
 
+import com.herocraftonline.heroes.chat.ChatComponents;
 import org.bukkit.*;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
@@ -51,7 +52,7 @@ public class SkillBlink extends ActiveSkill {
         Player player = hero.getPlayer();
         Location loc = player.getLocation();
         if (loc.getBlockY() > loc.getWorld().getMaxHeight() || loc.getBlockY() < 1) {
-            player.sendMessage("The void prevents you from blinking!");
+            player.sendMessage("    " + ChatComponents.GENERIC_SKILL + "The void prevents you from blinking!");
             return SkillResult.FAIL;
         }
 
@@ -77,7 +78,7 @@ public class SkillBlink extends ActiveSkill {
         try {
             iter = new BlockIterator(player, distance);
         } catch (IllegalStateException e) {
-            player.sendMessage("There was an error getting your blink location!");
+            player.sendMessage("    " + ChatComponents.GENERIC_SKILL + "There was an error getting your blink location!");
             return SkillResult.INVALID_TARGET_NO_MSG;
         }
 
@@ -108,7 +109,7 @@ public class SkillBlink extends ActiveSkill {
 
             return SkillResult.NORMAL;
         } else {
-            player.sendMessage("No location to blink to.");
+            player.sendMessage("    " + ChatComponents.GENERIC_SKILL + "No location to blink to.");
             return SkillResult.INVALID_TARGET_NO_MSG;
         }
     }

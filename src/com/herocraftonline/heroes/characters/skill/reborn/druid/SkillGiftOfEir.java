@@ -73,7 +73,7 @@ public class SkillGiftOfEir extends ActiveSkill {
 
         // Remove any harmful effects on the caster (from invuln)
         for (Effect effect : hero.getEffects()) {
-            if (effect.isType(EffectType.HARMFUL)) {
+            if (effect.isType(EffectType.DISPELLABLE) && effect.isType(EffectType.HARMFUL)) {
                 hero.removeEffect(effect);
             }
         }
