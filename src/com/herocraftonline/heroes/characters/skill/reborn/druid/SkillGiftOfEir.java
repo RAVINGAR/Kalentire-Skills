@@ -80,8 +80,8 @@ public class SkillGiftOfEir extends ActiveSkill {
         int period = SkillConfigManager.getUseSetting(hero, this, SkillSetting.PERIOD, 1000, false);
         double radius = SkillConfigManager.getUseSetting(hero, this, SkillSetting.RADIUS, 5000, false);
         double radiusSquared = radius * radius;
-        hero.addEffect(new RootEffect(this, player, period, duration, null ,null));
-        hero.addEffect(new ManaPoolEffect(this, player, 100, duration, radiusSquared));
+        hero.addEffect(new RootEffect(this, player, 100, duration, null ,null));
+        hero.addEffect(new ManaPoolEffect(this, player, period, duration, radiusSquared));
         hero.addEffect(new InvulnStationaryEffect(this, player, duration, null, expireText));
         Location location = player.getLocation().clone();
         VisualEffect.playInstantFirework(FireworkEffect.builder()

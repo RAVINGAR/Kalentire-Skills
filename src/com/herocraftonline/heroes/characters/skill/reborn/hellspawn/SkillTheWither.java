@@ -6,9 +6,11 @@ import com.herocraftonline.heroes.api.events.WeaponDamageEvent;
 import com.herocraftonline.heroes.characters.CharacterTemplate;
 import com.herocraftonline.heroes.characters.Hero;
 import com.herocraftonline.heroes.characters.Monster;
+import com.herocraftonline.heroes.characters.effects.Effect;
 import com.herocraftonline.heroes.characters.effects.EffectType;
 import com.herocraftonline.heroes.characters.effects.PeriodicExpirableEffect;
 import com.herocraftonline.heroes.characters.effects.StackingEffect;
+import com.herocraftonline.heroes.characters.effects.common.interfaces.Burning;
 import com.herocraftonline.heroes.characters.effects.common.interfaces.HealthRegainReduction;
 import com.herocraftonline.heroes.characters.equipment.EquipMethod;
 import com.herocraftonline.heroes.characters.equipment.EquipmentChangedEvent;
@@ -131,7 +133,7 @@ public class SkillTheWither extends ActiveSkill {
                 disguiseAsWitherSkelly(player);
             } else {
                 addWitherSkull(hero, player);
-                player.setFireTicks((int) (getDuration() * 50));
+                player.setFireTicks((int) (getRemainingTime() * 50));
             }
         }
 
@@ -154,7 +156,12 @@ public class SkillTheWither extends ActiveSkill {
                 removeWitherSkull(player);
             }
 
-            player.setFireTicks(0);
+            for (Effect effect : hero.getEffects()) {
+                if (effect instanceof Burning)
+                    effect.removeFromHero(hero);
+            }
+
+            player.setFireTicks(-1);
         }
 
         private void disguiseAsWitherSkelly(Player player) {
