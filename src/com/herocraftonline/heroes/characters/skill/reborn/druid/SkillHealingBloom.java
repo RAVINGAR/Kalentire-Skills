@@ -102,7 +102,7 @@ public class SkillHealingBloom extends ActiveSkill {
         return SkillResult.NORMAL;
     }
     public void playHoTVisual(LivingEntity target, int duration) {
-         EffectManager effectManager = th;
+         EffectManager effectManager = ;
         final int durationTicks = (int) duration / 50;
         final int displayPeriod = 2;
 
