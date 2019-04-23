@@ -141,7 +141,7 @@ public class SkillSuperJump extends ActiveSkill {
 
     private void applyJumpVelocity(Player player, Vector velocity) {
         player.setVelocity(velocity);
-        player.setFallDistance(-8f);
+        player.setFallDistance(-255f);
     }
 
     private class JumpEffect extends SafeFallEffect {

@@ -69,7 +69,7 @@ public class SkillSeizeFlame extends TargettedSkill {
     public SkillResult use(Hero hero, LivingEntity target, String[] args) {
         Player player = hero.getPlayer();
 
-        broadcastExecuteText(hero);
+        broadcastExecuteText(hero, target);
 
         player.setFireTicks(player.getFireTicks() + target.getFireTicks());
         target.setFireTicks(-1);
