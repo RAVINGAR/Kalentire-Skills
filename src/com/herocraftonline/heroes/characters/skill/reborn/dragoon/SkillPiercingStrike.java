@@ -57,6 +57,10 @@ public class SkillPiercingStrike extends TargettedSkill {
             return SkillResult.FAIL;
         }
 
+        Heroes.log(Level.INFO, "Item: " + item.toString());
+        Heroes.log(Level.INFO, "Plugin: " + plugin.toString());
+        Heroes.log(Level.INFO, "DM: " + plugin.getDamageManager().toString());
+        Heroes.log(Level.INFO, "Highest: " + plugin.getDamageManager().getHighestItemDamage(hero, item).toString());
         double damage = plugin.getDamageManager().getHighestItemDamage(hero, item);
         damage *= SkillConfigManager.getUseSetting(hero, this, "damage-multiplier", 1.0, false);
 
