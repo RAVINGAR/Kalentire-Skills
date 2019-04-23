@@ -192,7 +192,7 @@ public class SkillFlameDash extends ActiveSkill {
         }
 
         fireTickBlocks.remove(validFinalBlock); // Just in case.
-        Util.setBlocksOnFireIfAble(fireTickBlocks, 0.75);
+        plugin.getFireBlockManager().setBlocksOnFireIfAble(fireTickBlocks, 0.75);
 
         world.playSound(currentPlayerLoc, Sound.ENTITY_BLAZE_SHOOT, 1f, 0.533f);
         teleport(player, validFinalBlock, pitch, yaw);

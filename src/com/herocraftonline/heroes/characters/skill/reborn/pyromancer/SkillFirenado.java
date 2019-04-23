@@ -198,8 +198,8 @@ public class SkillFirenado extends ActiveSkill {
             // We're at our desired tick interval.
 
             // Reach two blocks down for fire tick blocks
-            Util.setBlockOnFireIfAble(block, 0.3, true);
-            Util.setBlockOnFireIfAble(block.getRelative(BlockFace.DOWN), 0.3, true);
+            plugin.getFireBlockManager().setBlockOnFireIfAble(block, 0.3, true);
+            plugin.getFireBlockManager().setBlockOnFireIfAble(block.getRelative(BlockFace.DOWN), 0.3, true);
 
             flipColors();
             LivingEntity target = getClosestEntity();
