@@ -159,8 +159,8 @@ public class SkillFeatheredShot extends ActiveSkill {
 
             //TODO: in 1.13 swap the levitate for slow fall
 //            addPotionEffect(new PotionEffect(PotionEffectType.SLOW_FALLING, (int) (duration / 1000 * 20), slowFallAmplifier));
-            addPotionEffect(new PotionEffect(PotionEffectType.LEVITATION, (int) (duration / 1000 * 20), slowFallAmplifier));
-            addPotionEffect(new PotionEffect(PotionEffectType.JUMP, (int) (duration / 1000 * 20), jumpBoostAmplifier));
+            addPotionEffect(new PotionEffect(PotionEffectType.LEVITATION, (int) duration / 50, slowFallAmplifier));
+//            addPotionEffect(new PotionEffect(PotionEffectType.JUMP, (int) (duration / 50), jumpBoostAmplifier));
         }
     }
 }

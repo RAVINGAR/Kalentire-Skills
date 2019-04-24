@@ -45,6 +45,7 @@ public class SkillHemorrhage extends TargettedSkill {
 
     public ConfigurationSection getDefaultConfig() {
         ConfigurationSection config = super.getDefaultConfig();
+        config.set(SkillSetting.ON_INTERRUPT_FORCE_COOLDOWN.node(), 1000);
         config.set(SkillSetting.MAX_DISTANCE.node(), 30);
         config.set(SkillSetting.DAMAGE.node(), 80);
         config.set(SkillSetting.DAMAGE_INCREASE_PER_STRENGTH.node(), 0.0);

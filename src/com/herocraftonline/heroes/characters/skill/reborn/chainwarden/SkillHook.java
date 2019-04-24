@@ -7,6 +7,7 @@ import com.herocraftonline.heroes.characters.Hero;
 import com.herocraftonline.heroes.characters.Monster;
 import com.herocraftonline.heroes.characters.effects.Effect;
 import com.herocraftonline.heroes.characters.effects.EffectType;
+import com.herocraftonline.heroes.characters.effects.ExpirableEffect;
 import com.herocraftonline.heroes.characters.effects.PeriodicExpirableEffect;
 import com.herocraftonline.heroes.characters.skill.*;
 import com.herocraftonline.heroes.characters.skill.tools.BasicMissile;
@@ -15,11 +16,8 @@ import com.herocraftonline.heroes.util.Util;
 import de.slikey.effectlib.EffectManager;
 import de.slikey.effectlib.effect.LineEffect;
 import de.slikey.effectlib.util.DynamicLocation;
-import org.bukkit.ChatColor;
-import org.bukkit.Color;
 import org.bukkit.Location;
 import org.bukkit.Particle;
-import org.bukkit.Sound;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
 import org.bukkit.configuration.ConfigurationSection;
@@ -31,6 +29,7 @@ import org.bukkit.plugin.Plugin;
 import org.bukkit.util.Vector;
 
 import java.util.*;
+import java.util.logging.Level;
 
 public class SkillHook extends ActiveSkill {
     public static String skillName = "Hook";
@@ -148,7 +147,7 @@ public class SkillHook extends ActiveSkill {
         if (player == null || invalidHookTargetReason == InvalidHookTargetReason.VALID_TARGET)
             return;
 
-        String text = ChatColor.GRAY + "    " + ChatComponents.GENERIC_SKILL;
+        String text = "    " + ChatComponents.GENERIC_SKILL;
         switch (invalidHookTargetReason){
             case NO_HOOK:
                 text += "That target has no hook!";
@@ -184,23 +183,46 @@ public class SkillHook extends ActiveSkill {
         if (targetCT == null)
             return InvalidHookTargetReason.NULL_CHARACTER;
 
-        String effectName = getHookedEffectName(hookOwner.getPlayer());
-        if (!targetCT.hasEffect(effectName))
+        Player ownerPlayer = hookOwner.getPlayer();
+        String baseEffectName = getBaseHookEffectName(hookOwner.getPlayer());
+
+        List<ExpirableEffect> foundHooks = new ArrayList<ExpirableEffect>();
+        for (Effect effect : targetCT.getEffects()) {
+            if (effect.getName().startsWith(baseEffectName) && effect instanceof ExpirableEffect) {
+                if (effect.getApplier().equals(ownerPlayer)) {
+                    foundHooks.add((ExpirableEffect) effect);
+                }
+            }
+        }
+        if (foundHooks.isEmpty())
             return InvalidHookTargetReason.NO_HOOK;
+
 
         boolean isAlliedTo = hookOwner.isAlliedTo(targetCT.getEntity());
         if (!isAlliedTo && !damageCheck(hookOwner.getPlayer(), targetCT.getEntity()))
             return InvalidHookTargetReason.INVINCIBLE_TARGET;
 
-        targetCT.removeEffect(targetCT.getEffect(effectName));
+        // Get the hook with the shortest remaining duration
+        Effect effectToRemove = Collections.min(foundHooks, Comparator.comparing(ExpirableEffect::getRemainingTime));
+        targetCT.removeEffect(effectToRemove);
         return InvalidHookTargetReason.VALID_TARGET;
     }
 
-    public static String getHookedEffectName(Player hookOwner) {
+    public static String getBaseHookEffectName(Player hookOwner) {
         return hookOwner.getName() + "-Hooked";
     }
 
-    // Lol.
+    // This is silly I know, but you gotta do what you gotta do.
+    private static int hookedTargetIndex = 0;
+    public static String getDynamicHookedTargetEffectName(Player hookOwner) {
+        hookedTargetIndex++;
+        if (hookedTargetIndex > 500) {
+            hookedTargetIndex = -500;
+        }
+        return getBaseHookEffectName(hookOwner) + "-" + hookedTargetIndex;
+    }
+
+    // This is silly I know, but you gotta do what you gotta do.
     private static int hookLocationIndex = 0;
     private static String getDynamicHookedLocationName() {
         hookLocationIndex++;
@@ -209,6 +231,7 @@ public class SkillHook extends ActiveSkill {
         }
         return "HookedLocation-" + hookLocationIndex;
     }
+
 
     public SkillHook.HookProjectile createHookProjectile(Hero hero) {
         double projSize = SkillConfigManager.getUseSetting(hero, this, "projectile-size", 0.25, false);
@@ -299,7 +322,7 @@ public class SkillHook extends ActiveSkill {
         }
 
         public int getCurrentHookCount() {
-            return this.hookedCharacters.size() + this.hookedLocations.size();
+            return (int) this.hookedCharacters.stream().distinct().count() + this.hookedLocations.size();
         }
 
         public int getCurrentHookedLocationsCount() {
@@ -318,27 +341,24 @@ public class SkillHook extends ActiveSkill {
             return null;
         }
 
-        // Do not call this manually. This is only for the HookedLocationEffect to call.
+        // Do not call this manually. This is only for the HookedEffect to call.
         void addHook(CharacterTemplate targetCT) {
-            if (!this.hookedCharacters.contains(targetCT))
-                this.hookedCharacters.add(targetCT);
+            this.hookedCharacters.add(targetCT);
         }
 
-        // Do not call this manually. This is only for the HookedLocationEffect to call.
+        // Do not call this manually. This is only for the HookedEffect to call.
         void removeHook(CharacterTemplate targetCT) {
             this.hookedCharacters.remove(targetCT);
         }
 
         // Do not call this manually. This is only for the HookedLocationEffect to call.
         void addLocationHook(HookedLocationEffect locEffect) {
-            if (!this.hookedLocations.contains(locEffect))
-                this.hookedLocations.add(locEffect);
+            this.hookedLocations.add(locEffect);
         }
 
         // Do not call this manually. This is only for the HookedLocationEffect to call.
         void removeLocationHook(HookedLocationEffect locEffect) {
-            if (this.hookedLocations.contains(locEffect))
-                this.hookedLocations.remove(locEffect);
+            this.hookedLocations.remove(locEffect);
         }
     }
 
@@ -417,7 +437,7 @@ public class SkillHook extends ActiveSkill {
         private EffectManager effectManager;
 
         public HookedEffect(Skill skill, Hero applierHero, long duration, double leashDist, double hookLeashPower) {
-            super(skill, getHookedEffectName(applierHero.getPlayer()), applierHero.getPlayer(), 1000, duration, null, null);
+            super(skill, getDynamicHookedTargetEffectName(applierHero.getPlayer()), applierHero.getPlayer(), 1000, duration, null, null);
             this.applierHero = applierHero;
             double snapDist = leashDist * 1.5;
             this.leashDistSquared = leashDist * leashDist;

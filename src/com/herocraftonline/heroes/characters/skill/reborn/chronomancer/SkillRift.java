@@ -32,7 +32,8 @@ public class SkillRift extends TargettedSkill {
         setUsage("/skill rift");
         setIdentifiers("skill rift");
         setArgumentRange(0, 0);
-        setTypes(SkillType.ABILITY_PROPERTY_TEMPORAL, SkillType.SILENCEABLE, SkillType.TELEPORTING, SkillType.MULTI_GRESSIVE, SkillType.NO_SELF_TARGETTING);
+        setTypes(SkillType.ABILITY_PROPERTY_TEMPORAL, SkillType.SILENCEABLE, SkillType.TELEPORTING,
+                SkillType.MULTI_GRESSIVE, SkillType.INTERRUPTING, SkillType.NO_SELF_TARGETTING);
     }
 
     @Override
@@ -53,7 +54,8 @@ public class SkillRift extends TargettedSkill {
     public ConfigurationSection getDefaultConfig() {
         ConfigurationSection config = super.getDefaultConfig();
         config.set(SkillSetting.MAX_DISTANCE.node(), 10);
-        config.set(SkillSetting.TARGET_HIT_TOLERANCE.node(), 2.5);
+        config.set(SkillSetting.TARGET_HIT_TOLERANCE.node(), 0.35);
+        config.set(SkillSetting.ON_INTERRUPT_FORCE_COOLDOWN.node(), 1500);
         config.set(SkillSetting.RADIUS.node(), 4.0);
         config.set(SkillSetting.DAMAGE.node(), 30.0);
         config.set("max-debuff-removals", 1);

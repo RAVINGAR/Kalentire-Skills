@@ -41,7 +41,7 @@ public class SkillDarkAxe extends TargettedSkill {
     public ConfigurationSection getDefaultConfig() {
         ConfigurationSection config = super.getDefaultConfig();
         config.set(SkillSetting.MAX_DISTANCE.node(), 4);
-        config.set(SkillSetting.INTERRUPT_COOLDOWN.node(), 3000);
+        config.set(SkillSetting.ON_INTERRUPT_FORCE_COOLDOWN.node(), 2500);
         config.set(SkillSetting.DAMAGE.node(), 60);
         config.set(SkillSetting.DAMAGE_INCREASE_PER_INTELLECT.node(), 0.0);
         config.set(SkillSetting.DURATION.node(), 3000);

@@ -48,6 +48,7 @@ public class SkillSpear extends ActiveSkill {
     @Override
     public ConfigurationSection getDefaultConfig() {
         ConfigurationSection config = super.getDefaultConfig();
+        config.set(SkillSetting.ON_INTERRUPT_FORCE_COOLDOWN.node(), 1500);
         config.set(SkillSetting.DAMAGE.node(), 45);
         config.set(SkillSetting.DAMAGE_INCREASE_PER_STRENGTH.node(), 0.0);
         config.set("projectile-size", 0.25);
@@ -134,7 +135,8 @@ public class SkillSpear extends ActiveSkill {
         // Manually try to interrupt since we're doing custom projectile stuff
         if (target instanceof Player) {
             Hero targetHero = plugin.getCharacterManager().getHero((Player) target);
-            targetHero.interruptDelayedSkill();
+            long interruptCd = SkillConfigManager.getUseSetting(hero, this, SkillSetting.ON_INTERRUPT_FORCE_COOLDOWN, 1500, false);
+            targetHero.interruptDelayedSkill(interruptCd);
         }
 
         double vPower = SkillConfigManager.getUseSetting(hero, this, "vertical-power", 0.4, false);
