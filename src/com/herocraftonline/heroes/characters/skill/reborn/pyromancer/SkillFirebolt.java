@@ -161,8 +161,8 @@ public class SkillFirebolt extends ActiveSkill {
                 final Block previousDirectionFireBlock = hitBlock.getRelative(directionCameFrom.getBlockX(), directionCameFrom.getBlockY(), directionCameFrom.getBlockZ());
                 Block mainFireBlock = projectile.getLocation().getBlock();
 
-                Util.setBlockOnFireIfAble(mainFireBlock);
-                Util.setBlockOnFireIfAble(previousDirectionFireBlock);
+                plugin.getFireBlockManager().setBlockOnFireIfAble(mainFireBlock);
+                plugin.getFireBlockManager().setBlockOnFireIfAble(previousDirectionFireBlock);
             }
 
             if (event.getHitEntity() == null) {

@@ -132,7 +132,11 @@ public class SkillAetherMissiles extends ActiveSkill {
                 missileVisual.iterations = (int) (getDuration() / 50) + projDurationTicks;
                 missileVisual.radius = this.projectileRadius;
                 missileVisual.particle = Particle.SPELL_WITCH;
+<<<<<<< .merge_file_a08120
                 missileVisual.particles = 25;
+=======
+                missileVisual.particles = 10;
+>>>>>>> .merge_file_a10704
                 missileVisual.radiusIncrease = 0;
                 effectManager.start(missileVisual);
 

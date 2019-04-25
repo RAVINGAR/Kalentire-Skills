@@ -74,6 +74,7 @@ public class SkillImpale extends TargettedSkill {
         ConfigurationSection config = super.getDefaultConfig();
         config.set(SkillSetting.MAX_DISTANCE.node(), 6);
         config.set(SkillSetting.TARGET_HIT_TOLERANCE.node(), 0.25);
+        config.set(SkillSetting.ON_INTERRUPT_FORCE_COOLDOWN.node(), 1500);
         config.set(SkillSetting.DAMAGE.node(), 50);
         config.set(SkillSetting.DAMAGE_INCREASE_PER_STRENGTH.node(), 0.0);
         config.set(SkillSetting.DURATION.node(), 3000);

@@ -57,9 +57,6 @@ public class SkillRewind extends ActiveSkill implements Passive {
     public void tryApplying(Hero hero) {
         Player player = hero.getPlayer();
         if (hero.canUseSkill(this)) {
-            if (hero.hasEffect(trackerEffectName)) {
-                hero.removeEffect(hero.getEffect(trackerEffectName));
-            }
             this.apply(hero);
         } else {
             this.unapply(hero);
@@ -178,11 +175,11 @@ public class SkillRewind extends ActiveSkill implements Passive {
     }
 
     public class SkillListener implements Listener {
-
-        @EventHandler(priority = EventPriority.MONITOR)
-        public void onAfterClassChange(AfterClassChangeEvent event) {
-            tryApplying(event.getHero());
-        }
+//
+//        @EventHandler(priority = EventPriority.MONITOR)
+//        public void onAfterClassChange(AfterClassChangeEvent event) {
+//            tryApplying(event.getHero());
+//        }
 
         @EventHandler(priority = EventPriority.MONITOR)
         public void onHeroChangeLevel(HeroChangeLevelEvent event) {

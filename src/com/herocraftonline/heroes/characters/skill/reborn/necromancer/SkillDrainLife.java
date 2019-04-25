@@ -33,11 +33,11 @@ public class SkillDrainLife extends TargettedSkill {
 
     @Override
     public String getDescription(Hero hero) {
-        double damage = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE, 98, false);
+        double damage = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE, 40, false);
         double damageIncrease = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE_INCREASE_PER_INTELLECT, 0.0, false);
         damage += damageIncrease * hero.getAttributeValue(AttributeType.INTELLECT);
 
-        double healMult = SkillConfigManager.getUseSetting(hero, this, "healing-multiplier", 1.75, false);
+        double healMult = SkillConfigManager.getUseSetting(hero, this, "healing-multiplier", 1.5, false);
 
         String formattedDamage = Util.decFormat.format(damage);
         String formattedHeal = Util.decFormat.format(damage * healMult);
@@ -48,11 +48,11 @@ public class SkillDrainLife extends TargettedSkill {
     @Override
     public ConfigurationSection getDefaultConfig() {
         ConfigurationSection config = super.getDefaultConfig();
-        config.set(SkillSetting.MAX_DISTANCE.node(), 9);
+        config.set(SkillSetting.MAX_DISTANCE.node(), 12);
         config.set(SkillSetting.MAX_DISTANCE_INCREASE_PER_INTELLECT.node(), 0.0);
-        config.set(SkillSetting.DAMAGE.node(), 50);
+        config.set(SkillSetting.DAMAGE.node(), 40);
         config.set(SkillSetting.DAMAGE_INCREASE_PER_INTELLECT.node(), 0.0);
-        config.set("healing-multiplier", 1.75);
+        config.set("healing-multiplier", 1.5);
         return config;
     }
 
@@ -62,14 +62,14 @@ public class SkillDrainLife extends TargettedSkill {
 
         broadcastExecuteText(hero, target);
 
-        double damage = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE, 98, false);
+        double damage = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE, 40, false);
         double damageIncrease = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE_INCREASE_PER_INTELLECT, 0.0, false);
         damage += damageIncrease * hero.getAttributeValue(AttributeType.INTELLECT);
 
         addSpellTarget(target, hero);
         damageEntity(target, player, damage, DamageCause.MAGIC);
 
-        double multiplier = SkillConfigManager.getUseSetting(hero, this, "healing-multiplier", 1.75, false);
+        double multiplier = SkillConfigManager.getUseSetting(hero, this, "healing-multiplier", 1.5, false);
 
         HeroRegainHealthEvent hrEvent = new HeroRegainHealthEvent(hero, (damage * multiplier), this);         // Bypass self heal as this can only be used on themself.
         plugin.getServer().getPluginManager().callEvent(hrEvent);

@@ -38,12 +38,12 @@ public class SkillEntomb extends TargettedSkill {
     private static final Random random = new Random(System.currentTimeMillis());
     private static final List<Material> blockTypes = Arrays.asList(
         Material.STONE,
-        Material.COARSE_DIRT,
+//        Material.COARSE_DIRT,
         Material.DIRT,
-        Material.GRASS_BLOCK,
-        Material.ANDESITE,
-        Material.DIORITE,
-        Material.GRANITE
+//        Material.GRASS_BLOCK,
+//        Material.ANDESITE,
+//        Material.DIORITE,
+//        Material.GRANITE
     );
 
     private String applyText;

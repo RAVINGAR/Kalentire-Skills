@@ -6,20 +6,18 @@ import com.herocraftonline.heroes.characters.CharacterTemplate;
 import com.herocraftonline.heroes.characters.Hero;
 import com.herocraftonline.heroes.characters.Monster;
 import com.herocraftonline.heroes.characters.effects.EffectType;
-import com.herocraftonline.heroes.characters.effects.PeriodicDamageEffect;
 import com.herocraftonline.heroes.characters.effects.common.SlowEffect;
 import com.herocraftonline.heroes.characters.effects.common.SummonEffect;
-import com.herocraftonline.heroes.characters.skill.ActiveSkill;
-import com.herocraftonline.heroes.characters.skill.Skill;
-import com.herocraftonline.heroes.characters.skill.SkillConfigManager;
-import com.herocraftonline.heroes.characters.skill.SkillType;
+import com.herocraftonline.heroes.characters.skill.*;
 import com.herocraftonline.heroes.util.Util;
 import me.libraryaddict.disguise.DisguiseAPI;
 import me.libraryaddict.disguise.disguisetypes.Disguise;
 import me.libraryaddict.disguise.disguisetypes.DisguiseType;
 import me.libraryaddict.disguise.disguisetypes.MobDisguise;
+import me.libraryaddict.disguise.disguisetypes.watchers.LivingWatcher;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
+import org.bukkit.Material;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.LivingEntity;
@@ -29,26 +27,26 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
+import org.bukkit.inventory.ItemStack;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 
-public class SkillAnkleBiter extends ActiveSkill {
+public class SkillSkeletonKnight extends ActiveSkill {
 
-    private final String minionEffectName = "AnkleBiter";
+    private final String minionEffectName = "SkeletonKnight";
     private boolean disguiseApiLoaded;
 
-    public SkillAnkleBiter(Heroes plugin) {
-        super(plugin, "AnkleBiter");
-        setDescription("Conjures a noxious minion to obey your commands. The minion has $1 HP and deals $2 damage per hit.");
-        setUsage("/skill anklebiter");
+    public SkillSkeletonKnight(Heroes plugin) {
+        super(plugin, "SkeletonKnight");
+        setDescription("Conjures a Skeleton Knight to obey your commands. The minion has $1 HP deals $2 damage per hit, and lasts for up to $3 seconds.");
+        setUsage("/skill skeletonknight");
+        setIdentifiers("skill skeletonknight");
         setArgumentRange(0, 0);
-        setIdentifiers("skill anklebiter");
         setTypes(SkillType.SUMMONING, SkillType.ABILITY_PROPERTY_DARK, SkillType.SILENCEABLE);
 
         if (Bukkit.getServer().getPluginManager().getPlugin("LibsDisguises") != null) {
             disguiseApiLoaded = true;
         }
-        Bukkit.getServer().getPluginManager().registerEvents(new SkillListener(this), plugin);
     }
 
     public String getDescription(Hero hero) {
@@ -68,14 +66,12 @@ public class SkillAnkleBiter extends ActiveSkill {
 
     public ConfigurationSection getDefaultConfig() {
         ConfigurationSection config = super.getDefaultConfig();
-        config.set("minion-attack-damage", 10.0);
-        config.set("minion-attack-damage-per-level", 0.3);
-        config.set("minion-max-hp", 65.0);
-        config.set("minion-max-hp-per-level", 0.7);
-        config.set("minion-on-hit-slow-duration", 2000);
-        config.set("minion-on-hit-slow-amplifier", 2);
-        config.set("minion-duration", 7000);
-        config.set("minion-speed-amplifier", 2);
+        config.set("minion-attack-damage", 25.0);
+        config.set("minion-attack-damage-per-level", 0.4);
+        config.set("minion-max-hp", 400.0);
+        config.set("minion-max-hp-per-level", 4.0);
+        config.set("minion-duration", 60000);
+        config.set("minion-speed-amplifier", -1);
         config.set("launch-velocity", 2.0);
         return config;
     }
@@ -86,7 +82,7 @@ public class SkillAnkleBiter extends ActiveSkill {
         broadcastExecuteText(hero);
 
         double launchVelocity = SkillConfigManager.getUseSetting(hero, this, "launch-velocity", 2.0, false);
-        long duration = SkillConfigManager.getUseSetting(hero, this, "minion-duration", 10000, false);
+        long duration = SkillConfigManager.getUseSetting(hero, this, "minion-duration", 45000, false);
 
         // Wolfs have the most reliable default AI for following and helping the player. We'll disguise it as something else later.
         Wolf minion = (Wolf) player.getWorld().spawnEntity(player.getEyeLocation(), EntityType.WOLF);
@@ -94,7 +90,7 @@ public class SkillAnkleBiter extends ActiveSkill {
 
         final Monster monster = plugin.getCharacterManager().getMonster(minion);
         monster.setExperience(0);
-        monster.addEffect(new AnkleBiterEffect(this, hero, duration));
+        monster.addEffect(new SkeletonKnightEffect(this, hero, duration));
 
         minion.setVelocity(player.getLocation().getDirection().normalize().multiply(launchVelocity));
         minion.setFallDistance(-7F);
@@ -102,54 +98,30 @@ public class SkillAnkleBiter extends ActiveSkill {
         return SkillResult.NORMAL;
     }
 
-    private class SkillListener implements Listener {
-        private final Skill skill;
-
-        SkillListener(Skill skill) {
-            this.skill = skill;
-        }
-
-        @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
-        public void onEntityDamage(EntityDamageByEntityEvent event) {
-            if (event.getDamage() <= 0 || !(event.getDamager() instanceof Wolf) || !(event.getEntity() instanceof LivingEntity))
-                return;
-
-            CharacterTemplate attackerCT = plugin.getCharacterManager().getCharacter((LivingEntity) event.getDamager());
-            if (!attackerCT.hasEffect(minionEffectName))
-                return;
-
-            Hero summoner = ((AnkleBiterEffect) attackerCT.getEffect(minionEffectName)).getSummoner();
-
-            CharacterTemplate defenderCT = plugin.getCharacterManager().getCharacter((LivingEntity) event.getEntity());
-            long duration = SkillConfigManager.getUseSetting(summoner, skill, "minion-on-hit-slow-duration", 2000, false);
-            int amplifier = SkillConfigManager.getUseSetting(summoner, skill, "minion-on-hit-slow-amplifier", 2, false);
-
-            defenderCT.addEffect(new SlowEffect(skill, summoner.getPlayer(), duration, amplifier));
-        }
-    }
-
-    public class AnkleBiterEffect extends SummonEffect {
-        public AnkleBiterEffect(Skill skill, Hero summoner, long duration) {
+    public class SkeletonKnightEffect extends SummonEffect {
+        public SkeletonKnightEffect(Skill skill, Hero summoner, long duration) {
             super(skill, minionEffectName, duration, summoner, null);
 
             types.add(EffectType.DISEASE);
             types.add(EffectType.WATER_BREATHING);
 
-            int speedAmplifier = SkillConfigManager.getUseSetting(summoner, skill, "minion-speed-amplifier", 2, false);
-
             addPotionEffect(new PotionEffect(PotionEffectType.WATER_BREATHING, (int) (duration / 50), 0));
-            addPotionEffect(new PotionEffect(PotionEffectType.SPEED, (int) (duration / 50), speedAmplifier));
+
+            int speedAmplifier = SkillConfigManager.getUseSetting(summoner, skill, "minion-speed-amplifier", -1, false);
+            if (speedAmplifier > -1) {
+                addPotionEffect(new PotionEffect(PotionEffectType.SPEED, (int) (duration / 50), speedAmplifier));
+            }
         }
 
         @Override
         public void applyToMonster(Monster monster) {
             super.applyToMonster(monster);
 
-            double maxHp = SkillConfigManager.getUseSetting(getSummoner(), skill, "minion-max-hp", 100.0, false);
-            maxHp+= SkillConfigManager.getUseSetting(getSummoner(), skill, "minion-max-hp-per-level", 0.0, false) * getSummoner().getHeroLevel(skill);
+            double maxHp = SkillConfigManager.getUseSetting(getSummoner(), skill, "minion-max-hp", 400.0, false);
+            maxHp+= SkillConfigManager.getUseSetting(getSummoner(), skill, "minion-max-hp-per-level", 4.0, false) * getSummoner().getHeroLevel(skill);
 
             double hitDmg = SkillConfigManager.getUseSetting(getSummoner(), skill, "minion-attack-damage", 25.0, false);
-            hitDmg+= SkillConfigManager.getUseSetting(getSummoner(), skill, "minion-attack-damage-per-level", 0.0, false) * getSummoner().getHeroLevel(skill);
+            hitDmg+= SkillConfigManager.getUseSetting(getSummoner(), skill, "minion-attack-damage-per-level", 0.4, false) * getSummoner().getHeroLevel(skill);
 
             LivingEntity minion = monster.getEntity();
             minion.setMaxHealth(maxHp);
@@ -163,12 +135,22 @@ public class SkillAnkleBiter extends ActiveSkill {
                     DisguiseAPI.undisguiseToAll(minion);
                 }
 
-                MobDisguise disguise = new MobDisguise(DisguiseType.getType(EntityType.ZOMBIE), false);
+                MobDisguise disguise = new MobDisguise(DisguiseType.getType(EntityType.SKELETON), false);
                 disguise.setEntity(minion);
                 disguise.setShowName(true);
                 disguise.setModifyBoundingBox(true);
                 disguise.setReplaceSounds(true);
                 disguise.setKeepDisguiseOnPlayerDeath(true);
+                LivingWatcher watcher = disguise.getWatcher();
+                ItemStack[] fakeInventory = new ItemStack[]{
+                        new ItemStack(Material.DIAMOND_BOOTS, 1),
+                        new ItemStack(Material.DIAMOND_LEGGINGS, 1),
+                        new ItemStack(Material.DIAMOND_CHESTPLATE, 1),
+                        new ItemStack(Material.AIR, 1)
+                };
+                watcher.setArmor(fakeInventory);
+                watcher.setItemInMainHand(new ItemStack(Material.DIAMOND_SWORD, 1));
+                watcher.setItemInOffHand(new ItemStack(Material.SHIELD, 1));
                 disguise.startDisguise();
             }
         }

@@ -18,9 +18,7 @@ import org.bukkit.util.BlockIterator;
 import org.bukkit.util.Vector;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
-import java.util.Set;
 
 public class SkillFlameDash extends ActiveSkill {
 
@@ -65,10 +63,10 @@ public class SkillFlameDash extends ActiveSkill {
             return SkillResult.FAIL;
         }
 
-        return performFlaimDash(hero, player);
+        return performFlameDash(hero, player);
     }
 
-    private SkillResult performFlaimDash(Hero hero, Player player) {
+    private SkillResult performFlameDash(Hero hero, Player player) {
         Location currentPlayerLoc = player.getLocation().clone();
         World world = currentPlayerLoc.getWorld();
         Vector direction = currentPlayerLoc.getDirection().normalize();
@@ -192,7 +190,7 @@ public class SkillFlameDash extends ActiveSkill {
         }
 
         fireTickBlocks.remove(validFinalBlock); // Just in case.
-        Util.setBlocksOnFireIfAble(fireTickBlocks, 0.75);
+        plugin.getFireBlockManager().setBlocksOnFireIfAble(fireTickBlocks, 0.75);
 
         world.playSound(currentPlayerLoc, Sound.ENTITY_BLAZE_SHOOT, 1f, 0.533f);
         teleport(player, validFinalBlock, pitch, yaw);

@@ -55,24 +55,39 @@ public class SkillNoxiousMinion extends ActiveSkill {
     }
 
     public String getDescription(Hero hero) {
-        return getDescription();
+        double maxHp = SkillConfigManager.getUseSetting(hero, this, "minion-max-hp", 400.0, false);
+        maxHp+= SkillConfigManager.getUseSetting(hero, this, "minion-max-hp-per-level", 4.0, false) * hero.getHeroLevel(this);
+
+        double hitDmg = SkillConfigManager.getUseSetting(hero, this, "minion-attack-damage", 25.0, false);
+        hitDmg+= SkillConfigManager.getUseSetting(hero, this, "minion-attack-damage-per-level", 0.4, false) * hero.getHeroLevel(this);
+
+        long duration = SkillConfigManager.getUseSetting(hero, this, "minion-duration", 45000, false);
+
+        return getDescription()
+                .replace("$1", Util.decFormat.format(maxHp))
+                .replace("$2", Util.decFormat.format(hitDmg))
+                .replace("$3", Util.decFormat.format(duration / 1000.0));
     }
 
     public ConfigurationSection getDefaultConfig() {
         ConfigurationSection config = super.getDefaultConfig();
-        config.set("minion-attack-damage", 50.0);
-        config.set("minion-on-hit-debuff-tick-damage", 15.0);
+        config.set("minion-attack-damage", 10.0);
+        config.set("minion-attack-damage-per-level", 0.2);
+        config.set("minion-max-hp", 125.0);
+        config.set("minion-max-hp-per-level", 1.0);
+        config.set("minion-on-hit-debuff-tick-damage", 10.0);
         config.set("minion-on-hit-debuff-period", 500);
         config.set("minion-on-hit-debuff-duration", 2000);
-        config.set("minion-max-hp", 200.0);
-        config.set("minion-speed-amplifier", 2);
-        config.set("minion-duration", 10000);
+        config.set("minion-speed-amplifier", 1);
+        config.set("minion-duration", 8000);
         config.set("launch-velocity", 1.5);
         return config;
     }
 
     public SkillResult use(Hero hero, String[] args) {
         Player player = hero.getPlayer();
+
+        broadcastExecuteText(hero);
 
         double launchVelocity = SkillConfigManager.getUseSetting(hero, this, "launch-velocity", 1.5, false);
         long duration = SkillConfigManager.getUseSetting(hero, this, "minion-duration", 10000, false);
@@ -132,7 +147,6 @@ public class SkillNoxiousMinion extends ActiveSkill {
             super(skill, minionEffectName, duration, summoner, null);
 
             types.add(EffectType.POISON);
-            //types.add(EffectType.WATER_BREATHING);
 
             int speedAmplifier = SkillConfigManager.getUseSetting(summoner, skill, "minion-speed-amplifier", 2, false);
 
@@ -144,8 +158,11 @@ public class SkillNoxiousMinion extends ActiveSkill {
         public void applyToMonster(Monster monster) {
             super.applyToMonster(monster);
 
-            double maxHp = SkillConfigManager.getUseSetting(getSummoner(), skill, "minion-max-hp", 500.0, false);
-            double hitDmg = SkillConfigManager.getUseSetting(getSummoner(), skill, "minion-attack-damage", 50.0, false);
+            double maxHp = SkillConfigManager.getUseSetting(getSummoner(), skill, "minion-max-hp", 125.0, false);
+            maxHp+= SkillConfigManager.getUseSetting(getSummoner(), skill, "minion-max-hp-per-level", 1.0, false) * getSummoner().getHeroLevel(skill);
+
+            double hitDmg = SkillConfigManager.getUseSetting(getSummoner(), skill, "minion-attack-damage", 10.0, false);
+            hitDmg+= SkillConfigManager.getUseSetting(getSummoner(), skill, "minion-attack-damage-per-level", 0.2, false) * getSummoner().getHeroLevel(skill);
 
             LivingEntity minion = monster.getEntity();
             minion.setMaxHealth(maxHp);
@@ -160,15 +177,11 @@ public class SkillNoxiousMinion extends ActiveSkill {
                 }
 
                 MobDisguise disguise = new MobDisguise(DisguiseType.getType(EntityType.CAVE_SPIDER), true);
-//                PlayerDisguise disguise = new PlayerDisguise(applier);
-                disguise.setKeepDisguiseOnPlayerDeath(true);
                 disguise.setEntity(minion);
                 disguise.setShowName(true);
-                disguise.setModifyBoundingBox(false);
+                disguise.setModifyBoundingBox(true);
                 disguise.setReplaceSounds(true);
-//                LivingWatcher watcher = disguise.getWatcher();
-//                watcher.setCustomName(ChatColor.DARK_GREEN + applier.getName() + "'s Minion");
-//                watcher.setArmor(applier.getInventory().getArmorContents().clone());
+                disguise.setKeepDisguiseOnPlayerDeath(true);
                 disguise.startDisguise();
             }
         }

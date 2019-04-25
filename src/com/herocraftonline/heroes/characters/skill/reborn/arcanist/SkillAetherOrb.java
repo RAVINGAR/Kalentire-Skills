@@ -136,6 +136,7 @@ public class SkillAetherOrb extends ActiveSkill {
             SphereEffect orbVisual = new SphereEffect(effectManager);
             orbVisual.setLocation(orbLocation);
             orbVisual.particle = Particle.SPELL_WITCH;
+            orbVisual.particles = 25;
             orbVisual.radius = orbVisualRadius;
             orbVisual.type = EffectType.REPEATING;
             orbVisual.period = 1;

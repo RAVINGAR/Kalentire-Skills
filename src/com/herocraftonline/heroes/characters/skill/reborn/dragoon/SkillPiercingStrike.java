@@ -57,8 +57,13 @@ public class SkillPiercingStrike extends TargettedSkill {
             return SkillResult.FAIL;
         }
 
-        double damage = plugin.getDamageManager().getHighestItemDamage(hero, item);
-        damage *= SkillConfigManager.getUseSetting(hero, this, "damage-multiplier", 1.0, false);
+        Double damage = plugin.getDamageManager().getHighestItemDamage(hero, item);
+        if (damage == null) {
+            player.sendMessage("You don't deal any damage with that weapon!");
+            return SkillResult.FAIL;
+        }
+
+        damage*= SkillConfigManager.getUseSetting(hero, this, "damage-multiplier", 1.0, false);
 
         addSpellTarget(target, hero);
         damageEntity(target, player, damage, DamageCause.ENTITY_ATTACK, false);

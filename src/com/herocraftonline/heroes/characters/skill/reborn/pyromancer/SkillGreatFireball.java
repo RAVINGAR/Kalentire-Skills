@@ -143,7 +143,7 @@ public class SkillGreatFireball extends ActiveSkill {
 
         private void performExplosion() {
             for (Location loc : GeometryUtil.getPerfectCircle(getLocation(), (int) this.fireTickGroundRadius, (int) this.fireTickGroundRadius, false, true, 0)) {
-                Util.setBlockOnFireIfAble(loc.getBlock(), 0.7);
+                plugin.getFireBlockManager().setBlockOnFireIfAble(loc.getBlock(), 0.7);
             }
 
             getWorld().playSound(getLocation(), Sound.ENTITY_GENERIC_EXPLODE, 1.0F, 0.8F);

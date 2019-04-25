@@ -193,8 +193,8 @@ public class SkillFireStream extends ActiveSkill {
                 final Block previousDirectionFireBlock = hitBlock.getRelative(directionCameFrom.getBlockX(), directionCameFrom.getBlockY(), directionCameFrom.getBlockZ());
                 Block mainFireBlock = projectile.getLocation().getBlock();
 
-                Util.setBlockOnFireIfAble(mainFireBlock, 0.8);
-                Util.setBlockOnFireIfAble(previousDirectionFireBlock, 0.8);
+                plugin.getFireBlockManager().setBlockOnFireIfAble(mainFireBlock, 0.8);
+                plugin.getFireBlockManager().setBlockOnFireIfAble(previousDirectionFireBlock, 0.8);
             }
 
             if (event.getHitEntity() == null) {

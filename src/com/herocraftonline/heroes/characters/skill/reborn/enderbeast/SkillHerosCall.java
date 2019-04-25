@@ -59,6 +59,7 @@ public class SkillHerosCall extends ActiveSkill {
     @Override
     public ConfigurationSection getDefaultConfig() {
         ConfigurationSection config = super.getDefaultConfig();
+        config.set(SkillSetting.ON_INTERRUPT_FORCE_COOLDOWN.node(), 2000);
         config.set(SkillSetting.RADIUS.node(), 8.0);
         config.set("transform-period", 500);
         config.set(SkillSetting.PERIOD.node(), 3000);
@@ -120,7 +121,8 @@ public class SkillHerosCall extends ActiveSkill {
             HeroicPurposeEffect callEffect = new HeroicPurposeEffect(this, player, period, duration, maxDistance, maxAngle, pullPowerReduction);
             targetCT.addEffect(callEffect);
             if (targetCT instanceof Hero) {
-                ((Hero) targetCT).interruptDelayedSkill();
+                long interruptCd = SkillConfigManager.getUseSetting(hero, this, SkillSetting.ON_INTERRUPT_FORCE_COOLDOWN, 2000, false);
+                ((Hero) targetCT).interruptDelayedSkill(interruptCd);
             }
             actualCallTargets.add(targetCT);
         }
