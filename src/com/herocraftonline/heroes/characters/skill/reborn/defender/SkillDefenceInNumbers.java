@@ -256,7 +256,8 @@ public class SkillDefenceInNumbers extends PassiveSkill {
         double incomingMultiplierImprovementWhenBuffed = SkillConfigManager.getUseSetting(defendingHero, this,
                 "incoming-multiplier-improvement-when-buffed", .05, false);
 
-        double incomingMultiplier = incomingMultiplierBase - defendingHero.getParty().getMembers().size() * incomingMultiplierPerAlly;
+        int numberOfAllies = defendingHero.hasParty() ? (defendingHero.getParty().getMembers().size()-1) : 0;
+        double incomingMultiplier = incomingMultiplierBase - (numberOfAllies * incomingMultiplierPerAlly);
         if (incomingMultiplier < 0) {
             incomingMultiplier = 0;
         }

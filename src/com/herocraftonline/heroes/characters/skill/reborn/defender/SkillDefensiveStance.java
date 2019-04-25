@@ -55,15 +55,7 @@ public class SkillDefensiveStance extends ActiveSkill {
     @Override
     public String getDescription(Hero hero) {
         int duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, 5000, false);
-        double chance = SkillConfigManager.getUseSetting(hero, this, SkillSetting.CHANCE, 0.8, false);
-        double chancePerLevel = SkillConfigManager.getUseSetting(hero, this, SkillSetting.CHANCE_PER_LEVEL, 0.02, false);
-
-        double overallChance = chance + chancePerLevel * hero.getHeroLevel();
-        if (overallChance > 1) {
-            overallChance = 1;
-        } else if (overallChance < 0) {
-            overallChance = 0;
-        }
+        double overallChance = getOverallHitChance(hero, this);
         return getDescription().replace("$1", (overallChance * 100) + "")
                 .replace("$2", duration / 1000 + "");
     }
@@ -88,6 +80,18 @@ public class SkillDefensiveStance extends ActiveSkill {
 
         hero.getPlayer().getWorld().playSound(hero.getPlayer().getLocation(), Sound.BLOCK_ANVIL_LAND, 0.6F, 1.0F);
         return SkillResult.NORMAL;
+    }
+
+    private double getOverallHitChance(Hero hero, Skill skill) {
+        double chance = SkillConfigManager.getUseSetting(hero, skill, SkillSetting.CHANCE, 0.8, false);
+        double chancePerLevel = SkillConfigManager.getUseSetting(hero, skill, SkillSetting.CHANCE_PER_LEVEL, 0.02, false);
+        double overallChance = chance + chancePerLevel * hero.getHeroLevel();
+        if (overallChance > 1) {
+            overallChance = 1;
+        } else if (overallChance < 0) {
+            overallChance = 0;
+        }
+        return overallChance;
     }
 
     public class DefensiveStanceEffect extends ExpirableEffect {
@@ -132,20 +136,13 @@ public class SkillDefensiveStance extends ActiveSkill {
             Player player = (Player) event.getEntity();
             Hero hero = plugin.getCharacterManager().getHero(player);
             if (hero.hasEffect(getName())) {
-                double chance = SkillConfigManager.getUseSetting(hero, skill, SkillSetting.CHANCE, 0.8, false);
-                double chancePerLevel = SkillConfigManager.getUseSetting(hero, skill, SkillSetting.CHANCE_PER_LEVEL, 0.02, false);
-                double overallChance = chance + chancePerLevel * hero.getHeroLevel();
-                if (overallChance > 1) {
-                    overallChance = 1;
-                } else if (overallChance < 0) {
-                    overallChance = 0;
-                }
+                double overallChance = getOverallHitChance(hero, skill);
 
                 if (overallChance != 1 && Util.nextRand() > overallChance) {
                     return;
                 }
 
-                hero.getEffect(getName()).removeFromHero(hero);
+                hero.removeEffect(hero.getEffect(getName()));
                 event.setCancelled(true);
 
                 player.sendMessage(parryText.replace("%hero%", "You"));
@@ -163,21 +160,14 @@ public class SkillDefensiveStance extends ActiveSkill {
             Player player = (Player) event.getEntity();
             Hero hero = plugin.getCharacterManager().getHero(player);
             if (hero.hasEffect(getName())) {
-                double chance = SkillConfigManager.getUseSetting(hero, skill, SkillSetting.CHANCE, 0.8, false);
-                double chancePerLevel = SkillConfigManager.getUseSetting(hero, skill, SkillSetting.CHANCE_PER_LEVEL, 0.02, false);
-                double overallChance = chance + chancePerLevel * hero.getHeroLevel();
-                if (overallChance > 1) {
-                    overallChance = 1;
-                } else if (overallChance < 0) {
-                    overallChance = 0;
-                }
+                double overallChance = getOverallHitChance(hero, skill);
 
                 //TODO: Check if the random chance is properly checked.
                 if (overallChance != 1 && Util.nextRand() > overallChance) {
                     return;
                 }
 
-                hero.getEffect(getName()).removeFromHero(hero);
+                hero.removeEffect(hero.getEffect(getName()));
                 event.setCancelled(true);
 
                 String message = event.getSkill().isType(SkillType.ABILITY_PROPERTY_MAGICAL) ? parrySkillMagicText : parrySkillText;
