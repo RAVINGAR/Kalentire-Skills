@@ -31,7 +31,7 @@ public class SkillGrapple extends ActiveSkill {
 
     public SkillGrapple(Heroes plugin) {
         super(plugin, "Grapple");
-        setDescription("Using your chains as leverage, you use your tremendous strength to jump and grapple your way down the chains." +
+        setDescription("After aiming at the hook you wish to use as leverage, you use your tremendous strength to jump and grapple your way down the chains." +
                 "Enemies are haulted slightly by this motion, whereas allies assist in pulling you further.");
         setUsage("/skill grapple");
         setArgumentRange(0, 0);
