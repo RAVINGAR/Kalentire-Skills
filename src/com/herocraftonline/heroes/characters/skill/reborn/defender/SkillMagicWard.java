@@ -42,7 +42,7 @@ public class SkillMagicWard extends ActiveSkill {
     public String getDescription(Hero hero) {
         int duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, 4000, false);
         double damageReduction = SkillConfigManager.getUseSetting(hero, this, "damage-reduction", 0.2, false);
-        int maxAlliesProtected = SkillConfigManager.getUseSetting(hero, this, "max-allies-protected", 4, false);
+        int maxAlliesProtected = SkillConfigManager.getUseSetting(hero, this, "max-allies-protected", -1, false);
         boolean requireShieldToActivate = SkillConfigManager.getUseSetting(hero, this, "require-shield-to-activate", false);
 
         String formattedDuration = Util.decFormat.format(duration / 1000.0);
@@ -64,7 +64,7 @@ public class SkillMagicWard extends ActiveSkill {
         node.set("damage-reduction", 0.2);
         node.set(SkillSetting.DURATION.node(), 4000);
         node.set(SkillSetting.RADIUS.node(), 10.0);
-        node.set("max-allies-protected", 4);
+        node.set("max-allies-protected", -1);
         node.set("require-shield-to-activate", false);
         node.set("allow-doors-as-shields", false);
         node.set("allow-trapdoors-as-shields", false);
@@ -97,7 +97,7 @@ public class SkillMagicWard extends ActiveSkill {
 
         int duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, 4000, false);
         double damageReduction = SkillConfigManager.getUseSetting(hero, this, "damage-reduction", 0.2, false);
-        int maxAlliesProtected = SkillConfigManager.getUseSetting(hero, this, "max-allies-protected", 4, false);
+        int maxAlliesProtected = SkillConfigManager.getUseSetting(hero, this, "max-allies-protected", -1, false);
         double radius = SkillConfigManager.getUseSetting(hero, this, SkillSetting.RADIUS.node(), 10.0, false);
 
         // Apply ward to party members
@@ -105,26 +105,24 @@ public class SkillMagicWard extends ActiveSkill {
             Set<Hero> partyMembers = hero.getParty().getMembers();
             partyMembers.remove(hero);
 
-            boolean protectWholeParty = maxAlliesProtected < 0;
-            if (protectWholeParty) {
-                for (Hero partyMember : hero.getParty().getMembers()) {
-                    if (partyMember.getPlayer().getLocation().distance(player.getLocation()) <= radius)
-                        partyMember.addEffect(new MagicWardEffect(this, player, duration, damageReduction, null, null));
+            if (maxAlliesProtected < 0) {
+                // protect whole party
+                maxAlliesProtected = partyMembers.size();
+            }
+
+            int alliesProtected = 0;
+            for (Hero partyMember : hero.getParty().getMembers()) {
+                if (alliesProtected == maxAlliesProtected){
+                    break;
                 }
-            } else {
-                int alliesProtected = 0;
-                for (Hero partyMember : hero.getParty().getMembers()) {
-                    if (alliesProtected == maxAlliesProtected){
-                        break;
-                    }
-                    if (partyMember.getPlayer().getLocation().distance(player.getLocation()) <= radius) {
-                        partyMember.addEffect(new MagicWardEffect(this, player, duration, damageReduction, null, null));
-                        alliesProtected++;
-                    }
+                if (partyMember.getPlayer().getLocation().distance(player.getLocation()) <= radius) {
+                    partyMember.addEffect(new MagicWardEffect(this, player, duration, damageReduction, null, null));
+                    alliesProtected++;
                 }
             }
 
         }
+        // apply ward to caster
         hero.addEffect(new MagicWardEffect(this, player, duration, damageReduction, applyText, expireText));
 
         player.getWorld().playSound(player.getLocation(), Sound.ENTITY_BLAZE_AMBIENT, 0.8F, 1.0F);
