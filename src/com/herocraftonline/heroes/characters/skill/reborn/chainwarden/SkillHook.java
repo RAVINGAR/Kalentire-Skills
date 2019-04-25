@@ -37,7 +37,8 @@ public class SkillHook extends ActiveSkill {
 
     public SkillHook(Heroes plugin) {
         super(plugin, "Hook");
-        setDescription("You launch a hook and chain outward at high speeds. The hook will latch onto whatever it hits for the next $1 seconds. " +
+        setDescription("You pull a chain from your chainbelt and attach a hook to it, then throw it forwards at high speeds. " +
+                "The hook will latch onto whatever it hits for the next $1 seconds. " +
                 "Enemies will be dealt $2 damage on hit. Any targets that run over $3 blocks away will be yanked back slightly and have their hook dislodged.");
         setUsage("/skill hook");
         setIdentifiers("skill hook");
