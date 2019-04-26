@@ -179,7 +179,7 @@ public class SkillNoxiousMinion extends ActiveSkill {
                 MobDisguise disguise = new MobDisguise(DisguiseType.getType(EntityType.CAVE_SPIDER), true);
                 disguise.setEntity(minion);
                 disguise.setShowName(true);
-                disguise.setModifyBoundingBox(true);
+                disguise.setModifyBoundingBox(false);
                 disguise.setReplaceSounds(true);
                 disguise.setKeepDisguiseOnPlayerDeath(true);
                 disguise.startDisguise();

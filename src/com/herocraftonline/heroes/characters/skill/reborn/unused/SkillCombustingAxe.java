@@ -1,4 +1,4 @@
-package com.herocraftonline.heroes.characters.skill.reborn.hellspawn;
+package com.herocraftonline.heroes.characters.skill.reborn.unused;
 
 import com.herocraftonline.heroes.Heroes;
 import com.herocraftonline.heroes.api.events.WeaponDamageEvent;

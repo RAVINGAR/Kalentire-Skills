@@ -71,7 +71,7 @@ public class SkillChaosOrb extends ActiveSkill {
         config.set(SkillSetting.DAMAGE.node(), 120);
         config.set(SkillSetting.DAMAGE_INCREASE_PER_INTELLECT.node(), 1.25);
         config.set("burn-duration", 2000);
-        config.set("burn-damage-multiplier", 2.0);
+        config.set("burn-damage-multiplier", 1.5);
         config.set("velocity-multiplier", 0.75);
         config.set("ticks-before-drop", 5);
         config.set("y-value-drop", 0.35);
@@ -144,7 +144,7 @@ public class SkillChaosOrb extends ActiveSkill {
             }
 
             int burnDuration = SkillConfigManager.getUseSetting(hero, skill, "burn-duration", 2000, false);
-            double burnMultipliaer = SkillConfigManager.getUseSetting(hero, skill, "burn-damage-multiplier", 2.0, false);
+            double burnMultipliaer = SkillConfigManager.getUseSetting(hero, skill, "burn-damage-multiplier", 1.5, false);
             double damage = SkillConfigManager.getUseSetting(hero, skill, SkillSetting.DAMAGE, 90, false);
             double damageIncrease = SkillConfigManager.getUseSetting(hero, skill, SkillSetting.DAMAGE_INCREASE_PER_INTELLECT, 0.0, false);
             damage += damageIncrease * hero.getAttributeValue(AttributeType.INTELLECT);

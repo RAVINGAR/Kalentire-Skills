@@ -9,14 +9,14 @@ import com.herocraftonline.heroes.characters.effects.ExpirableEffect;
 import com.herocraftonline.heroes.characters.effects.common.SafeFallEffect;
 import com.herocraftonline.heroes.characters.skill.*;
 import com.herocraftonline.heroes.chat.ChatComponents;
-import com.herocraftonline.heroes.nms.physics.NMSPhysics;
-import com.herocraftonline.heroes.nms.physics.RayCastHit;
 import com.herocraftonline.heroes.util.Util;
 import org.bukkit.*;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
 import org.bukkit.configuration.ConfigurationSection;
-import org.bukkit.entity.*;
+import org.bukkit.entity.Entity;
+import org.bukkit.entity.LivingEntity;
+import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.HandlerList;
@@ -30,7 +30,6 @@ import org.bukkit.util.BlockIterator;
 import org.bukkit.util.Vector;
 
 import java.util.*;
-import java.util.logging.Level;
 
 public class SkillOvergrowth extends TargettedLocationSkill {
 
@@ -233,11 +232,13 @@ public class SkillOvergrowth extends TargettedLocationSkill {
         return entitiesWithinRadius;
     }
 
-    private List<LivingEntity> getLivingEntitiesWithinFlatCircle(Location center, int radius) {
+    private List<LivingEntity> getLivingEntitiesWithinFlatCircle(Location center, double radius) {
         World world = center.getWorld();
         List<LivingEntity> worldEntities = world.getLivingEntities();
         List<LivingEntity> entitiesWithinRadius = new ArrayList<LivingEntity>();
-        List<Block> blocksInRadius = getBlocksWithinFlatCircle(center, radius);
+        List<Block> blocksInRadius = getBlocksWithinFlatCircle(center, (int) radius);
+
+        world.getNearbyEntities(center, radius, 2, radius);
 
         for (LivingEntity entity : worldEntities) {
             Block standingBlock = entity.getLocation().getBlock();
@@ -246,20 +247,6 @@ public class SkillOvergrowth extends TargettedLocationSkill {
         }
         return entitiesWithinRadius;
     }
-
-//    private List<Entity> getEntitiesWithinFlatCircle(Location center, int radius) {
-//        World world = center.getWorld();
-//        List<Entity> worldEntities = world.getEntities();
-//        List<Entity> entitiesWithinRadius = new ArrayList<Entity>();
-//        List<Block> blocksInRadius = getBlocksWithinFlatCircle(center, radius);
-//
-//        for (Entity entity : worldEntities) {
-//            Block standingBlock = entity.getLocation().getBlock();
-//            if (blocksInRadius.contains(standingBlock))
-//                entitiesWithinRadius.add(entity);
-//        }
-//        return entitiesWithinRadius;
-//    }
 
     private List<Block> getBlocksWithinSphere(Location center, int radius, boolean hollow) {
         List<Block> sphereBlocks = new ArrayList<Block>();

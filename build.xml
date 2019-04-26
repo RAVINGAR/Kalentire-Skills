@@ -11,7 +11,7 @@
     <property name="dir.maven.dependencies" value ="maven" />
     <property name="skill-packs" value="public1,pack1,pack2,pack3,pack4,pack5,pack6,pack7,pack8,skills" />
     <!--<property name="reborn-classes" value="arcanist,chainwarden,chronomancer,defender,dragoon,druid,enderbeast,hellspawn,necromancer,pathfinder,professions,pyromancer,shared" />-->
-    <property name="reborn-classes" value="necromancer,chainwarden" />
+    <property name="reborn-classes" value="dragoon" />
 
     <!--Classpath used by javac compiler-->
     <path id="classpath">

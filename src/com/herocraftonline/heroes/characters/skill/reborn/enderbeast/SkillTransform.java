@@ -116,9 +116,9 @@ public class SkillTransform extends ActiveSkill {
         public void tickHero(Hero hero) {
             Player player = hero.getPlayer();
             double newHealth = player.getHealth() - healthDrainTick;
-            if (newHealth < 1)
+            if (newHealth < 1) {
                 hero.removeEffect(this);
-            else {
+            } else {
                 // Trying to disable screen shake. It isn't working.
                 Damageable playerDamageable = (Damageable) player;
                 playerDamageable.setHealth(newHealth);

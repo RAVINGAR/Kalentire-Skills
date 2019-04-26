@@ -61,7 +61,7 @@ public class SkillChaosStream extends ActiveSkill {
         int numFireballs = SkillConfigManager.getUseSetting(hero, this, "total-projectile-count", 20, false);
 
         int burnDuration = SkillConfigManager.getUseSetting(hero, this, "burn-duration", 2000, false);
-        double burnMultipliaer = SkillConfigManager.getUseSetting(hero, this, "burn-damage-multiplier", 2.0, false);
+        double burnMultipliaer = SkillConfigManager.getUseSetting(hero, this, "burn-damage-multiplier", 1.5, false);
         double totalBurnDamage = plugin.getDamageManager().calculateFireTickDamage((int) (burnDuration / 50), burnMultipliaer);
 
         double effectivenessDecrease = SkillConfigManager.getUseSetting(hero, this, "effectiveness-decrease-per-hit-percent", 0.20, false);

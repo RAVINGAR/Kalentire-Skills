@@ -11,11 +11,11 @@ import com.herocraftonline.heroes.characters.skill.SkillSetting;
 import com.herocraftonline.heroes.characters.skill.SkillType;
 import com.herocraftonline.heroes.characters.skill.TargettedSkill;
 import com.herocraftonline.heroes.chat.ChatComponents;
-import com.herocraftonline.heroes.nms.NMSHandler;
 import com.herocraftonline.heroes.util.Util;
-import org.bukkit.*;
-import org.bukkit.block.Block;
-import org.bukkit.block.BlockFace;
+import org.bukkit.Location;
+import org.bukkit.Material;
+import org.bukkit.Particle;
+import org.bukkit.Sound;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
@@ -31,7 +31,7 @@ public class SkillImpale extends TargettedSkill {
     public SkillImpale(Heroes plugin) {
         super(plugin, "Impale");
         setDescription("You impale your target with your weapon, dealing $1 physical damage and slowing them for $2 second(s). " +
-                "If you impale the target against a wall, they will be stunned for $3 seconds instead.");
+                "If you impale the target against a wall, they will be stunned for $3 seconds as well.");
         setUsage("/skill impale");
         setArgumentRange(0, 0);
         setIdentifiers("skill impale");
@@ -102,11 +102,7 @@ public class SkillImpale extends TargettedSkill {
         Vector playerDirection = player.getLocation().getDirection().normalize().multiply(0.9);
 
         Location behindLoc = target.getEyeLocation().add(playerDirection);
-//        Location behindDoubleLoc = target.getEyeLocation().add(playerDirection.multiply(2));
-
-        // get block
         Material blockBehindTarget = behindLoc.getBlock().getType();
-//        Material blockDoubleBehindTarget = behindDoubleLoc.getBlock().getType();
 
         long duration;
         int amplitude;
@@ -116,14 +112,14 @@ public class SkillImpale extends TargettedSkill {
 
             StunEffect effect = new StunEffect(this, player, duration, stunApplyText, expireText);
             plugin.getCharacterManager().getCharacter(target).addEffect(effect);
-        } else {
-            // Add the slow effect
-            duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, 3000, false);
-            amplitude = SkillConfigManager.getUseSetting(hero, this, "slow-amplitude", 2, false);
-
-            SlowEffect effect = new SlowEffect(this, player, duration, amplitude, applyText, expireText);
-            plugin.getCharacterManager().getCharacter(target).addEffect(effect);
         }
+
+        // Add the slow effect
+        duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, 3000, false);
+        amplitude = SkillConfigManager.getUseSetting(hero, this, "slow-amplitude", 2, false);
+
+        SlowEffect effect = new SlowEffect(this, player, duration, amplitude, applyText, expireText);
+        plugin.getCharacterManager().getCharacter(target).addEffect(effect);
 
         player.getWorld().playSound(player.getLocation(), Sound.ENTITY_GENERIC_HURT, 1.0F, 1.0F);
         player.getWorld().spawnParticle(Particle.CRIT, target.getLocation().add(0, 0.5, 0), 75, 0, 0, 0, 1);

@@ -18,8 +18,8 @@ public class SkillHellgate extends ActiveSkill {
         super(plugin, "Hellgate");
         setDescription("You teleport your party to or from the nether.");
         setUsage("/skill hellgate");
-        setArgumentRange(0, 0);
         setIdentifiers("skill hellgate");
+        setArgumentRange(0, 0);
         setTypes(SkillType.SILENCEABLE, SkillType.TELEPORTING, SkillType.AREA_OF_EFFECT, SkillType.ABILITY_PROPERTY_DARK, SkillType.ABILITY_PROPERTY_FIRE);
     }
 
@@ -30,17 +30,15 @@ public class SkillHellgate extends ActiveSkill {
 
     @Override
     public ConfigurationSection getDefaultConfig() {
-        ConfigurationSection node = super.getDefaultConfig();
-
-        node.set(SkillSetting.RADIUS.node(), 10);
-        node.set("teleport-absolute", false);
-        //Defaults set to coordinates of hell island
-        node.set("x", 612);
-        node.set("y", 124);
-        node.set("z", -65);
-        node.set("hell-world", "hell");
-        node.set("default-return", "bastion"); // default world the player return to if their location wasn't saved
-        return node;
+        ConfigurationSection config = super.getDefaultConfig();
+        config.set(SkillSetting.RADIUS.node(), 10);
+        config.set("teleport-absolute", false);
+        config.set("x", 612);
+        config.set("y", 124);
+        config.set("z", -65);
+        config.set("hell-world", "world_nether");
+        config.set("default-return", "world");
+        return config;
     }
 
     @Override
@@ -84,19 +82,19 @@ public class SkillHellgate extends ActiveSkill {
             }
 
             hero.addEffect(new HellgateEffect(this, player.getLocation()));
-            
+
             boolean absolute = SkillConfigManager.getUseSetting(hero, this, "teleport-absolute", false);
             if (absolute) {
-            	Location cur = hero.getPlayer().getLocation();
-            	
-            	//If no config setting, just leave them where they are
-            	int x = SkillConfigManager.getUseSetting(hero, this, "x", cur.getBlockX(), false);
-            	int y = SkillConfigManager.getUseSetting(hero, this, "y", cur.getBlockY(), false);
-            	int z = SkillConfigManager.getUseSetting(hero, this, "z", cur.getBlockZ(), false);
-            	
-            	teleportLocation = new Location(world, x, y, z);
+                Location cur = hero.getPlayer().getLocation();
+
+                //If no config setting, just leave them where they are
+                int x = SkillConfigManager.getUseSetting(hero, this, "x", cur.getBlockX(), false);
+                int y = SkillConfigManager.getUseSetting(hero, this, "y", cur.getBlockY(), false);
+                int z = SkillConfigManager.getUseSetting(hero, this, "z", cur.getBlockZ(), false);
+
+                teleportLocation = new Location(world, x, y, z);
             } else {
-            	teleportLocation = world.getSpawnLocation();
+                teleportLocation = world.getSpawnLocation();
             }
         }
 
@@ -132,24 +130,23 @@ public class SkillHellgate extends ActiveSkill {
 
         player.teleport(teleportLocation);
 
-        hero.getPlayer().getWorld().playSound(hero.getPlayer().getLocation(), Sound.BLOCK_PORTAL_TRAVEL , 0.5F, 1.0F);
+        hero.getPlayer().getWorld().playSound(hero.getPlayer().getLocation(), Sound.BLOCK_PORTAL_TRAVEL, 0.5F, 1.0F);
         broadcastExecuteText(hero);
         return SkillResult.NORMAL;
     }
 
     // Tracks the players original location for returning
     public class HellgateEffect extends Effect {
-
         private final Location location;
 
-        public HellgateEffect(Skill skill, Location location) {
+        HellgateEffect(Skill skill, Location location) {
             super(skill, "Hellgate");
+
             this.location = location;
         }
 
         public Location getLocation() {
             return location;
         }
-
     }
 }

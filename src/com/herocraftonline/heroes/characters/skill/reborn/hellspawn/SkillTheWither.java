@@ -18,6 +18,10 @@ import com.herocraftonline.heroes.characters.equipment.EquipmentType;
 import com.herocraftonline.heroes.characters.skill.*;
 import com.herocraftonline.heroes.chat.ChatComponents;
 import com.herocraftonline.heroes.util.Util;
+import me.libraryaddict.disguise.DisguiseAPI;
+import me.libraryaddict.disguise.disguisetypes.Disguise;
+import me.libraryaddict.disguise.disguisetypes.DisguiseType;
+import me.libraryaddict.disguise.disguisetypes.MobDisguise;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -74,6 +78,7 @@ public class SkillTheWither extends ActiveSkill {
     public ConfigurationSection getDefaultConfig() {
         ConfigurationSection config = super.getDefaultConfig();
         config.set(SkillSetting.DURATION.node(), 10000);
+        config.set("self-speed-amplifier", 2);
         config.set("on-hit-wither-duration", 6000);
         config.set("wither-amplifier-per-stack", 3);
         config.set(SkillSetting.APPLY_TEXT.node(), ChatComponents.GENERIC_SKILL + "%hero% has assumed a wither form!");
@@ -94,19 +99,23 @@ public class SkillTheWither extends ActiveSkill {
     public SkillResult use(Hero hero, String[] args) {
         Player player = hero.getPlayer();
 
+        broadcastExecuteText(hero);
+
         int duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, 10000, false);
-        hero.addEffect(new WitherformEffect(this, player, duration));
+        int speedAmplifier = SkillConfigManager.getUseSetting(hero, this, "self-speed-amplifier", 2, false);
+
+        hero.addEffect(new WitherformEffect(this, player, duration, speedAmplifier));
+
         Location location = player.getLocation();
         location.getWorld().playSound(location, Sound.ENTITY_WITHER_SKELETON_STEP, 0.5F, 0.5f);
         location.getWorld().playSound(location, Sound.ENTITY_PARROT_IMITATE_WITHER_SKELETON, 1F, 1f);
-        broadcastExecuteText(hero);
 
         return SkillResult.NORMAL;
     }
 
     public class WitherformEffect extends PeriodicExpirableEffect {
 
-        WitherformEffect(Skill skill, Player applier, long duration) {
+        WitherformEffect(Skill skill, Player applier, long duration, int speedAmplifier) {
             super(skill, effectName, applier, 500, duration, applyText, expireText);
 
             types.add(EffectType.DISPELLABLE);
@@ -116,6 +125,8 @@ public class SkillTheWither extends ActiveSkill {
             types.add(EffectType.FORM);
 
             addPotionEffect(new PotionEffect(PotionEffectType.WITHER, (int) (duration / 50), 1));
+            if (speedAmplifier > -1)
+                addPotionEffect(new PotionEffect(PotionEffectType.SPEED, (int) (duration / 50), speedAmplifier));
         }
 
         @Override
@@ -129,7 +140,7 @@ public class SkillTheWither extends ActiveSkill {
 //                disguiseAsWitherSkelly(player);
             } else {
                 addWitherSkull(hero, player);
-                player.setFireTicks((int) (getRemainingTime() * 50));
+                forceFireTicks(hero.getEntity());
             }
         }
 
@@ -147,7 +158,7 @@ public class SkillTheWither extends ActiveSkill {
 
             Player player = hero.getPlayer();
             if (disguiseApiLoaded) {
-//                removeDisguise(player);
+                removeDisguise(player);
             } else {
                 removeWitherSkull(player);
             }
@@ -160,27 +171,27 @@ public class SkillTheWither extends ActiveSkill {
             player.setFireTicks(-1);
         }
 
-//        private void disguiseAsWitherSkelly(Player player) {
-//            if (DisguiseAPI.isDisguised(player)) {
-//                removeDisguise(player);
-//            }
-//
-//            MobDisguise disguise = new MobDisguise(DisguiseType.getType(EntityType.WITHER_SKELETON), true);
-//            disguise.setKeepDisguiseOnPlayerDeath(false);
-//            disguise.setEntity(player);
-//            disguise.setShowName(true);
-//            disguise.setReplaceSounds(true);
-//            disguise.setHearSelfDisguise(true);
-//            disguise.startDisguise();
-//        }
-//
-//        private void removeDisguise(Player player) {
-//            if (DisguiseAPI.isDisguised(player)) {
-//                Disguise disguise = DisguiseAPI.getDisguise(player);
-//                disguise.stopDisguise();
-//                disguise.removeDisguise();
-//            }
-//        }
+        private void disguiseAsWitherSkelly(Player player) {
+            if (DisguiseAPI.isDisguised(player)) {
+                removeDisguise(player);
+            }
+
+            MobDisguise disguise = new MobDisguise(DisguiseType.getType(EntityType.WITHER_SKELETON), true);
+            disguise.setKeepDisguiseOnPlayerDeath(false);
+            disguise.setEntity(player);
+            disguise.setShowName(true);
+            disguise.setReplaceSounds(true);
+            disguise.setHearSelfDisguise(true);
+            disguise.startDisguise();
+        }
+
+        private void removeDisguise(Player player) {
+            if (DisguiseAPI.isDisguised(player)) {
+                Disguise disguise = DisguiseAPI.getDisguise(player);
+                disguise.stopDisguise();
+                disguise.removeDisguise();
+            }
+        }
 
         private void addWitherSkull(Hero hero, Player player) {
             PlayerInventory inventory = player.getInventory();
@@ -221,7 +232,7 @@ public class SkillTheWither extends ActiveSkill {
         }
 
         private void forceFireTicks(LivingEntity entity) {
-            entity.setFireTicks((int)(getPeriod() / 50) + 1);
+            entity.setFireTicks((int)(getPeriod() / 50) + 2);   // Add 2 extra ticks so it doesn't fall off inbetween pulses.
         }
     }
 

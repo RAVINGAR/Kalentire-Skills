@@ -138,18 +138,18 @@ public class SkillSkeletonKnight extends ActiveSkill {
                 MobDisguise disguise = new MobDisguise(DisguiseType.getType(EntityType.SKELETON), false);
                 disguise.setEntity(minion);
                 disguise.setShowName(true);
-                disguise.setModifyBoundingBox(true);
+                disguise.setModifyBoundingBox(false);
                 disguise.setReplaceSounds(true);
                 disguise.setKeepDisguiseOnPlayerDeath(true);
                 LivingWatcher watcher = disguise.getWatcher();
-                ItemStack[] fakeInventory = new ItemStack[]{
-                        new ItemStack(Material.DIAMOND_BOOTS, 1),
-                        new ItemStack(Material.DIAMOND_LEGGINGS, 1),
-                        new ItemStack(Material.DIAMOND_CHESTPLATE, 1),
+                ItemStack[] fakeInventory = new ItemStack[] {
+                        new ItemStack(Material.IRON_BOOTS, 1),
+                        new ItemStack(Material.IRON_LEGGINGS, 1),
+                        new ItemStack(Material.IRON_CHESTPLATE, 1),
                         new ItemStack(Material.AIR, 1)
                 };
                 watcher.setArmor(fakeInventory);
-                watcher.setItemInMainHand(new ItemStack(Material.DIAMOND_SWORD, 1));
+                watcher.setItemInMainHand(new ItemStack(Material.IRON_SWORD, 1));
                 watcher.setItemInOffHand(new ItemStack(Material.SHIELD, 1));
                 disguise.startDisguise();
             }

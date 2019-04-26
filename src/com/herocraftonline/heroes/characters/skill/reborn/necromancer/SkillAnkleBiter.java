@@ -166,7 +166,7 @@ public class SkillAnkleBiter extends ActiveSkill {
                 MobDisguise disguise = new MobDisguise(DisguiseType.getType(EntityType.ZOMBIE), false);
                 disguise.setEntity(minion);
                 disguise.setShowName(true);
-                disguise.setModifyBoundingBox(true);
+                disguise.setModifyBoundingBox(false);
                 disguise.setReplaceSounds(true);
                 disguise.setKeepDisguiseOnPlayerDeath(true);
                 disguise.startDisguise();
