@@ -17,7 +17,7 @@ import java.util.logging.Level;
 public class SkillWardensRend extends ActiveSkill {
     public SkillWardensRend(Heroes plugin) {
         super(plugin, "WardensRend");
-        setDescription("Rend all of your currently hooked enemies, Hemorrhaging each one of them.");
+        setDescription("Rend all of your currently hooked enemies, hemorrhaging each one of them.");
         setUsage("/skill wardensrend");
         setIdentifiers("skill wardensrend");
         setArgumentRange(0, 0);

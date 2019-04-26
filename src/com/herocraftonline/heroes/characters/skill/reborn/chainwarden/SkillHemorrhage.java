@@ -26,10 +26,10 @@ public class SkillHemorrhage extends TargettedSkill {
 
     public SkillHemorrhage(Heroes plugin) {
         super(plugin, "Hemorrhage");
-        this.setDescription("Violently wrench your hook out of a target, dealing $1 physical damage and interrupting their casting.");
+        this.setDescription("After aiming at a hooked target, you violently wrench your hook out of them, dealing $1 physical damage and interrupting their casting.");
         this.setUsage("/skill hemorrhage");
-        this.setArgumentRange(0, 1);
         this.setIdentifiers("skill hemorrhage");
+        this.setArgumentRange(0, 1);
         this.setTypes(SkillType.ABILITY_PROPERTY_PHYSICAL, SkillType.DAMAGING, SkillType.AGGRESSIVE, SkillType.INTERRUPTING);
     }
 

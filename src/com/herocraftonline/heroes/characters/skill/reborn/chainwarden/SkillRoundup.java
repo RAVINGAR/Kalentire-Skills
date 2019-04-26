@@ -18,7 +18,7 @@ import java.util.logging.Level;
 public class SkillRoundup extends ActiveSkill {
     public SkillRoundup(Heroes plugin) {
         super(plugin, "Roundup");
-        setDescription("Roundup your prisoners, Yanking every single one of your currently hooked targets.");
+        setDescription("You roundup your currently hooked targets, yanking each one of them towards you.");
         setUsage("/skill roundup");
         setIdentifiers("skill roundup");
         setArgumentRange(0, 0);

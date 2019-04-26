@@ -27,11 +27,11 @@ public class SkillYank extends TargettedSkill {
 
     public SkillYank(Heroes plugin) {
         super(plugin, "Yank");
-        setDescription("Yank on the chains of a hooked target, pulling them towards you and dealing $1 damage. " +
+        setDescription("After aiming at a hooked target, you yank on their chains, removing the hook and pulling them towards you, dealing $1 damage. " +
                 "Chained allies are more willing to allow this to happen, and so they do not take damage and are pulled harder.");
         setUsage("/skill yank");
-        setArgumentRange(0, 0);
         setIdentifiers("skill yank");
+        setArgumentRange(0, 0);
         setTypes(SkillType.ABILITY_PROPERTY_PHYSICAL, SkillType.NO_SELF_TARGETTING, SkillType.MULTI_GRESSIVE);
     }
 
