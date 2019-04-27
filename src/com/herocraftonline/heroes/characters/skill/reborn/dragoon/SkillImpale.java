@@ -50,7 +50,7 @@ public class SkillImpale extends TargettedSkill {
         return getDescription()
                 .replace("$1", Util.decFormat.format(damage))
                 .replace("$2", Util.decFormat.format(duration / 1000.0))
-                .replace("$2", Util.decFormat.format(stunDuration / 1000.0));
+                .replace("$3", Util.decFormat.format(stunDuration / 1000.0));
     }
 
     @Override

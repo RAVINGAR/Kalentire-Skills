@@ -107,7 +107,9 @@ public class SkillManaMissile extends PassiveSkill {
             if (!hero.canUseSkill(skill))
                 return;
 
-            event.setCancelled(true);
+            if (validateCanCast(hero)) {
+                event.setCancelled(true);
+            }
         }
 
         private void fireProjectile(Player player, Hero hero) {

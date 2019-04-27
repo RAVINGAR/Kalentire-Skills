@@ -1,20 +1,15 @@
 package com.herocraftonline.heroes.characters.skill.reborn.ninja;
 
-import org.bukkit.configuration.ConfigurationSection;
-import org.bukkit.entity.Player;
-import org.bukkit.util.Vector;
-
 import com.herocraftonline.heroes.Heroes;
 import com.herocraftonline.heroes.api.SkillResult;
 import com.herocraftonline.heroes.characters.Hero;
 import com.herocraftonline.heroes.characters.effects.common.InvisibleEffect;
-import com.herocraftonline.heroes.characters.skill.ActiveSkill;
-import com.herocraftonline.heroes.characters.skill.Skill;
-import com.herocraftonline.heroes.characters.skill.SkillConfigManager;
-import com.herocraftonline.heroes.characters.skill.SkillSetting;
-import com.herocraftonline.heroes.characters.skill.SkillType;
+import com.herocraftonline.heroes.characters.skill.*;
 import com.herocraftonline.heroes.chat.ChatComponents;
 import com.herocraftonline.heroes.util.Util;
+import org.bukkit.configuration.ConfigurationSection;
+import org.bukkit.entity.Player;
+import org.bukkit.util.Vector;
 
 public class SkillSmokeBomb extends ActiveSkill {
 
@@ -23,7 +18,8 @@ public class SkillSmokeBomb extends ActiveSkill {
 
     public SkillSmokeBomb(Heroes plugin) {
         super(plugin, "SmokeBomb");
-        setDescription("Vanish in a smokebomb! You will not be visible to other players for the next $1 second(s). Taking damage or using abilities will cause you to reappear.");
+        setDescription("Vanish in a smokebomb! You will not be visible to other players for the next $1 second(s). " +
+                "Taking damage or using abilities will cause you to reappear.");
         setUsage("/skill smokebomb");
         setArgumentRange(0, 0);
         setIdentifiers("skill smokebomb", "skill smoke");
@@ -75,8 +71,7 @@ public class SkillSmokeBomb extends ActiveSkill {
     }
 
     public class SmokeEffect extends InvisibleEffect {
-
-        public SmokeEffect(Skill skill, Player applier, long duration) {
+        SmokeEffect(Skill skill, Player applier, long duration) {
             super(skill, applier, duration, null, null);
         }
 

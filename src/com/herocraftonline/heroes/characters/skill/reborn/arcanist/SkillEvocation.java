@@ -112,16 +112,21 @@ public class SkillEvocation extends ActiveSkill {
 
             // We were interrupted or finished casting.
             hero.removeEffect(this);
-            Long currentCD = hero.getCooldown(skill.getName());
-            if (currentCD == null || currentCD <= 0) {
-                long defaultCD = SkillConfigManager.getUseSetting(hero, skill, SkillSetting.COOLDOWN, 1000, false);
-                hero.setCooldown(skill.getName(), defaultCD);
-            }
         }
 
         @Override
         public void removeFromHero(Hero hero) {
             super.removeFromHero(hero);
+
+            long cooldownMillis = SkillConfigManager.getUseSetting(hero, skill, SkillSetting.COOLDOWN, 1000, false);
+            long currentTime = System.currentTimeMillis();
+
+            Long currentCd = hero.getCooldown(skill.getName());
+            long defaultCd = currentTime + cooldownMillis;
+            if (currentCd == null || currentCd < defaultCd) {
+                hero.setCooldown(skill.getName(), System.currentTimeMillis() + cooldownMillis);
+            }
+
             hero.removeEffect(hero.getEffect(effectName));
         }
     }

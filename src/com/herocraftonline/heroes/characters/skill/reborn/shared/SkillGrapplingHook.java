@@ -1,27 +1,4 @@
-package com.herocraftonline.heroes.characters.skill.reborn.ninja;
-
-import java.util.LinkedHashMap;
-import java.util.Map;
-
-import org.bukkit.Bukkit;
-import org.bukkit.Location;
-import org.bukkit.configuration.ConfigurationSection;
-import org.bukkit.entity.Arrow;
-import org.bukkit.entity.Entity;
-import org.bukkit.entity.LivingEntity;
-import org.bukkit.entity.Player;
-import org.bukkit.Sound;
-import org.bukkit.entity.Projectile;
-import org.bukkit.event.EventHandler;
-import org.bukkit.event.EventPriority;
-import org.bukkit.event.Listener;
-import org.bukkit.event.entity.EntityDamageByEntityEvent;
-import org.bukkit.event.entity.EntityDamageEvent;
-import org.bukkit.event.entity.EntityShootBowEvent;
-import org.bukkit.event.entity.ProjectileHitEvent;
-import org.bukkit.potion.PotionEffect;
-import org.bukkit.potion.PotionEffectType;
-import org.bukkit.util.Vector;
+package com.herocraftonline.heroes.characters.skill.reborn.shared;
 
 import com.google.common.collect.Lists;
 import com.herocraftonline.heroes.Heroes;
@@ -31,15 +8,27 @@ import com.herocraftonline.heroes.characters.effects.Effect;
 import com.herocraftonline.heroes.characters.effects.EffectType;
 import com.herocraftonline.heroes.characters.effects.ExpirableEffect;
 import com.herocraftonline.heroes.characters.effects.common.SafeFallEffect;
-import com.herocraftonline.heroes.characters.skill.ActiveSkill;
-import com.herocraftonline.heroes.characters.skill.Skill;
-import com.herocraftonline.heroes.characters.skill.SkillConfigManager;
-import com.herocraftonline.heroes.characters.skill.SkillSetting;
-import com.herocraftonline.heroes.characters.skill.SkillType;
+import com.herocraftonline.heroes.characters.skill.*;
 import com.herocraftonline.heroes.characters.skill.ncp.NCPFunction;
 import com.herocraftonline.heroes.characters.skill.ncp.NCPUtils;
 import com.herocraftonline.heroes.chat.ChatComponents;
 import com.herocraftonline.heroes.util.Util;
+import org.bukkit.Bukkit;
+import org.bukkit.Location;
+import org.bukkit.Sound;
+import org.bukkit.configuration.ConfigurationSection;
+import org.bukkit.entity.*;
+import org.bukkit.event.EventHandler;
+import org.bukkit.event.EventPriority;
+import org.bukkit.event.Listener;
+import org.bukkit.event.entity.EntityDamageByEntityEvent;
+import org.bukkit.event.entity.EntityDamageEvent;
+import org.bukkit.event.entity.EntityShootBowEvent;
+import org.bukkit.event.entity.ProjectileHitEvent;
+import org.bukkit.util.Vector;
+
+import java.util.LinkedHashMap;
+import java.util.Map;
 
 public class SkillGrapplingHook extends ActiveSkill {
 
@@ -64,9 +53,7 @@ public class SkillGrapplingHook extends ActiveSkill {
 
     public SkillGrapplingHook(Heroes plugin) {
         super(plugin, "GrapplingHook");
-        setDescription("Apply a grappling hook to $1 of your arrows. "
-                + "Once attached, your next $2 fired within the $3 seconds will grapple you to the targeted location! "
-                + "Hitting an enemy with the grappling hook will instead pull that person to you.");
+        setDescription("Apply a grappling hook to $1 of your arrows. Once attached, your $2 fired within the next $3 seconds will grapple you to the targeted location! Hitting a target with the grappling hook will pull them to you instead however.");
         setUsage("/skill grapplinghook");
         setArgumentRange(0, 0);
         setIdentifiers("skill grapplinghook");
@@ -79,9 +66,9 @@ public class SkillGrapplingHook extends ActiveSkill {
 
         String numShotsString = "";
         if (numShots > 1)
-            numShotsString = numShots + " shots";
+            numShotsString = "next " + numShots + " shots";
         else
-            numShotsString = "shot";
+            numShotsString = "next shot";
 
         //double velocityMultiplier = Util.formatDouble(SkillConfigManager.getUseSetting(hero, this, "velocity-multiplier", 0.5D, false));
         //velocityMultiplier = Util.formatDouble((1.0 - velocityMultiplier) * 100.0);
@@ -91,24 +78,21 @@ public class SkillGrapplingHook extends ActiveSkill {
     }
 
     public ConfigurationSection getDefaultConfig() {
-        ConfigurationSection node = super.getDefaultConfig();
-
-        node.set("num-shots", 1);
-        //node.set("velocity-multiplier", 0.5D);
-        node.set("max-distance", -1);
-        node.set("safe-fall-duration", 4500);
-        node.set(SkillSetting.DURATION.node(), 5000);
-        node.set("horizontal-divider", 6);
-        node.set("vertical-divider", 8);
-        node.set("multiplier", 1.0);
-        node.set("grapple-delay", 0.5);
-        node.set("ncp-exemption-duration", 3000);
-        node.set(SkillSetting.APPLY_TEXT.node(), ChatComponents.GENERIC_SKILL + "%hero% readies his grappling hook!");
-        node.set(SkillSetting.EXPIRE_TEXT.node(), ChatComponents.GENERIC_SKILL + "%hero% drops his grappling hook.");
-        node.set(SkillSetting.REAGENT.node(), 287);
-        node.set(SkillSetting.REAGENT_COST.node(), 2);
-
-        return node;
+        ConfigurationSection config = super.getDefaultConfig();
+        config.set("num-shots", 1);
+        config.set("projectile-velocity-multiplier", 0.75);
+        config.set("max-distance", 35);
+        config.set("safe-fall-duration", 4500);
+        config.set(SkillSetting.DURATION.node(), 5000);
+        config.set("horizontal-divider", 7);
+        config.set("vertical-divider", 6);
+        config.set("grapple-delay-ticks", 10);
+        config.set("ncp-exemption-duration", 0);
+        config.set(SkillSetting.APPLY_TEXT.node(), ChatComponents.GENERIC_SKILL + "%hero% readies his grappling hook!");
+        config.set(SkillSetting.EXPIRE_TEXT.node(), ChatComponents.GENERIC_SKILL + "%hero% drops his grappling hook.");
+        config.set(SkillSetting.REAGENT.node(), "STRING");
+        config.set(SkillSetting.REAGENT_COST.node(), 2);
+        return config;
     }
 
     public void init() {
@@ -142,10 +126,10 @@ public class SkillGrapplingHook extends ActiveSkill {
             }
 
             Hero hero = plugin.getCharacterManager().getHero((Player) event.getEntity());
-            if (hero.hasEffect("GrapplingHookBuff")) {
+            if (hero.hasEffect("GrapplingHookBuffEffect")) {
 
                 // Lower the number of shots left on the buff
-                GrapplingHookBuffEffect ghbEffect = (GrapplingHookBuffEffect) hero.getEffect("GrapplingHookBuff");
+                GrapplingHookBuffEffect ghbEffect = (GrapplingHookBuffEffect) hero.getEffect("GrapplingHookBuffEffect");
 
                 if (ghbEffect.getShotsLeft() < 1)
                     return;
@@ -154,14 +138,15 @@ public class SkillGrapplingHook extends ActiveSkill {
 
                 // If we're out of grapples, remove the buff.
                 if (ghbEffect.getShotsLeft() < 1) {
-                    ghbEffect.setShowExpireText(false);		// Don't show expire text if
+                    ghbEffect.setShowExpireText(false);        // Don't show expire text if
                     hero.removeEffect(ghbEffect);
                 }
 
                 // Modify the projectile
-                //double velocityMultiplier = SkillConfigManager.getUseSetting(hero, skill, "velocity-multiplier", 0.5D, false);
                 Arrow grapplingHook = (Arrow) event.getProjectile();
-                //grapplingHook.setVelocity(grapplingHook.getVelocity().normalize().multiply(velocityMultiplier));
+                double velocityMultiplier = SkillConfigManager.getUseSetting(hero, skill, "projectile-velocity-multiplier", 0.75, false);
+                if (velocityMultiplier != 1.0)
+                    grapplingHook.setVelocity(grapplingHook.getVelocity().multiply(velocityMultiplier));
 
                 // Put it on the hashmap so we can check it in another event.
                 grapplingHooks.put(grapplingHook, System.currentTimeMillis());
@@ -183,7 +168,7 @@ public class SkillGrapplingHook extends ActiveSkill {
             Player shooter = (Player) grapplingHook.getShooter();
             final Hero hero = plugin.getCharacterManager().getHero(shooter);
 
-            double grappleDelay = SkillConfigManager.getUseSetting(hero, skill, "grapple-delay", 0.5, false);
+            int grappleTicks = SkillConfigManager.getUseSetting(hero, skill, "grapple-delay-ticks", 10, false);
 
             Bukkit.getServer().getScheduler().scheduleSyncDelayedTask(plugin, new Runnable() {
                 public void run() {
@@ -194,8 +179,7 @@ public class SkillGrapplingHook extends ActiveSkill {
                     grapplingHooks.remove(grapplingHook);
                     grappleToLocation(hero, grapplingHook.getLocation());
                 }
-            }, (long) (grappleDelay * 20));
-
+            }, grappleTicks);
         }
 
         @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
@@ -276,30 +260,31 @@ public class SkillGrapplingHook extends ActiveSkill {
         double xDir = (targetLoc.getX() - playerLoc.getX()) / horizontalDivider;
         double yDir = (targetLoc.getY() - playerLoc.getY()) / verticalDivider;
         double zDir = (targetLoc.getZ() - playerLoc.getZ()) / horizontalDivider;
-        double multiplier = SkillConfigManager.getUseSetting(hero, this, "multiplier", 1.2, false);
-        final Vector vec = new Vector(xDir, yDir, zDir).multiply(multiplier);
+        final Vector vec = new Vector(xDir, yDir, zDir);
 
         // Prevent y velocity increase if told to.
         if (noY) {
-            vec.multiply(0.5).setY(0.5);	// Half the power of the grapple, and eliminate the y power
-        }
-        else {
+            vec.multiply(0.5).setY(0.5);    // Half the power of the grapple, and eliminate the y power
+        } else {
             // As long as we have Y, give them safefall
             int safeFallDuration = SkillConfigManager.getUseSetting(hero, this, "safe-fall-duration", 5000, false);
-            hero.addEffect(new JumpSafeFallEffect(this, player, safeFallDuration));
+            hero.addEffect(new SafeFallEffect(this, player, safeFallDuration));
         }
 
         // Grapple!
-        player.getWorld().playSound(playerLoc, Sound.ENTITY_MAGMA_CUBE_JUMP, 0.8F, 1.0F);
-        // Let's bypass the nocheat issues...
-        NCPUtils.applyExemptions(player, new NCPFunction() {
+        player.getWorld().playSound(playerLoc, Sound.ENTITY_MAGMACUBE_JUMP, 0.8F, 1.0F);
 
-            @Override
-            public void execute()
-            {
-                player.setVelocity(vec);
-            }
-        }, Lists.newArrayList("MOVING"), SkillConfigManager.getUseSetting(hero, this, "ncp-exemption-duration", 3000, false));
+        long exemptionDuration = SkillConfigManager.getUseSetting(hero, this, "ncp-exemption-duration", 0, false);
+        if (exemptionDuration > 0) {
+            NCPUtils.applyExemptions(player, new NCPFunction() {
+                @Override
+                public void execute() {
+                    player.setVelocity(vec);
+                }
+            }, Lists.newArrayList("MOVING"), exemptionDuration);
+        } else {
+            player.setVelocity(vec);
+        }
     }
 
     private void grappleTargetToPlayer(Hero hero, final LivingEntity target) {
@@ -331,13 +316,12 @@ public class SkillGrapplingHook extends ActiveSkill {
         final Vector vec = new Vector(xDir, 0, zDir).multiply(multiplier).setY(0.7);
 
         // Grapple!
-        player.getWorld().playSound(playerLoc, Sound.ENTITY_MAGMA_CUBE_JUMP, 0.8F, 1.0F);
+        player.getWorld().playSound(playerLoc, Sound.ENTITY_MAGMACUBE_JUMP, 0.8F, 1.0F);
         // Let's bypass the nocheat issues...
         NCPUtils.applyExemptions(player, new NCPFunction() {
 
             @Override
-            public void execute()
-            {
+            public void execute() {
                 target.setVelocity(vec);
             }
         }, Lists.newArrayList("MOVING"), SkillConfigManager.getUseSetting(hero, this, "ncp-exemption-duration", 3000, false));
@@ -350,7 +334,7 @@ public class SkillGrapplingHook extends ActiveSkill {
         private boolean showExpireText = true;
 
         public GrapplingHookBuffEffect(Skill skill, Player applier, long duration, int numShots) {
-            super(skill, "GrapplingHookBuff", applier, duration);
+            super(skill, "GrapplingHookBuffEffect", applier, duration);
             this.shotsLeft = numShots;
 
             types.add(EffectType.IMBUE);
@@ -396,18 +380,6 @@ public class SkillGrapplingHook extends ActiveSkill {
 
         public void setShowExpireText(boolean showExpireText) {
             this.showExpireText = showExpireText;
-        }
-    }
-
-    private class JumpSafeFallEffect extends SafeFallEffect {
-
-        public JumpSafeFallEffect(Skill skill, Player applier, int duration) {
-            super(skill, "GrappleJumpSafeFall", applier, duration);
-
-            types.add(EffectType.BENEFICIAL);
-            types.add(EffectType.JUMP_BOOST);
-
-            addPotionEffect(new PotionEffect(PotionEffectType.JUMP, duration / 1000 * 20, 5), false);
         }
     }
 }

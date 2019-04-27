@@ -34,7 +34,7 @@ public class SkillRuptureShot extends ActiveSkill {
         setUsage("/skill ruptureshot");
         setIdentifiers("skill ruptureshot", "skill ruptureshot");
         setArgumentRange(0, 0);
-        setTypes(SkillType.BUFFING, SkillType.ABILITY_PROPERTY_PROJECTILE);
+        setTypes(SkillType.BUFFING, SkillType.ABILITY_PROPERTY_PROJECTILE, SkillType.DAMAGING);
         setToggleableEffectName(toggleableEffectName);
 
         Bukkit.getServer().getPluginManager().registerEvents(new SkillDamageListener(this), plugin);

@@ -56,11 +56,6 @@ public class SkillYggdrasilsTouch extends ActiveSkill {
     public SkillResult use(Hero hero, String[] args) {
         Player player = hero.getPlayer();
 
-        if (hero.getParty() == null) {
-            player.sendMessage("    " + ChatComponents.GENERIC_SKILL + "You must be in a party to use this ability!");
-            return SkillResult.CANCELLED;
-        }
-
         broadcastExecuteText(hero);
 
         final double radius = SkillConfigManager.getUseSetting(hero, this, SkillSetting.RADIUS, 5, false);
@@ -69,13 +64,17 @@ public class SkillYggdrasilsTouch extends ActiveSkill {
         int duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, 5000, false);
 
         final Location heroLoc = player.getLocation();
-        for (final Hero partyHero : hero.getParty().getMembers()) {
-            if (!player.getWorld().equals(partyHero.getPlayer().getWorld()))
-                continue;
-            if (!(partyHero.getPlayer().getLocation().distanceSquared(heroLoc) <= radiusSquared))
-                continue;
+        if (hero.getParty() == null) {
+            hero.addEffect(new YggdrasilsMark(this, player, duration, radius, radiusSquared, healing));
+        } else {
+            for (final Hero partyHero : hero.getParty().getMembers()){
+                if (!player.getWorld().equals(partyHero.getPlayer().getWorld()))
+                    continue;
+                if (!(partyHero.getPlayer().getLocation().distanceSquared(heroLoc) <= radiusSquared))
+                    continue;
 
-            partyHero.addEffect(new YggdrasilsMark(this, player, duration, radius, radiusSquared, healing));
+                partyHero.addEffect(new YggdrasilsMark(this, player, duration, radius, radiusSquared, healing));
+            }
         }
 
         return SkillResult.NORMAL;

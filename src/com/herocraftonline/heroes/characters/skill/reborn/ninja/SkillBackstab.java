@@ -194,8 +194,9 @@ public class SkillBackstab extends ActiveSkill {
 
             if (backStab) {
                 event.setDamage(event.getDamage() * damageModifier);
-                target.getWorld().spawnParticle(Particle.REDSTONE, target.getLocation().add(0, 0.5, 0), 30, 0.2, 0, 0.2, new Particle.DustOptions(Color.RED, 1));
-                target.getWorld().playSound(target.getLocation(), Sound.ENTITY_ENDER_DRAGON_HURT, 1.0F, 0.6F);
+                target.getWorld().spigot().playEffect(target.getLocation().add(0, 0.5, 0), Effect.COLOURED_DUST, 0, 0, 0.2F, 0.0F, 0.2F, 0.0F, 30, 16);
+//                target.getWorld().spawnParticle(Particle.REDSTONE, target.getLocation().add(0, 0.5, 0), 30, 0.2, 0, 0.2, new Particle.DustOptions(Color.RED, 1));
+                target.getWorld().playSound(target.getLocation(), Sound.ENTITY_ENDERDRAGON_HURT, 0.5F, 0.6F);
                 broadcast(player.getLocation(), backstabText.replace("%hero%", player.getName()).replace("%target%", CustomNameManager.getName(target)));
             }
         }

@@ -36,9 +36,8 @@ public class SkillHerosCall extends ActiveSkill {
 
     public SkillHerosCall(Heroes plugin) {
         super(plugin, "HerosCall");
-        setDescription("You loose a dreadful howl, imposing your beastly presence in a $1 block radius. " +
-                "All those who hear the call will have their inner dragon slayer awoken. " +
-                "The beast " + ChatColor.BOLD + ChatColor.ITALIC + "must" + ChatColor.RESET + " be slain. The effect lasts for $2 second(s). " +
+        setDescription("You taunt all nearby" + ChatColor.ITALIC + "'Heroes'" + ChatColor.RESET + " in a $1 block radius around you. " +
+                "The effect lasts for $2 second(s). " +
                 "Not very effective if you are in your human form.");
         setArgumentRange(0, 0);
         setUsage("/skill heroscall");

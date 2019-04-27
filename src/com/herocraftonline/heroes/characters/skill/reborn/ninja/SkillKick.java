@@ -1,4 +1,4 @@
-package com.herocraftonline.heroes.characters.skill.reborn.unused;
+package com.herocraftonline.heroes.characters.skill.reborn.ninja;
 
 import com.herocraftonline.heroes.Heroes;
 import com.herocraftonline.heroes.api.SkillResult;

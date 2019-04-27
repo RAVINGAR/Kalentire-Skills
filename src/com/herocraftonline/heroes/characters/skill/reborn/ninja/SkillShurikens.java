@@ -67,18 +67,16 @@ public class SkillShurikens extends PassiveSkill {
     }
 
     public ConfigurationSection getDefaultConfig() {
-        ConfigurationSection node = super.getDefaultConfig();
-
-        node.set(SkillSetting.DAMAGE.node(), 35);
-        node.set(SkillSetting.DAMAGE_INCREASE_PER_DEXTERITY.node(), 0.4);
-        node.set(SkillSetting.STAMINA.node(), 100);
-        node.set("shuriken-toss-cooldown", 1000);
-        node.set("num-shuriken", 3);
-        node.set("degrees", (double) 10);
-        node.set("interval", 0.15);
-        node.set("velocity-multiplier", 3.0);
-
-        return node;
+        ConfigurationSection config = super.getDefaultConfig();
+        config.set(SkillSetting.DAMAGE.node(), 35);
+        config.set(SkillSetting.DAMAGE_INCREASE_PER_DEXTERITY.node(), 0.4);
+        config.set(SkillSetting.STAMINA.node(), 100);
+        config.set("shuriken-toss-cooldown", 1000);
+        config.set("num-shuriken", 3);
+        config.set("degrees", (double) 10);
+        config.set("interval", 0.15);
+        config.set("velocity-multiplier", 3.0);
+        return config;
     }
 
     public class SkillEntityListener implements Listener {
@@ -261,7 +259,7 @@ public class SkillShurikens extends PassiveSkill {
 
     // Effect required for implementing an internal cooldown
     private class ShurikenTossCooldown extends ExpirableEffect {
-        public ShurikenTossCooldown(Skill skill, Player applier, long duration) {
+        ShurikenTossCooldown(Skill skill, Player applier, long duration) {
             super(skill, "ShurikenTossCooldown", applier, duration);
         }
     }

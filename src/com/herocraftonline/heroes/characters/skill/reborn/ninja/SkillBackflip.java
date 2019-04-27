@@ -28,7 +28,7 @@ public class SkillBackflip extends ActiveSkill {
 
     public SkillBackflip(Heroes plugin) {
         super(plugin, "Backflip");
-        setDescription("Backflip away from your enemies. $1Distance traveled is based on your Dexterity.$2");
+        setDescription("Backflip away from your enemies. $1$2");
         setUsage("/skill backflip");
         setArgumentRange(0, 0);
         setIdentifiers("skill backflip");
@@ -47,7 +47,9 @@ public class SkillBackflip extends ActiveSkill {
         if (hero.canUseSkill("Frontflip"))
             frontFlipString = " This ability shares a cooldown with Frontflip.";
 
-        return getDescription().replace("$1", throwShurikenDescription).replace("$2", frontFlipString);
+        return getDescription()
+                .replace("$1", throwShurikenDescription)
+                .replace("$2", frontFlipString);
     }
 
     @Override
@@ -139,7 +141,7 @@ public class SkillBackflip extends ActiveSkill {
             }
         }
 
-        player.getWorld().playSound(player.getLocation(), Sound.ENTITY_ENDER_DRAGON_FLAP, 4.0F, 1.0F);
+        player.getWorld().playSound(player.getLocation(), Sound.ENTITY_ENDERDRAGON_FLAP, 4.0F, 1.0F);
 
         if (hero.canUseSkill("Frontflip")) {
             long cooldown = SkillConfigManager.getUseSetting(hero, this, SkillSetting.COOLDOWN, 1000, false);
@@ -156,12 +158,14 @@ public class SkillBackflip extends ActiveSkill {
         requiredMaterials.add(Material.WATER);
         requiredMaterials.add(Material.LAVA);
         requiredMaterials.add(Material.AIR);
-        requiredMaterials.add(Material.ACACIA_LEAVES);
-        requiredMaterials.add(Material.BIRCH_LEAVES);
-        requiredMaterials.add(Material.DARK_OAK_LEAVES);
-        requiredMaterials.add(Material.JUNGLE_LEAVES);
-        requiredMaterials.add(Material.OAK_LEAVES);
-        requiredMaterials.add(Material.SPRUCE_LEAVES);
+        requiredMaterials.add(Material.LEAVES);
+        requiredMaterials.add(Material.LEAVES_2);
+//        requiredMaterials.add(Material.ACACIA_LEAVES);
+//        requiredMaterials.add(Material.BIRCH_LEAES);
+//        requiredMaterials.add(Material.DARK_OAK_LEAVES);
+//        requiredMaterials.add(Material.JUNGLE_LEAVES);
+//        requiredMaterials.add(Material.OAK_LEAVES);
+//        requiredMaterials.add(Material.SPRUCE_LEAVES);
         requiredMaterials.add(Material.SOUL_SAND);
     }
 }

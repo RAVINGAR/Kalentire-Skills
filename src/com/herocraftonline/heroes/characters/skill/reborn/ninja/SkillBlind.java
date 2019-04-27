@@ -24,7 +24,8 @@ public class SkillBlind extends TargettedSkill {
 
     public SkillBlind(Heroes plugin) {
         super(plugin, "Blind");
-        setDescription("You throw dirt into your target's eyes, interrupting them and blinding them for $1 second(s). Blinded enemies are unable to target any abilities.");
+        setDescription("You throw dirt into your target's eyes, interrupting them and blinding them for $1 second(s). " +
+                "Blinded enemies are unable to target any abilities.");
         setUsage("/skill blind");
         setArgumentRange(0, 0);
         setIdentifiers("skill blind");
@@ -75,7 +76,7 @@ public class SkillBlind extends TargettedSkill {
         plugin.getCharacterManager().getHero((Player) target).addEffect(effect);
 
         player.getWorld().spawnParticle(Particle.SPELL, target.getLocation(), 10, 0, 0, 0, 0);
-        player.getWorld().playSound(player.getLocation(), Sound.ENTITY_ENDERMAN_AMBIENT, 0.8F, 1.0F);
+        player.getWorld().playSound(player.getLocation(), Sound.ENTITY_ENDERMEN_AMBIENT, 0.8F, 1.0F);
 
         return SkillResult.NORMAL;
     }
