@@ -9,6 +9,7 @@ import com.herocraftonline.heroes.characters.skill.SkillConfigManager;
 import com.herocraftonline.heroes.characters.skill.SkillSetting;
 import com.herocraftonline.heroes.characters.skill.SkillType;
 import com.herocraftonline.heroes.characters.skill.skills.SkillBaseGroundEffect;
+import com.herocraftonline.heroes.chat.ChatComponents;
 import com.herocraftonline.heroes.util.Util;
 import de.slikey.effectlib.Effect;
 import de.slikey.effectlib.EffectManager;
@@ -24,31 +25,36 @@ public class SkillTrap extends SkillBaseGroundEffect {
 
     public SkillTrap(Heroes plugin) {
         super(plugin, "Trap");
-        setDescription("You set a trap underneath that lasts for $1s. The first player who sets of the trap will be rooted for $2s");
+        setDescription("You set a trap underneath you that is $1 blocks wide and lasts for $2 second(s). " +
+                "The first target who sets off the trap will be rooted for $3 second(s).");
         setUsage("/skill trap");
         setIdentifiers("skill trap");
         setArgumentRange(0, 0);
-        setTypes(SkillType.ABILITY_PROPERTY_MAGICAL, SkillType.MULTI_GRESSIVE, SkillType.AREA_OF_EFFECT, SkillType.NO_SELF_TARGETTING, SkillType.SILENCEABLE);
+        setTypes(SkillType.AREA_OF_EFFECT);
     }
 
     @Override
     public String getDescription(Hero hero) {
-        long warmUp = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DELAY, 3000, false);
+        final double radius = SkillConfigManager.getUseSetting(hero, this, SkillSetting.RADIUS, 3.0, false);
         long duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, 30000, false);
+        long rootDuration = SkillConfigManager.getUseSetting(hero, this, "root-duration", 2000, false);
+
         return getDescription()
-                .replace("$1", Util.decFormat.format((double) duration / 1000));
+                .replace("$2", Util.decFormat.format(radius))
+                .replace("$2", Util.decFormat.format(duration / 1000.0))
+                .replace("$3", Util.decFormat.format(rootDuration / 1000.0));
     }
 
     @Override
     public ConfigurationSection getDefaultConfig() {
-        ConfigurationSection node = super.getDefaultConfig();
-        node.set(SkillSetting.RADIUS.node(), 3d);
-        node.set(HEIGHT_NODE, 2d);
-        node.set(SkillSetting.DELAY.node(), 5000);
-        node.set("root-duration", 2000);
-        node.set(SkillSetting.DURATION.node(), 5000);
-        node.set(SkillSetting.PERIOD.node(), 500);
-        return node;
+        ConfigurationSection config = super.getDefaultConfig();
+        config.set(SkillSetting.RADIUS.node(), 3.0);
+        config.set(HEIGHT_NODE, 2.0);
+        config.set(SkillSetting.DELAY.node(), 5000);
+        config.set("root-duration", 2000);
+        config.set(SkillSetting.DURATION.node(), 5000);
+        config.set(SkillSetting.PERIOD.node(), 500);
+        return config;
     }
 
     @Override public SkillResult use(Hero hero, String[] strings) {
@@ -58,13 +64,13 @@ public class SkillTrap extends SkillBaseGroundEffect {
         // place on ground only
         Material belowBlockType = playerLoc.getBlock().getRelative(BlockFace.DOWN).getType();
         if (!belowBlockType.isSolid()) {
-            player.sendMessage("You must be standing on something hard to place the trap");
+            player.sendMessage("    " + ChatComponents.GENERIC_SKILL + "You must be standing on something hard to place a trap.");
             return SkillResult.FAIL;
         }
 
         broadcastExecuteText(hero);
 
-        final double radius = SkillConfigManager.getUseSetting(hero, this, SkillSetting.RADIUS, 3d, false);
+        final double radius = SkillConfigManager.getUseSetting(hero, this, SkillSetting.RADIUS, 3.0, false);
         double height = SkillConfigManager.getUseSetting(hero, this, HEIGHT_NODE, 2d, false);
         long duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, 30000, false);
         final long period = SkillConfigManager.getUseSetting(hero, this, SkillSetting.PERIOD, 500, false);

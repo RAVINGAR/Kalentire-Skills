@@ -39,8 +39,8 @@ public class SkillTransform extends ActiveSkill {
         setDescription("Take on your true form, granting new powers to all of your other abilities. "
                 + "Your lose $1 health per second while in this state.");
         setUsage("/skill transform");
-        setArgumentRange(0, 0);
         setIdentifiers("skill transform");
+        setArgumentRange(0, 0);
         setToggleableEffectName(toggleableEffectName);
         setTypes(SkillType.ABILITY_PROPERTY_ENDER, SkillType.ABILITY_PROPERTY_DARK, SkillType.FORM_ALTERING, SkillType.SILENCEABLE, SkillType.BUFFING);
 
@@ -83,7 +83,7 @@ public class SkillTransform extends ActiveSkill {
     public SkillResult use(Hero hero, String[] args) {
         Player player = hero.getPlayer();
 
-        double healthDrainTick = SkillConfigManager.getUseSetting(hero, this, "health-drain-tick", 20.0D, false);
+        double healthDrainTick = SkillConfigManager.getUseSetting(hero, this, "health-drain-tick", 20.0, false);
         int healthDrainPeriod = SkillConfigManager.getUseSetting(hero, this, "health-drain-period", 500, false);
 
         if (player.getHealth() <= healthDrainTick) {
@@ -91,10 +91,11 @@ public class SkillTransform extends ActiveSkill {
             return SkillResult.INVALID_TARGET_NO_MSG;
         }
 
-        hero.addEffect(new TransformedEffect(this, player, healthDrainTick, healthDrainPeriod));
+        broadcastExecuteText(hero);
+
+        hero.addEffect(new TransformedEffect(this, player, healthDrainPeriod, healthDrainTick));
         Location location = player.getLocation();
         location.getWorld().playSound(location, Sound.ENTITY_ZOMBIE_AMBIENT, 1F, 0.6f);
-        broadcastExecuteText(hero);
 
         return SkillResult.NORMAL;
     }
@@ -103,7 +104,7 @@ public class SkillTransform extends ActiveSkill {
 
         private final double healthDrainTick;
 
-        TransformedEffect(Skill skill, Player applier, double healthDrainTick, long period) {
+        TransformedEffect(Skill skill, Player applier, long period, double healthDrainTick) {
             super(skill, toggleableEffectName, applier, period, applyText, expireText);
             this.healthDrainTick = healthDrainTick;
 
@@ -185,9 +186,12 @@ public class SkillTransform extends ActiveSkill {
 
         @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
         public void onEquipmentChanged(EquipmentChangedEvent event) {
-            if (event.getType() != EquipmentType.HELMET || event.getOldArmorPiece() == null
+            if (event.getMethod() == EquipMethod.EXPIRING_SKILL_EFFECT
+                    || event.getType() != EquipmentType.HELMET
+                    || event.getOldArmorPiece() == null
                     || event.getOldArmorPiece().getType() != Material.SKULL_ITEM
-                    || event.getMethod() == EquipMethod.EXPIRING_SKILL_EFFECT) {
+                    || event.getOldArmorPiece().getData() == null
+                    || event.getOldArmorPiece().getData().getData() != (byte) 5) {
                 return;
             }
 

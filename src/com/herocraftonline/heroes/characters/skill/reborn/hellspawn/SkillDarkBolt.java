@@ -10,9 +10,15 @@ import com.herocraftonline.heroes.characters.effects.common.HealthRegainReductio
 import com.herocraftonline.heroes.characters.skill.*;
 import com.herocraftonline.heroes.chat.ChatComponents;
 import com.herocraftonline.heroes.util.Util;
-import org.bukkit.*;
+import org.bukkit.Bukkit;
+import org.bukkit.Location;
+import org.bukkit.Particle;
+import org.bukkit.Sound;
 import org.bukkit.configuration.ConfigurationSection;
-import org.bukkit.entity.*;
+import org.bukkit.entity.Entity;
+import org.bukkit.entity.LivingEntity;
+import org.bukkit.entity.Player;
+import org.bukkit.entity.WitherSkull;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
@@ -131,8 +137,6 @@ public class SkillDarkBolt extends ActiveSkill {
     }
 
     public class SkillEntityListener implements Listener {
-
-        public SkillEntityListener() {}
 
         @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
         public void onProjectileHit(ProjectileHitEvent event) {

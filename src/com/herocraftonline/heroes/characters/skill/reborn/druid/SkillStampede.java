@@ -5,7 +5,6 @@ import com.herocraftonline.heroes.api.SkillResult;
 import com.herocraftonline.heroes.characters.CharacterTemplate;
 import com.herocraftonline.heroes.characters.Hero;
 import com.herocraftonline.heroes.characters.Monster;
-import com.herocraftonline.heroes.characters.effects.EffectType;
 import com.herocraftonline.heroes.characters.effects.common.SlowEffect;
 import com.herocraftonline.heroes.characters.effects.common.SummonEffect;
 import com.herocraftonline.heroes.characters.skill.ActiveSkill;
@@ -27,8 +26,6 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
-import org.bukkit.potion.PotionEffect;
-import org.bukkit.potion.PotionEffectType;
 import org.bukkit.util.Vector;
 
 import java.util.Random;
@@ -38,7 +35,14 @@ public class SkillStampede extends ActiveSkill {
 
     private final String minionEffectName = "Stampede";
     private boolean disguiseApiLoaded;
-    private final EntityType animalArray[] = {EntityType.COW, EntityType.PIG, EntityType.LLAMA, EntityType.SHEEP, EntityType.STRAY, EntityType.OCELOT};
+    private final EntityType animalArray[] = {
+//            EntityType.COW,
+//            EntityType.PIG,
+//            EntityType.LLAMA,
+//            EntityType.SHEEP,
+            EntityType.WOLF
+//            EntityType.OCELOT
+    };
 
     public SkillStampede(Heroes plugin) {
         super(plugin, "Stampede");
@@ -81,7 +85,7 @@ public class SkillStampede extends ActiveSkill {
         final double randomMax = SkillConfigManager.getUseSetting(hero, this, "max-launch-spread", 0.4, false);
 
         // Wolfs have the most reliable default AI for following and helping the player. We'll disguise it as something else later.
-        for (int i=0; i < numAnimals; i++) {
+        for (int i = 0; i < numAnimals; i++) {
             Wolf minion = (Wolf) player.getWorld().spawnEntity(player.getEyeLocation(), EntityType.WOLF);
             minion.setOwner(player);
 
@@ -145,7 +149,8 @@ public class SkillStampede extends ActiveSkill {
             minion.setCustomNameVisible(true);
             monster.setDamage(hitDmg);
 
-            if (disguiseApiLoaded) {
+            // TODO: switch minion instanceof to disguiseType
+            if (disguiseApiLoaded && !(minion instanceof Wolf)) {
                 if (!DisguiseAPI.isDisguised(minion)) {
                     DisguiseAPI.undisguiseToAll(minion);
                 }
@@ -169,7 +174,7 @@ public class SkillStampede extends ActiveSkill {
         public void removeFromMonster(Monster monster) {
             LivingEntity minion = monster.getEntity();
 
-            if (disguiseApiLoaded) {
+            if (disguiseApiLoaded && !(minion instanceof Wolf)) {
                 if (DisguiseAPI.isDisguised(minion)) {
                     Disguise disguise = DisguiseAPI.getDisguise(minion);
                     disguise.stopDisguise();
