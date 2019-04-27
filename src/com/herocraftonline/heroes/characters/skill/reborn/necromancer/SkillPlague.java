@@ -37,22 +37,19 @@ public class SkillPlague extends TargettedSkill {
 
     @Override
     public String getDescription(Hero hero) {
-        int radius = SkillConfigManager.getUseSetting(hero, this, SkillSetting.RADIUS.node(), 4, false);
-
         int duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, 20000, false);
         int period = SkillConfigManager.getUseSetting(hero, this, SkillSetting.PERIOD, 2500, false);
 
         double tickDamage = SkillConfigManager.getUseSetting(hero, this, "tick-damage", 17, false);
-        double tickDamageIncrease = hero.getAttributeValue(AttributeType.INTELLECT) * SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE_INCREASE_PER_INTELLECT, 0.17, false);
+        double tickDamageIncrease = hero.getAttributeValue(AttributeType.INTELLECT) *
+                SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE_INCREASE_PER_INTELLECT, 0.17, false);
+
         tickDamage += tickDamageIncrease;
 
-        String formattedDamage = Util.decFormat.format(tickDamage * ((double) duration / (double) period));
-        String formattedDuration = Util.decFormat.format(duration / 1000.0);
-
         return getDescription()
-                .replace("$1", formattedDamage)
-                .replace("$2", formattedDuration)
-                .replace("$3", radius + "");
+                .replace("$1", tickDamage + "")
+                .replace("$2", Util.decFormat.format(period / 1000.0))
+                .replace("$2", Util.decFormat.format(duration / 1000.0));
     }
 
     @Override
