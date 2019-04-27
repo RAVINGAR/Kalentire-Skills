@@ -2,31 +2,29 @@ package com.herocraftonline.heroes.characters.skill.reborn.druid;
 
 import com.herocraftonline.heroes.Heroes;
 import com.herocraftonline.heroes.api.SkillResult;
-import com.herocraftonline.heroes.characters.CharacterTemplate;
 import com.herocraftonline.heroes.characters.Hero;
 import com.herocraftonline.heroes.characters.Monster;
 import com.herocraftonline.heroes.characters.effects.EffectType;
-import com.herocraftonline.heroes.characters.effects.common.SlowEffect;
 import com.herocraftonline.heroes.characters.effects.common.SummonEffect;
 import com.herocraftonline.heroes.characters.skill.ActiveSkill;
 import com.herocraftonline.heroes.characters.skill.Skill;
 import com.herocraftonline.heroes.characters.skill.SkillConfigManager;
 import com.herocraftonline.heroes.characters.skill.SkillType;
+import com.herocraftonline.heroes.util.Util;
 import me.libraryaddict.disguise.DisguiseAPI;
 import me.libraryaddict.disguise.disguisetypes.Disguise;
 import me.libraryaddict.disguise.disguisetypes.DisguiseType;
 import me.libraryaddict.disguise.disguisetypes.MobDisguise;
+import me.libraryaddict.disguise.disguisetypes.watchers.LivingWatcher;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
+import org.bukkit.Material;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.entity.Wolf;
-import org.bukkit.event.EventHandler;
-import org.bukkit.event.EventPriority;
-import org.bukkit.event.Listener;
-import org.bukkit.event.entity.EntityDamageByEntityEvent;
+import org.bukkit.inventory.ItemStack;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 import org.bukkit.util.Vector;
@@ -38,11 +36,19 @@ public class SkillStampede extends ActiveSkill {
 
     private final String minionEffectName = "Stampede";
     private boolean disguiseApiLoaded;
-    private final EntityType animalArray[] = {EntityType.COW, EntityType.PIG, EntityType.LLAMA, EntityType.SHEEP, EntityType.STRAY, EntityType.OCELOT};
+    private final EntityType animalArray[] = {
+            EntityType.COW,
+            EntityType.PIG,
+            EntityType.LLAMA,
+            EntityType.SHEEP,
+            EntityType.WOLF,
+            EntityType.OCELOT
+    };
 
     public SkillStampede(Heroes plugin) {
         super(plugin, "Stampede");
-        setDescription("Call animals that obey your commands. The minion has $1 HP and deals $2 damage per hit.");
+        setDescription("Call a stampede of animals to assist you in battle! " +
+                "Each animal has $1 HP deals $2 damage per hit, and lasts for up to $3 seconds.");
         setUsage("/skill stampede");
         setArgumentRange(0, 0);
         setIdentifiers("skill stampede");
@@ -51,21 +57,31 @@ public class SkillStampede extends ActiveSkill {
         if (Bukkit.getServer().getPluginManager().getPlugin("LibsDisguises") != null) {
             disguiseApiLoaded = true;
         }
-        Bukkit.getServer().getPluginManager().registerEvents(new SkillListener(this), plugin);
     }
 
     public String getDescription(Hero hero) {
-        return getDescription();
+        double maxHp = SkillConfigManager.getUseSetting(hero, this, "minion-max-hp", 400.0, false);
+        maxHp += SkillConfigManager.getUseSetting(hero, this, "minion-max-hp-per-level", 4.0, false) * hero.getHeroLevel(this);
+
+        double hitDmg = SkillConfigManager.getUseSetting(hero, this, "minion-attack-damage", 25.0, false);
+        hitDmg += SkillConfigManager.getUseSetting(hero, this, "minion-attack-damage-per-level", 0.4, false) * hero.getHeroLevel(this);
+
+        long duration = SkillConfigManager.getUseSetting(hero, this, "minion-duration", 45000, false);
+
+        return getDescription()
+                .replace("$1", Util.decFormat.format(maxHp))
+                .replace("$2", Util.decFormat.format(hitDmg))
+                .replace("$3", Util.decFormat.format(duration / 1000.0));
     }
 
     public ConfigurationSection getDefaultConfig() {
         ConfigurationSection config = super.getDefaultConfig();
         config.set("minion-attack-damage", 25.0);
-        config.set("minion-on-hit-slow-duration", 2000);
-        config.set("minion-on-hit-slow-amplifier", 2);
-        config.set("minion-max-hp", 100.0);
-        config.set("minion-duration", 6000);
-        config.set("minion-speed-amplifier", 2);
+        config.set("minion-attack-damage-per-level", 0.4);
+        config.set("minion-max-hp", 400.0);
+        config.set("minion-max-hp-per-level", 4.0);
+        config.set("minion-duration", 60000);
+        config.set("minion-speed-amplifier", -1);
         config.set("launch-velocity", 2.0);
         return config;
     }
@@ -81,7 +97,7 @@ public class SkillStampede extends ActiveSkill {
         final double randomMax = SkillConfigManager.getUseSetting(hero, this, "max-launch-spread", 0.4, false);
 
         // Wolfs have the most reliable default AI for following and helping the player. We'll disguise it as something else later.
-        for (int i=0; i < numAnimals; i++) {
+        for (int i = 0; i < numAnimals; i++) {
             Wolf minion = (Wolf) player.getWorld().spawnEntity(player.getEyeLocation(), EntityType.WOLF);
             minion.setOwner(player);
 
@@ -100,43 +116,27 @@ public class SkillStampede extends ActiveSkill {
         return SkillResult.NORMAL;
     }
 
-    private class SkillListener implements Listener {
-        private final Skill skill;
-
-        SkillListener(Skill skill) {
-            this.skill = skill;
-        }
-
-        @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
-        public void onEntityDamage(EntityDamageByEntityEvent event) {
-            if (event.getDamage() <= 0 || !(event.getDamager() instanceof Wolf) || !(event.getEntity() instanceof LivingEntity))
-                return;
-
-            CharacterTemplate attackerCT = plugin.getCharacterManager().getCharacter((LivingEntity) event.getDamager());
-            if (!attackerCT.hasEffect(minionEffectName))
-                return;
-
-            Hero summoner = ((StampedeEffect) attackerCT.getEffect(minionEffectName)).getSummoner();
-
-            CharacterTemplate defenderCT = plugin.getCharacterManager().getCharacter((LivingEntity) event.getEntity());
-            long duration = SkillConfigManager.getUseSetting(summoner, skill, "minion-on-hit-slow-duration", 2000, false);
-            int amplifier = SkillConfigManager.getUseSetting(summoner, skill, "minion-on-hit-slow-amplifier", 2, false);
-
-            defenderCT.addEffect(new SlowEffect(skill, summoner.getPlayer(), duration, amplifier));
-        }
-    }
-
     public class StampedeEffect extends SummonEffect {
         public StampedeEffect(Skill skill, Hero summoner, long duration) {
             super(skill, minionEffectName, duration, summoner, null);
+
+            addPotionEffect(new PotionEffect(PotionEffectType.WATER_BREATHING, (int) (duration / 50), 0));
+
+            int speedAmplifier = SkillConfigManager.getUseSetting(summoner, skill, "minion-speed-amplifier", -1, false);
+            if (speedAmplifier > -1) {
+                addPotionEffect(new PotionEffect(PotionEffectType.SPEED, (int) (duration / 50), speedAmplifier));
+            }
         }
 
         @Override
         public void applyToMonster(Monster monster) {
             super.applyToMonster(monster);
 
-            double maxHp = SkillConfigManager.getUseSetting(getSummoner(), skill, "minion-max-hp", 200.0, false);
+            double maxHp = SkillConfigManager.getUseSetting(getSummoner(), skill, "minion-max-hp", 400.0, false);
+            maxHp += SkillConfigManager.getUseSetting(getSummoner(), skill, "minion-max-hp-per-level", 4.0, false) * getSummoner().getHeroLevel(skill);
+
             double hitDmg = SkillConfigManager.getUseSetting(getSummoner(), skill, "minion-attack-damage", 25.0, false);
+            hitDmg += SkillConfigManager.getUseSetting(getSummoner(), skill, "minion-attack-damage-per-level", 0.4, false) * getSummoner().getHeroLevel(skill);
 
             LivingEntity minion = monster.getEntity();
             minion.setMaxHealth(maxHp);
@@ -152,15 +152,16 @@ public class SkillStampede extends ActiveSkill {
 
                 Random rand = new Random();
                 int randomNum = rand.nextInt(animalArray.length);
-                MobDisguise disguise = new MobDisguise(DisguiseType.getType(animalArray[randomNum]), true);
+                DisguiseType disguiseType = DisguiseType.getType(animalArray[randomNum]);
+                if (disguiseType == DisguiseType.WOLF)  // We already have wolves, no need to disguise them.
+                    return;
+
+                MobDisguise disguise = new MobDisguise(disguiseType, true);
                 disguise.setKeepDisguiseOnPlayerDeath(true);
                 disguise.setEntity(minion);
                 disguise.setShowName(true);
                 disguise.setModifyBoundingBox(false);
                 disguise.setReplaceSounds(true);
-                disguise.setHearSelfDisguise(true);
-                disguise.setHideHeldItemFromSelf(true);
-                disguise.setHideArmorFromSelf(true);
                 disguise.startDisguise();
             }
         }

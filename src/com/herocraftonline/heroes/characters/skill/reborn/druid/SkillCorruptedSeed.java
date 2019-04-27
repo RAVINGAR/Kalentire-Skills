@@ -33,7 +33,8 @@ public class SkillCorruptedSeed extends TargettedSkill {
 
     public SkillCorruptedSeed(Heroes plugin) {
         super(plugin, "CorruptedSeed");
-        setDescription("Plant a corrupted seed in yourself or an ally, recasting this ability will explode the seed silencing nearby enemies. While the user is holding a seed they will take periodic damage");
+        setDescription("Plant a corrupted seed in yourself or an ally, recasting this ability will explode the seed silencing nearby enemies. " +
+                "While the user is holding a seed they will take periodic damage");
         setUsage("/skill corruptedseed");
         setArgumentRange(0, 0);
         setIdentifiers("skill corruptedseed");
@@ -45,8 +46,16 @@ public class SkillCorruptedSeed extends TargettedSkill {
     @Override
     public void init() {
         super.init();
-        applyText = SkillConfigManager.getRaw(this, SkillSetting.APPLY_TEXT, ChatComponents.GENERIC_SKILL + "%hero% has planted a corrupted seed on %target%!").replace("%hero%", "$2").replace("%target%", "$1");
-        expireText = SkillConfigManager.getRaw(this, SkillSetting.EXPIRE_TEXT, ChatComponents.GENERIC_SKILL + "%target%`s corrupted seed has exploded!").replace("%target%", "$1");
+
+        applyText = SkillConfigManager.getRaw(this, SkillSetting.APPLY_TEXT,
+                ChatComponents.GENERIC_SKILL + "%hero% has planted a corrupted seed on %target%!")
+                .replace("%hero%", "$2")
+                .replace("%target%", "$1");
+
+        expireText = SkillConfigManager.getRaw(this,
+                SkillSetting.EXPIRE_TEXT, ChatComponents.GENERIC_SKILL + "%target%`s corrupted seed has exploded!")
+                .replace("%target%", "$1");
+
         setUseText(null);
     }
 

@@ -238,12 +238,15 @@ public class SkillOvergrowth extends TargettedLocationSkill {
         List<LivingEntity> entitiesWithinRadius = new ArrayList<LivingEntity>();
         List<Block> blocksInRadius = getBlocksWithinFlatCircle(center, (int) radius);
 
-        world.getNearbyEntities(center, radius, 2, radius);
+        ;
 
-        for (LivingEntity entity : worldEntities) {
+        for (Entity entity : world.getNearbyEntities(center, radius, 2, radius)) {
+            if (!(entity instanceof LivingEntity))
+                continue;
+
             Block standingBlock = entity.getLocation().getBlock();
             if (blocksInRadius.contains(standingBlock))
-                entitiesWithinRadius.add(entity);
+                entitiesWithinRadius.add((LivingEntity) entity);
         }
         return entitiesWithinRadius;
     }

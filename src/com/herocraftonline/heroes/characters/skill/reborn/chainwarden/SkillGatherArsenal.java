@@ -106,15 +106,27 @@ public class SkillGatherArsenal extends ActiveSkill {
         @Override
         public void tickHero(Hero hero) {
             super.tickHero(hero);
-            if (hero.getDelayedSkill() == null || !hero.getDelayedSkill().getSkill().equals(skill)) {
-                // We were interrupted or finished casting.
-                hero.removeEffect(this);
-            }
+
+            if (hero.getDelayedSkill() != null && hero.getDelayedSkill().getSkill().equals(skill))
+                return;
+
+            // We were interrupted or finished casting.
+            hero.removeEffect(this);
         }
 
         @Override
         public void removeFromHero(Hero hero) {
             super.removeFromHero(hero);
+
+            long cooldownMillis = SkillConfigManager.getUseSetting(hero, skill, SkillSetting.COOLDOWN, 1000, false);
+            long currentTime = System.currentTimeMillis();
+
+            Long currentCd = hero.getCooldown(skill.getName());
+            long defaultCd = currentTime + cooldownMillis;
+            if (currentCd == null || currentCd < defaultCd) {
+                hero.setCooldown(skill.getName(), System.currentTimeMillis() + cooldownMillis);
+            }
+
             hero.removeEffect(hero.getEffect(effectName));
         }
     }

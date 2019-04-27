@@ -48,7 +48,9 @@ public class SkillExplosiveShot extends ActiveSkill {
 
     public SkillExplosiveShot(Heroes plugin) {
         super(plugin, "ExplosiveShot");
-        setDescription("Apply a explosive charge to $1 of your arrows. Once attached, your $2 fired within the next $3 seconds will damage all targets within $4 blocks for $5 damage. Targets that are hit with the blast are also knocked away from the explosion.");
+        setDescription("Apply a explosive charge to $1 of your arrows. " +
+                "Once attached, your $2 fired within the next $3 seconds will damage all targets within $4 blocks for $5 damage. " +
+                "Targets that are hit with the blast are also knocked away from the explosion.");
         setUsage("/skill explosiveshot");
         setArgumentRange(0, 0);
         setIdentifiers("skill explosiveshot");
@@ -101,7 +103,7 @@ public class SkillExplosiveShot extends ActiveSkill {
         config.set(SkillSetting.DURATION.node(), 4000);
         config.set(SkillSetting.RADIUS.node(), 4);
         config.set(SkillSetting.DAMAGE.node(), 80D);
-        config.set(SkillSetting.DAMAGE_INCREASE_PER_INTELLECT.node(), 2.0D);
+        config.set(SkillSetting.DAMAGE_INCREASE_PER_INTELLECT.node(), 0.0);
         config.set("horizontal-power", 1.1D);
         config.set("vertical-power", 0.5D);
         config.set("ncp-exemption-duration", 0);

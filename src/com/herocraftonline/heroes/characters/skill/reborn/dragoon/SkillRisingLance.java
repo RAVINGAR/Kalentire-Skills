@@ -28,7 +28,8 @@ public class SkillRisingLance extends ActiveSkill {
 
     public SkillRisingLance(Heroes plugin) {
         super(plugin, "RisingLance");
-        setDescription("You point your lance straight up and launch into the air, grabbing any target foolish enough to be in your path.");
+        setDescription("You point your lance straight up and launch into the air, grabbing any target foolish enough to be in your path. " +
+                "Grabbed targets are dealt $1 damage.");
         setUsage("/skill risinglance");
         setIdentifiers("skill risinglance");
         setArgumentRange(0, 0);
@@ -37,9 +38,9 @@ public class SkillRisingLance extends ActiveSkill {
 
     @Override
     public String getDescription(Hero hero) {
-        long duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION.node(), 5000, false);
+        long damage = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE.node(), 50, false);
         return getDescription()
-                .replace("$1", Util.decFormat.format((double) duration / 1000));
+                .replace("$1", Util.decFormat.format(damage));
     }
 
     @Override

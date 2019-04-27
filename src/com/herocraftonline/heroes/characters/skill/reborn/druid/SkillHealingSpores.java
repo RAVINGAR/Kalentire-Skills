@@ -32,17 +32,17 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Level;
 
-public class SkillMysticWinds extends ActiveSkill {
-    private static String EffectName = "FloatingMysticWinds";
+public class SkillHealingSpores extends ActiveSkill {
+    private static String EffectName = "FloatingHealingSpores";
 
-    public SkillMysticWinds(Heroes plugin) {
+    public SkillHealingSpores(Heroes plugin) {
         super(plugin, "HealingSpores");
         setDescription("Summon $1 healing spores that will float and remain inactive around the caster for up to $2 seconds. " +
-                "If this ability is cast again within that time, it will unleash each stored spore. " +
+                "If this ability is cast again within that time, it will unleash a single stored spore. " +
                 "Each spore will heal $3 damage");
         setUsage("/skill healingspores");
-        setArgumentRange(0, 0);
         setIdentifiers("skill healingspores");
+        setArgumentRange(0, 0);
         setTypes(SkillType.ABILITY_PROPERTY_EARTH, SkillType.SILENCEABLE, SkillType.HEALING);
         Bukkit.getServer().getPluginManager().registerEvents(new SkillHeroListener(this), plugin);
     }
@@ -52,10 +52,6 @@ public class SkillMysticWinds extends ActiveSkill {
         int numProjectiles = SkillConfigManager.getUseSetting(hero, this, "num-projectiles", 4, false);
         long duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, 15000, false);
         double heal = SkillConfigManager.getUseSetting(hero, this, "projectile-heal", 25.0, false);
-
-
-        // lmao
-
 
         return getDescription()
                 .replace("$1", numProjectiles + "")
@@ -90,6 +86,7 @@ public class SkillMysticWinds extends ActiveSkill {
 
     private class SkillHeroListener implements Listener {
         private Skill skill;
+
         SkillHeroListener(Skill skill) {
             this.skill = skill;
         }
@@ -104,7 +101,7 @@ public class SkillMysticWinds extends ActiveSkill {
             if (!hero.hasEffect(EffectName))
                 return;
 //
-            if(hero.hasEffect(EffectName)) {
+            if (hero.hasEffect(EffectName)) {
                 HealingSporesEffect effect = (HealingSporesEffect) hero.getEffect(EffectName);
 
             }
@@ -171,7 +168,7 @@ public class SkillMysticWinds extends ActiveSkill {
                         SphereEffect missileVisual = pair.getRight();
 
                         Location eyeLocation = hero.getPlayer().getEyeLocation();
-                        Vector eyeOffset = eyeLocation.getDirection().add(new Vector(0,-1,0));
+                        Vector eyeOffset = eyeLocation.getDirection().add(new Vector(0, -1, 0));
                         missileVisual.setLocation(eyeLocation.clone().add(eyeOffset));
                         AetherMissile missile = new AetherMissile(hero, skill, projectileRadius, pair.getLeft(), missileVisual);
                         missile.fireMissile();
@@ -263,7 +260,5 @@ public class SkillMysticWinds extends ActiveSkill {
             targetHero.tryHeal(hero, skill, heal);
             hero.getPlayer().sendMessage("healing: " + heal);
         }
-
-
     }
 }

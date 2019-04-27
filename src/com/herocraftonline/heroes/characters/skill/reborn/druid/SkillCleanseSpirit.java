@@ -21,11 +21,12 @@ public class SkillCleanseSpirit extends SkillBaseHeal {
 
     public SkillCleanseSpirit(Heroes plugin) {
         super(plugin, "CleanseSpirit");
-        setDescription("Cleanse the spirit of the target, restoring $1 of their health and removing $2 random debuff(s) that does not impede movement. You are only healed for $3 health from this ability.");
+        setDescription("Cleanse the spirit of the target, restoring $1 of their health$4" +
+                "You are only healed for $3 health from this ability.");
         setUsage("/skill cleansespirit <target>");
         setArgumentRange(0, 1);
         setIdentifiers("skill cleansespirit");
-        setTypes(SkillType.ABILITY_PROPERTY_LIGHT, SkillType.DISPELLING, SkillType.HEALING, SkillType.SILENCEABLE);
+        setTypes(SkillType.ABILITY_PROPERTY_LIGHT, SkillType.DISPELLING, SkillType.NAME_TARGETTING_ENABLED, SkillType.HEALING, SkillType.SILENCEABLE);
     }
 
     @Override
@@ -34,12 +35,19 @@ public class SkillCleanseSpirit extends SkillBaseHeal {
         double healingIncrease = SkillConfigManager.getUseSetting(hero, this, SkillSetting.HEALING_INCREASE_PER_WISDOM.node(), 2.0, false);
         healing += (hero.getAttributeValue(AttributeType.WISDOM) * healingIncrease);
 
+        String removalText = ".";
         int effectRemovals = SkillConfigManager.getUseSetting(hero, this, "max-effect-removals", 1, false);
+        if (effectRemovals > 0) {
+            removalText = " and removing " + effectRemovals + " random debuff(s) that do not impede movement. ";
+        }
 
         String formattedHealing = Util.decFormat.format(healing);
         String formattedSelfHealing = Util.decFormat.format(healing * Heroes.properties.selfHeal);
 
-        return getDescription().replace("$1", formattedHealing).replace("$2", effectRemovals + "").replace("$3", formattedSelfHealing);
+        return getDescription()
+                .replace("$1", formattedHealing)
+                .replace("$3", formattedSelfHealing)
+                .replace("$4", removalText);
     }
 
     @Override

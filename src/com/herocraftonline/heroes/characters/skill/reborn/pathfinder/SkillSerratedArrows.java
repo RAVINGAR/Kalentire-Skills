@@ -24,11 +24,11 @@ public class SkillSerratedArrows extends PassiveSkill {
 
     public SkillSerratedArrows(Heroes plugin) {
         super(plugin, "SerratedArrows");
-        setDescription("The third arrow hit against the same target within $1s will deal $2 bonus damage and pierce through your targets Armor");
+        setDescription("Your third arrow hit against the same target within $1 second(s) will deal $2 armor piercing damage.");
         setUsage("/skill serratedarrows");
         setArgumentRange(0, 0);
         setIdentifiers("skill serratedarrows");
-        setTypes(SkillType.DAMAGING);
+        setTypes(SkillType.DAMAGING, SkillType.ARMOR_PIERCING);
         Bukkit.getServer().getPluginManager().registerEvents(new SkillDamageListener(this), plugin);
     }
 
@@ -38,7 +38,7 @@ public class SkillSerratedArrows extends PassiveSkill {
         long duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, 5000, false);
 
         return getDescription()
-                .replace("$1", Util.decFormat.format(duration))
+                .replace("$1", Util.decFormat.format(duration / 1000.0))
                 .replace("$2", Util.decFormat.format(damage));
     }
 
@@ -52,6 +52,7 @@ public class SkillSerratedArrows extends PassiveSkill {
 
     public class SkillDamageListener implements Listener {
         private Skill skill;
+
         SkillDamageListener(Skill skill) {
             this.skill = skill;
         }
@@ -79,57 +80,42 @@ public class SkillSerratedArrows extends PassiveSkill {
             double damage = SkillConfigManager.getUseSetting(hero, this.skill, SkillSetting.DAMAGE, 90, false);
             long duration = SkillConfigManager.getUseSetting(hero, this.skill, SkillSetting.DURATION, 30000, false);
 
-            if (!hero.hasEffect("SerratedArrows")) {
+            if (!hero.hasEffect(skill.getName()))
                 return;
-            }
-
 
             LivingEntity target = (LivingEntity) event.getEntity();
             CharacterTemplate targetCT = plugin.getCharacterManager().getCharacter(target);
             String effectName = getMultiHitEffectName(player);
 
-            if (targetCT.hasEffect(effectName)) {
-               SerratedArrowsHitEffect serratedEffect = (SerratedArrowsHitEffect) targetCT.getEffect(effectName);
-               serratedEffect.addHit();
-               if (serratedEffect.getHitCount() == 3) {
-                   addSpellTarget(target, hero);
-                   damageEntity(target, player, damage, EntityDamageEvent.DamageCause.MAGIC, true);
-                   targetCT.removeEffect(serratedEffect);
-                   VisualEffect.playInstantFirework(FireworkEffect.builder()
-                           .flicker(false)
-                           .trail(false)
-                           .with(FireworkEffect.Type.BURST)
-                           .withColor(Color.WHITE)
-                           .withFade(Color.GREEN)
-                           .build(), target.getLocation().add(0, 1.0, 0));
-               }
-
-            } else {
+            if (!targetCT.hasEffect(effectName)) {
                 targetCT.addEffect(new SerratedArrowsHitEffect(skill, effectName, player, duration));
+                return;
             }
 
-            /*
-            if (hero.hasEffect("SerratedArrows")) {
-                hitCount++;
-                player.sendMessage("hit");
+            SerratedArrowsHitEffect serratedEffect = (SerratedArrowsHitEffect) targetCT.getEffect(effectName);
+            serratedEffect.addHit();
+            if (serratedEffect.getHitCount() != 3)
+                return;
+
+            // Reduce damage by current bow force. // TODO: Use meta key from HDamageListener?
+            if (arrow.hasMetadata("hero-fired-bow-force")) {
+                damage *= (float) arrow.getMetadata("hero-fired-bow-force").get(0).value();
             }
 
-            if (hitCount == 3) {
-                final LivingEntity target = (LivingEntity) event.getEntity();
-                addSpellTarget(target, hero);
-                damageEntity(target, player, damage, EntityDamageEvent.DamageCause.MAGIC, true);
-                target.sendMessage("fuckyou");
-                player.sendMessage("hi cutie");
-                VisualEffect.playInstantFirework(FireworkEffect.builder()
-                        .flicker(false)
-                        .trail(false)
-                        .with(FireworkEffect.Type.BURST)
-                        .withColor(Color.WHITE)
-                        .withFade(Color.GREEN)
-                        .build(), player.getLocation().add(0, 2.0, 0));
-                hitCount = 0;
-            }
-             */
+            addSpellTarget(target, hero);
+            damageEntity(target, player, damage, EntityDamageEvent.DamageCause.ENTITY_ATTACK, true);
+            targetCT.removeEffect(serratedEffect);
+
+            VisualEffect.playInstantFirework(FireworkEffect.builder()
+                    .flicker(false)
+                    .trail(false)
+                    .with(FireworkEffect.Type.BURST)
+                    .withColor(Color.WHITE)
+                    .withFade(Color.GREEN)
+                    .build(), target.getLocation().add(0, 1.0, 0));
+
+            event.setDamage(0);
+            event.setCancelled(true);
         }
     }
 

@@ -87,6 +87,9 @@ public class SkillManaMissile extends PassiveSkill {
                 return;
 
             Player player = event.getPlayer();
+            if (player == null || player.isDead() || player.getHealth() < 0)
+                return;
+
             Hero hero = plugin.getCharacterManager().getHero(player);
             if (!validateCanCast(hero))
                 return;
@@ -95,17 +98,19 @@ public class SkillManaMissile extends PassiveSkill {
             event.setUseItemInHand(Event.Result.DENY);
         }
 
-//        @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
-//        public void onWeaponDamage(WeaponDamageEvent event) {
-//            if (event.isProjectile() || !(event.getDamager() instanceof Hero))
-//                return;
-//
-//            Hero hero = ((Hero) event.getDamager());
-//            if (!validateCanCast(hero))
-//                return;
-//
-//            fireProjectile(hero.getPlayer(), hero);
-//        }
+        @EventHandler(priority = EventPriority.NORMAL, ignoreCancelled = true)
+        public void onWeaponDamage(WeaponDamageEvent event) {
+            if (event.isProjectile() || !(event.getDamager() instanceof Hero))
+                return;
+
+            Hero hero = ((Hero) event.getDamager());
+            if (!hero.canUseSkill(skill))
+                return;
+
+            if (validateCanCast(hero)) {
+                event.setCancelled(true);
+            }
+        }
 
         private void fireProjectile(Player player, Hero hero) {
             double projSize = SkillConfigManager.getUseSetting(hero, skill, "projectile-size", 0.25, false);

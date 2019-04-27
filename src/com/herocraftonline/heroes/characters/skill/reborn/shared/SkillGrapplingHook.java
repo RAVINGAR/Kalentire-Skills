@@ -1,4 +1,4 @@
-package com.herocraftonline.heroes.characters.skill.reborn.pathfinder;
+package com.herocraftonline.heroes.characters.skill.reborn.shared;
 
 import com.google.common.collect.Lists;
 import com.herocraftonline.heroes.Heroes;

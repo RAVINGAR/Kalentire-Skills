@@ -25,7 +25,7 @@ public class SkillFeatheredShot extends ActiveSkill {
 
     private String applyText;
     private String expireText;
-    private String shotEffect = "HasFeatheredArrows";
+    private String shotEffectName = "HasFeatheredArrows";
 
     public SkillFeatheredShot(Heroes plugin) {
         super(plugin, "FeatheredShot");
@@ -90,7 +90,7 @@ public class SkillFeatheredShot extends ActiveSkill {
     public class FeatherArrowsEffect extends ExpirableEffect {
 
         FeatherArrowsEffect(Skill skill, Player applier, long duration) {
-            super(skill, shotEffect, applier, duration, applyText, expireText);
+            super(skill, shotEffectName, applier, duration, applyText, expireText);
             types.add(EffectType.IMBUE);
             types.add(EffectType.BENEFICIAL);
         }
@@ -138,7 +138,7 @@ public class SkillFeatheredShot extends ActiveSkill {
 
             final Player player = (Player) arrow.getShooter();
             final Hero hero = plugin.getCharacterManager().getHero(player);
-            if (!hero.hasEffect(shotEffect))
+            if (!hero.hasEffect(shotEffectName))
                 return;
 
             CharacterTemplate targetCT = plugin.getCharacterManager().getCharacter((LivingEntity) event.getEntity());
@@ -146,6 +146,7 @@ public class SkillFeatheredShot extends ActiveSkill {
             int slowFall = SkillConfigManager.getUseSetting(hero, skill, "slow-fall-amplifier", 3, false);
             int jumpBoost = SkillConfigManager.getUseSetting(hero, skill, "jump-boost-amplifier", 4, false);
             targetCT.addEffect(new FeatheredEffect(skill, player, duration, slowFall, jumpBoost));
+            hero.removeEffect(hero.getEffect(shotEffectName));
         }
     }
 

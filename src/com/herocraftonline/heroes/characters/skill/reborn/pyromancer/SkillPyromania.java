@@ -133,6 +133,8 @@ public class SkillPyromania extends PassiveSkill {
             event.setDamage(newDamage);
             player.sendMessage("    " + ChatComponents.GENERIC_SKILL + ChatColor.GOLD + "Pyromania Damage Boost: "
                     + Util.largeDecFormat.format(damageDifference) + "!");
+            event.getDamager().getEntity().sendMessage("    " + ChatComponents.GENERIC_SKILL + ChatColor.GOLD + "Pyromania Damage Boost: " +
+                    Util.decFormat.format(damageDifference) + "!");
         }
 
         @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
