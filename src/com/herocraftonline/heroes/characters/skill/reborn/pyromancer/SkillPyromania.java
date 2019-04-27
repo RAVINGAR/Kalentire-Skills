@@ -116,10 +116,12 @@ public class SkillPyromania extends PassiveSkill {
                 return;
             if (event.getDamage() <= 0.0)
                 return;
-            if (!event.getDamager().hasEffect(skill.getName()))
+            if (!(event.getDamager() instanceof Player) || !event.getDamager().hasEffect(skill.getName()))
                 return;
 
-            PyromaniaEffect effect = (PyromaniaEffect) event.getDamager().getEffect(skill.getName());
+            Player player = (Player)event.getDamager();
+            Hero hero = plugin.getCharacterManager().getHero(player);
+            PyromaniaEffect effect = (PyromaniaEffect)hero.getEffect(skill.getName());
             if (effect.getDamageIncrease() <= 0.0)
                 return;
 
@@ -129,7 +131,8 @@ public class SkillPyromania extends PassiveSkill {
                 return;
 
             event.setDamage(newDamage);
-            event.getDamager().getEntity().sendMessage("    " + ChatComponents.GENERIC_SKILL + ChatColor.GOLD + "Pyromania Damage Boost: " + damageDifference + "!");
+            player.sendMessage("    " + ChatComponents.GENERIC_SKILL + ChatColor.GOLD + "Pyromania Damage Boost: "
+                    + Util.largeDecFormat.format(damageDifference) + "!");
         }
 
         @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)

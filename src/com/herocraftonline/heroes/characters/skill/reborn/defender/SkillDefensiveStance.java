@@ -41,7 +41,7 @@ public class SkillDefensiveStance extends ActiveSkill {
     public ConfigurationSection getDefaultConfig() {
         ConfigurationSection node = super.getDefaultConfig();
         node.set(SkillSetting.DELAY.node(), 1000);
-        node.set(SkillSetting.DURATION.node(), 5000);
+        node.set(SkillSetting.DURATION.node(), 8000);
         node.set(SkillSetting.CHANCE.node(), 0.8);
         node.set(SkillSetting.CHANCE_PER_LEVEL.node(), 0.02);
         node.set(SkillSetting.APPLY_TEXT.node(), "%hero% steadies themself in a defensive stance!");
@@ -54,7 +54,7 @@ public class SkillDefensiveStance extends ActiveSkill {
 
     @Override
     public String getDescription(Hero hero) {
-        int duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, 5000, false);
+        int duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, 8000, false);
         double overallChance = getOverallHitChance(hero, this);
         return getDescription().replace("$1", (overallChance * 100) + "")
                 .replace("$2", duration / 1000 + "");
