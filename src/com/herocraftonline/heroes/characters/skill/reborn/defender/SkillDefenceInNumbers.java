@@ -23,6 +23,11 @@ import org.bukkit.event.Listener;
 public class SkillDefenceInNumbers extends PassiveSkill {
     final static String allyEffectName = "DefenceInNumbersAllyEffect";
     public static final String SKILL_MESSAGE_PREFIX_SPACES = "    ";
+    private String applyText;
+    private String expireText;
+    private String renewText;
+    private String allyApplyText;
+    private String allyExpireText;
 
     public SkillDefenceInNumbers(Heroes plugin) {
         super(plugin, "DefenceInNumbers");
@@ -84,14 +89,25 @@ public class SkillDefenceInNumbers extends PassiveSkill {
     }
 
     @Override
+    public void init() {
+        super.init();
+
+        applyText = SkillConfigManager.getRaw(this, SkillSetting.APPLY_TEXT.node(),
+                ChatComponents.GENERIC_SKILL + "You have renewed your protection to allies.");
+        expireText = SkillConfigManager.getRaw(this, SkillSetting.EXPIRE_TEXT.node(),
+                ChatComponents.GENERIC_SKILL + "Your protection to allies has expired.");
+        renewText = SkillConfigManager.getRaw(this, "renew-text",
+                ChatComponents.GENERIC_SKILL + "You have renewed your protection to $1 allies.");
+        allyApplyText = SkillConfigManager.getRaw(this, "ally-apply-text",
+                ChatComponents.GENERIC_SKILL + "Your protection in numbers has been renewed by %hero%");
+        allyExpireText = SkillConfigManager.getRaw(this, "ally-expire-text",
+                ChatComponents.GENERIC_SKILL + "Your protection in numbers has expired.");
+    }
+
+    @Override
     public void apply(Hero hero) {
         long period = SkillConfigManager.getUseSetting(hero, this, SkillSetting.PERIOD.node(), 5000, false);
 
-        //TODO make apply and expire text not broadcasted, and only sent to the defender
-        String applyText = SkillConfigManager.getUseSetting(hero, this, SkillSetting.APPLY_TEXT.node(),
-                ChatComponents.GENERIC_SKILL + "You have renewed your protection to allies.");
-        String expireText = SkillConfigManager.getUseSetting(hero, this, SkillSetting.EXPIRE_TEXT.node(),
-                ChatComponents.GENERIC_SKILL + "Your protection to allies has expired.");
         hero.addEffect(new DefenceInNumbersEffect(this, this.getName(), hero.getPlayer(), period, applyText, expireText));
     }
 
@@ -99,6 +115,7 @@ public class SkillDefenceInNumbers extends PassiveSkill {
 
         public DefenceInNumbersEffect(Skill skill, String name, Player applier, long period, String applyText, String removeText) {
             super(skill, name, applier, period, applyText, removeText);
+            setEffectTypes(EffectType.INTERNAL, EffectType.SILENT_ACTIONS, EffectType.BENEFICIAL, EffectType.AREA_OF_EFFECT);
             setPersistent(true);
         }
 
@@ -119,12 +136,6 @@ public class SkillDefenceInNumbers extends PassiveSkill {
             }
 
             double radius = SkillConfigManager.getUseSetting(hero, skill, SkillSetting.RADIUS.node(), 20, false);
-            String renewText = SkillConfigManager.getUseSetting(hero, skill, "renew-text",
-                    ChatComponents.GENERIC_SKILL + "You have renewed your protection to $1 allies.");
-            String allyApplyText = SkillConfigManager.getUseSetting(hero, skill, "ally-apply-text",
-                    ChatComponents.GENERIC_SKILL + "Your protection in numbers has been renewed by %hero%").replace("%hero%", defendingPlayer.getName());
-            String allyExpireText = SkillConfigManager.getUseSetting(hero, skill, "ally-expire-text",
-                    ChatComponents.GENERIC_SKILL + "Your protection in numbers has expired.").replace("%hero%", defendingPlayer.getName());
 
             // Apply protection to allies in range of the hero with this passive
             int alliesProtected = 0;
@@ -140,7 +151,9 @@ public class SkillDefenceInNumbers extends PassiveSkill {
                 // If in range reapply effect
                 if (defendingPlayer.getLocation().distance(ally.getPlayer().getLocation()) <= radius) {
                     ally.addEffect(new DefenceInNumbersAllyEffect(skill, allyEffectName, defendingPlayer,
-                            getIncomingMultiplier(hero), getPeriod(), allyApplyText, allyExpireText));
+                            getIncomingMultiplier(hero), getPeriod(),
+                            allyApplyText.replace("%hero%", defendingPlayer.getName()),
+                            allyExpireText.replace("%hero%", defendingPlayer.getName())));
                     alliesProtected++;
                 }
             }
@@ -183,7 +196,7 @@ public class SkillDefenceInNumbers extends PassiveSkill {
             //Check if a party member possesses this passive
             Hero defendingHero = null;
             for (Hero partyMember : party.getMembers()) {
-                if (partyMember.hasEffect(SkillDefenceInNumbers.this.getName())) {
+                if (partyMember.hasEffect("DefenceInNumbers")) {
                     defendingHero = partyMember;
                 }
             }
@@ -197,11 +210,6 @@ public class SkillDefenceInNumbers extends PassiveSkill {
             long period = SkillConfigManager.getUseSetting(defendingHero, skill, SkillSetting.PERIOD.node(), 5000, false);
             double radius = SkillConfigManager.getUseSetting(defendingHero, skill, SkillSetting.RADIUS.node(), 20, false);
 
-            String allyApplyText = SkillConfigManager.getUseSetting(defendingHero, skill, "ally-apply-text",
-                    ChatComponents.GENERIC_SKILL + "Your protection in numbers has been renewed by %hero%").replace("%hero%", defendingPlayer.getName());
-            String allyExpireText = SkillConfigManager.getUseSetting(defendingHero, skill, "ally-expire-text",
-                    ChatComponents.GENERIC_SKILL + "Your protection in numbers has expired.").replace("%hero%", defendingPlayer.getName());
-
             // remove existing protection
             if (joiningHero.hasEffect(allyEffectName)) {
                 joiningHero.removeEffect(joiningHero.getEffect(allyEffectName));
@@ -209,23 +217,26 @@ public class SkillDefenceInNumbers extends PassiveSkill {
 
             // If in range apply effect
             if (defendingPlayer.getLocation().distance(joiningHero.getPlayer().getLocation()) <= radius) {
-
                 DefenceInNumbersAllyEffect effect = new DefenceInNumbersAllyEffect(
-                        skill, allyEffectName, defendingPlayer, getIncomingMultiplier(defendingHero),
-                        period, allyApplyText, allyExpireText);
+                        skill, allyEffectName, defendingPlayer, getIncomingMultiplier(defendingHero), period,
+                        allyApplyText.replace("%hero%", defendingPlayer.getName()),
+                        allyExpireText.replace("%hero%", defendingPlayer.getName()));
                 joiningHero.addEffect(effect);
             }
         }
 
         @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
         public void onSkillDamage(SkillDamageEvent event) {
-            if (event.getDamage() == 0 || !(event.getEntity() instanceof Hero))
+            if (event.getDamage() == 0 || !(event.getEntity() instanceof Player))
                 return;
 
-            Hero hero = (Hero) event.getEntity();
+            Player player = (Player) event.getEntity();
+            Hero hero = plugin.getCharacterManager().getHero(player);
+
             int requiredAllyNumber = SkillConfigManager.getUseSetting(hero, skill,
                     "required-ally-number", 0, true);
-            if (hero.hasEffect("DefenceInNumbers") && hero.getParty().getMembers().size() >= requiredAllyNumber) {
+//            if (hero.hasEffect("DefenceInNumbers") && hero.getParty().getMembers().size() >= requiredAllyNumber) {
+            if (hero.hasEffect("DefenceInNumbers")) {
                 event.setDamage(event.getDamage() * getIncomingMultiplier(hero));
             } else if (hero.hasEffect(allyEffectName)) {
                 DefenceInNumbersAllyEffect allyEffect = (DefenceInNumbersAllyEffect) hero.getEffect(allyEffectName);
@@ -235,13 +246,16 @@ public class SkillDefenceInNumbers extends PassiveSkill {
 
         @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
         public void onWeaponDamage(WeaponDamageEvent event) {
-            if ((event.getDamage() == 0) || !(event.getEntity() instanceof Hero))
+            if ((event.getDamage() == 0) || !(event.getEntity() instanceof Player))
                 return;
 
-            Hero hero = (Hero) event.getEntity();
+            Player player = (Player) event.getEntity();
+            Hero hero = plugin.getCharacterManager().getHero(player);
+
             int requiredAllyNumber = SkillConfigManager.getUseSetting(hero, skill,
                     "required-ally-number", 0, true);
-            if (hero.hasEffect("DefenceInNumbers") && hero.getParty().getMembers().size() >= requiredAllyNumber) {
+//            if (hero.hasEffect("DefenceInNumbers") && hero.getParty().getMembers().size() >= requiredAllyNumber) {
+            if (hero.hasEffect("DefenceInNumbers")) {
                 event.setDamage(event.getDamage() * getIncomingMultiplier(hero));
             } else if (hero.hasEffect(allyEffectName)) {
                 DefenceInNumbersAllyEffect allyEffect = (DefenceInNumbersAllyEffect) hero.getEffect(allyEffectName);
@@ -274,10 +288,9 @@ public class SkillDefenceInNumbers extends PassiveSkill {
         public DefenceInNumbersAllyEffect(Skill skill, String name, Player applier, double incomingMultiplier,
                                           long duration, String applyText, String expireText) {
             super(skill, name, applier, duration, applyText, expireText);
-            this.incomingMultiplier = incomingMultiplier;
+            setEffectTypes(EffectType.BENEFICIAL);
 
-            types.add(EffectType.BENEFICIAL);
-            types.add(EffectType.AREA_OF_EFFECT);
+            this.incomingMultiplier = incomingMultiplier;
         }
 
         public double getIncomingMultiplier() {
