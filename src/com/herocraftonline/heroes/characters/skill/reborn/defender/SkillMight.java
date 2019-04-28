@@ -20,6 +20,8 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityDamageEvent.DamageCause;
 
 public class SkillMight extends ActiveSkill {
+    public static final String SKILL_MESSAGE_PREFIX_SPACES = "    ";
+
     private String applyText;
     private String expireText;
 
@@ -59,8 +61,8 @@ public class SkillMight extends ActiveSkill {
     public void init() {
         super.init();
 
-        applyText = SkillConfigManager.getRaw(this, SkillSetting.APPLY_TEXT, ChatComponents.GENERIC_SKILL + "Your muscles bulge with power!");
-        expireText = SkillConfigManager.getRaw(this, SkillSetting.EXPIRE_TEXT, ChatComponents.GENERIC_SKILL + "You feel strength leave your body!");
+        applyText = SKILL_MESSAGE_PREFIX_SPACES + SkillConfigManager.getRaw(this, SkillSetting.APPLY_TEXT, ChatComponents.GENERIC_SKILL + "Your muscles bulge with power!");
+        expireText = SKILL_MESSAGE_PREFIX_SPACES + SkillConfigManager.getRaw(this, SkillSetting.EXPIRE_TEXT, ChatComponents.GENERIC_SKILL + "You feel strength leave your body!");
     }
 
     @Override

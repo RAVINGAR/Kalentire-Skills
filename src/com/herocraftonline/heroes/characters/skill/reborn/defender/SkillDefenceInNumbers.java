@@ -11,6 +11,7 @@ import com.herocraftonline.heroes.characters.effects.ExpirableEffect;
 import com.herocraftonline.heroes.characters.effects.PeriodicEffect;
 import com.herocraftonline.heroes.characters.party.HeroParty;
 import com.herocraftonline.heroes.characters.skill.*;
+import com.herocraftonline.heroes.chat.ChatComponents;
 import com.herocraftonline.heroes.util.Util;
 import org.bukkit.Bukkit;
 import org.bukkit.configuration.ConfigurationSection;
@@ -21,6 +22,7 @@ import org.bukkit.event.Listener;
 
 public class SkillDefenceInNumbers extends PassiveSkill {
     final static String allyEffectName = "DefenceInNumbersAllyEffect";
+    public static final String SKILL_MESSAGE_PREFIX_SPACES = "    ";
 
     public SkillDefenceInNumbers(Heroes plugin) {
         super(plugin, "DefenceInNumbers");
@@ -42,11 +44,11 @@ public class SkillDefenceInNumbers extends PassiveSkill {
         config.set("incoming-multiplier-improvement-when-buffed", .05);
         config.set("required-ally-number", 0);
         config.set("outgoing-multiplier", 1.0);
-        config.set(SkillSetting.APPLY_TEXT.node(), "You have renewed your protection to allies.");
-        config.set("renew-text", "You have renewed your protection to $1 allies.");
-        config.set(SkillSetting.EXPIRE_TEXT.node(), "Your protection to allies has expired.");
-        config.set("ally-apply-text", "Your protection in numbers has been renewed by %hero%");
-        config.set("ally-expire-text", "Your protection in numbers has expired.");
+        config.set(SkillSetting.APPLY_TEXT.node(), ChatComponents.GENERIC_SKILL + "You have renewed your protection to allies.");
+        config.set("renew-text", ChatComponents.GENERIC_SKILL + "You have renewed your protection to $1 allies.");
+        config.set(SkillSetting.EXPIRE_TEXT.node(), ChatComponents.GENERIC_SKILL + "Your protection to allies has expired.");
+        config.set("ally-apply-text", ChatComponents.GENERIC_SKILL + "Your protection in numbers has been renewed by %hero%");
+        config.set("ally-expire-text", ChatComponents.GENERIC_SKILL + "Your protection in numbers has expired.");
         return config;
     }
 
@@ -56,7 +58,7 @@ public class SkillDefenceInNumbers extends PassiveSkill {
         long period = SkillConfigManager.getUseSetting(hero, this, SkillSetting.PERIOD.node(), 5000, false);
         double radius = SkillConfigManager.getUseSetting(hero, this, SkillSetting.RADIUS.node(), 20, false);
         double incomingMultiplierBase = SkillConfigManager.getUseSetting(hero, this,
-                "incoming-multiplier-base", 1, true);
+                "incoming-multiplier-base", 1.0, true);
         double incomingMultiplierPerAlly = SkillConfigManager.getUseSetting(hero, this,
                 "incoming-multiplier-per-ally", .05, false);
         double incomingMultiplierImprovementWhenBuffed = SkillConfigManager.getUseSetting(hero, this,
@@ -85,10 +87,11 @@ public class SkillDefenceInNumbers extends PassiveSkill {
     public void apply(Hero hero) {
         long period = SkillConfigManager.getUseSetting(hero, this, SkillSetting.PERIOD.node(), 5000, false);
 
+        //TODO make apply and expire text not broadcasted, and only sent to the defender
         String applyText = SkillConfigManager.getUseSetting(hero, this, SkillSetting.APPLY_TEXT.node(),
-                "You have renewed your protection to allies.");
+                ChatComponents.GENERIC_SKILL + "You have renewed your protection to allies.");
         String expireText = SkillConfigManager.getUseSetting(hero, this, SkillSetting.EXPIRE_TEXT.node(),
-                "Your protection to allies has expired.");
+                ChatComponents.GENERIC_SKILL + "Your protection to allies has expired.");
         hero.addEffect(new DefenceInNumbersEffect(this, this.getName(), hero.getPlayer(), period, applyText, expireText));
     }
 
@@ -117,11 +120,11 @@ public class SkillDefenceInNumbers extends PassiveSkill {
 
             double radius = SkillConfigManager.getUseSetting(hero, skill, SkillSetting.RADIUS.node(), 20, false);
             String renewText = SkillConfigManager.getUseSetting(hero, skill, "renew-text",
-                    "You have renewed your protection to $1 allies.");
+                    ChatComponents.GENERIC_SKILL + "You have renewed your protection to $1 allies.");
             String allyApplyText = SkillConfigManager.getUseSetting(hero, skill, "ally-apply-text",
-                    "Your protection in numbers has been renewed by %hero%").replace("%hero%", defendingPlayer.getName());
+                    ChatComponents.GENERIC_SKILL + "Your protection in numbers has been renewed by %hero%").replace("%hero%", defendingPlayer.getName());
             String allyExpireText = SkillConfigManager.getUseSetting(hero, skill, "ally-expire-text",
-                    "Your protection in numbers has expired.").replace("%hero%", defendingPlayer.getName());
+                    ChatComponents.GENERIC_SKILL + "Your protection in numbers has expired.").replace("%hero%", defendingPlayer.getName());
 
             // Apply protection to allies in range of the hero with this passive
             int alliesProtected = 0;
@@ -143,7 +146,7 @@ public class SkillDefenceInNumbers extends PassiveSkill {
             }
 
             if (!renewText.isEmpty()) {
-                defendingPlayer.sendMessage(renewText.replace("$1", alliesProtected + ""));
+                defendingPlayer.sendMessage(SKILL_MESSAGE_PREFIX_SPACES + renewText.replace("$1", alliesProtected + ""));
             }
         }
     }
@@ -195,9 +198,9 @@ public class SkillDefenceInNumbers extends PassiveSkill {
             double radius = SkillConfigManager.getUseSetting(defendingHero, skill, SkillSetting.RADIUS.node(), 20, false);
 
             String allyApplyText = SkillConfigManager.getUseSetting(defendingHero, skill, "ally-apply-text",
-                    "Your protection in numbers has been renewed by %hero%").replace("%hero%", defendingPlayer.getName());
+                    ChatComponents.GENERIC_SKILL + "Your protection in numbers has been renewed by %hero%").replace("%hero%", defendingPlayer.getName());
             String allyExpireText = SkillConfigManager.getUseSetting(defendingHero, skill, "ally-expire-text",
-                    "Your protection in numbers has expired.").replace("%hero%", defendingPlayer.getName());
+                    ChatComponents.GENERIC_SKILL + "Your protection in numbers has expired.").replace("%hero%", defendingPlayer.getName());
 
             // remove existing protection
             if (joiningHero.hasEffect(allyEffectName)) {
@@ -250,7 +253,7 @@ public class SkillDefenceInNumbers extends PassiveSkill {
 
     public double getIncomingMultiplier(Hero defendingHero) {
         double incomingMultiplierBase = SkillConfigManager.getUseSetting(defendingHero, this,
-                "incoming-multiplier-base", 1, true);
+                "incoming-multiplier-base", 1.0, true);
         double incomingMultiplierPerAlly = SkillConfigManager.getUseSetting(defendingHero, this,
                 "incoming-multiplier-per-ally", .05, false);
         double incomingMultiplierImprovementWhenBuffed = SkillConfigManager.getUseSetting(defendingHero, this,

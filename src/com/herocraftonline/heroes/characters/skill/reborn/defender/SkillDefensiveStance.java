@@ -9,6 +9,7 @@ import com.herocraftonline.heroes.characters.Hero;
 import com.herocraftonline.heroes.characters.effects.EffectType;
 import com.herocraftonline.heroes.characters.effects.ExpirableEffect;
 import com.herocraftonline.heroes.characters.skill.*;
+import com.herocraftonline.heroes.chat.ChatComponents;
 import com.herocraftonline.heroes.util.Util;
 import org.bukkit.Bukkit;
 import org.bukkit.Sound;
@@ -20,6 +21,7 @@ import org.bukkit.event.Listener;
 
 
 public class SkillDefensiveStance extends ActiveSkill {
+    public static final String SKILL_MESSAGE_PREFIX_SPACES = "    ";
 
     private String applyText;
     private String expireText;
@@ -44,11 +46,11 @@ public class SkillDefensiveStance extends ActiveSkill {
         node.set(SkillSetting.DURATION.node(), 8000);
         node.set(SkillSetting.CHANCE.node(), 0.8);
         node.set(SkillSetting.CHANCE_PER_LEVEL.node(), 0.02);
-        node.set(SkillSetting.APPLY_TEXT.node(), "%hero% steadies themself in a defensive stance!");
-        node.set(SkillSetting.EXPIRE_TEXT.node(), "%hero% loosened their stance!");
-        node.set("parry-text", "%hero% parried an attack!");
-        node.set("parry-skill-text", "%hero% has parried %target%'s %skill%.");
-        node.set("parry-skill-magic-text", "%hero% has countered %target%'s magic.");
+        node.set(SkillSetting.APPLY_TEXT.node(), ChatComponents.GENERIC_SKILL + "%hero% steadies themself in a defensive stance!");
+        node.set(SkillSetting.EXPIRE_TEXT.node(), ChatComponents.GENERIC_SKILL + "%hero% loosened their stance!");
+        node.set("parry-text", ChatComponents.GENERIC_SKILL + "%hero% parried an attack!");
+        node.set("parry-skill-text", ChatComponents.GENERIC_SKILL + "%hero% has parried %target%'s %skill%.");
+        node.set("parry-skill-magic-text", ChatComponents.GENERIC_SKILL + "%hero% has countered %target%'s magic.");
         return node;
     }
 
@@ -64,12 +66,12 @@ public class SkillDefensiveStance extends ActiveSkill {
     public void init() {
         super.init();
         applyText = SkillConfigManager.getRaw(this, SkillSetting.APPLY_TEXT,
-                "%hero% steadies themself in a defensive stance!").replace("%hero%", "$1");
+                ChatComponents.GENERIC_SKILL + "%hero% steadies themself in a defensive stance!").replace("%hero%", "$1");
         expireText = SkillConfigManager.getRaw(this, SkillSetting.EXPIRE_TEXT,
-                "%hero% loosened their stance!").replace("%hero%", "$1");
-        parryText = SkillConfigManager.getRaw(this, "parry-text", "%hero% parried an attack!");
-        parrySkillText = SkillConfigManager.getRaw(this, "parry-skill-text", "%hero% has parried %target%'s %skill%.");
-        parrySkillMagicText = SkillConfigManager.getRaw(this, "parry-skill-magic-text", "%hero% has countered %target%'s magic.");
+                ChatComponents.GENERIC_SKILL + "%hero% loosened their stance!").replace("%hero%", "$1");
+        parryText = SkillConfigManager.getRaw(this, "parry-text", ChatComponents.GENERIC_SKILL + "%hero% parried an attack!");
+        parrySkillText = SkillConfigManager.getRaw(this, "parry-skill-text", ChatComponents.GENERIC_SKILL + "%hero% has parried %target%'s %skill%.");
+        parrySkillMagicText = SkillConfigManager.getRaw(this, "parry-skill-magic-text", ChatComponents.GENERIC_SKILL + "%hero% has countered %target%'s magic.");
     }
 
     @Override
@@ -145,9 +147,10 @@ public class SkillDefensiveStance extends ActiveSkill {
                 hero.removeEffect(hero.getEffect(getName()));
                 event.setCancelled(true);
 
-                player.sendMessage(parryText.replace("%hero%", "You"));
+                player.sendMessage(SKILL_MESSAGE_PREFIX_SPACES + parryText.replace("%hero%", "You"));
                 if (event.getDamager() instanceof Hero) {
-                    ((Hero) event.getDamager()).getPlayer().sendMessage(parryText.replace("%hero%", player.getName()));
+                    ((Hero) event.getDamager()).getPlayer().sendMessage(SKILL_MESSAGE_PREFIX_SPACES
+                            + parryText.replace("%hero%", player.getName()));
                 }
             }
         }
@@ -170,7 +173,8 @@ public class SkillDefensiveStance extends ActiveSkill {
                 hero.removeEffect(hero.getEffect(getName()));
                 event.setCancelled(true);
 
-                String message = event.getSkill().isType(SkillType.ABILITY_PROPERTY_MAGICAL) ? parrySkillMagicText : parrySkillText;
+                String message = SKILL_MESSAGE_PREFIX_SPACES
+                        + (event.getSkill().isType(SkillType.ABILITY_PROPERTY_MAGICAL) ? parrySkillMagicText : parrySkillText);
                 message = message.replace("%hero%", player.getName())
                         .replace("%target%", CustomNameManager.getName(event.getDamager()))
                         .replace("%skill%", event.getSkill().getName());
