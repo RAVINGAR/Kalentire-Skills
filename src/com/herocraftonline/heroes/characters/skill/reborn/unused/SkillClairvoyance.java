@@ -36,9 +36,9 @@ public class SkillClairvoyance extends ActiveSkill {
 
     @Override
     public String getDescription(Hero hero) {
-        int damage = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE, 60, false);
+        double damage = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE, 60.0, false);
         double damageIncrease = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE_INCREASE_PER_INTELLECT, 1.0, false);
-        damage += (int) (damageIncrease * hero.getAttributeValue(AttributeType.INTELLECT));
+        damage += damageIncrease * hero.getAttributeValue(AttributeType.INTELLECT);
 
         int radius = SkillConfigManager.getUseSetting(hero, this, SkillSetting.RADIUS, 30, false);
 
@@ -50,7 +50,7 @@ public class SkillClairvoyance extends ActiveSkill {
         ConfigurationSection node = super.getDefaultConfig();
 
         node.set(SkillSetting.DELAY.node(), 10000);
-        node.set(SkillSetting.DAMAGE.node(), 1);
+        node.set(SkillSetting.DAMAGE.node(), 1.0);
         node.set(SkillSetting.RADIUS.node(), 50);
         node.set("max-targets", 5);
 
@@ -81,9 +81,9 @@ public class SkillClairvoyance extends ActiveSkill {
 
         broadcastExecuteText(hero);
 
-        double damage = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE, 60, false);
+        double damage = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE, 60.0, false);
         double damageIncrease = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE_INCREASE_PER_INTELLECT, 1.0, false);
-        damage += (damageIncrease * hero.getAttributeValue(AttributeType.INTELLECT));
+        damage += damageIncrease * hero.getAttributeValue(AttributeType.INTELLECT);
 
         int radius = SkillConfigManager.getUseSetting(hero, this, SkillSetting.RADIUS, 5, false);
 

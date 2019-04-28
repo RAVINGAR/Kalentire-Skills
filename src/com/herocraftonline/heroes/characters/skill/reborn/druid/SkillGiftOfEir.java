@@ -12,12 +12,14 @@ import com.herocraftonline.heroes.characters.effects.PeriodicExpirableEffect;
 import com.herocraftonline.heroes.characters.effects.common.RootEffect;
 import com.herocraftonline.heroes.characters.skill.*;
 import com.herocraftonline.heroes.chat.ChatComponents;
+import com.herocraftonline.heroes.util.GeometryUtil;
 import com.herocraftonline.heroes.util.Util;
 import org.bukkit.*;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
 
 import java.util.ArrayList;
+import java.util.List;
 
 public class SkillGiftOfEir extends ActiveSkill {
 
@@ -181,25 +183,9 @@ public class SkillGiftOfEir extends ActiveSkill {
             }
         }
 
-        private ArrayList<Location> circle(Location centerPoint, int particleAmount, double circleRadius) {
-            World world = centerPoint.getWorld();
-
-            double increment = (2 * Math.PI) / particleAmount;
-
-            ArrayList<Location> locations = new ArrayList<>();
-
-            for (int i = 0; i < particleAmount; i++) {
-                double angle = i * increment;
-                double x = centerPoint.getX() + (circleRadius * Math.cos(angle));
-                double z = centerPoint.getZ() + (circleRadius * Math.sin(angle));
-                locations.add(new Location(world, x, centerPoint.getY(), z));
-            }
-            return locations;
-        }
-
         private void applyVisuals(Player player) {
             for (double r = 1; r < radiusSquared; r++) {
-                ArrayList<Location> particleLocations = circle(player.getLocation(), 15, 5);
+                List<Location> particleLocations = GeometryUtil.circle(player.getLocation(), 15, 5);
                 for (int i = 0; i < particleLocations.size(); i++) {
 //                    player.getWorld().spawnParticle(Particle.REDSTONE, particleLocations.get(i), 1, 3, 0.2, 0.5, 0.2, Color.AQUA);
                     player.getWorld().spigot().playEffect(particleLocations.get(i), org.bukkit.Effect.COLOURED_DUST, 0, 0, 0.0F, 1.0F, 1.0F, 1.0F, 5, 2);

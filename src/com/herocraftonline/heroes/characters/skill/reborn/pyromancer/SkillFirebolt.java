@@ -54,7 +54,7 @@ public class SkillFirebolt extends ActiveSkill {
 
     @Override
     public String getDescription(Hero hero) {
-        double damage = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE, 80, false);
+        double damage = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE, 80.0, false);
         double damageIncrease = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE_INCREASE_PER_INTELLECT, 0.0, false);
         damage += damageIncrease * hero.getAttributeValue(AttributeType.INTELLECT);
 
@@ -71,7 +71,7 @@ public class SkillFirebolt extends ActiveSkill {
     @Override
     public ConfigurationSection getDefaultConfig() {
         ConfigurationSection config = super.getDefaultConfig();
-        config.set(SkillSetting.DAMAGE.node(), 50);
+        config.set(SkillSetting.DAMAGE.node(), 50.0);
         config.set("projectile-velocity", 2.0);
         config.set("burn-duration", 2000);
         config.set("burn-damage-multiplier", 2.0);
@@ -196,7 +196,7 @@ public class SkillFirebolt extends ActiveSkill {
 
             int burnDuration = SkillConfigManager.getUseSetting(hero, skill, "burn-duration", 2000, false);
             double burnMultipliaer = SkillConfigManager.getUseSetting(hero, skill, "burn-damage-multiplier", 2.0, false);
-            double damage = SkillConfigManager.getUseSetting(hero, skill, SkillSetting.DAMAGE, 90, false);
+            double damage = SkillConfigManager.getUseSetting(hero, skill, SkillSetting.DAMAGE, 90.0, false);
             double damageIncrease = SkillConfigManager.getUseSetting(hero, skill, SkillSetting.DAMAGE_INCREASE_PER_INTELLECT, 0.0, false);
             damage += damageIncrease * hero.getAttributeValue(AttributeType.INTELLECT);
 

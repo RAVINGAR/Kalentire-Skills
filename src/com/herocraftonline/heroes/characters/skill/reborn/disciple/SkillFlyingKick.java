@@ -28,8 +28,8 @@ public class SkillFlyingKick extends TargettedSkill {
         super(plugin, "FlyingKick");
         setDescription("FlyingKick towards your target and deal $1 damage! Targeting distance for this ability is increased by your Dexterity.");
         setUsage("/skill flyingkick");
-        setArgumentRange(0, 0);
         setIdentifiers("skill flyingkick");
+        setArgumentRange(0, 0);
         setTypes(SkillType.VELOCITY_INCREASING, SkillType.DAMAGING, SkillType.INTERRUPTING, SkillType.ABILITY_PROPERTY_PHYSICAL, SkillType.AGGRESSIVE);
     }
 
@@ -46,20 +46,18 @@ public class SkillFlyingKick extends TargettedSkill {
 
     @Override
     public ConfigurationSection getDefaultConfig() {
-        ConfigurationSection node = super.getDefaultConfig();
-
-        node.set(SkillSetting.MAX_DISTANCE.node(), 8);
-        node.set(SkillSetting.MAX_DISTANCE_INCREASE_PER_DEXTERITY.node(), 0.15);
-        node.set(SkillSetting.DAMAGE.node(), 40);
-        node.set(SkillSetting.DAMAGE_INCREASE_PER_STRENGTH.node(), 1.125);
-        node.set("vertical-power", 1.0);
-        node.set("horizontal-divider", 6);
-        node.set("vertical-divider", 8);
-        node.set("multiplier", 1.0);
-        node.set("jump-delay", 0.3);
-        node.set("ncp-exemption-duration", 2000);
-
-        return node;
+        ConfigurationSection config = super.getDefaultConfig();
+        config.set(SkillSetting.MAX_DISTANCE.node(), 8);
+        config.set(SkillSetting.MAX_DISTANCE_INCREASE_PER_DEXTERITY.node(), 0.0);
+        config.set(SkillSetting.DAMAGE.node(), 40.0);
+        config.set(SkillSetting.DAMAGE_INCREASE_PER_STRENGTH.node(), 0.0);
+        config.set("vertical-power", 1.0);
+        config.set("horizontal-divider", 6);
+        config.set("vertical-divider", 8);
+        config.set("multiplier", 1.0);
+        config.set("jump-delay", 0.3);
+        config.set("ncp-exemption-duration", 2000);
+        return config;
     }
 
     @Override
@@ -78,8 +76,7 @@ public class SkillFlyingKick extends TargettedSkill {
         NCPUtils.applyExemptions(player, new NCPFunction() {
 
             @Override
-            public void execute()
-            {
+            public void execute() {
                 player.setVelocity(pushUpVector);
             }
         }, Lists.newArrayList("MOVING"), SkillConfigManager.getUseSetting(hero, this, "ncp-exemption-duration", 1500, false));

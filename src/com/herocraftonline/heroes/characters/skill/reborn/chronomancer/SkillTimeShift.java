@@ -67,8 +67,8 @@ public class SkillTimeShift extends TargettedSkill {
     @Override
     public ConfigurationSection getDefaultConfig() {
         ConfigurationSection config = super.getDefaultConfig();
-        config.set(SkillSetting.DAMAGE.node(), 25);
-        config.set(SkillSetting.HEALING.node(), 30);
+        config.set(SkillSetting.DAMAGE.node(), 25.0);
+        config.set(SkillSetting.HEALING.node(), 30.0);
         config.set("ally-percent-speed-increase", 0.05);
         config.set("enemy-percent-speed-decrease", 0.05);
         config.set("max-stacks", 5);

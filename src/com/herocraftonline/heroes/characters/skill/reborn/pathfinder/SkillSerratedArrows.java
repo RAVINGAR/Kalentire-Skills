@@ -64,7 +64,7 @@ public class SkillSerratedArrows extends PassiveSkill {
             return player.getName() + "-SerratedArrows";
         }
 
-        @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
+        @EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
         public void onEntityDamage(EntityDamageByEntityEvent event) {
             if (!(event.getDamager() instanceof Arrow)) {
                 return;

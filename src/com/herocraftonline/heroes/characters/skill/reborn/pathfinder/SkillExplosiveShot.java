@@ -72,10 +72,10 @@ public class SkillExplosiveShot extends ActiveSkill {
             numShotsString = "next shot";
 
         int duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, 7500, false);
-        int radius = SkillConfigManager.getUseSetting(hero, this, SkillSetting.RADIUS, 5, false);
+        double radius = SkillConfigManager.getUseSetting(hero, this, SkillSetting.RADIUS, 5.0, false);
 
-        double damage = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE, 80, false);
-        double damageIncrease = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE_INCREASE_PER_INTELLECT, 2, false);
+        double damage = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE, 80.0, false);
+        double damageIncrease = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE_INCREASE_PER_INTELLECT, 0.0, false);
         damage += damageIncrease * hero.getAttributeValue(AttributeType.INTELLECT);
 
         String formattedDuration = Util.decFormat.format(duration / 1000.0);
@@ -101,8 +101,8 @@ public class SkillExplosiveShot extends ActiveSkill {
         config.set(SkillSetting.USE_TEXT.node(), "");
         config.set("num-shots", 1);
         config.set(SkillSetting.DURATION.node(), 4000);
-        config.set(SkillSetting.RADIUS.node(), 4);
-        config.set(SkillSetting.DAMAGE.node(), 80D);
+        config.set(SkillSetting.RADIUS.node(), 4.0);
+        config.set(SkillSetting.DAMAGE.node(), 80.0);
         config.set(SkillSetting.DAMAGE_INCREASE_PER_INTELLECT.node(), 0.0);
         config.set("horizontal-power", 1.1D);
         config.set("vertical-power", 0.5D);
@@ -280,9 +280,9 @@ public class SkillExplosiveShot extends ActiveSkill {
         //projectile.getWorld().playSound(projectile.getLocation(), Sound.ENTITY_GENERIC_EXPLODE, 1.0F, 1.0F);
 
         int radius = SkillConfigManager.getUseSetting(hero, this, SkillSetting.RADIUS, 4, false);
-        double damage = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE, 80, false);
-        double damageIncrease = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE_INCREASE_PER_INTELLECT, 2.0, false);
-        damage += (damageIncrease * hero.getAttributeValue(AttributeType.INTELLECT));
+        double damage = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE, 80.0, false);
+        double damageIncrease = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE_INCREASE_PER_INTELLECT, 0.0, false);
+        damage += damageIncrease * hero.getAttributeValue(AttributeType.INTELLECT);
 
         // Play an effect, but only if we actually hit a target.
         // Play explosion effect

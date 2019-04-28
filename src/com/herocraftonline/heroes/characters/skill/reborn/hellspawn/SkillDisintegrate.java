@@ -6,7 +6,7 @@ import com.herocraftonline.heroes.characters.CharacterTemplate;
 import com.herocraftonline.heroes.characters.Hero;
 import com.herocraftonline.heroes.characters.effects.Effect;
 import com.herocraftonline.heroes.characters.effects.EffectType;
-import com.herocraftonline.heroes.characters.effects.common.interfaces.Burning;
+import com.herocraftonline.heroes.characters.effects.common.interfaces.Stacked;
 import com.herocraftonline.heroes.characters.skill.*;
 import com.herocraftonline.heroes.chat.ChatComponents;
 import com.herocraftonline.heroes.util.Util;
@@ -17,9 +17,6 @@ import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.entity.EntityDamageEvent;
-
-import java.util.ArrayList;
-import java.util.List;
 
 public class SkillDisintegrate extends TargettedSkill {
 
@@ -69,7 +66,12 @@ public class SkillDisintegrate extends TargettedSkill {
             if (!effect.isType(EffectType.WITHER))
                 continue;
 
-            addedDamage+= damagePerStack;
+            if (effect instanceof Stacked) {
+                addedDamage += ((Stacked) effect).getStackCount() * damagePerStack;
+            } else {
+                addedDamage += damagePerStack;
+            }
+
             targetCT.removeEffect(effect);
         }
 
@@ -81,7 +83,7 @@ public class SkillDisintegrate extends TargettedSkill {
             hero.getPlayer().sendMessage("    " + ChatComponents.GENERIC_SKILL + ChatColor.DARK_PURPLE + "Disintegrate Consume Damage: " + addedDamage);
         }
 
-        damage+= addedDamage;
+        damage += addedDamage;
         addSpellTarget(target, hero);
         damageEntity(target, hero.getPlayer(), damage, EntityDamageEvent.DamageCause.MAGIC);
 

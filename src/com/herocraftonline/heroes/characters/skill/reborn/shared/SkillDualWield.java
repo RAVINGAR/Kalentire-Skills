@@ -132,6 +132,9 @@ public class SkillDualWield extends PassiveSkill {
                 new BukkitRunnable() {
                     @Override
                     public void run() {
+                        if (target.isDead() || target.getHealth() <= 0)
+                            return;
+
                         doAttack(target, hero, damage);
                     }
                 }.runTaskLater(plugin, delayTicks);

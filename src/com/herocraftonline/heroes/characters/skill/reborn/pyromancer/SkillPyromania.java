@@ -28,7 +28,8 @@ public class SkillPyromania extends PassiveSkill {
     public SkillPyromania(Heroes plugin) {
         super(plugin, "Pyromania");
         setDescription("You passively take $1% less damage from Fire. " +
-                "Additionally, you deal $2% increased damage with fire abilities for each second of burning damage you have stored up on yourself, up to a maximum of $3%.");
+                "You gain $4 mana for every point of fire tick damage that you take." +
+                "You deal $2% increased damage with fire abilities for each second of burning damage you have stored up on yourself, up to a maximum of $3%.");
         setEffectTypes(EffectType.BENEFICIAL, EffectType.FIRE);
 
         Bukkit.getPluginManager().registerEvents(new SkillHeroListener(this), plugin);
@@ -39,11 +40,13 @@ public class SkillPyromania extends PassiveSkill {
         double reductionPercent = SkillConfigManager.getUseSetting(hero, this, "damage-reduction-percent", 0.2, false);
         double increasePerFireTickSecond = SkillConfigManager.getUseSetting(hero, this, "damage-percent-increase-per-fire-tick-second", 0.05, false);
         double maxPercentIncrease = SkillConfigManager.getUseSetting(hero, this, "max-damage-increase-percent", 0.25, false);
+        double manaRegainPerDamage = SkillConfigManager.getUseSetting(hero, this, "mana-regain-per-fire-damage", 1.0, false);
 
         return super.getDescription()
                 .replace("$1", Util.decFormat.format(reductionPercent * 100))
                 .replace("$2", Util.decFormat.format(increasePerFireTickSecond * 100))
-                .replace("$3", Util.decFormat.format(maxPercentIncrease * 100));
+                .replace("$3", Util.decFormat.format(maxPercentIncrease * 100))
+                .replace("$3", Util.decFormat.format(manaRegainPerDamage));
     }
 
     @Override
@@ -54,6 +57,7 @@ public class SkillPyromania extends PassiveSkill {
         config.set("damage-reduction-percent", 0.2);
         config.set("damage-percent-increase-per-fire-tick-second", 0.05);
         config.set("max-damage-increase-percent", 0.25);
+        config.set("mana-regain-per-fire-damage", 1.0);
         return config;
     }
 
@@ -74,6 +78,7 @@ public class SkillPyromania extends PassiveSkill {
         private double reductionPercent;
         private double increasePerFireTickSecond;
         private double maxPercentIncrease;
+        private double manaRegainPerDamage;
 
         PyromaniaEffect(Skill skill, Player player, String applyText, String unapplyText) {
             super(skill, skill.getName(), player, applyText, unapplyText);
@@ -88,6 +93,7 @@ public class SkillPyromania extends PassiveSkill {
             this.reductionPercent = SkillConfigManager.getUseSetting(hero, skill, "damage-reduction-percent", 0.2, false);
             this.increasePerFireTickSecond = SkillConfigManager.getUseSetting(hero, skill, "damage-percent-increase-per-fire-tick-second", 0.05, false);
             this.maxPercentIncrease = SkillConfigManager.getUseSetting(hero, skill, "max-damage-increase-percent", 0.25, false);
+            this.manaRegainPerDamage = SkillConfigManager.getUseSetting(hero, skill, "mana-regain-per-fire-damage", 1.0, false);
         }
 
         public double getReductionPercent() {
@@ -100,6 +106,10 @@ public class SkillPyromania extends PassiveSkill {
 
             int fireTickSeconds = (int) (applier.getFireTicks() / 20);
             return Math.min(maxPercentIncrease, increasePerFireTickSecond * fireTickSeconds);
+        }
+
+        public double getManaRegainPerDamage() {
+            return manaRegainPerDamage;
         }
     }
 
@@ -157,6 +167,7 @@ public class SkillPyromania extends PassiveSkill {
 
             PyromaniaEffect effect = (PyromaniaEffect) hero.getEffect(skill.getName());
             event.setDamage(event.getDamage() * (1.0 - effect.getReductionPercent()));
+            hero.setMana(hero.getMana() + (int) (effect.getManaRegainPerDamage() * event.getDamage()));
         }
     }
 }

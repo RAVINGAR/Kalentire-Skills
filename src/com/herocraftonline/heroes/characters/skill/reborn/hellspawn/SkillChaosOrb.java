@@ -51,7 +51,7 @@ public class SkillChaosOrb extends ActiveSkill {
 
     @Override
     public String getDescription(Hero hero) {
-        double damage = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE, 90, false);
+        double damage = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE, 90.0, false);
         double damageIncrease = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE_INCREASE_PER_INTELLECT, 0.0, false);
         damage += damageIncrease * hero.getAttributeValue(AttributeType.INTELLECT);
 
@@ -68,7 +68,7 @@ public class SkillChaosOrb extends ActiveSkill {
     @Override
     public ConfigurationSection getDefaultConfig() {
         ConfigurationSection config = super.getDefaultConfig();
-        config.set(SkillSetting.DAMAGE.node(), 120);
+        config.set(SkillSetting.DAMAGE.node(), 120.0);
         config.set(SkillSetting.DAMAGE_INCREASE_PER_INTELLECT.node(), 1.25);
         config.set("burn-duration", 2000);
         config.set("burn-damage-multiplier", 1.5);
@@ -145,7 +145,7 @@ public class SkillChaosOrb extends ActiveSkill {
 
             int burnDuration = SkillConfigManager.getUseSetting(hero, skill, "burn-duration", 2000, false);
             double burnMultipliaer = SkillConfigManager.getUseSetting(hero, skill, "burn-damage-multiplier", 1.5, false);
-            double damage = SkillConfigManager.getUseSetting(hero, skill, SkillSetting.DAMAGE, 90, false);
+            double damage = SkillConfigManager.getUseSetting(hero, skill, SkillSetting.DAMAGE, 90.0, false);
             double damageIncrease = SkillConfigManager.getUseSetting(hero, skill, SkillSetting.DAMAGE_INCREASE_PER_INTELLECT, 0.0, false);
             damage += damageIncrease * hero.getAttributeValue(AttributeType.INTELLECT);
 

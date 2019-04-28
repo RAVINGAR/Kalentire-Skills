@@ -1,4 +1,4 @@
-package com.herocraftonline.heroes.characters.skill.pack8;
+package com.herocraftonline.heroes.characters.skill.reborn.disciple;
 
 import com.herocraftonline.heroes.Heroes;
 import com.herocraftonline.heroes.api.events.HeroRegainHealthEvent;
@@ -30,7 +30,8 @@ public class SkillFistOfJin extends PassiveSkill {
 
     public SkillFistOfJin(Heroes plugin) {
         super(plugin, "FistOfJin");
-        setDescription("Each of your melee strikes restore $1 health to you, and $2 health to party members within $3 blocks. You cannot heal more than once per $4 second(s).");
+        setDescription("Each of your melee strikes restore $1 health to you, and $2 health to party members within $3 blocks. " +
+                "You cannot heal more than once per $4 second(s).");
         setTypes(SkillType.SILENCEABLE, SkillType.HEALING, SkillType.AREA_OF_EFFECT);
         setEffectTypes(EffectType.HEALING, EffectType.BENEFICIAL, EffectType.MAGIC);
 

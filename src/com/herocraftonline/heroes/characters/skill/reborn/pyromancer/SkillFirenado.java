@@ -52,7 +52,7 @@ public class SkillFirenado extends ActiveSkill {
     public String getDescription(Hero hero) {
         int tornadoDuration = SkillConfigManager.getUseSetting(hero, this, "tornado-duration", 8000, false);
 
-        double damage = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE, 90, false);
+        double damage = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE, 90.0, false);
         double damageIncrease = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE_INCREASE_PER_INTELLECT, 0.0, false);
         damage += damageIncrease * hero.getAttributeValue(AttributeType.INTELLECT);
 
@@ -70,7 +70,7 @@ public class SkillFirenado extends ActiveSkill {
     @Override
     public ConfigurationSection getDefaultConfig() {
         ConfigurationSection config = super.getDefaultConfig();
-        config.set(SkillSetting.DAMAGE.node(), 75);
+        config.set(SkillSetting.DAMAGE.node(), 75.0);
         config.set("burn-duration", 4000);
         config.set("burn-damage-multiplier", 2.0);
         config.set("require-blaze-rod", false);
@@ -269,10 +269,10 @@ public class SkillFirenado extends ActiveSkill {
             Vector direction = getDirection();
             setLocation(location.clone().subtract(direction));
             setDirectionAndSpeed(direction.multiply(-1).setY(0.5), this.defaultSpeed);
-//            if (currentTarget != null) {
-//                tempIgnoreTargets.add(currentTarget);
-//                currentTarget = null;
-//            }
+            if (currentTarget != null) {
+                tempIgnoreTargets.add(currentTarget);
+                currentTarget = null;
+            }
             return false;
         }
 

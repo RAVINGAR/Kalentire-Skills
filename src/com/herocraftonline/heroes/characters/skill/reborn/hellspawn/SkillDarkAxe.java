@@ -27,9 +27,9 @@ public class SkillDarkAxe extends TargettedSkill {
     }
 
     public String getDescription(Hero hero) {
-        int damage = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE, 50, false);
+        double damage = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE, 50.0, false);
         double damageIncrease = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE_INCREASE_PER_INTELLECT, 0.0, false);
-        damage += (int) (damageIncrease * hero.getAttributeValue(AttributeType.INTELLECT));
+        damage += damageIncrease * hero.getAttributeValue(AttributeType.INTELLECT);
 
         int duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, 3000, false);
 
@@ -40,9 +40,9 @@ public class SkillDarkAxe extends TargettedSkill {
 
     public ConfigurationSection getDefaultConfig() {
         ConfigurationSection config = super.getDefaultConfig();
-        config.set(SkillSetting.MAX_DISTANCE.node(), 4);
+        config.set(SkillSetting.MAX_DISTANCE.node(), 4.0);
         config.set(SkillSetting.ON_INTERRUPT_FORCE_COOLDOWN.node(), 2500);
-        config.set(SkillSetting.DAMAGE.node(), 60);
+        config.set(SkillSetting.DAMAGE.node(), 60.0);
         config.set(SkillSetting.DAMAGE_INCREASE_PER_INTELLECT.node(), 0.0);
         config.set(SkillSetting.DURATION.node(), 3000);
         return config;
@@ -63,7 +63,7 @@ public class SkillDarkAxe extends TargettedSkill {
         CharacterTemplate targCT = plugin.getCharacterManager().getCharacter(target);
 
         // Damage the target and add the slow effect.
-        double damage = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE, 50, false);
+        double damage = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE, 50.0, false);
         double damageIncrease = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE_INCREASE_PER_INTELLECT, 0.0, false);
         damage += damageIncrease * hero.getAttributeValue(AttributeType.INTELLECT);
 
