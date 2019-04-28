@@ -1,4 +1,4 @@
-package com.herocraftonline.heroes.characters.skill.pack3;
+package com.herocraftonline.heroes.characters.skill.reborn.disciple;
 
 import com.herocraftonline.heroes.Heroes;
 import com.herocraftonline.heroes.characters.CharacterTemplate;
@@ -6,7 +6,6 @@ import com.herocraftonline.heroes.characters.Hero;
 import com.herocraftonline.heroes.characters.skill.SkillSetting;
 import com.herocraftonline.heroes.characters.skill.SkillType;
 import com.herocraftonline.heroes.characters.skill.skills.SkillBaseHeal;
-
 import org.bukkit.Particle;
 import org.bukkit.Sound;
 import org.bukkit.World;

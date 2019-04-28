@@ -154,20 +154,33 @@ public class SkillGrapple extends ActiveSkill {
             grappleVector.setY(0.4);
         }
 
-        double horizontalPower = grappleVector.clone().setY(0).length();
         double verticalPower = grappleVector.clone().setX(0).setZ(0).length();
+        double horizontalPower = grappleVector.clone().setY(0).length();
+        Heroes.log(Level.INFO, "Before: Grapple Horizontal Power: " + horizontalPower);
+        Heroes.log(Level.INFO, "Before: Grapple Vertical Power: " + verticalPower);
 
-//        double minVerticalVelocity = SkillConfigManager.getUseSetting(hero, this, "min-vertical-velocity", 0.4, false);
-//        double maxVerticalVelocity = SkillConfigManager.getUseSetting(hero, this, "max-vertical-velocity", 1.85, false);
-//        if (verticalPower < minVerticalVelocity) {
-//            locVec.setY()
-//        }
-//        if (verticalPower > maxVerticalVelocity) {
-//            locVec.setY(maxVerticalVelocity);
-//        } else
+        double minVerticalVelocity = SkillConfigManager.getUseSetting(hero, this, "min-vertical-velocity", 0.4, false);
+        double maxVerticalVelocity = SkillConfigManager.getUseSetting(hero, this, "max-vertical-velocity", 1.85, false);
+        if (verticalPower < minVerticalVelocity) {
+            grappleVector.setY(minVerticalVelocity);
+        } else if (verticalPower > maxVerticalVelocity) {
+            grappleVector.setY(maxVerticalVelocity);
+        }
 
-        Heroes.log(Level.INFO, "Grapple Horizontal Power: " + horizontalPower);
-        Heroes.log(Level.INFO, "Grapple Vertical Power: " + verticalPower);
+        double minHorizontalVelocity = SkillConfigManager.getUseSetting(hero, this, "min-horizontal-velocity", 0.5, false);
+        double maxHorizontalVelocity = SkillConfigManager.getUseSetting(hero, this, "max-horizontal-velocity", 3.5, false);
+        if (horizontalPower < minHorizontalVelocity) {
+            double oldY = grappleVector.getY();
+            grappleVector.normalize().multiply(maxHorizontalVelocity).setY(oldY);
+        } else if (horizontalPower > maxHorizontalVelocity) {
+            double oldY = grappleVector.getY();
+            grappleVector.normalize().multiply(maxHorizontalVelocity).setY(oldY);
+        }
+
+        verticalPower = grappleVector.clone().setX(0).setZ(0).length();
+        horizontalPower = grappleVector.clone().setY(0).length();
+        Heroes.log(Level.INFO, "After: Grapple Horizontal Power: " + horizontalPower);
+        Heroes.log(Level.INFO, "After: Grapple Vertical Power: " + verticalPower);
 
         // As long as we have Y, give them safefall
         long safeFallDuration = SkillConfigManager.getUseSetting(hero, this, "safe-fall-duration", 5000, false);

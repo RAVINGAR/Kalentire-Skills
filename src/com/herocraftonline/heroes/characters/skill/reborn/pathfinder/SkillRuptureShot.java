@@ -60,7 +60,7 @@ public class SkillRuptureShot extends ActiveSkill {
         ConfigurationSection config = super.getDefaultConfig();
         config.set(SkillSetting.DURATION.node(), 10000);
         config.set(SkillSetting.PERIOD.node(), 1000);
-        config.set(SkillSetting.DAMAGE_TICK.node(), 15);
+        config.set(SkillSetting.DAMAGE_TICK.node(), 15.0);
         config.set("rupture-duration", 4000);
         config.set("mana-drain-per-tick", 25);
         config.set("stamina-drain-per-tick", 35);

@@ -39,7 +39,7 @@ public class SkillLockup extends ActiveSkill {
         long duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, 5000, false);
 
         return super.getDescription()
-                .replace("$2", Util.decFormat.format(radius))
+                .replace("$1", Util.decFormat.format(radius))
                 .replace("$2", Util.decFormat.format(damage))
                 .replace("$3", Util.decFormat.format(duration / 1000.0));
     }

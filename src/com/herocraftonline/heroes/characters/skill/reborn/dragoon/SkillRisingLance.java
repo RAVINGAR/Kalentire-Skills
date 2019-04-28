@@ -18,6 +18,7 @@ import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.block.BlockFace;
 import org.bukkit.configuration.ConfigurationSection;
+import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.entity.EntityDamageEvent;
@@ -70,21 +71,29 @@ public class SkillRisingLance extends ActiveSkill {
 
         final Vector velocity = player.getVelocity().setY(vPower);
 
-        LivingEntity target = checkForTarget(hero, player);
+        double maxDistance = SkillConfigManager.getUseSetting(hero, this, SkillSetting.MAX_DISTANCE, 25.0, false);
+        LivingEntity target = checkForTarget(hero, player, maxDistance);
+        if (target == null) {
+            for (Entity entity : player.getNearbyEntities(maxDistance, maxDistance, maxDistance)) {
+                if (entity instanceof LivingEntity) {
+                    target = (LivingEntity) entity;
+                    break;
+                }
+            }
+        }
+
+        launch(hero, player, velocity);
         if (target != null) {
             double damage = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE, 35, false);
             addSpellTarget(target, hero);
             damageEntity(target, player, damage, EntityDamageEvent.DamageCause.ENTITY_ATTACK, false);
-            launchTarget(hero, target, velocity);
+            launch(hero, target, velocity);
         }
-
-        launchTarget(hero, player, velocity);
 
         return SkillResult.NORMAL;
     }
 
-    public LivingEntity checkForTarget(Hero hero, Player player) {
-        double maxDistance = SkillConfigManager.getUseSetting(hero, this, SkillSetting.MAX_DISTANCE, 25.0, false);
+    public LivingEntity checkForTarget(Hero hero, Player player, double maxDistance) {
         Location eyeLocation = player.getEyeLocation();
         Vector normal = eyeLocation.getDirection();
         Vector start = eyeLocation.toVector();
@@ -99,7 +108,7 @@ public class SkillRisingLance extends ActiveSkill {
         return (LivingEntity) hit.getEntity();
     }
 
-    public void launchTarget(Hero hero, LivingEntity target, Vector velocity) {
+    public void launch(Hero hero, LivingEntity target, Vector velocity) {
         long exemptionDuration = SkillConfigManager.getUseSetting(hero, this, "ncp-exemption-duration", 0, false);
         if (exemptionDuration > 0) {
             NCPUtils.applyExemptions(target, new NCPFunction() {

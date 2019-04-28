@@ -9,6 +9,7 @@ import com.herocraftonline.heroes.characters.effects.ExpirableEffect;
 import com.herocraftonline.heroes.characters.effects.common.SafeFallEffect;
 import com.herocraftonline.heroes.characters.skill.*;
 import com.herocraftonline.heroes.chat.ChatComponents;
+import com.herocraftonline.heroes.util.GeometryUtil;
 import com.herocraftonline.heroes.util.Util;
 import org.bukkit.*;
 import org.bukkit.block.Block;
@@ -60,7 +61,7 @@ public class SkillOvergrowth extends TargettedLocationSkill {
     }
 
     public String getDescription(Hero hero) {
-        int radius = SkillConfigManager.getUseSetting(hero, this, SkillSetting.RADIUS, 4, false);
+        double radius = SkillConfigManager.getUseSetting(hero, this, SkillSetting.RADIUS, 4, false);
         long duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, 7500, false);
         int height = SkillConfigManager.getUseSetting(hero, this, "height", 16, false);
 
@@ -73,7 +74,7 @@ public class SkillOvergrowth extends TargettedLocationSkill {
     public SkillResult use(Hero hero, Location targetLocation, String[] args) {
         Player player = hero.getPlayer();
 
-        int radius = SkillConfigManager.getUseSetting(hero, this, SkillSetting.RADIUS, 4, false);
+        double radius = SkillConfigManager.getUseSetting(hero, this, SkillSetting.RADIUS, 4, false);
         long duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, 7500, false);
         int height = SkillConfigManager.getUseSetting(hero, this, "height", 18, false);
         int heightWithoutBaseBlock = height - 1;
@@ -95,7 +96,7 @@ public class SkillOvergrowth extends TargettedLocationSkill {
         return SkillResult.NORMAL;
     }
 
-    private OvergrowthConstructionData tryGetOvergrowthConstructionData(Hero hero, Block startBlock, int height, int radius) {
+    private OvergrowthConstructionData tryGetOvergrowthConstructionData(Hero hero, Block startBlock, int height, double radius) {
         Player player = hero.getPlayer();
         List<Block> conversionBlocks = new ArrayList<Block>();
         List<LivingEntity> targets = new ArrayList<LivingEntity>();
@@ -111,6 +112,8 @@ public class SkillOvergrowth extends TargettedLocationSkill {
         } catch (IllegalStateException e) {
             return null;
         }
+        
+        boolean isFirstLayer = true;
 
         while (iter.hasNext()) {
             currentBlock = iter.next();
@@ -119,42 +122,49 @@ public class SkillOvergrowth extends TargettedLocationSkill {
             if (!currentBlock.isEmpty())
                 break;
 
-            boolean hitMaxValidHeight = false;
+            boolean hitMaxHeight = false;
             for (LivingEntity confirmedTarget : targets) {
                 Location theoreticalPlatformLocation = confirmedTarget.getLocation().clone();
                 theoreticalPlatformLocation.setY(currentBlock.getY());
                 if (cannotGoAnyHigher(theoreticalPlatformLocation.getBlock(), 3)) {
-                    hitMaxValidHeight = true;
+                    hitMaxHeight = true;
                 }
             }
 
-            Collection<LivingEntity> currentLevelTargets = getLivingEntitiesWithinFlatCircle(currentBlock.getLocation(), radius);
+            Collection<LivingEntity> currentLevelTargets;
+            if (isFirstLayer) {
+                currentLevelTargets = getLivingEntitiesWithinSphere(currentBlock.getLocation(), radius);
+                isFirstLayer = false;
+            } else {
+                currentLevelTargets = getLivingEntitiesWithinFlatCircle(currentBlock.getLocation(), radius);
+            }
+
             for (LivingEntity target : currentLevelTargets) {
                 if (!hero.isAlliedTo(target) && !damageCheck(player, target)) {
-                    hitMaxValidHeight = false;
+                    hitMaxHeight = true;
                     validTopBlock = null;
                     break;
                 }
                 Location entLoc = target.getLocation();
                 Block entBlock = entLoc.getBlock();
                 if (cannotGoAnyHigher(entBlock, 3)) {
-                    hitMaxValidHeight = true;
+                    hitMaxHeight = true;
                 }
                 targets.add(target);
             }
 
             // Never found a valid block
-            if (hitMaxValidHeight && validTopBlock == null)
+            if (hitMaxHeight && validTopBlock == null)
                 break;
 
-            for (Block block : getBlocksWithinFlatCircle(currentBlock.getLocation(), radius)) {
+            for (Block block : getBlocksWithinFlatCircle(currentBlock.getLocation(), (int) radius)) {
                 if (block.isEmpty()) {
                     conversionBlocks.add(block);
                 }
             }
 
             validTopBlock = currentBlock;
-            if (hitMaxValidHeight)
+            if (hitMaxHeight)
                 break;
         }
 
@@ -204,25 +214,26 @@ public class SkillOvergrowth extends TargettedLocationSkill {
         return cannotGoAnyHigher;
     }
 
-    private List<LivingEntity> getLivingEntitiesWithinSphere(Location center, int radius) {
+    private List<LivingEntity> getLivingEntitiesWithinSphere(Location center, double radius) {
         World world = center.getWorld();
         List<LivingEntity> worldEntities = world.getLivingEntities();
         List<LivingEntity> entitiesWithinRadius = new ArrayList<LivingEntity>();
-        List<Block> blocksInRadius = getBlocksWithinSphere(center, radius, false);
+        List<Block> blocksInRadius = getBlocksWithinSphere(center, (int) radius, false);
 
         for (LivingEntity entity : worldEntities) {
             Block standingBlock = entity.getLocation().getBlock();
-            if (blocksInRadius.contains(standingBlock))
+            Block headBlock = entity.getEyeLocation().getBlock();
+            if (blocksInRadius.contains(standingBlock) || blocksInRadius.contains(headBlock))
                 entitiesWithinRadius.add(entity);
         }
         return entitiesWithinRadius;
     }
 
-    private List<Entity> getEntitiesWithinSphere(Location center, int radius) {
+    private List<Entity> getEntitiesWithinSphere(Location center, double radius) {
         World world = center.getWorld();
         List<Entity> worldEntities = world.getEntities();
         List<Entity> entitiesWithinRadius = new ArrayList<Entity>();
-        List<Block> blocksInRadius = getBlocksWithinSphere(center, radius, false);
+        List<Block> blocksInRadius = getBlocksWithinSphere(center, (int) radius, false);
 
         for (Entity entity : worldEntities) {
             Block standingBlock = entity.getLocation().getBlock();
@@ -238,9 +249,7 @@ public class SkillOvergrowth extends TargettedLocationSkill {
         List<LivingEntity> entitiesWithinRadius = new ArrayList<LivingEntity>();
         List<Block> blocksInRadius = getBlocksWithinFlatCircle(center, (int) radius);
 
-        ;
-
-        for (Entity entity : world.getNearbyEntities(center, radius, 2, radius)) {
+        for (Entity entity : world.getNearbyEntities(center, radius, 1, radius)) {
             if (!(entity instanceof LivingEntity))
                 continue;
 
@@ -291,17 +300,17 @@ public class SkillOvergrowth extends TargettedLocationSkill {
         return flatCircleBlocks;
     }
 
-    private boolean isBlockWithinFlatCircle(Block block, Location center, int radius) {
+    private boolean isBlockWithinFlatCircle(Block block, Location center, double radius) {
         int centerY = center.getBlockY();
         if (block.getY() != centerY)
             return false;
 
         int centerX = center.getBlockX();
         int centerZ = center.getBlockZ();
-        int rSquared = radius * radius;
+        double rSquared = radius * radius;
 
-        for (int x = centerX - radius; x <= centerX + radius; x++) {
-            for (int z = centerZ - radius; z <= centerZ + radius; z++) {
+        for (double x = centerX - radius; x <= centerX + radius; x++) {
+            for (double z = centerZ - radius; z <= centerZ + radius; z++) {
                 if ((centerX - x) * (centerX - x) + (centerZ - z) * (centerZ - z) <= rSquared) {
                     if (block.getX() == x && block.getZ() == z)
                         return true;
@@ -314,11 +323,11 @@ public class SkillOvergrowth extends TargettedLocationSkill {
     private class OvergrowthConstructionData {
         Block bottomCenterBlock;
         Block topCenterBlock;
-        int radius;
+        double radius;
         List<Block> possibleConversionBlocks = new ArrayList<Block>();
         List<LivingEntity> targets = new ArrayList<LivingEntity>();
 
-        OvergrowthConstructionData(Block bottomCenterBlock, Block topCenterBlock, int radius, List<Block> possibleConversionBlocks, List<LivingEntity> targets) {
+        OvergrowthConstructionData(Block bottomCenterBlock, Block topCenterBlock, double radius, List<Block> possibleConversionBlocks, List<LivingEntity> targets) {
             this.bottomCenterBlock = bottomCenterBlock;
             this.topCenterBlock = topCenterBlock;
             this.radius = radius;

@@ -9,11 +9,14 @@ import com.herocraftonline.heroes.characters.skill.ActiveSkill;
 import com.herocraftonline.heroes.characters.skill.SkillConfigManager;
 import com.herocraftonline.heroes.characters.skill.SkillSetting;
 import com.herocraftonline.heroes.characters.skill.SkillType;
-import org.bukkit.*;
+import com.herocraftonline.heroes.util.GeometryUtil;
+import org.bukkit.ChatColor;
+import org.bukkit.Location;
+import org.bukkit.Particle;
+import org.bukkit.Sound;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
 
-import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
@@ -44,24 +47,6 @@ public class SkillBalance extends ActiveSkill {
 
         return node;
     }
-    
-    public ArrayList<Location> circle(Location centerPoint, int particleAmount, double circleRadius)
-	{
-		World world = centerPoint.getWorld();
-
-		double increment = (2 * Math.PI) / particleAmount;
-
-		ArrayList<Location> locations = new ArrayList<Location>();
-
-		for (int i = 0; i < particleAmount; i++)
-		{
-			double angle = i * increment;
-			double x = centerPoint.getX() + (circleRadius * Math.cos(angle));
-			double z = centerPoint.getZ() + (circleRadius * Math.sin(angle));
-			locations.add(new Location(world, x, centerPoint.getY(), z));
-		}
-		return locations;
-	}
 
     @Override
     public SkillResult use(Hero hero, String[] arg1) {
@@ -89,7 +74,7 @@ public class SkillBalance extends ActiveSkill {
         radius += (int) Math.floor(radiusIncrease * hero.getAttributeValue(AttributeType.WISDOM));
         int radiusSquared = radius * radius;
 
-        boolean skipRangeCheck = (radius == 0);						//0 for no maximum range
+        boolean skipRangeCheck = (radius == 0);                        //0 for no maximum range
         while (partyMembers.hasNext()) {
             Hero member = partyMembers.next();
             Location memberLocation = member.getPlayer().getLocation();
@@ -115,16 +100,14 @@ public class SkillBalance extends ActiveSkill {
                 applyHero.getPlayer().setHealth((applyHero.getPlayer().getMaxHealth() * healthMultiplier));
                 if (applyHero.getName().equals(hero.getName())) {
                     player.sendMessage(ChatColor.GRAY + "You used Balance!");
-                }
-                else {
+                } else {
                     applyHero.getPlayer().sendMessage(ChatColor.GRAY + hero.getName() + " balanced your health with that of your party!");
                 }
-                List<Location> circle = circle(applyHero.getPlayer().getLocation().add(0, 0.5, 0), 36, 1.5);
-                for (int i = 0; i < circle.size(); i++)
-        		{
-        			//applyHero.getPlayer().getWorld().spigot().playEffect(circle(applyHero.getPlayer().getLocation().add(0, 0.5, 0), 36, radius / 2).get(i), org.bukkit.Effect.INSTANT_SPELL, 0, 0, 0, 0, 0, 0, 16, 16);
-        		    applyHero.getPlayer().getWorld().spawnParticle(Particle.SPELL_INSTANT, circle.get(i), 16, 0, 0, 0, 0);
-        		}
+                List<Location> circle = GeometryUtil.circle(applyHero.getPlayer().getLocation().add(0, 0.5, 0), 36, 1.5);
+                for (Location location : circle) {
+//                    applyHero.getPlayer().getWorld().spigot().playEffect(GeometryUtil.circle(applyHero.getPlayer().getLocation().add(0, 0.5, 0), 36, radius / 2.0).get(i), org.bukkit.Effect.INSTANT_SPELL, 0, 0, 0, 0, 0, 0, 16, 16);
+                    applyHero.getPlayer().getWorld().spawnParticle(Particle.SPELL_INSTANT, location, 16, 0, 0, 0, 0);
+                }
             }
         }
         player.getWorld().playSound(playerLocation, Sound.ENTITY_PLAYER_LEVELUP, 0.9F, 1.0F);

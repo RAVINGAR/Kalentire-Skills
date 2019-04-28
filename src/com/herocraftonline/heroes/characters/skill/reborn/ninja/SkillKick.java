@@ -30,9 +30,9 @@ public class SkillKick extends TargettedSkill {
 
     @Override
     public String getDescription(Hero hero) {
-        int damage = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE, 40, false);
+        double damage = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE, 40.0, false);
         double damageIncrease = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE_INCREASE_PER_STRENGTH, 0.75, false);
-        damage += (int) (damageIncrease * hero.getAttributeValue(AttributeType.STRENGTH));
+        damage += damageIncrease * hero.getAttributeValue(AttributeType.STRENGTH);
 
         int duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, 2000, false);
         String formattedDuration = Util.decFormat.format(duration / 1000.0);
@@ -45,7 +45,7 @@ public class SkillKick extends TargettedSkill {
         ConfigurationSection config = super.getDefaultConfig();
         config.set(SkillSetting.MAX_DISTANCE.node(), 3.5);
         config.set(SkillSetting.ON_INTERRUPT_FORCE_COOLDOWN.node(), 2500);
-        config.set(SkillSetting.DAMAGE.node(), 40);
+        config.set(SkillSetting.DAMAGE.node(), 40.0);
         config.set(SkillSetting.DAMAGE_INCREASE_PER_STRENGTH.node(), 0.0);
         config.set(SkillSetting.DURATION.node(), 2000);
         return config;
@@ -59,7 +59,7 @@ public class SkillKick extends TargettedSkill {
 
         int duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, 2000, false);
 
-        double damage = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE, 40, false);
+        double damage = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE, 40.0, false);
         double damageIncrease = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE_INCREASE_PER_STRENGTH, 0.75, false);
         damage += damageIncrease * hero.getAttributeValue(AttributeType.STRENGTH);
 

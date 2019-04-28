@@ -56,7 +56,7 @@ public class SkillShurikens extends PassiveSkill {
         else
             numShurikenText = "a Shuriken! Shuriken deal";
 
-        int damage = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE, 20, false);
+        double damage = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE, 20.0, false);
         double damageIncrease = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE_INCREASE_PER_DEXTERITY, 0.6, false);
         damage += (int) (hero.getAttributeValue(AttributeType.DEXTERITY) * damageIncrease);
 
@@ -68,7 +68,7 @@ public class SkillShurikens extends PassiveSkill {
 
     public ConfigurationSection getDefaultConfig() {
         ConfigurationSection config = super.getDefaultConfig();
-        config.set(SkillSetting.DAMAGE.node(), 35);
+        config.set(SkillSetting.DAMAGE.node(), 35.0);
         config.set(SkillSetting.DAMAGE_INCREASE_PER_DEXTERITY.node(), 0.4);
         config.set(SkillSetting.STAMINA.node(), 100);
         config.set("shuriken-toss-cooldown", 1000);
@@ -165,8 +165,8 @@ public class SkillShurikens extends PassiveSkill {
             LivingEntity target = (LivingEntity) event.getEntity();
 
             // Damage the target
-            double damage = SkillConfigManager.getUseSetting(hero, skill, SkillSetting.DAMAGE, 35, false);
-            double damageIncrease = SkillConfigManager.getUseSetting(hero, skill, SkillSetting.DAMAGE_INCREASE_PER_DEXTERITY, 0, false);
+            double damage = SkillConfigManager.getUseSetting(hero, skill, SkillSetting.DAMAGE, 35.0, false);
+            double damageIncrease = SkillConfigManager.getUseSetting(hero, skill, SkillSetting.DAMAGE_INCREASE_PER_DEXTERITY, 0.0, false);
             damage += hero.getAttributeValue(AttributeType.DEXTERITY) * damageIncrease;
 
             addSpellTarget(target, hero);

@@ -226,7 +226,7 @@ public class SkillDecelerationField extends TargettedLocationSkill {
 
         @Override
         public void applyToMonster(Monster monster) {
-            addPotionEffect(new PotionEffect(PotionEffectType.SLOW, (int) (getDuration() / 50), 3));
+            addPotionEffect(new PotionEffect(PotionEffectType.SLOW, (int) (getDuration() / 50), 2));
             super.applyToMonster(monster);
         }
     }

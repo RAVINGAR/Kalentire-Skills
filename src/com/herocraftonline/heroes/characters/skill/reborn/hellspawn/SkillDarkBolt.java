@@ -65,7 +65,7 @@ public class SkillDarkBolt extends ActiveSkill {
     public String getDescription(Hero hero) {
         double radius = SkillConfigManager.getUseSetting(hero, this, SkillSetting.RADIUS, 4.0, false);
 
-        double damage = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE, 80, false);
+        double damage = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE, 80.0, false);
         double damageIncrease = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE_INCREASE_PER_INTELLECT, 1.25, false);
         damage += damageIncrease * hero.getAttributeValue(AttributeType.INTELLECT);
 
@@ -83,7 +83,7 @@ public class SkillDarkBolt extends ActiveSkill {
     @Override
     public ConfigurationSection getDefaultConfig() {
         ConfigurationSection config = super.getDefaultConfig();
-        config.set(SkillSetting.DAMAGE.node(), 50);
+        config.set(SkillSetting.DAMAGE.node(), 50.0);
         config.set(SkillSetting.DAMAGE_INCREASE_PER_INTELLECT.node(), 0.0);
         config.set(SkillSetting.RADIUS.node(), 4.0);
         config.set(SkillSetting.DURATION.node(), 7000);
@@ -183,7 +183,7 @@ public class SkillDarkBolt extends ActiveSkill {
         Hero hero = plugin.getCharacterManager().getHero(player);
 
         double radius = SkillConfigManager.getUseSetting(hero, this, SkillSetting.RADIUS, 3, false);
-        double damage = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE, 80, false);
+        double damage = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE, 80.0, false);
         double damageIncrease = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE_INCREASE_PER_INTELLECT, 0.0, false);
         damage += damageIncrease * hero.getAttributeValue(AttributeType.INTELLECT);
 

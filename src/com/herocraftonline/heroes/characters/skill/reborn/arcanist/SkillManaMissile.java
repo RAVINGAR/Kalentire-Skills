@@ -64,7 +64,7 @@ public class SkillManaMissile extends PassiveSkill {
         config.set("catalysts", Util.hoes);
         config.set("projectile-size", 0.3);
         config.set("projectile-velocity", 75.0);
-        config.set("projectile-ticks-lives", 30);
+        config.set("projectile-ticks-lived", 30);
         config.set("projectile-gravity", 0.0);
         config.set("projectile-pierces-on-hit", true);
         config.set("knockback-on-hit", false);
@@ -91,7 +91,7 @@ public class SkillManaMissile extends PassiveSkill {
                 return;
 
             Hero hero = plugin.getCharacterManager().getHero(player);
-            if (!validateCanCast(hero))
+            if (!validateCanCast(hero, true))
                 return;
 
             fireProjectile(player, hero);
@@ -107,9 +107,16 @@ public class SkillManaMissile extends PassiveSkill {
             if (!hero.canUseSkill(skill))
                 return;
 
-            if (validateCanCast(hero)) {
-                event.setCancelled(true);
-            }
+            Player player = hero.getPlayer();
+            PlayerInventory playerInv = player.getInventory();
+            ItemStack mainHand = NMSHandler.getInterface().getItemInMainHand(playerInv);
+
+            List<String> allowedCatalysts = SkillConfigManager.getUseSetting(hero, skill, "catalysts", Util.hoes);
+            if (mainHand == null || !allowedCatalysts.contains(mainHand.getType().name()))
+                return;
+
+            event.setDamage(0.0);
+            event.setCancelled(true);
         }
 
         private void fireProjectile(Player player, Hero hero) {
@@ -123,7 +130,7 @@ public class SkillManaMissile extends PassiveSkill {
             hero.addEffect(new CooldownEffect(skill, player, cooldown));
         }
 
-        private boolean validateCanCast(Hero hero) {
+        private boolean validateCanCast(Hero hero, boolean applyCosts) {
             if (!hero.canUseSkill(skill))
                 return false;
 
@@ -175,6 +182,9 @@ public class SkillManaMissile extends PassiveSkill {
                 ActiveSkill.sendResultMessage(hero, skill, SkillResult.LOW_STAMINA);
                 return false;
             }
+
+            if (!applyCosts)
+                return true;
 
             // Deduct health
             if (healthCost > 0) {

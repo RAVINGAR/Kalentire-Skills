@@ -201,7 +201,7 @@ public class SkillTheWither extends ActiveSkill {
         private double healingReductionPerStack;
 
         WitherDecayEffect(Skill skill, Player applier, int witherAmplifier, double healhReductionPerStack, int maxStacks) {
-            super(skill, applier.getName() + "-WitherDecayed", applier, maxStacks);
+            super(skill, getWitherDecayEffectName(applier), applier, maxStacks);
 
             this.types.add(EffectType.DISPELLABLE);
             this.types.add(EffectType.HARMFUL);
@@ -223,6 +223,10 @@ public class SkillTheWither extends ActiveSkill {
         public void setDelta(Double value) {
             this.healingReductionPerStack = value / effectStack.count();
         }
+    }
+
+    private static String getWitherDecayEffectName(Player player) {
+        return player.getName() + "-WitherDecayed";
     }
 
     public class SkillEffectListener implements Listener {
@@ -248,7 +252,7 @@ public class SkillTheWither extends ActiveSkill {
             int maxStacks = SkillConfigManager.getUseSetting(hero, skill, "on-hit-max-stacks", 6, false);
 
             CharacterTemplate targetCT = plugin.getCharacterManager().getCharacter((LivingEntity) event.getEntity());
-            targetCT.addEffectStack(player.getName() + "-WitherAttacked", skill, player, duration,
+            targetCT.addEffectStack(getWitherDecayEffectName(player), skill, player, duration,
                     () -> new WitherDecayEffect(skill, player, witherAmplifier, healingReduction, maxStacks));
         }
 

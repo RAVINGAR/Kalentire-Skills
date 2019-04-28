@@ -29,7 +29,7 @@ public class SkillEviscerate extends TargettedSkill {
 
     @Override
     public String getDescription(Hero hero) {
-        double damage = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE, 50, false);
+        double damage = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE, 50.0, false);
         double damageIncrease = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE_INCREASE_PER_STRENGTH, 1.6, false);
         damage+= damageIncrease * hero.getAttributeValue(AttributeType.STRENGTH);
 
@@ -43,7 +43,7 @@ public class SkillEviscerate extends TargettedSkill {
     public ConfigurationSection getDefaultConfig() {
         ConfigurationSection config = super.getDefaultConfig();
         config.set(SkillSetting.MAX_DISTANCE.node(), 4);
-        config.set(SkillSetting.DAMAGE.node(), 100);
+        config.set(SkillSetting.DAMAGE.node(), 100.0);
         config.set(SkillSetting.DAMAGE_INCREASE_PER_STRENGTH.node(), 0.0);
         config.set("weapons", Util.swords);
         return config;
@@ -61,7 +61,7 @@ public class SkillEviscerate extends TargettedSkill {
 
         broadcastExecuteText(hero, target);
 
-        double damage = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE, 50, false);
+        double damage = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE, 50.0, false);
         double damageIncrease = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE_INCREASE_PER_STRENGTH, 1.125, false);
         damage += damageIncrease * hero.getAttributeValue(AttributeType.STRENGTH);
 

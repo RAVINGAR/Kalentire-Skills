@@ -43,8 +43,8 @@ public class SkillEnderBreath extends SkillBaseGroundEffect {
                 + "Enemies within the breath are dealt $1 damage every $2 second(s) for $3 second(s) and "
                 + "if you are transformed, they suffer chaotic ender teleports.");
         setUsage("/skill enderbreath");
-        setArgumentRange(0, 0);
         setIdentifiers("skill enderbreath");
+        setArgumentRange(0, 0);
         setTypes(SkillType.DAMAGING, SkillType.ABILITY_PROPERTY_ENDER, SkillType.ABILITY_PROPERTY_DARK, SkillType.SILENCEABLE, SkillType.AGGRESSIVE, SkillType.AREA_OF_EFFECT);
 
         setToggleableEffectName(this.getName());
@@ -224,7 +224,7 @@ public class SkillEnderBreath extends SkillBaseGroundEffect {
             visualEffect.type = EffectType.INSTANT;
             visualEffect.setLocation(location);
 
-            visualEffect.start();
+            effectManager.start(visualEffect);
 
             player.getWorld().playSound(location, Sound.ENTITY_GENERIC_BURN, 0.15f, 0.0001f);
         }
