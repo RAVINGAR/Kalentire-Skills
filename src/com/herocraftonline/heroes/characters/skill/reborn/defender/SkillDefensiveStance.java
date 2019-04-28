@@ -10,14 +10,17 @@ import com.herocraftonline.heroes.characters.effects.EffectType;
 import com.herocraftonline.heroes.characters.effects.ExpirableEffect;
 import com.herocraftonline.heroes.characters.skill.*;
 import com.herocraftonline.heroes.chat.ChatComponents;
+import com.herocraftonline.heroes.nms.NMSHandler;
 import com.herocraftonline.heroes.util.Util;
 import org.bukkit.Bukkit;
+import org.bukkit.Material;
 import org.bukkit.Sound;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
+import org.bukkit.inventory.ItemStack;
 
 
 public class SkillDefensiveStance extends ActiveSkill {
@@ -46,6 +49,9 @@ public class SkillDefensiveStance extends ActiveSkill {
         node.set(SkillSetting.DURATION.node(), 8000);
         node.set(SkillSetting.CHANCE.node(), 0.8);
         node.set(SkillSetting.CHANCE_PER_LEVEL.node(), 0.02);
+        node.set("require-shield-to-activate", false);
+        node.set("allow-doors-as-shields", false);
+        node.set("allow-trapdoors-as-shields", false);
         node.set(SkillSetting.APPLY_TEXT.node(), ChatComponents.GENERIC_SKILL + "%hero% steadies themself in a defensive stance!");
         node.set(SkillSetting.EXPIRE_TEXT.node(), ChatComponents.GENERIC_SKILL + "%hero% loosened their stance!");
         node.set("parry-text", ChatComponents.GENERIC_SKILL + "%hero% parried an attack!");
@@ -76,11 +82,18 @@ public class SkillDefensiveStance extends ActiveSkill {
 
     @Override
     public SkillResult use(Hero hero, String[] args) {
+        Player player = hero.getPlayer();
+        boolean requireShieldToActivate = SkillConfigManager.getUseSetting(hero, this, "require-shield-to-activate", false);
+        if (requireShieldToActivate && isWearingShield(hero)){
+            player.sendMessage("You must have a shield equipped to use this skill");
+            return SkillResult.FAIL;
+        }
+
         broadcastExecuteText(hero);
         int duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, 5000, false);
-        hero.addEffect(new DefensiveStanceEffect(this, hero.getPlayer(), duration));
+        hero.addEffect(new DefensiveStanceEffect(this, player, duration));
 
-        hero.getPlayer().getWorld().playSound(hero.getPlayer().getLocation(), Sound.BLOCK_ANVIL_LAND, 0.6F, 1.0F);
+        player.getWorld().playSound(player.getLocation(), Sound.BLOCK_ANVIL_LAND, 0.6F, 1.0F);
         return SkillResult.NORMAL;
     }
 
@@ -95,6 +108,37 @@ public class SkillDefensiveStance extends ActiveSkill {
         }
         return overallChance;
     }
+
+    private boolean isWearingShield(Hero hero){
+        boolean allowDoors = SkillConfigManager.getUseSetting(hero, this, "allow-doors-as-shields", false);
+        boolean allowTrapdoors = SkillConfigManager.getUseSetting(hero, this, "allow-trapdoors-as-shields", false);
+
+        ItemStack mainhandItem = NMSHandler.getInterface().getItemInMainHand(hero.getPlayer().getInventory());
+        ItemStack offhandItem = NMSHandler.getInterface().getItemInOffHand(hero.getPlayer().getInventory());
+
+        return isValidShield(mainhandItem.getType(), allowDoors, allowTrapdoors)
+                || isValidShield(offhandItem.getType(), allowDoors, allowTrapdoors);
+    }
+
+    private boolean isValidShield(Material material, boolean allowDoors, boolean allowTrapdoors){
+        return material == Material.SHIELD || (allowDoors && isDoor(material))
+                || (allowTrapdoors && (material == Material.TRAP_DOOR || material == Material.IRON_TRAPDOOR));
+    }
+
+    private boolean isDoor(Material material){
+        switch (material){
+            case WOOD_DOOR: // Oak
+            case BIRCH_DOOR_ITEM:
+            case SPRUCE_DOOR_ITEM:
+            case JUNGLE_DOOR_ITEM:
+            case ACACIA_DOOR_ITEM:
+            case DARK_OAK_DOOR_ITEM:
+            case IRON_DOOR:
+                return true;
+        }
+        return false;
+    }
+
 
     public class DefensiveStanceEffect extends ExpirableEffect {
 
