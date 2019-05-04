@@ -2,37 +2,34 @@ package com.herocraftonline.heroes.characters.skill.reborn.necromancer;
 
 import com.herocraftonline.heroes.Heroes;
 import com.herocraftonline.heroes.api.SkillResult;
-import com.herocraftonline.heroes.attributes.AttributeType;
 import com.herocraftonline.heroes.characters.CharacterTemplate;
-import com.herocraftonline.heroes.characters.CustomNameManager;
 import com.herocraftonline.heroes.characters.Hero;
 import com.herocraftonline.heroes.characters.Monster;
 import com.herocraftonline.heroes.characters.effects.EffectType;
-import com.herocraftonline.heroes.characters.effects.Expirable;
-import com.herocraftonline.heroes.characters.effects.ExpirableEffect;
 import com.herocraftonline.heroes.characters.effects.PeriodicDamageEffect;
 import com.herocraftonline.heroes.characters.effects.common.SummonEffect;
-import com.herocraftonline.heroes.characters.skill.*;
+import com.herocraftonline.heroes.characters.skill.ActiveSkill;
+import com.herocraftonline.heroes.characters.skill.Skill;
+import com.herocraftonline.heroes.characters.skill.SkillConfigManager;
+import com.herocraftonline.heroes.characters.skill.SkillType;
 import com.herocraftonline.heroes.util.Util;
 import me.libraryaddict.disguise.DisguiseAPI;
-import me.libraryaddict.disguise.disguisetypes.*;
-import me.libraryaddict.disguise.disguisetypes.watchers.LivingWatcher;
-import me.libraryaddict.disguise.disguisetypes.watchers.PlayerWatcher;
-import org.bukkit.*;
+import me.libraryaddict.disguise.disguisetypes.Disguise;
+import me.libraryaddict.disguise.disguisetypes.DisguiseType;
+import me.libraryaddict.disguise.disguisetypes.MobDisguise;
+import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
 import org.bukkit.configuration.ConfigurationSection;
-import org.bukkit.entity.*;
+import org.bukkit.entity.EntityType;
+import org.bukkit.entity.LivingEntity;
+import org.bukkit.entity.Player;
+import org.bukkit.entity.Wolf;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
-import org.bukkit.event.entity.EntityDamageEvent;
-import org.bukkit.event.entity.EntityDeathEvent;
-import org.bukkit.event.player.PlayerShearEntityEvent;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
-
-import java.util.HashMap;
-import java.util.Map;
 
 public class SkillNoxiousMinion extends ActiveSkill {
 
@@ -42,7 +39,7 @@ public class SkillNoxiousMinion extends ActiveSkill {
     public SkillNoxiousMinion(Heroes plugin) {
         super(plugin, "NoxiousMinion");
         setDescription("Conjures a noxious minion to obey your commands. "
-                + "The minion has $1 Health and deals $2 damage per hit.");
+                + "The minion has $1 Health and deals $2 damage per hit. $9");
         setUsage("/skill noxiousminion");
         setArgumentRange(0, 0);
         setIdentifiers("skill noxiousminion");
@@ -56,17 +53,30 @@ public class SkillNoxiousMinion extends ActiveSkill {
 
     public String getDescription(Hero hero) {
         double maxHp = SkillConfigManager.getUseSetting(hero, this, "minion-max-hp", 400.0, false);
-        maxHp+= SkillConfigManager.getUseSetting(hero, this, "minion-max-hp-per-level", 4.0, false) * hero.getHeroLevel(this);
+        maxHp += SkillConfigManager.getUseSetting(hero, this, "minion-max-hp-per-level", 4.0, false) * hero.getHeroLevel(this);
 
         double hitDmg = SkillConfigManager.getUseSetting(hero, this, "minion-attack-damage", 25.0, false);
-        hitDmg+= SkillConfigManager.getUseSetting(hero, this, "minion-attack-damage-per-level", 0.4, false) * hero.getHeroLevel(this);
+        hitDmg += SkillConfigManager.getUseSetting(hero, this, "minion-attack-damage-per-level", 0.4, false) * hero.getHeroLevel(this);
 
         long duration = SkillConfigManager.getUseSetting(hero, this, "minion-duration", 45000, false);
+
+        String speedText = "";
+        int speedAmplifier = SkillConfigManager.getUseSetting(hero, this, "minion-speed-amplifier", -1, false);
+        if (speedAmplifier > 2) {
+            speedText = "This is an extremely fast minion.";
+        } else if (speedAmplifier > 1) {
+            speedText = "This is a very fast minion.";
+        } else if (speedAmplifier > 0) {
+            speedText = "This is a fast minion.";
+        } else {
+            speedText = "This minion does not move very fast.";
+        }
 
         return getDescription()
                 .replace("$1", Util.decFormat.format(maxHp))
                 .replace("$2", Util.decFormat.format(hitDmg))
-                .replace("$3", Util.decFormat.format(duration / 1000.0));
+                .replace("$3", Util.decFormat.format(duration / 1000.0))
+                .replace("$9", speedText);
     }
 
     public ConfigurationSection getDefaultConfig() {
@@ -159,10 +169,10 @@ public class SkillNoxiousMinion extends ActiveSkill {
             super.applyToMonster(monster);
 
             double maxHp = SkillConfigManager.getUseSetting(getSummoner(), skill, "minion-max-hp", 125.0, false);
-            maxHp+= SkillConfigManager.getUseSetting(getSummoner(), skill, "minion-max-hp-per-level", 1.0, false) * getSummoner().getHeroLevel(skill);
+            maxHp += SkillConfigManager.getUseSetting(getSummoner(), skill, "minion-max-hp-per-level", 1.0, false) * getSummoner().getHeroLevel(skill);
 
             double hitDmg = SkillConfigManager.getUseSetting(getSummoner(), skill, "minion-attack-damage", 10.0, false);
-            hitDmg+= SkillConfigManager.getUseSetting(getSummoner(), skill, "minion-attack-damage-per-level", 0.2, false) * getSummoner().getHeroLevel(skill);
+            hitDmg += SkillConfigManager.getUseSetting(getSummoner(), skill, "minion-attack-damage-per-level", 0.2, false) * getSummoner().getHeroLevel(skill);
 
             LivingEntity minion = monster.getEntity();
             minion.setMaxHealth(maxHp);

@@ -19,12 +19,12 @@ import org.bukkit.util.Vector;
 
 import java.util.ArrayList;
 
-public class SkillShadowStep extends ActiveSkill {
+public class SkillShadowLunge extends ActiveSkill {
     private final int _maxHitsBeforeDiminish = 3;
     private final double _diminishPercent = 0.15;
     private final double _maxDiminishPercent = 0.75;
 
-    public SkillShadowStep(Heroes plugin) {
+    public SkillShadowLunge(Heroes plugin) {
         super(plugin, "ShadowStep");
         setUsage("/skill shadowstep");
         setIdentifiers("skill shadowstep");
@@ -79,7 +79,7 @@ public class SkillShadowStep extends ActiveSkill {
     private void PerformDash(Hero hero, Player player, double damage, double speedMult, double boost, double radius) {
         final Vector velocity = player.getLocation().getDirection().clone().setY(0.0D).multiply(speedMult + boost);
         player.getWorld().spawnParticle(Particle.CLOUD, player.getLocation(), 25, 0, 0.1, 0, 0.5);
-        player.getWorld().playSound(player.getLocation(), Sound.ENTITY_ENDER_DRAGON_FLAP, 1.0F, 1.0F);
+        player.getWorld().playSound(player.getLocation(), Sound.ENTITY_ENDERDRAGON_FLAP, 1.0F, 1.0F);
 
         final ArrayList<LivingEntity> lungeEntitiesToHit = new ArrayList<>();
         new BukkitRunnable() {
@@ -108,7 +108,7 @@ public class SkillShadowStep extends ActiveSkill {
                     addSpellTarget(lEnt, hero);
                     lungeEntitiesToHit.add(lEnt);
                     damageEntity(lEnt, player, finalDamage, EntityDamageEvent.DamageCause.ENTITY_ATTACK, false);
-                    player.getWorld().playSound(player.getLocation(), Sound.ENTITY_PHANTOM_FLAP, 1.0F, 1.0F);
+//                    player.getWorld().playSound(player.getLocation(), Sound.ENTITY_PHANTOM_FLAP, 1.0F, 1.0F);
                 }
                 ticks++;
             }

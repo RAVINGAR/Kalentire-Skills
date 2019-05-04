@@ -19,11 +19,6 @@ import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
 import org.bukkit.util.Vector;
 
-import java.util.HashSet;
-import java.util.Set;
-
-import com.herocraftonline.heroes.characters.skill.reborn.ninja.SkillShurikens;
-
 public class SkillBackflip extends ActiveSkill {
 
     public SkillBackflip(Heroes plugin) {
@@ -39,9 +34,9 @@ public class SkillBackflip extends ActiveSkill {
     public String getDescription(Hero hero) {
 
         String throwShurikenDescription = "";
-        boolean throwShuriken = SkillConfigManager.getUseSetting(hero, this, "thow-shuriken", true);
+        boolean throwShuriken = SkillConfigManager.getUseSetting(hero, this, "thow-shurikens", true);
         if (throwShuriken)
-            throwShurikenDescription = "If you are able to currently throw Shuriken, you will do so as well. ";
+            throwShurikenDescription = "If you are able to throw shurikens, you will do that as well. ";
 
         String frontFlipString = "";
         if (hero.canUseSkill("Frontflip"))
@@ -58,6 +53,7 @@ public class SkillBackflip extends ActiveSkill {
         config.set("horizontal-power", 0.5);
         config.set("horizontal-power-increase-per-dexterity", 0.0125);
         config.set("vertical-power", 0.5);
+        config.set("thow-shurikens", true);
         config.set("vertical-power-increase-per-dexterity", 0.00625);
         config.set("ncp-exemption-duration", 2000);
         return config;
@@ -121,7 +117,6 @@ public class SkillBackflip extends ActiveSkill {
 
         // Let's bypass the nocheat issues...
         NCPUtils.applyExemptions(player, new NCPFunction() {
-
             @Override
             public void execute() {
                 // Backflip!
@@ -131,10 +126,10 @@ public class SkillBackflip extends ActiveSkill {
         }, Lists.newArrayList("MOVING"), SkillConfigManager.getUseSetting(hero, this, "ncp-exemption-duration", 1000, false));
 
         // If they can use shuriken, let's make them throw a few after they backflip
-        boolean throwShuriken = SkillConfigManager.getUseSetting(hero, this, "thow-shuriken", true);
+        boolean throwShuriken = SkillConfigManager.getUseSetting(hero, this, "thow-shurikens", true);
         if (throwShuriken) {
-            if (hero.canUseSkill("Shuriken")) {
-                SkillShurikens shurikenSkill = (SkillShurikens) plugin.getSkillManager().getSkill("Shuriken");
+            if (hero.canUseSkill("Shurikens")) {
+                SkillShurikens shurikenSkill = (SkillShurikens) plugin.getSkillManager().getSkill("Shurikens");
 
                 if (shurikenSkill != null)
                     shurikenSkill.shurikenToss(player);
@@ -149,23 +144,5 @@ public class SkillBackflip extends ActiveSkill {
         }
 
         return SkillResult.NORMAL;
-    }
-
-    private static final Set<Material> requiredMaterials;
-
-    static {
-        requiredMaterials = new HashSet<>();
-        requiredMaterials.add(Material.WATER);
-        requiredMaterials.add(Material.LAVA);
-        requiredMaterials.add(Material.AIR);
-        requiredMaterials.add(Material.LEAVES);
-        requiredMaterials.add(Material.LEAVES_2);
-//        requiredMaterials.add(Material.ACACIA_LEAVES);
-//        requiredMaterials.add(Material.BIRCH_LEAES);
-//        requiredMaterials.add(Material.DARK_OAK_LEAVES);
-//        requiredMaterials.add(Material.JUNGLE_LEAVES);
-//        requiredMaterials.add(Material.OAK_LEAVES);
-//        requiredMaterials.add(Material.SPRUCE_LEAVES);
-        requiredMaterials.add(Material.SOUL_SAND);
     }
 }

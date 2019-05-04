@@ -26,7 +26,7 @@ public class SkillFlyingKick extends TargettedSkill {
 
     public SkillFlyingKick(Heroes plugin) {
         super(plugin, "FlyingKick");
-        setDescription("FlyingKick towards your target and deal $1 damage! Targeting distance for this ability is increased by your Dexterity.");
+        setDescription("FlyingKick towards your target and deal $1 physical damage!");
         setUsage("/skill flyingkick");
         setIdentifiers("skill flyingkick");
         setArgumentRange(0, 0);

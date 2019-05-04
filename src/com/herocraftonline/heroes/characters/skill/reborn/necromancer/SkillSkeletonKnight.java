@@ -38,7 +38,8 @@ public class SkillSkeletonKnight extends ActiveSkill {
 
     public SkillSkeletonKnight(Heroes plugin) {
         super(plugin, "SkeletonKnight");
-        setDescription("Conjures a Skeleton Knight to obey your commands. The minion has $1 HP deals $2 damage per hit, and lasts for up to $3 seconds.");
+        setDescription("Conjures a Skeleton Knight to obey your commands. " +
+                "The minion has $1 HP deals $2 damage per hit, and lasts for up to $3 seconds. $9");
         setUsage("/skill skeletonknight");
         setIdentifiers("skill skeletonknight");
         setArgumentRange(0, 0);
@@ -58,10 +59,23 @@ public class SkillSkeletonKnight extends ActiveSkill {
 
         long duration = SkillConfigManager.getUseSetting(hero, this, "minion-duration", 45000, false);
 
+        String speedText = "";
+        int speedAmplifier = SkillConfigManager.getUseSetting(hero, this, "minion-speed-amplifier", -1, false);
+        if (speedAmplifier > 2) {
+            speedText = "This is an extremely fast minion.";
+        } else if (speedAmplifier > 1) {
+            speedText = "This is a very fast minion.";
+        } else if (speedAmplifier > 0) {
+            speedText = "This is a fast minion.";
+        } else {
+            speedText = "This minion does not move very fast.";
+        }
+
         return getDescription()
                 .replace("$1", Util.decFormat.format(maxHp))
                 .replace("$2", Util.decFormat.format(hitDmg))
-                .replace("$3", Util.decFormat.format(duration / 1000.0));
+                .replace("$3", Util.decFormat.format(duration / 1000.0))
+                .replace("$9", speedText);
     }
 
     public ConfigurationSection getDefaultConfig() {

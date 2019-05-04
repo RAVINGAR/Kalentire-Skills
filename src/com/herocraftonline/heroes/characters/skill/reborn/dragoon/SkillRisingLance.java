@@ -75,10 +75,15 @@ public class SkillRisingLance extends ActiveSkill {
         LivingEntity target = checkForTarget(hero, player, maxDistance);
         if (target == null) {
             for (Entity entity : player.getNearbyEntities(maxDistance, maxDistance, maxDistance)) {
-                if (entity instanceof LivingEntity) {
-                    target = (LivingEntity) entity;
-                    break;
-                }
+                if (!(entity instanceof LivingEntity))
+                    continue;
+
+                LivingEntity entLE = (LivingEntity) entity;
+                if (!damageCheck(player, entLE))
+                    continue;
+
+                target = (LivingEntity) entity;
+                break;
             }
         }
 

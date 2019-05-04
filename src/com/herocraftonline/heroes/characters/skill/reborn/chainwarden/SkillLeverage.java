@@ -1,6 +1,7 @@
 package com.herocraftonline.heroes.characters.skill.reborn.chainwarden;
 
 import com.herocraftonline.heroes.Heroes;
+import com.herocraftonline.heroes.api.events.SkillDamageEvent;
 import com.herocraftonline.heroes.api.events.WeaponDamageEvent;
 import com.herocraftonline.heroes.characters.Hero;
 import com.herocraftonline.heroes.characters.skill.*;
@@ -48,14 +49,40 @@ public class SkillLeverage extends PassiveSkill {
         }
 
         @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
+        public void onSkillDamage(SkillDamageEvent event) {
+            if (event.getDamage() <= 0 || !(event.getDamager() instanceof Hero) || !(event.getEntity() instanceof LivingEntity))
+                return;
+
+            Hero hero = (Hero) event.getDamager();
+            if (!hero.canUseSkill(skill))
+                return;
+            if (!hero.hasEffect(SkillHook.ownerEffectName))
+                return;
+
+            SkillHook.HookOwnerEffect ownerEffect = (SkillHook.HookOwnerEffect) hero.getEffect(SkillHook.ownerEffectName);
+            if (ownerEffect == null)
+                return;
+
+            int count = ownerEffect.getCurrentHookCount();
+            if (count < 1)
+                return;
+
+            double increasePerHook = SkillConfigManager.getUseSetting(hero, skill, "percent-increase-per-hook", 0.1, false);
+            double maxIncrease = SkillConfigManager.getUseSetting(hero, skill, "maximum-damage-increase", 0.4, false);
+
+            double modifier = Math.min(maxIncrease, increasePerHook * count);
+            event.setDamage(event.getDamage() * (1.0 + modifier));
+        }
+
+        @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
         public void onWeaponDamage(WeaponDamageEvent event) {
             if (event.getDamage() <= 0 || !(event.getDamager() instanceof Hero) || !(event.getEntity() instanceof LivingEntity))
                 return;
 
             Hero hero = (Hero) event.getDamager();
-            if (!hero.hasEffect(SkillHook.ownerEffectName))
-                return;
             if (!hero.canUseSkill(skill))
+                return;
+            if (!hero.hasEffect(SkillHook.ownerEffectName))
                 return;
 
             SkillHook.HookOwnerEffect ownerEffect = (SkillHook.HookOwnerEffect) hero.getEffect(SkillHook.ownerEffectName);

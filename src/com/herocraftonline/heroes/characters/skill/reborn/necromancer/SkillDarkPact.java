@@ -28,12 +28,12 @@ public class SkillDarkPact extends TargettedSkill {
     public SkillDarkPact(Heroes plugin) {
         super(plugin, "DarkPact");
         setDescription("You form a dark pact with your target, sapping your own life and granting it to them. " +
-                "The pact lasts for $1 second(s) and transfers $2 life every $3 second(s)." +
-                "You cannot cancel the pact.");
+                "The pact lasts for $1 second(s) and transfers $2 life every $3 second(s). " +
+                "You cannot cancel this pact at will--be careful.");
         setUsage("/skill darkpact <target>");
         setIdentifiers("skill darkpact");
         setArgumentRange(0, 1);
-        setTypes(SkillType.BUFFING, SkillType.HEALING, SkillType.SILENCEABLE, SkillType.NO_SELF_TARGETTING);
+        setTypes(SkillType.BUFFING, SkillType.HEALING, SkillType.SILENCEABLE, SkillType.NAME_TARGETTING_ENABLED, SkillType.NO_SELF_TARGETTING);
     }
 
     public String getDescription(Hero hero) {

@@ -28,7 +28,7 @@ public class SkillForcePull extends TargettedSkill {
 
     public SkillForcePull(Heroes plugin) {
         super(plugin, "Forcepull");
-        setDescription("Deal $1 physical damage and force your target away from you. " +
+        setDescription("Deal $1 magic damage and force your target away from you. " +
                 "If you target an ally, they will be healed for $2 instead.");
         setUsage("/skill forcepull");
         setIdentifiers("skill forcepull");
@@ -49,7 +49,7 @@ public class SkillForcePull extends TargettedSkill {
 
         return getDescription()
                 .replace("$1", Util.decFormat.format(damage))
-                .replace("$1", Util.decFormat.format(healing));
+                .replace("$2", Util.decFormat.format(healing));
     }
 
     @Override

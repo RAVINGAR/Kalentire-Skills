@@ -142,11 +142,13 @@ public class SkillEnderBreath extends SkillBaseGroundEffect {
         @Override
         public void groundEffectTargetAction(Hero hero, final LivingEntity target, final AreaGroundEffectEffect groundEffect, EffectManager effectManager) {
             Player player = hero.getPlayer();
-            if (!damageCheck(player, target))
+            if (!target.equals(player) && !damageCheck(player, target))
                 return;
 
-            addSpellTarget(target, hero);
-            damageEntity(target, player, damageTick, DamageCause.MAGIC, false);
+            if (target.equals(player)) {
+                addSpellTarget(target, hero);
+                damageEntity(target, player, damageTick, DamageCause.MAGIC, false);
+            }
 
             if (!hero.hasEffect("EnderBeastTransformed"))
                 return;

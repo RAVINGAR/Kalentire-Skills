@@ -27,8 +27,8 @@ public class SkillGarrote extends TargettedSkill {
         super(plugin, "Garrote");
         setDescription("Strangle your target, dealing $1 physical damage, interrupting their casting, and silencing them for $2 second(s).");
         setUsage("/skill garrote");
-        setArgumentRange(0, 0);
         setIdentifiers("skill garrote");
+        setArgumentRange(0, 0);
         setTypes(SkillType.ABILITY_PROPERTY_PHYSICAL, SkillType.DAMAGING, SkillType.AGGRESSIVE, SkillType.SILENCING, SkillType.INTERRUPTING);
     }
 
@@ -46,14 +46,12 @@ public class SkillGarrote extends TargettedSkill {
 
     @Override
     public ConfigurationSection getDefaultConfig() {
-        ConfigurationSection node = super.getDefaultConfig();
-
-        node.set(SkillSetting.MAX_DISTANCE.node(), 3);
-        node.set(SkillSetting.DAMAGE.node(), 40);
-        node.set(SkillSetting.DAMAGE_INCREASE_PER_STRENGTH.node(), 0.75);
-        node.set(SkillSetting.DURATION.node(), 3000);
-
-        return node;
+        ConfigurationSection config = super.getDefaultConfig();
+        config.set(SkillSetting.MAX_DISTANCE.node(), 3);
+        config.set(SkillSetting.DAMAGE.node(), 40);
+        config.set(SkillSetting.DAMAGE_INCREASE_PER_STRENGTH.node(), 0.75);
+        config.set(SkillSetting.DURATION.node(), 3000);
+        return config;
     }
 
     @Override

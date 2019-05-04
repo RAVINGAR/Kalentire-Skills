@@ -27,8 +27,9 @@ public class SkillYggdrasilsTouch extends ActiveSkill {
         super(plugin, "YggdrasilsTouch");
         setDescription("You mark all nearby Allies with Yggdrasil's touch. After a short period Yggdrasil's touch explodes and heals you and all nearby allies");
         setUsage("/skill yggdrasilstouch");
-        setArgumentRange(0, 0);
         setIdentifiers("skill yggdrasilstouch", "skill ytouch");
+        setNotes("/bind ytouch", "/skill ytouch");
+        setArgumentRange(0, 0);
         setTypes(SkillType.HEALING, SkillType.AREA_OF_EFFECT, SkillType.SILENCEABLE);
     }
 
