@@ -101,7 +101,7 @@ public class SkillGrapple extends ActiveSkill {
             LivingEntity target = (LivingEntity) hit.getEntity();
             CharacterTemplate targetCT = plugin.getCharacterManager().getCharacter((LivingEntity) target);
 
-            SkillHook.InvalidHookTargetReason invalidHookTargetReason = SkillHook.tryRemoveHook(hero, targetCT);
+            SkillHook.InvalidHookTargetReason invalidHookTargetReason = SkillHook.tryUseHook(hero, targetCT, true);
             if (invalidHookTargetReason == SkillHook.InvalidHookTargetReason.VALID_TARGET) {
                 // Found a valid hook target.
 
@@ -147,13 +147,6 @@ public class SkillGrapple extends ActiveSkill {
         double zDir = (targetLoc.getZ() - playerLoc.getZ()) / horizontalDivider;
         final Vector grappleVector = new Vector(xDir, yDir, zDir);
 
-        if (grappleVector.getY() < 0.5) {
-            grappleVector.setY(0.4);
-        }
-        if (locVec.getY() < playerLoc.getY()) {
-            grappleVector.setY(0.4);
-        }
-
         double verticalPower = grappleVector.clone().setX(0).setZ(0).length();
         double horizontalPower = grappleVector.clone().setY(0).length();
         Heroes.log(Level.INFO, "Before: Grapple Horizontal Power: " + horizontalPower);
@@ -179,8 +172,8 @@ public class SkillGrapple extends ActiveSkill {
 
         verticalPower = grappleVector.clone().setX(0).setZ(0).length();
         horizontalPower = grappleVector.clone().setY(0).length();
-        Heroes.log(Level.INFO, "After: Grapple Horizontal Power: " + horizontalPower);
-        Heroes.log(Level.INFO, "After: Grapple Vertical Power: " + verticalPower);
+
+        grappleVector.multiply(multiplier);
 
         // As long as we have Y, give them safefall
         long safeFallDuration = SkillConfigManager.getUseSetting(hero, this, "safe-fall-duration", 5000, false);

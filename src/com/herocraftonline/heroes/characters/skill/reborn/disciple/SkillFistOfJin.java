@@ -153,8 +153,7 @@ public class SkillFistOfJin extends PassiveSkill {
 
                         // Check to see if we're dealing with the hero himself.
                         if (member.equals(hero)) {
-
-                            HeroRegainHealthEvent healEvent = new HeroRegainHealthEvent(hero, selfHeal, skill);     // Bypass self-heal nerf.
+                            HeroRegainHealthEvent healEvent = new HeroRegainHealthEvent(hero, selfHeal, skill, null);     // Bypass self-heal nerf.
                             Bukkit.getPluginManager().callEvent(healEvent);
                             if (!healEvent.isCancelled()) {
                                 hero.heal(healEvent.getDelta());
@@ -175,7 +174,7 @@ public class SkillFistOfJin extends PassiveSkill {
                     }
                 }
             } else {
-                HeroRegainHealthEvent healEvent = new HeroRegainHealthEvent(hero, selfHeal, skill);     // Bypass self-heal nerf
+                HeroRegainHealthEvent healEvent = new HeroRegainHealthEvent(hero, selfHeal, skill, null);     // Bypass self-heal nerf
                 Bukkit.getPluginManager().callEvent(healEvent);
                 if (!healEvent.isCancelled()) {
                     hero.heal(healEvent.getDelta());

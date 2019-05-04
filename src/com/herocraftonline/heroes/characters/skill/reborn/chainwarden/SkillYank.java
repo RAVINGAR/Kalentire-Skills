@@ -5,6 +5,7 @@ import com.herocraftonline.heroes.Heroes;
 import com.herocraftonline.heroes.api.SkillResult;
 import com.herocraftonline.heroes.attributes.AttributeType;
 import com.herocraftonline.heroes.characters.Hero;
+import com.herocraftonline.heroes.characters.effects.common.SafeFallEffect;
 import com.herocraftonline.heroes.characters.skill.SkillConfigManager;
 import com.herocraftonline.heroes.characters.skill.SkillSetting;
 import com.herocraftonline.heroes.characters.skill.SkillType;
@@ -21,6 +22,7 @@ import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.util.Vector;
 
 import java.util.Arrays;
+import java.util.logging.Level;
 
 public class SkillYank extends TargettedSkill {
     public static String skillName = "Yank";
@@ -63,8 +65,9 @@ public class SkillYank extends TargettedSkill {
 
         // This is necessary for compatibility with AoE versions of this skill.
         boolean shouldBroadcast = args == null || args.length == 0 || Arrays.stream(args).noneMatch(x -> x.equalsIgnoreCase("NoBroadcast"));
+        boolean removeOnUse = args == null || args.length == 0 || Arrays.stream(args).noneMatch(x -> x.equalsIgnoreCase("RemoveHook"));
 
-        SkillHook.InvalidHookTargetReason invalidHookTargetReason = SkillHook.tryRemoveHook(plugin, hero, target);
+        SkillHook.InvalidHookTargetReason invalidHookTargetReason = SkillHook.tryUseHook(plugin, hero, target, removeOnUse);
         if (invalidHookTargetReason != SkillHook.InvalidHookTargetReason.VALID_TARGET) {
             if (shouldBroadcast) {
                 SkillHook.broadcastInvalidHookTargetText(hero, invalidHookTargetReason);
@@ -77,26 +80,28 @@ public class SkillYank extends TargettedSkill {
 
         boolean shouldWeaken = shouldWeaken(target.getLocation());
 
-        Location playerLoc = player.getLocation();
-        Location targetLoc = target.getLocation();
-
-        double vPower = SkillConfigManager.getUseSetting(hero, this, "vertical-power", 0.4, false);
-        double hPower = SkillConfigManager.getUseSetting(hero, this, "horizontal-power", 0.5, false);
-        double hPowerIncrease = SkillConfigManager.getUseSetting(hero, this, "horizontal-power-increase-per-strength", 0.0125, false);
-        hPower += hPowerIncrease * hero.getAttributeValue(AttributeType.STRENGTH);
-
-        Vector direction = playerLoc.toVector().subtract(targetLoc.toVector()).normalize();
-        if (shouldWeaken) {
-            direction.multiply(0.75);
-        }
+//        Location playerLoc = player.getLocation();
+//        Location targetLoc = target.getLocation();
+//
+//        double vPower = SkillConfigManager.getUseSetting(hero, this, "vertical-power", 0.4, false);
+//        double hPower = SkillConfigManager.getUseSetting(hero, this, "horizontal-power", 0.5, false);
+//        double hPowerIncrease = SkillConfigManager.getUseSetting(hero, this, "horizontal-power-increase-per-strength", 0.0125, false);
+//        hPower += hPowerIncrease * hero.getAttributeValue(AttributeType.STRENGTH);
+//
+//        Vector direction = playerLoc.toVector().subtract(targetLoc.toVector()).normalize();
+//        if (shouldWeaken) {
+//            direction.multiply(0.75);
+//        }
 
         if (hero.isAlliedTo(target)) {
-            pushTargetUpwards(hero, target, vPower, true);
+//            pushTargetUpwards(hero, target, vPower, true);
             double allyMultipler = SkillConfigManager.getUseSetting(hero, this, "ally-multiplier", 1.5, false);
-            pullTarget(hero, target, vPower, hPower * allyMultipler, direction);
+//            pullTarget(hero, target, vPower, hPower * allyMultipler, direction);
+            pull(hero, player, target, allyMultipler);
         } else {
-            pushTargetUpwards(hero, target, vPower, false);
-            pullTarget(hero, target, vPower, hPower, direction);
+//            pushTargetUpwards(hero, target, vPower, false);
+//            pullTarget(hero, target, vPower, hPower, direction);
+            pull(hero, player, target, 1.0);
             damageEnemy(hero, target, player);
         }
 
@@ -150,6 +155,60 @@ public class SkillYank extends TargettedSkill {
 
         if (reduceFallDamage)
             target.setFallDistance(-3F);
+    }
+
+    private void pull(Hero hero, LivingEntity puller, LivingEntity target, double multiplier) {
+        Location pullerLoc = puller.getLocation();
+        Location targetLoc = target.getLocation();
+        if (!(pullerLoc.getWorld().equals(target.getWorld())))
+            return;
+
+        boolean shouldWeaken = shouldWeaken(targetLoc);
+        if (shouldWeaken) {
+            multiplier *= 0.75;
+        }
+
+        Vector pullerLocVec = puller.getLocation().toVector();
+        Vector targetLocVec = target.getLocation().toVector();
+
+        double horizontalDivider = SkillConfigManager.getUseSetting(hero, this, "horizontal-divider", 6.0, false);
+        double verticalDivider = SkillConfigManager.getUseSetting(hero, this, "vertical-divider", 8.0, false);
+        double xDir = (pullerLoc.getX() - targetLoc.getX()) / horizontalDivider;
+        double yDir = (pullerLoc.getY() - targetLoc.getY()) / verticalDivider;
+        double zDir = (pullerLoc.getZ() - targetLoc.getZ()) / horizontalDivider;
+        final Vector pullVector = new Vector(xDir, yDir, zDir);
+
+        double verticalPower = pullVector.clone().setX(0).setZ(0).length();
+        double horizontalPower = pullVector.clone().setY(0).length();
+        Heroes.log(Level.INFO, "Before: Grapple Horizontal Power: " + horizontalPower);
+        Heroes.log(Level.INFO, "Before: Grapple Vertical Power: " + verticalPower);
+
+        double minVerticalVelocity = SkillConfigManager.getUseSetting(hero, this, "min-vertical-velocity", 0.4, false);
+        double maxVerticalVelocity = SkillConfigManager.getUseSetting(hero, this, "max-vertical-velocity", 0.75, false);
+        if (verticalPower < minVerticalVelocity) {
+            pullVector.setY(minVerticalVelocity);
+        } else if (verticalPower > maxVerticalVelocity) {
+            pullVector.setY(maxVerticalVelocity);
+        }
+
+        double minHorizontalVelocity = SkillConfigManager.getUseSetting(hero, this, "min-horizontal-velocity", 0.5, false);
+        double maxHorizontalVelocity = SkillConfigManager.getUseSetting(hero, this, "max-horizontal-velocity", 1.5, false);
+        if (horizontalPower < minHorizontalVelocity) {
+            double oldY = pullVector.getY();
+            pullVector.normalize().multiply(maxHorizontalVelocity).setY(oldY);
+        } else if (horizontalPower > maxHorizontalVelocity) {
+            double oldY = pullVector.getY();
+            pullVector.normalize().multiply(maxHorizontalVelocity).setY(oldY);
+        }
+
+        verticalPower = pullVector.clone().setX(0).setZ(0).length();
+        horizontalPower = pullVector.clone().setY(0).length();
+
+        pullVector.multiply(multiplier);
+
+        target.setVelocity(pullVector);
+
+        puller.getWorld().playSound(pullerLoc, Sound.ENTITY_MAGMACUBE_JUMP, 0.8F, 1.0F);
     }
 
     private boolean shouldWeaken(Location targetLoc) {

@@ -18,7 +18,8 @@ import java.util.logging.Level;
 public class SkillRoundup extends ActiveSkill {
     public SkillRoundup(Heroes plugin) {
         super(plugin, "Roundup");
-        setDescription("You roundup your currently hooked targets, yanking each one of them towards you.");
+        setDescription("You roundup your currently hooked targets, yanking each one of them towards you. " +
+                "Does not remove hooks.");
         setUsage("/skill roundup");
         setIdentifiers("skill roundup");
         setArgumentRange(0, 0);
@@ -55,7 +56,7 @@ public class SkillRoundup extends ActiveSkill {
                 continue;
 
             LivingEntity target = (LivingEntity) entity;
-            SkillResult result = yankSkill.use(hero, target, new String[]{"NoBroadcast"});
+            SkillResult result = yankSkill.use(hero, target, new String[]{"NoBroadcast", "RemoveHook"});
             if (result == SkillResult.NORMAL) {
                 hitCount++;
             }

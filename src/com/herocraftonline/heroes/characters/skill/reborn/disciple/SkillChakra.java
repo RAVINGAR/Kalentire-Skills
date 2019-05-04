@@ -122,8 +122,8 @@ public class SkillChakra extends ActiveSkill {
         return SkillResult.NORMAL;
     }
 
-    private void healDispel(Hero targetHero, int removals, double healAmount, Hero hero) {
-        targetHero.tryHeal(hero, this, healAmount);
+    private void healDispel(Hero targetHero, int removals, double healAmount, Hero healer) {
+        targetHero.tryHeal(healer, this, healAmount);
         if (removals == 0)
             return;
 

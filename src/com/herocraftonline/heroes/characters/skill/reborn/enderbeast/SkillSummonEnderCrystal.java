@@ -41,7 +41,7 @@ public class SkillSummonEnderCrystal extends TargettedLocationSkill {
         super(plugin, "SummonEnderCrystal");
         setDescription("Summon an EnderCrystal to help sustain your existence while transformed. " +
                 "The crystal will heal you for $1 every $2 second(s) from up to $3 blocks away. " +
-                "Fades after $4 second(s). Has no notable effects while in your human form.");
+                "Fades after $4 second(s). If you are not transformed, you will only be healed for $5 instead.");
         setUsage("/skill summonendercrystal");
         setIdentifiers("skill summonendercrystal");
         setArgumentRange(0, 0);
@@ -53,6 +53,7 @@ public class SkillSummonEnderCrystal extends TargettedLocationSkill {
     public String getDescription(Hero hero) {
         double healDist = SkillConfigManager.getUseSetting(hero, this, "heal-distance", 20.0, false);
         double healAmount = SkillConfigManager.getUseSetting(hero, this, "heal-tick", 20.0, false);
+        double humanHealAmount = SkillConfigManager.getUseSetting(hero, this, "human-heal-tick", 5.0, false);
         long period = SkillConfigManager.getUseSetting(hero, this, SkillSetting.PERIOD, 1000, false);
         long duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, 20000, false);
 
@@ -60,7 +61,8 @@ public class SkillSummonEnderCrystal extends TargettedLocationSkill {
                 .replace("$1", Util.decFormat.format(healAmount))
                 .replace("$2", Util.decFormat.format(period / 1000.0))
                 .replace("$3", Util.decFormat.format(healDist))
-                .replace("$4", Util.decFormat.format(duration / 1000.0));
+                .replace("$4", Util.decFormat.format(duration / 1000.0))
+                .replace("$4", Util.decFormat.format(humanHealAmount));
     }
 
     public ConfigurationSection getDefaultConfig() {
@@ -84,6 +86,7 @@ public class SkillSummonEnderCrystal extends TargettedLocationSkill {
 
         double healDist = SkillConfigManager.getUseSetting(hero, this, "heal-distance", 20.0, false);
         double healAmount = SkillConfigManager.getUseSetting(hero, this, "heal-tick", 20.0, false);
+        double humanHealAmount = SkillConfigManager.getUseSetting(hero, this, "human-heal-tick", 5.0, false);
         long period = SkillConfigManager.getUseSetting(hero, this, SkillSetting.PERIOD, 400, false);
         long duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, 20000, false);
         int height = SkillConfigManager.getUseSetting(hero, this, "crystal-height", 2, false);
@@ -98,7 +101,7 @@ public class SkillSummonEnderCrystal extends TargettedLocationSkill {
         if (constructionData == null)
             return invalidTargetWithMessage(player);
 
-        ExpirableEffect effect = new EnderCrystaledEffect(this, player, period, duration, constructionData, healAmount, healDist);
+        ExpirableEffect effect = new EnderCrystaledEffect(this, player, period, duration, constructionData, healAmount, humanHealAmount, healDist);
         hero.addEffect(effect);
 
         return SkillResult.NORMAL;
@@ -193,13 +196,15 @@ public class SkillSummonEnderCrystal extends TargettedLocationSkill {
     public class EnderCrystaledEffect extends PeriodicExpirableEffect {
         private final SkillConstructionData constructionData;
         private final double healAmount;
+        private final double humanHealAmount;
         private final double healDistSquared;
 
-        EnderCrystaledEffect(Skill skill, Player applier, long period, long duration,
-                             SkillConstructionData constructionData, double healAmount, double maxHealDistance) {
+        EnderCrystaledEffect(Skill skill, Player applier, long period, long duration, SkillConstructionData constructionData,
+                             double healAmount, double humanHealAmount, double maxHealDistance) {
             super(skill, toggleableEffectName, applier, period, duration);
             this.constructionData = constructionData;
             this.healAmount = healAmount;
+            this.humanHealAmount = humanHealAmount;
             this.healDistSquared = maxHealDistance * maxHealDistance;
 
             types.add(EffectType.BENEFICIAL);
@@ -238,17 +243,17 @@ public class SkillSummonEnderCrystal extends TargettedLocationSkill {
                 return;
 
             Player player = hero.getPlayer();
-            if (!hero.hasEffect("EnderBeastTransformed") || constructionData.activeEnderCrystal.getLocation().distanceSquared(player.getLocation()) > healDistSquared) {
+            if (constructionData.activeEnderCrystal.getLocation().distanceSquared(player.getLocation()) > healDistSquared) {
                 constructionData.activeEnderCrystal.setBeamTarget(constructionData.activeEnderCrystal.getLocation());
                 return;
             }
 
             constructionData.activeEnderCrystal.setBeamTarget(player.getLocation().add(new Vector(0, -1, 0)));
-
-            HeroRegainHealthEvent healEvent = new HeroRegainHealthEvent(hero, healAmount, skill);
-            Bukkit.getPluginManager().callEvent(healEvent);
-            if (!healEvent.isCancelled())
-                hero.heal(healEvent.getDelta());
+            if (hero.hasEffect("EnderBeastTransformed")) {
+                hero.tryHeal(null, skill, healAmount);  // Null to avoid self-heal nerf
+            } else {
+                hero.tryHeal(null, skill, humanHealAmount);  // Null to avoid self-heal nerf
+            }
         }
     }
 

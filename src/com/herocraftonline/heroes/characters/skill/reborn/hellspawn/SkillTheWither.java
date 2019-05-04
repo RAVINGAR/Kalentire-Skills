@@ -41,8 +41,8 @@ public class SkillTheWither extends ActiveSkill {
     public SkillTheWither(Heroes plugin) {
         super(plugin, "TheWither");
         setDescription("Channel the power of the Wither himself, altering your appearance and granting you passive wither damage immunity. " +
-                "Sustaining this form drains $2 mana from you every $3 second(s)." +
-                "While active, your melee attacks inflict a stacking Wither-Decay effect lowers incoming healing on the target by $4% for $5 second(s). " +
+                "Sustaining this form drains $2 mana from you every $3 second(s). " +
+                "While active, your melee attacks inflict a stacking Wither-Decay effect that lowers incoming healing on the target by $4% for $5 second(s). " +
                 "The maximum amount of Wither-Decay stacks a target can have is $6.");
         setUsage("/skill thewither");
         setIdentifiers("skill thewither", "skill witherform");
@@ -55,8 +55,8 @@ public class SkillTheWither extends ActiveSkill {
 
     @Override
     public String getDescription(Hero hero) {
-        int period = SkillConfigManager.getUseSetting(hero, this, "mana-drain-period", 1000, false);
-        double manaDrainPeriod = SkillConfigManager.getUseSetting(hero, this, "mana-drain-per-tick", 0.075, false);
+        int drainPeriod = SkillConfigManager.getUseSetting(hero, this, "mana-drain-period", 1000, false);
+        double manaDrain = SkillConfigManager.getUseSetting(hero, this, "mana-drain-per-tick", 0.075, false);
 
         int witherAmplifier = SkillConfigManager.getUseSetting(hero, this, "on-hit-wither-amplifier", 3, false);
         int witherDuration = SkillConfigManager.getUseSetting(hero, this, "on-hit-wither-duration", 2000, false);
@@ -64,7 +64,12 @@ public class SkillTheWither extends ActiveSkill {
         int maxStacks = SkillConfigManager.getUseSetting(hero, this, "on-hit-max-stacks", 6, false);
 
         return getDescription()
-                .replace("$1", Util.decFormat.format(witherDuration / 1000.0));
+                .replace("$1", Util.decFormat.format(witherDuration / 1000.0))
+                .replace("$2", Util.decFormat.format(manaDrain))
+                .replace("$3", Util.decFormat.format(drainPeriod / 1000.0))
+                .replace("$4", Util.decFormat.format(healingReduction * 100))
+                .replace("$5", Util.decFormat.format(witherDuration / 1000.0))
+                .replace("$6", maxStacks + "");
     }
 
     @Override

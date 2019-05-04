@@ -24,11 +24,11 @@ public class SkillFlameDash extends ActiveSkill {
 
     public SkillFlameDash(Heroes plugin) {
         super(plugin, "FlameDash");
-        setDescription("Embue your movement with the power of flame, dashing you forward up to $1 blocks away.");
+        setDescription("Dash straight forward at the speed of flame for up to $1 blocks away and auto-jumping any blocks that are in your path. " +
+                "Any flammable blocks passed while dashing will be set on fire. Does not work in water.");
         setUsage("/skill flamedash");
-        setNotes("NOTE: Cannot be used in water.");
-        setArgumentRange(0, 0);
         setIdentifiers("skill flamedash");
+        setArgumentRange(0, 0);
         setTypes(SkillType.SILENCEABLE, SkillType.ABILITY_PROPERTY_FIRE, SkillType.TELEPORTING);
     }
 

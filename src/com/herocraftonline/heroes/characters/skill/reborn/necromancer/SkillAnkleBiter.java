@@ -6,7 +6,6 @@ import com.herocraftonline.heroes.characters.CharacterTemplate;
 import com.herocraftonline.heroes.characters.Hero;
 import com.herocraftonline.heroes.characters.Monster;
 import com.herocraftonline.heroes.characters.effects.EffectType;
-import com.herocraftonline.heroes.characters.effects.PeriodicDamageEffect;
 import com.herocraftonline.heroes.characters.effects.common.SlowEffect;
 import com.herocraftonline.heroes.characters.effects.common.SummonEffect;
 import com.herocraftonline.heroes.characters.skill.ActiveSkill;
@@ -39,10 +38,12 @@ public class SkillAnkleBiter extends ActiveSkill {
 
     public SkillAnkleBiter(Heroes plugin) {
         super(plugin, "AnkleBiter");
-        setDescription("Conjures a noxious minion to obey your commands. The minion has $1 HP and deals $2 damage per hit.");
+        setDescription("Conjures a very fast minion to obey your commands. " +
+                "The minion has $1 HP and deals $2 damage per hit. " +
+                "When the minion attacks an enemy, they will be slowed for $3 second(s). $9");
         setUsage("/skill anklebiter");
-        setArgumentRange(0, 0);
         setIdentifiers("skill anklebiter");
+        setArgumentRange(0, 0);
         setTypes(SkillType.SUMMONING, SkillType.ABILITY_PROPERTY_DARK, SkillType.SILENCEABLE);
 
         if (Bukkit.getServer().getPluginManager().getPlugin("LibsDisguises") != null) {
@@ -53,17 +54,32 @@ public class SkillAnkleBiter extends ActiveSkill {
 
     public String getDescription(Hero hero) {
         double maxHp = SkillConfigManager.getUseSetting(hero, this, "minion-max-hp", 400.0, false);
-        maxHp+= SkillConfigManager.getUseSetting(hero, this, "minion-max-hp-per-level", 4.0, false) * hero.getHeroLevel(this);
+        maxHp += SkillConfigManager.getUseSetting(hero, this, "minion-max-hp-per-level", 4.0, false) * hero.getHeroLevel(this);
 
         double hitDmg = SkillConfigManager.getUseSetting(hero, this, "minion-attack-damage", 25.0, false);
-        hitDmg+= SkillConfigManager.getUseSetting(hero, this, "minion-attack-damage-per-level", 0.4, false) * hero.getHeroLevel(this);
+        hitDmg += SkillConfigManager.getUseSetting(hero, this, "minion-attack-damage-per-level", 0.4, false) * hero.getHeroLevel(this);
 
         long duration = SkillConfigManager.getUseSetting(hero, this, "minion-duration", 45000, false);
+        long slowDuration = SkillConfigManager.getUseSetting(hero, this, "minion-on-hit-slow-duration", 2000, false);
+
+        String speedText = "";
+        int speedAmplifier = SkillConfigManager.getUseSetting(hero, this, "minion-speed-amplifier", -1, false);
+        if (speedAmplifier > 2) {
+            speedText = "This is an extremely fast minion.";
+        } else if (speedAmplifier > 1) {
+            speedText = "This is a very fast minion.";
+        } else if (speedAmplifier > 0) {
+            speedText = "This is a fast minion.";
+        } else {
+            speedText = "This minion does not move very fast.";
+        }
 
         return getDescription()
                 .replace("$1", Util.decFormat.format(maxHp))
                 .replace("$2", Util.decFormat.format(hitDmg))
-                .replace("$3", Util.decFormat.format(duration / 1000.0));
+                .replace("$3", Util.decFormat.format(duration / 1000.0))
+                .replace("$4", Util.decFormat.format(slowDuration / 1000.0))
+                .replace("$9", speedText);
     }
 
     public ConfigurationSection getDefaultConfig() {
@@ -146,10 +162,10 @@ public class SkillAnkleBiter extends ActiveSkill {
             super.applyToMonster(monster);
 
             double maxHp = SkillConfigManager.getUseSetting(getSummoner(), skill, "minion-max-hp", 100.0, false);
-            maxHp+= SkillConfigManager.getUseSetting(getSummoner(), skill, "minion-max-hp-per-level", 0.0, false) * getSummoner().getHeroLevel(skill);
+            maxHp += SkillConfigManager.getUseSetting(getSummoner(), skill, "minion-max-hp-per-level", 0.0, false) * getSummoner().getHeroLevel(skill);
 
             double hitDmg = SkillConfigManager.getUseSetting(getSummoner(), skill, "minion-attack-damage", 25.0, false);
-            hitDmg+= SkillConfigManager.getUseSetting(getSummoner(), skill, "minion-attack-damage-per-level", 0.0, false) * getSummoner().getHeroLevel(skill);
+            hitDmg += SkillConfigManager.getUseSetting(getSummoner(), skill, "minion-attack-damage-per-level", 0.0, false) * getSummoner().getHeroLevel(skill);
 
             LivingEntity minion = monster.getEntity();
             minion.setMaxHealth(maxHp);

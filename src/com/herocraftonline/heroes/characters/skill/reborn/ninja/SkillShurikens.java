@@ -6,6 +6,7 @@ import com.herocraftonline.heroes.characters.Hero;
 import com.herocraftonline.heroes.characters.effects.ExpirableEffect;
 import com.herocraftonline.heroes.characters.skill.*;
 import com.herocraftonline.heroes.chat.ChatComponents;
+import com.herocraftonline.heroes.nms.NMSHandler;
 import com.herocraftonline.heroes.util.Util;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
@@ -24,10 +25,10 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.PlayerInventory;
 import org.bukkit.util.Vector;
 
-import java.util.LinkedHashMap;
-import java.util.Map;
+import java.util.*;
 
 public class SkillShurikens extends PassiveSkill {
+    private static List<String> defaultWeapons = new ArrayList<String>(Arrays.asList(Material.NETHER_STAR.name()));
 
     private Map<Arrow, Long> shurikens = new LinkedHashMap<Arrow, Long>(100) {
         private static final long serialVersionUID = 1L;
@@ -68,6 +69,7 @@ public class SkillShurikens extends PassiveSkill {
 
     public ConfigurationSection getDefaultConfig() {
         ConfigurationSection config = super.getDefaultConfig();
+        config.set("toss-weapons", defaultWeapons);
         config.set(SkillSetting.DAMAGE.node(), 35.0);
         config.set(SkillSetting.DAMAGE_INCREASE_PER_DEXTERITY.node(), 0.4);
         config.set(SkillSetting.STAMINA.node(), 100);
@@ -89,26 +91,27 @@ public class SkillShurikens extends PassiveSkill {
 
         @EventHandler(priority = EventPriority.MONITOR)
         public void onPlayerInteract(PlayerInteractEvent event) {
-            if (!(event.getAction() == Action.RIGHT_CLICK_AIR || event.getAction() == Action.RIGHT_CLICK_BLOCK))
-                return;
-            if (!event.hasItem())
-                return;
-
-            ItemStack activatedItem = event.getItem();
-            if (activatedItem.getType() != Material.SHEARS)
+            if (event.getAction() != Action.RIGHT_CLICK_AIR && event.getAction() != Action.RIGHT_CLICK_BLOCK)
                 return;
 
             Player player = event.getPlayer();
+            Hero hero = plugin.getCharacterManager().getHero(player);
+            if (!hero.canUseSkill(skill))
+                return;
+            if (hero.hasEffect("ShurikenTossCooldown"))
+                return;
+
             if (event.getClickedBlock() != null) {
                 if ((Util.interactableBlocks.contains(event.getClickedBlock().getType()))) {
                     return;
                 }
             }
 
-            Hero hero = plugin.getCharacterManager().getHero(player);
-            if (!hero.canUseSkill(skill))
-                return;
-            if (hero.hasEffect("ShurikenTossCooldown"))
+            PlayerInventory playerInv = player.getInventory();
+            ItemStack mainHand = NMSHandler.getInterface().getItemInMainHand(playerInv);
+            ItemStack offHand = NMSHandler.getInterface().getItemInOffHand(playerInv);
+            List<String> weapons = SkillConfigManager.getUseSetting(hero, skill, "toss-weapons", defaultWeapons);
+            if ((mainHand == null || !weapons.contains(mainHand.getType().name())) && (offHand == null || !weapons.contains(offHand.getType().name())))
                 return;
 
             int staminaCost = SkillConfigManager.getUseSetting(hero, skill, SkillSetting.STAMINA, 100, false);
@@ -141,7 +144,6 @@ public class SkillShurikens extends PassiveSkill {
                     shurikens.remove(projectile);
                     projectile.remove();
                 }
-
             }, 2L);
         }
 
@@ -193,13 +195,12 @@ public class SkillShurikens extends PassiveSkill {
     public void shurikenToss(final Player player, int numShuriken, double degrees, double interval, final double velocityMultiplier) {
         Hero hero = plugin.getCharacterManager().getHero(player);
 
-        if (numShuriken < 1 || hero.hasEffect("ShurikenTossCooldown"))
+        if (numShuriken < 1 || hero.hasEffect("ShurikenTossCooldown")) {
             return;
-        else if (numShuriken == 1) {
+        } else if (numShuriken == 1) {
             // If we're only firing a single shuriken, there is no need for fancy math.
             Arrow shuriken = player.launchProjectile(Arrow.class);
-            shuriken.setVelocity(shuriken.getVelocity().multiply(velocityMultiplier));
-            shuriken.setShooter(player);
+            shuriken.setVelocity(shuriken.getLocation().getDirection().multiply(velocityMultiplier));
             shurikens.put(shuriken, System.currentTimeMillis());
 
             return;
@@ -219,7 +220,7 @@ public class SkillShurikens extends PassiveSkill {
         int i = 1;
         for (double a = 0; a <= degreesRad; a += diff) {
             final double finalA = a;
-            Bukkit.getScheduler().runTaskLaterAsynchronously(plugin, new Runnable() {
+            Bukkit.getScheduler().runTaskLater(plugin, new Runnable() {
                 @Override
                 public void run() {
                     // Convert yaw to radians

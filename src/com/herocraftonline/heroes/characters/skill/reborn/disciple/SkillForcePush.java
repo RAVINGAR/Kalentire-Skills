@@ -25,11 +25,11 @@ public class SkillForcePush extends TargettedSkill {
 
     public SkillForcePush(Heroes plugin) {
         super(plugin, "Forcepush");
-        setDescription("Deal $1 physical damage and force your target away from you. " +
+        setDescription("Deal $1 magic damage and force your target away from you. " +
                 "If you target an ally, they will be healed for $2 instead.");
         setUsage("/skill forcepush");
-        setArgumentRange(0, 0);
         setIdentifiers("skill forcepush");
+        setArgumentRange(0, 0);
         setTypes(SkillType.FORCE, SkillType.ABILITY_PROPERTY_MAGICAL, SkillType.INTERRUPTING, SkillType.SILENCEABLE,
                 SkillType.MULTI_GRESSIVE, SkillType.NO_SELF_TARGETTING);
     }
@@ -46,7 +46,7 @@ public class SkillForcePush extends TargettedSkill {
 
         return getDescription()
                 .replace("$1", Util.decFormat.format(damage))
-                .replace("$1", Util.decFormat.format(healing));
+                .replace("$2", Util.decFormat.format(healing));
     }
 
     @Override

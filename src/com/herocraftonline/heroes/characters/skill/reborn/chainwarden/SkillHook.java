@@ -29,7 +29,6 @@ import org.bukkit.plugin.Plugin;
 import org.bukkit.util.Vector;
 
 import java.util.*;
-import java.util.logging.Level;
 
 public class SkillHook extends ActiveSkill {
     public static String skillName = "Hook";
@@ -172,15 +171,15 @@ public class SkillHook extends ActiveSkill {
         player.sendMessage(text);
     }
 
-    public static InvalidHookTargetReason tryRemoveHook(Heroes plugin, Hero hookOwner, LivingEntity target) {
+    public static InvalidHookTargetReason tryUseHook(Heroes plugin, Hero hookOwner, LivingEntity target, boolean removeOnUse) {
         if (target == null)
             return InvalidHookTargetReason.NULL_TARGET_ENTITY;
 
         CharacterTemplate targetCT = plugin.getCharacterManager().getCharacter(target);
-        return tryRemoveHook(hookOwner, targetCT);
+        return tryUseHook(hookOwner, targetCT, removeOnUse);
     }
 
-    public static InvalidHookTargetReason tryRemoveHook(Hero hookOwner, CharacterTemplate targetCT) {
+    public static InvalidHookTargetReason tryUseHook(Hero hookOwner, CharacterTemplate targetCT, boolean removeOnUse) {
         if (targetCT == null)
             return InvalidHookTargetReason.NULL_CHARACTER;
 
@@ -198,14 +197,15 @@ public class SkillHook extends ActiveSkill {
         if (foundHooks.isEmpty())
             return InvalidHookTargetReason.NO_HOOK;
 
-
         boolean isAlliedTo = hookOwner.isAlliedTo(targetCT.getEntity());
         if (!isAlliedTo && !damageCheck(hookOwner.getPlayer(), targetCT.getEntity()))
             return InvalidHookTargetReason.INVINCIBLE_TARGET;
 
-        // Get the hook with the shortest remaining duration
-        Effect effectToRemove = Collections.min(foundHooks, Comparator.comparing(ExpirableEffect::getRemainingTime));
-        targetCT.removeEffect(effectToRemove);
+        if (removeOnUse) {
+            // Get the hook with the shortest remaining duration
+            Effect effectToRemove = Collections.min(foundHooks, Comparator.comparing(ExpirableEffect::getRemainingTime));
+            targetCT.removeEffect(effectToRemove);
+        }
         return InvalidHookTargetReason.VALID_TARGET;
     }
 

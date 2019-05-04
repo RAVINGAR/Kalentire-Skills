@@ -23,8 +23,8 @@ public class SkillDisintegrate extends TargettedSkill {
     public SkillDisintegrate(Heroes plugin) {
         super(plugin, "Disintegrate");
         setDescription("You Disintegrate an enemy, dealing $1 damage and consuming all of their Withering effects. " +
-                "You deal an additional $2 damage for each effect consumed this way. " +
-                "The maximum additional damage that can be dealt this way is $3.");
+                "You deal an additional $2 damage for each effect consumed. " +
+                "The maximum bonus damage that can be dealt is $3.");
         setUsage("/skill disintegrate");
         setIdentifiers("skill disintegrate");
         setArgumentRange(0, 0);

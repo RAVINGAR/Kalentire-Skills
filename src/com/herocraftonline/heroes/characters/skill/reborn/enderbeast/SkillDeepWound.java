@@ -123,7 +123,6 @@ public class SkillDeepWound extends TargettedSkill {
             this.decreasePercent = decreasePercent;
 
             types.add(EffectType.BLEED);
-            types.add(EffectType.HARMFUL);
             types.add(EffectType.WALK_SPEED_DECREASING);
         }
 

@@ -10,9 +10,10 @@ import com.herocraftonline.heroes.characters.effects.ExpirableEffect;
 import com.herocraftonline.heroes.characters.effects.common.BurningEffect;
 import com.herocraftonline.heroes.characters.skill.*;
 import com.herocraftonline.heroes.util.Util;
-import org.bukkit.*;
+import org.bukkit.Bukkit;
+import org.bukkit.Particle;
+import org.bukkit.Sound;
 import org.bukkit.block.Block;
-import org.bukkit.block.BlockFace;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.*;
 import org.bukkit.event.EventHandler;
@@ -24,7 +25,8 @@ import org.bukkit.event.entity.ProjectileHitEvent;
 import org.bukkit.projectiles.ProjectileSource;
 import org.bukkit.util.Vector;
 
-import java.util.*;
+import java.util.LinkedHashMap;
+import java.util.Map;
 import java.util.concurrent.ThreadLocalRandom;
 
 public class SkillFireStream extends ActiveSkill {
@@ -110,19 +112,18 @@ public class SkillFireStream extends ActiveSkill {
 
             Bukkit.getScheduler().scheduleSyncDelayedTask(plugin, new Runnable() {
                 public void run() {
-
-                    for(int launchedThisLoop = 0; launchedThisLoop < projectilesPerLaunch; launchedThisLoop++) {
+                    for (int launchedThisLoop = 0; launchedThisLoop < projectilesPerLaunch; launchedThisLoop++) {
                         Snowball projectile = player.launchProjectile(Snowball.class);
+
+                        projectile.setGravity(true);
+                        projectile.setFireTicks(100);
+                        projectiles.put(projectile, System.currentTimeMillis());
+                        projectile.setShooter(player);
 
                         Vector newVelocity = player.getLocation().getDirection().normalize()
                                 .add(new Vector(ThreadLocalRandom.current().nextDouble(randomMin, randomMax), 0, ThreadLocalRandom.current().nextDouble(randomMin, randomMax)))
                                 .multiply(mult);
-                        projectile.setGravity(true);
                         projectile.setVelocity(newVelocity);
-
-                        projectile.setFireTicks(100);
-                        projectiles.put(projectile, System.currentTimeMillis());
-                        projectile.setShooter(player);
                     }
 
                     player.getWorld().playSound(player.getLocation(), Sound.ENTITY_BLAZE_SHOOT, 0.3F, 0.6F);
