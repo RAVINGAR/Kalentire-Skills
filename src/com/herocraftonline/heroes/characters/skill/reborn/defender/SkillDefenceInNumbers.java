@@ -124,14 +124,15 @@ public class SkillDefenceInNumbers extends PassiveSkill {
             super.tickHero(hero);
             //TODO boost effect when buffing a ally
 
+            // Need atleast one ally
             final Player defendingPlayer = hero.getPlayer();
-            if (!hero.hasParty()) {
+            if (!hero.hasParty() && hero.getParty().getMembers().size() > 1) {
                 return;
             }
 
             // Check required ally number
             int requiredAllyNumber = SkillConfigManager.getUseSetting(hero, skill, "required-ally-number", 0, true);
-            if (hero.getParty().getMembers().size() < requiredAllyNumber) {
+            if (!(hero.getParty().getMembers().size() - 1 >= requiredAllyNumber)) {
                 return;
             }
 
