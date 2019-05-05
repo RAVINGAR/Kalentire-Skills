@@ -26,7 +26,7 @@ import org.bukkit.event.Listener;
 
 import java.util.List;
 
-public class SkillTaunt extends ActiveSkill {
+public class SkillTaunt extends TargettedSkill {
 
     private String applyText;
     private String expireText;
@@ -47,14 +47,14 @@ public class SkillTaunt extends ActiveSkill {
     @Override
     public String getDescription(Hero hero) {
 
-        double radius = SkillConfigManager.getUseSetting(hero, this, SkillSetting.RADIUS, 10, false);
+        double maxDistance = SkillConfigManager.getUseSetting(hero, this, SkillSetting.MAX_DISTANCE, 5.0, false);
         int duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, 180000, false);
         double damageReduction = SkillConfigManager.getUseSetting(hero, this, "damage-reduction", 0.85, false);
 
         String formattedDuration = Util.decFormat.format(duration / 1000.0);
         String formattedDamageModifier = Util.decFormat.format((1 - damageReduction) * 100.0);
 
-        return getDescription().replace("$1", radius + "")
+        return getDescription().replace("$1", maxDistance + "")
                 .replace("$2", formattedDamageModifier).replace("$3", formattedDuration);
     }
 
@@ -63,7 +63,8 @@ public class SkillTaunt extends ActiveSkill {
         ConfigurationSection node = super.getDefaultConfig();
 
         node.set("damage-reduction", 0.85);
-        node.set(SkillSetting.RADIUS.node(), 8.0);
+        node.set(SkillSetting.MAX_DISTANCE.node(), 5.0);
+        node.set(SkillSetting.COOLDOWN.node(), 18000);
         node.set(SkillSetting.DURATION.node(), 6000);
         node.set(SkillSetting.APPLY_TEXT.node(), ChatComponents.GENERIC_SKILL + "%target% was taunted by %hero%!");
         node.set(SkillSetting.EXPIRE_TEXT.node(), ChatComponents.GENERIC_SKILL + "%target% is no longer taunted!");
@@ -76,6 +77,7 @@ public class SkillTaunt extends ActiveSkill {
     public void init() {
         super.init();
 
+        setUseText(getUseText());
         applyText = SkillConfigManager.getRaw(this, SkillSetting.APPLY_TEXT,
                 ChatComponents.GENERIC_SKILL + "%target% was taunted by %hero%!")
                 .replace("%target%", "$1").replace("%hero%", "$2");
@@ -86,38 +88,29 @@ public class SkillTaunt extends ActiveSkill {
     }
 
     @Override
-    public SkillResult use(Hero hero, String[] args) {
-        Player player = hero.getPlayer();
+    public SkillResult use(Hero hero, LivingEntity target, String[] strings) {
+        if (target == null)
+            return SkillResult.INVALID_TARGET_NO_MSG;
 
-        double radius = SkillConfigManager.getUseSetting(hero, this, SkillSetting.RADIUS, 10, false);
+        Player player = hero.getPlayer();
+        if (!damageCheck(player, target)) {
+            player.sendMessage("You can't damage that target!");
+            return SkillResult.INVALID_TARGET_NO_MSG;
+        }
 
         int duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, 180000, false);
         int period = SkillConfigManager.getUseSetting(hero, this, "taunt-message-speed", 1000, false);
         double damageModifier = SkillConfigManager.getUseSetting(hero, this, "damage-reduction", 0.85, false);
 
-        broadcastExecuteText(hero);
+        broadcastExecuteText(hero, target);
 
-        TauntEffect tEffect = new TauntEffect(this, player, period, duration, damageModifier);
-
-        List<Entity> entities = hero.getPlayer().getNearbyEntities(radius, radius, radius);
-        for (Entity entity : entities) {
-            if (!(entity instanceof LivingEntity)) {
-                continue;
-            }
-
-            LivingEntity target = (LivingEntity) entity;
-            if (!damageCheck(player, target))
-                continue;
-
-            CharacterTemplate targetCT = plugin.getCharacterManager().getCharacter(target);
-            //target.getWorld().spigot().playEffect(target.getLocation().add(0, 1, 0), Effect.VILLAGER_THUNDERCLOUD, 0, 0, 1.0F, 0.5F, 1.0F, 0.2F, 35, 16);
-            target.getWorld().spawnParticle(Particle.VILLAGER_ANGRY, target.getLocation().add(0, 1, 0), 35, 1.0F, 0.5F, 1.0F, 0.2);
-            targetCT.addEffect(tEffect);
-        }
+        CharacterTemplate targetCT = plugin.getCharacterManager().getCharacter(target);
+        target.getWorld().spawnParticle(Particle.VILLAGER_ANGRY, target.getLocation().add(0, 1, 0), 35, 1.0F, 0.5F, 1.0F, 0.2);
+        targetCT.addEffect(new TauntEffect(this, player, period, duration, damageModifier));
 
         player.getWorld().playSound(player.getLocation(), Sound.ENTITY_CHICKEN_STEP, 0.8F, 0.5F);
         player.getWorld().playSound(player.getLocation(), Sound.ENTITY_CHICKEN_HURT, 0.8F, 1.25F);
-        
+
         return SkillResult.NORMAL;
     }
 

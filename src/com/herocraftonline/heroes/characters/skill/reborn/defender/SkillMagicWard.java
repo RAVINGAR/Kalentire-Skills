@@ -62,7 +62,8 @@ public class SkillMagicWard extends ActiveSkill {
         ConfigurationSection node = super.getDefaultConfig();
 
         node.set("damage-reduction", 0.2);
-        node.set(SkillSetting.DURATION.node(), 4000);
+        node.set(SkillSetting.COOLDOWN.node(), 15000);
+        node.set(SkillSetting.DURATION.node(), 8000);
         node.set(SkillSetting.RADIUS.node(), 10.0);
         node.set("max-allies-protected", -1);
         node.set("require-shield-to-activate", false);

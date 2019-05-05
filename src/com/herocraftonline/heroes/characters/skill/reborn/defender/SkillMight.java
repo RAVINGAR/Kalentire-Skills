@@ -49,6 +49,7 @@ public class SkillMight extends ActiveSkill {
         ConfigurationSection node = super.getDefaultConfig();
 
         node.set("damage-bonus", 1.20);
+        node.set(SkillSetting.COOLDOWN.node(), 60000);
         node.set(SkillSetting.RADIUS.node(), 10);
         node.set(SkillSetting.APPLY_TEXT.node(), ChatComponents.GENERIC_SKILL + "Your muscles bulge with power!");
         node.set(SkillSetting.EXPIRE_TEXT.node(), ChatComponents.GENERIC_SKILL + "You feel strength leave your body!");

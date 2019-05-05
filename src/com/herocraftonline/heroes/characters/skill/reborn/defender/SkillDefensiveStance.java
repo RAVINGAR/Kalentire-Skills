@@ -45,6 +45,7 @@ public class SkillDefensiveStance extends ActiveSkill {
     @Override
     public ConfigurationSection getDefaultConfig() {
         ConfigurationSection node = super.getDefaultConfig();
+        node.set(SkillSetting.COOLDOWN.node(), 0);
         node.set(SkillSetting.DELAY.node(), 1000);
         node.set(SkillSetting.DURATION.node(), 8000);
         node.set(SkillSetting.CHANCE.node(), 0.8);

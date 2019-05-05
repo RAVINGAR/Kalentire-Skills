@@ -36,6 +36,7 @@ public class SkillMindandBody extends TargettedSkill {
         ConfigurationSection node = super.getDefaultConfig();
         node.set("speed-multiplier", 0);
         node.set("target-only-allies", true);
+        node.set(SkillSetting.COOLDOWN.node(), 18000);
         node.set(SkillSetting.DURATION.node(), 1000);
         node.set(SkillSetting.DELAY.node(), 0);
         return node;

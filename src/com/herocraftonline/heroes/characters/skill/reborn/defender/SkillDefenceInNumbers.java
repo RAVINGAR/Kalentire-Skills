@@ -120,6 +120,19 @@ public class SkillDefenceInNumbers extends PassiveSkill {
             setPersistent(true);
         }
 
+        @Override
+        public void applyToHero(Hero hero) {
+            // Make more quiet when out of party (note as this has no potion effects this is fine)
+            if (hasAllies(hero))
+                super.applyToHero(hero);
+        }
+
+        @Override
+        public void removeFromHero(Hero hero) {
+            // Make more quiet when out of party (note as this has no potion effects this is fine)
+            if (hasAllies(hero))
+                super.removeFromHero(hero);
+        }
 
         @Override
         public void tickHero(Hero hero) {
@@ -127,9 +140,8 @@ public class SkillDefenceInNumbers extends PassiveSkill {
             //TODO boost effect when buffing a ally
 
             // Need atleast one ally
-            if (!hero.hasParty() || hero.getParty().getMembers().size() <= 1) {
+            if (!hasAllies(hero))
                 return;
-            }
 
             // Check required ally number
             int requiredAllyNumber = SkillConfigManager.getUseSetting(hero, skill, "required-ally-number", 0, true);
@@ -165,6 +177,10 @@ public class SkillDefenceInNumbers extends PassiveSkill {
                 defendingPlayer.sendMessage(SKILL_MESSAGE_PREFIX_SPACES + renewText.replace("$1", alliesProtected + ""));
             }
         }
+    }
+
+    private static boolean hasAllies(Hero hero) {
+        return hero.hasParty() && hero.getParty().getMembers().size() > 1;
     }
 
 
