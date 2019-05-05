@@ -82,18 +82,23 @@ public class SkillExplosiveShot extends ActiveSkill {
         String formattedDamage = Util.decFormat.format(damage);
 
 
-        String directHitEffect = "";
+        String directHitEffectText = "";
         double altArrowDamage;
         if (SkillConfigManager.getUseSetting(hero, this, "cancel-arrow-damage", true)) {
             altArrowDamage = SkillConfigManager.getUseSetting(hero, this, "alt-arrow-damage", 75, false);
             if (altArrowDamage > 0) {
-                directHitEffect = " The arrow deals " + altArrowDamage + " damage on hitting a target directly.";
+                directHitEffectText = " The arrow deals " + altArrowDamage + " damage on hitting a target directly.";
             }
         } else {
-            directHitEffect = " The arrow deals standard Bow damage on hitting a target directly.";
+            directHitEffectText = " The arrow deals standard Bow damage on hitting a target directly.";
         }
 
-        return getDescription().replace("$1", numShots + "").replace("$2", numShotsString + "").replace("$3", formattedDuration).replace("$4", radius + "").replace("$5", formattedDamage) + directHitEffect;
+        return getDescription()
+                .replace("$1", numShots + "")
+                .replace("$2", numShotsString + "")
+                .replace("$3", formattedDuration)
+                .replace("$4", radius + "")
+                .replace("$5", formattedDamage) + directHitEffectText;
     }
 
     public ConfigurationSection getDefaultConfig() {
@@ -109,8 +114,8 @@ public class SkillExplosiveShot extends ActiveSkill {
         config.set("ncp-exemption-duration", 0);
         config.set("cancel-arrow-damage", true);
         config.set("alt-arrow-damage", 75D);
-        config.set(SkillSetting.APPLY_TEXT.node(), String.valueOf(ChatComponents.GENERIC_SKILL + "%hero%'s arrows are " + ChatColor.WHITE + ChatColor.BOLD + "Explosive" + ChatColor.RESET + "!"));
-        config.set(SkillSetting.EXPIRE_TEXT.node(), String.valueOf(ChatComponents.GENERIC_SKILL + "%hero%'s arrows are no longer Explosive."));
+        config.set(SkillSetting.APPLY_TEXT.node(), ChatComponents.GENERIC_SKILL + "%hero%'s arrows are " + ChatColor.WHITE + ChatColor.BOLD + "Explosive" + ChatColor.RESET + "!");
+        config.set(SkillSetting.EXPIRE_TEXT.node(), ChatComponents.GENERIC_SKILL + "%hero%'s arrows are no longer Explosive.");
 
         return config;
     }
@@ -191,7 +196,7 @@ public class SkillExplosiveShot extends ActiveSkill {
             }
 
             Player player = hero.getPlayer();
-            broadcast(player.getLocation(), shotText.replace("%hero%", player.getDisplayName()));
+            broadcast(player.getLocation(), shotText.replace("$1", player.getDisplayName()));
 
             // Add the projectile to the hashlist
             Arrow explosiveShot = (Arrow) event.getProjectile();
@@ -263,7 +268,6 @@ public class SkillExplosiveShot extends ActiveSkill {
                     damageEntity(target, shooter, altArrowDamage, DamageCause.MAGIC, false);
                 }
             }
-
         }
     }
 
@@ -279,7 +283,7 @@ public class SkillExplosiveShot extends ActiveSkill {
         projectile.getWorld().spawnParticle(Particle.EXPLOSION_LARGE, projectile.getLocation(), 10, 1, 1, 1, 0);
         //projectile.getWorld().playSound(projectile.getLocation(), Sound.ENTITY_GENERIC_EXPLODE, 1.0F, 1.0F);
 
-        int radius = SkillConfigManager.getUseSetting(hero, this, SkillSetting.RADIUS, 4, false);
+        double radius = SkillConfigManager.getUseSetting(hero, this, SkillSetting.RADIUS, 4.0, false);
         double damage = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE, 80.0, false);
         double damageIncrease = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE_INCREASE_PER_INTELLECT, 0.0, false);
         damage += damageIncrease * hero.getAttributeValue(AttributeType.INTELLECT);
@@ -288,9 +292,14 @@ public class SkillExplosiveShot extends ActiveSkill {
         // Play explosion effect
         projectile.getWorld().playEffect(projectile.getLocation(), org.bukkit.Effect.SMOKE, 4);
         try {
-            fplayer.playFirework(projectile.getWorld(), projectile.getLocation(), FireworkEffect.builder().flicker(false).trail(true).with(FireworkEffect.Type.BURST).withColor(Color.ORANGE).withFade(Color.RED).build());
-        } catch (IllegalArgumentException e) {
-            e.printStackTrace();
+            fplayer.playFirework(projectile.getWorld(), projectile.getLocation(),
+                    FireworkEffect.builder()
+                            .flicker(false)
+                            .trail(true)
+                            .with(FireworkEffect.Type.BURST)
+                            .withColor(Color.ORANGE)
+                            .withFade(Color.RED)
+                            .build());
         } catch (Exception e) {
             e.printStackTrace();
         }
