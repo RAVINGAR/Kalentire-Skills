@@ -50,6 +50,7 @@ public class SkillDefenceInNumbers extends PassiveSkill {
         config.set("required-ally-number", 0);
         config.set("outgoing-multiplier", 1.0);
         config.set(SkillSetting.APPLY_TEXT.node(), ChatComponents.GENERIC_SKILL + "You have renewed your protection to allies.");
+        config.set(SkillSetting.UNAPPLY_TEXT.node(), null); //remove option -> using expire text instead
         config.set("renew-text", ChatComponents.GENERIC_SKILL + "You have renewed your protection to $1 allies.");
         config.set(SkillSetting.EXPIRE_TEXT.node(), ChatComponents.GENERIC_SKILL + "Your protection to allies has expired.");
         config.set("ally-apply-text", ChatComponents.GENERIC_SKILL + "Your protection in numbers has been renewed by %hero%");
@@ -119,14 +120,14 @@ public class SkillDefenceInNumbers extends PassiveSkill {
             setPersistent(true);
         }
 
+
         @Override
         public void tickHero(Hero hero) {
             super.tickHero(hero);
             //TODO boost effect when buffing a ally
 
             // Need atleast one ally
-            final Player defendingPlayer = hero.getPlayer();
-            if (!hero.hasParty() && hero.getParty().getMembers().size() > 1) {
+            if (!hero.hasParty() || hero.getParty().getMembers().size() <= 1) {
                 return;
             }
 
@@ -139,6 +140,7 @@ public class SkillDefenceInNumbers extends PassiveSkill {
             double radius = SkillConfigManager.getUseSetting(hero, skill, SkillSetting.RADIUS.node(), 20, false);
 
             // Apply protection to allies in range of the hero with this passive
+            final Player defendingPlayer = hero.getPlayer();
             int alliesProtected = 0;
             for (Hero ally : hero.getParty().getMembers()) {
                 if (hero.equals(ally))
