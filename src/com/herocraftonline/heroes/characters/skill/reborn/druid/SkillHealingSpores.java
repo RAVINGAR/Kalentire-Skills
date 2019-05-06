@@ -30,6 +30,7 @@ import org.bukkit.util.Vector;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Queue;
 import java.util.logging.Level;
 
 public class SkillHealingSpores extends ActiveSkill {
@@ -104,6 +105,7 @@ public class SkillHealingSpores extends ActiveSkill {
 //
             if (hero.hasEffect(sporeEffectName)) {
                 HealingSporesEffect effect = (HealingSporesEffect) hero.getEffect(sporeEffectName);
+                effect.launchSpore(hero);
 
             }
 
@@ -111,11 +113,10 @@ public class SkillHealingSpores extends ActiveSkill {
     }
 
     private class HealingSporesEffect extends ExpirableEffect {
-        private int currentProjectileCount;
+        private int firedProjectiles = 0;
         private int maxProjectiles;
         private double projectileRadius;
-        private Queue<Pair<EffectManager, SphereEffect>> missileVisuals = new ArrayList<Pair<EffectManager, SphereEffect>>();
-
+        private List<Pair<EffectManager, SphereEffect>> missileVisuals = new ArrayList<Pair<EffectManager, SphereEffect>>();
         HealingSporesEffect(Skill skill, Player applier, long duration) {
             super(skill, sporeEffectName, applier, duration);
             this.types.add(EffectType.HEALING);
@@ -126,7 +127,6 @@ public class SkillHealingSpores extends ActiveSkill {
             super.applyToHero(hero);
 
             this.maxProjectiles = SkillConfigManager.getUseSetting(hero, skill, "num-projectiles", 4, false);
-            this.currentProjectileCount = maxProjectiles;
             this.projectileRadius = SkillConfigManager.getUseSetting(hero, skill, "projectile-radius", 0.15, false);
             int projDurationTicks = SkillConfigManager.getUseSetting(hero, skill, "projectile-max-ticks-lived", 30, false);
 
@@ -165,21 +165,22 @@ public class SkillHealingSpores extends ActiveSkill {
         }
 
         public void launchSpore(Hero hero) {
-            if (currentProjectileCount < 1) {
-                hero.removeEffect(this);
-                return;
-            }
-
             final Player player = hero.getPlayer();
 
-            Pair<EffectManager, SphereEffect> pair = missileVisuals.get(0); //TODO: Not 0
+            Pair<EffectManager, SphereEffect> pair = missileVisuals.get(firedProjectiles);
             SphereEffect missileVisual = pair.getRight();
-
             Location eyeLocation = hero.getPlayer().getEyeLocation();
             Vector eyeOffset = eyeLocation.getDirection().add(new Vector(0, -1, 0));
             missileVisual.setLocation(eyeLocation.clone().add(eyeOffset));
             HealingSpore spore = new HealingSpore(hero, skill, projectileRadius, pair.getLeft(), missileVisual);
             spore.fireMissile();
+
+            firedProjectiles++;
+            if (firedProjectiles == maxProjectiles) {
+               removeFromHero(hero);
+            }
+
+
         }
     }
 
