@@ -8,29 +8,26 @@ import com.herocraftonline.heroes.characters.CharacterTemplate;
 import com.herocraftonline.heroes.characters.Hero;
 import com.herocraftonline.heroes.characters.Monster;
 import com.herocraftonline.heroes.characters.effects.EffectType;
-import com.herocraftonline.heroes.characters.effects.ExpirableEffect;
 import com.herocraftonline.heroes.characters.effects.PeriodicExpirableEffect;
 import com.herocraftonline.heroes.characters.skill.*;
 import com.herocraftonline.heroes.chat.ChatComponents;
 import com.herocraftonline.heroes.util.Util;
-import org.bukkit.*;
+import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
+import org.bukkit.Particle;
+import org.bukkit.Sound;
 import org.bukkit.configuration.ConfigurationSection;
+import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
-import org.bukkit.event.player.PlayerTeleportEvent;
-import org.bukkit.potion.PotionEffect;
-import org.bukkit.potion.PotionEffectType;
-import org.bukkit.util.Vector;
 
 import java.util.List;
 
 public class SkillTaunt extends TargettedSkill {
 
-    private String taunterEffectName = "Taunting";
-    private String tauntEffectName = "Taunt";
     private String applyText;
     private String expireText;
     private String tauntText;
@@ -148,26 +145,6 @@ public class SkillTaunt extends TargettedSkill {
         }
     }
 
-    public class TauntingEffect extends ExpirableEffect {
-
-        private final List<CharacterTemplate> callTargets;
-
-        public TauntingEffect(Skill skill, Player applier, long duration, List<CharacterTemplate> callTargets) {
-            super(skill, taunterEffectName, applier, duration);
-            this.callTargets = callTargets;
-        }
-
-        @Override
-        public void removeFromHero(Hero hero) {
-            for (CharacterTemplate target : callTargets) {
-                if (target == null) // Does this happen if one of the players logs out? I have no idea tbh.
-                    continue;
-                if (target.hasEffect(tauntEffectName))
-                    target.removeEffect(target.getEffect(tauntEffectName));
-            }
-        }
-    }
-
     public class TauntEffect extends PeriodicExpirableEffect {
 
         private double damageModifier;
@@ -198,73 +175,6 @@ public class SkillTaunt extends TargettedSkill {
 
         public void setDamageModifier(double damageModifier) {
             this.damageModifier = damageModifier;
-        }
-    }
-
-    public class HeroicPurposeEffect extends PeriodicExpirableEffect {
-        private final double maxDistanceSquared;
-        private final double pullPowerReduction;
-        private final double maxAngleDegrees;
-
-        HeroicPurposeEffect(Skill skill, Player applier, long period, long duration, double maxDistance, double maxAngle, double pullPowerReduction) {
-            super(skill, tauntEffectName, applier, period, duration, applyText, expireText);
-            this.maxDistanceSquared = maxDistance * maxDistance;
-            this.maxAngleDegrees = maxAngle * 0.5;
-
-            this.pullPowerReduction = pullPowerReduction;
-
-            types.add(EffectType.HARMFUL);
-            types.add(EffectType.PHYSICAL);
-            types.add(EffectType.DISPELLABLE);
-            types.add(EffectType.TAUNT);
-
-            addPotionEffect(new PotionEffect(PotionEffectType.SLOW, (int) (duration / 1000 * 20), 1));
-        }
-
-        @Override
-        public void tickHero(Hero hero) {
-            Player victim = hero.getPlayer();
-            Hero currentlyCallingHero = plugin.getCharacterManager().getHero((Player) applier);
-            if (currentlyCallingHero == null || !currentlyCallingHero.hasEffect(taunterEffectName) || victim.getLocation().distanceSquared(applier.getLocation()) > maxDistanceSquared)
-                hero.removeEffect(this);
-
-            Location targetLocation = applier.getLocation();
-            faceTargetIfNecessary(victim, targetLocation);
-            pullToTarget(victim, targetLocation);
-        }
-
-        @Override
-        public void tickMonster(Monster monster) {
-            LivingEntity victim = monster.getEntity();
-            Hero currentlyCallingHero = plugin.getCharacterManager().getHero((Player) applier);
-            if (currentlyCallingHero == null || !currentlyCallingHero.hasEffect(taunterEffectName) || victim.getLocation().distanceSquared(applier.getLocation()) > maxDistanceSquared)
-                monster.removeEffect(this);
-
-            Location targetLocation = applier.getLocation();
-            faceTargetIfNecessary(victim, targetLocation);
-            pullToTarget(victim, targetLocation);
-
-            monster.setTargetIfAble(applier);
-        }
-
-        private void faceTargetIfNecessary(LivingEntity victim, Location callerLocation) {
-            Location victimLocation = victim.getLocation();
-            Vector difference = callerLocation.toVector().subtract(victimLocation.toVector());
-            double angleDegrees = Math.toDegrees(victimLocation.getDirection().angle(difference));
-
-            if (angleDegrees > maxAngleDegrees) {
-                Vector dir = callerLocation.clone().subtract(victim.getEyeLocation()).toVector();
-                Location loc = victim.getLocation().setDirection(dir);
-                victim.teleport(loc, PlayerTeleportEvent.TeleportCause.PLUGIN);
-            }
-        }
-
-        private void pullToTarget(LivingEntity victim, Location callerLocation) {
-            Location victimLocation = victim.getLocation();
-            double xDir = (callerLocation.getX() - victimLocation.getX()) / pullPowerReduction;
-            double zDir = (callerLocation.getZ() - victimLocation.getZ()) / pullPowerReduction;
-            final Vector v = new Vector(xDir, 0, zDir);
-            victim.setVelocity(victim.getVelocity().add(v));
         }
     }
 }
