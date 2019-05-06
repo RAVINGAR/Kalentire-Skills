@@ -6,48 +6,37 @@ import com.herocraftonline.heroes.characters.CharacterTemplate;
 import com.herocraftonline.heroes.characters.Hero;
 import com.herocraftonline.heroes.characters.Monster;
 import com.herocraftonline.heroes.characters.effects.EffectType;
-import com.herocraftonline.heroes.characters.effects.PeriodicEffect;
 import com.herocraftonline.heroes.characters.effects.PeriodicExpirableEffect;
+import com.herocraftonline.heroes.characters.effects.common.WalkSpeedDecreaseEffect;
 import com.herocraftonline.heroes.characters.effects.common.WalkSpeedIncreaseEffect;
 import com.herocraftonline.heroes.characters.skill.*;
 import com.herocraftonline.heroes.chat.ChatComponents;
-import com.herocraftonline.heroes.nms.physics.NMSPhysics;
-import com.herocraftonline.heroes.nms.physics.RayCastHit;
 import com.herocraftonline.heroes.util.Util;
 import de.slikey.effectlib.EffectManager;
 import de.slikey.effectlib.effect.CylinderEffect;
-import de.slikey.effectlib.util.DynamicLocation;
 import org.bukkit.*;
-import org.bukkit.block.Block;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.*;
-import org.bukkit.event.EventHandler;
-import org.bukkit.event.EventPriority;
-import org.bukkit.event.Listener;
-import org.bukkit.event.entity.ProjectileLaunchEvent;
-import org.bukkit.metadata.FixedMetadataValue;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
-import org.bukkit.util.Vector;
 
 import java.util.Collection;
 
-public class SkillAccelerationField extends TargettedLocationSkill {
-    private final String actualEffectName = "AcceleratedTime";
+public class SkillDistortionField extends TargettedLocationSkill {
+    private final String accelerateEffectName = "AcceleratedTime";
+    private final String decelerateEffectName = "DeceleratedTime";
     private final String immunityEffectName = "TemporallyWarded";
     private String applyText;
     private String expireText;
 
-    public SkillAccelerationField(Heroes plugin) {
-        super(plugin, "AccelerationField");
-        setDescription("You tap into the web of time, accelerating everything around a target location. " +
-                "All of those within a $1 block radius, enemy or ally, will be accelerated. The field lasts $2 second(s).");
-        setUsage("/skill accelerationfield");
+    public SkillDistortionField(Heroes plugin) {
+        super(plugin, "DistortionField");
+        setDescription("You tap into the web of time and distort time within a $1 block radius."
+                + "Any aly will be accelerated and any enemy will be decelerated. The field lasts $2 second(s).");
+        setUsage("/skill distortionfield");
         setArgumentRange(0, 0);
-        setIdentifiers("skill accelerationfield");
-        setTypes(SkillType.MULTI_GRESSIVE, SkillType.MOVEMENT_INCREASING, SkillType.AREA_OF_EFFECT);
-
-        Bukkit.getServer().getPluginManager().registerEvents(new SkillListener(), plugin);
+        setIdentifiers("skill distortionfield");
+        setTypes(SkillType.MULTI_GRESSIVE, SkillType.MOVEMENT_INCREASING, SkillType.MOVEMENT_SLOWING, SkillType.AREA_OF_EFFECT);
     }
 
     @Override
@@ -70,10 +59,10 @@ public class SkillAccelerationField extends TargettedLocationSkill {
         config.set(SkillSetting.RADIUS.node(), 14.0);
         config.set(SkillSetting.DURATION.node(), 10000);
         config.set("percent-speed-increase", 0.35);
-        config.set("projectile-velocity-multiplier", 1.25);
+        config.set("percent-speed-decrease", 0.4);
         config.set("pulse-period", 250);
-        config.set(SkillSetting.APPLY_TEXT.node(), ChatComponents.GENERIC_SKILL + "%hero% is accelerating time!");
-        config.set(SkillSetting.EXPIRE_TEXT.node(), ChatComponents.GENERIC_SKILL + "%hero% is no longer accelerating time.");
+        config.set(SkillSetting.APPLY_TEXT.node(), ChatComponents.GENERIC_SKILL + "%hero% is distorting time!");
+        config.set(SkillSetting.EXPIRE_TEXT.node(), ChatComponents.GENERIC_SKILL + "%hero% is no longer distorting time.");
         config.set(SkillSetting.DELAY.node(), 1500);
         return config;
     }
@@ -81,7 +70,6 @@ public class SkillAccelerationField extends TargettedLocationSkill {
     @Override
     public void init() {
         super.init();
-
         applyText = SkillConfigManager.getRaw(this, SkillSetting.APPLY_TEXT, "    " + ChatComponents.GENERIC_SKILL + "%hero% is accelerating time!").replace("%hero%", "$1");
         expireText = SkillConfigManager.getRaw(this, SkillSetting.EXPIRE_TEXT, "    " + ChatComponents.GENERIC_SKILL + "%hero% is no longer accelerating time.").replace("%hero%", "$1");
         setUseText(null);
@@ -97,9 +85,14 @@ public class SkillAccelerationField extends TargettedLocationSkill {
         long duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, 20, false);
         int pulsePeriod = SkillConfigManager.getUseSetting(hero, this, "pulse-period", 250, false);
         double percentIncrease = SkillConfigManager.getUseSetting(hero, this, "percent-speed-increase", 0.35, false);
-        double projectileVMulti = SkillConfigManager.getUseSetting(hero, this, "projectile-velocity-multiplier", 1.35, false);
+        double projectileVMultiIncrease = SkillConfigManager.getUseSetting(hero, this, "projectile-velocity-multiplier-accelerate", 1.35, false);
+        double percentDecrease = SkillConfigManager.getUseSetting(hero, this, "percent-speed-decrease", 0.35, false);
+        double projectileVMultiDecrease = SkillConfigManager.getUseSetting(hero, this, "projectile-velocity-multiplier-decelerate", 0.5, false);
 
-        AcceleratedFieldEmitterEffect emitterEffect = new AcceleratedFieldEmitterEffect(this, player, pulsePeriod, duration, targetLoc, radius, percentIncrease, projectileVMulti);
+        AcceleratedFieldEmitterEffect emitterEffect = new AcceleratedFieldEmitterEffect(this, player, pulsePeriod,
+                duration, targetLoc, radius,
+                percentIncrease, projectileVMultiIncrease,
+                percentDecrease, projectileVMultiDecrease);
         hero.addEffect(emitterEffect);
 
 //        player.getWorld().playSound(player.getLocation(), Sound.BLOCK_BEACON_ACTIVATE, 2.0F, 2.0F);
@@ -115,9 +108,13 @@ public class SkillAccelerationField extends TargettedLocationSkill {
         private final double heightRadius;
         private final double offsetHeight;
         private final double flatSpeedIncrease;
-        private final double projVMulti;
+        private final double projVMultiIncrease;
+        private final double flatDecrease;
+        private final double projVMultiDecrease;
 
-        AcceleratedFieldEmitterEffect(Skill skill, Player applier, int period, long duration, Location location, double radius, double percentIncrease, double projVMulti) {
+        AcceleratedFieldEmitterEffect(Skill skill, Player applier, int period, long duration, Location location,
+                                      double radius, double percentIncrease,
+                                      double projVMultiIncrease,double percentDecrease, double projVMultiDecrease) {
             super(skill, "AccelerationField", applier, period, duration, applyText, expireText);
             this.location = location;
 
@@ -126,7 +123,9 @@ public class SkillAccelerationField extends TargettedLocationSkill {
             this.heightRadius = radius;
             this.offsetHeight = radius / 2.0;
             this.flatSpeedIncrease = Util.convertPercentageToPlayerMovementSpeedValue(percentIncrease);
-            this.projVMulti = projVMulti;
+            this.projVMultiIncrease = projVMultiIncrease;
+            this.flatDecrease = Util.convertPercentageToPlayerMovementSpeedValue(percentDecrease);
+            this.projVMultiDecrease = projVMultiDecrease;
 
             types.add(EffectType.BENEFICIAL);
             types.add(EffectType.TEMPORAL);
@@ -177,17 +176,22 @@ public class SkillAccelerationField extends TargettedLocationSkill {
             int tempDuration = (int) (getPeriod() + 250);   // Added 250 cuz this thing is buggy as hell without it BOI
             Collection<Entity> nearbyEnts = location.getWorld().getNearbyEntities(location, radius, heightRadius, radius);
             for (Entity ent : nearbyEnts) {
-                if (ent instanceof Projectile) {
-                    accelerateProjectile((Projectile) ent, projVMulti);
-                } else if (ent instanceof LivingEntity) {
+                if (ent instanceof LivingEntity) {
                     CharacterTemplate ctTarget = plugin.getCharacterManager().getCharacter((LivingEntity) ent);
                     if (ctTarget == null)
                         continue;
                     if (ctTarget.hasEffect(immunityEffectName))
                         continue;
 
-                    ctTarget.removeEffect(ctTarget.getEffect(actualEffectName));
-                    ctTarget.addEffect(new AcceleratedTimeEffect(skill, player, tempDuration, flatSpeedIncrease, projVMulti));
+                    LivingEntity target = (LivingEntity) ent;
+                    if (hero.isAlliedTo(target)) {
+                        ctTarget.removeEffect(ctTarget.getEffect(accelerateEffectName));
+                        ctTarget.addEffect(new AcceleratedTimeEffect(skill, player, tempDuration, flatSpeedIncrease, projVMultiIncrease));
+                    } else {
+                        ctTarget.removeEffect(ctTarget.getEffect(decelerateEffectName));
+                        ctTarget.addEffect(new DeceleratedTimeEffect(skill, player, tempDuration, flatDecrease, projVMultiDecrease));
+
+                    }
                 }
             }
         }
@@ -197,7 +201,7 @@ public class SkillAccelerationField extends TargettedLocationSkill {
         final double projVMulti;
 
         AcceleratedTimeEffect(Skill skill, Player applier, int duration, double speedIncrease, double projVMulti) {
-            super(skill, actualEffectName, applier, duration, speedIncrease, null, null);
+            super(skill, accelerateEffectName, applier, duration, speedIncrease, null, null);
             this.projVMulti = projVMulti;
 
             types.add(EffectType.BENEFICIAL);
@@ -221,35 +225,31 @@ public class SkillAccelerationField extends TargettedLocationSkill {
         }
     }
 
-    private void accelerateProjectile(Projectile proj, double multi) {
-        if (proj.hasMetadata(actualEffectName))
-            return;
-        Vector multipliedVel = proj.getVelocity().multiply(multi);
-        proj.setVelocity(multipliedVel);
-        proj.setMetadata(actualEffectName, new FixedMetadataValue(plugin, true));
-    }
+    public class DeceleratedTimeEffect extends WalkSpeedDecreaseEffect {
+        final double projVMulti;
 
-    public class SkillListener implements Listener {
+        DeceleratedTimeEffect(Skill skill, Player applier, int duration, double flatDecrease, double projVMulti) {
+            super(skill, decelerateEffectName, applier, duration, flatDecrease, null, null);
+            this.projVMulti = projVMulti;
 
-        @EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
-        public void onProjLaunch(ProjectileLaunchEvent event) {
-            if (event.getEntity().getShooter() == null)
-                return;
-            if (!(event.getEntity().getShooter() instanceof LivingEntity))
-                return;
-            if (event.getEntity().hasMetadata(actualEffectName))
-                return;
+            types.add(EffectType.HARMFUL);
+            types.add(EffectType.TEMPORAL);
+        }
 
-            LivingEntity shooter = (LivingEntity) event.getEntity().getShooter();
-            CharacterTemplate ctShooter = plugin.getCharacterManager().getCharacter(shooter);
-            if (ctShooter == null || !ctShooter.hasEffect(actualEffectName))
-                return;
+        @Override
+        public void applyToHero(Hero hero) {
+            super.applyToHero(hero);
+        }
 
-            AcceleratedTimeEffect effect = (AcceleratedTimeEffect) ctShooter.getEffect(actualEffectName);
-            if (effect == null)
-                return;
+        @Override
+        public void removeFromHero(Hero hero) {
+            super.removeFromHero(hero);
+        }
 
-            accelerateProjectile(event.getEntity(), effect.projVMulti);
+        @Override
+        public void applyToMonster(Monster monster) {
+            addPotionEffect(new PotionEffect(PotionEffectType.SLOW, (int) (getDuration() / 50), 2));
+            super.applyToMonster(monster);
         }
     }
 }
