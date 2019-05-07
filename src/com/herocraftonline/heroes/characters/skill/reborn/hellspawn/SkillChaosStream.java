@@ -87,6 +87,8 @@ public class SkillChaosStream extends ActiveSkill {
         config.set("effectiveness-decrease-per-hit-percent", 0.20);
         config.set("total-projectile-count", 15);
         config.set("projectiles-per-launch", 3);
+        config.set("proj-spread-min", -0.1);
+        config.set("proj-spread-max", 0.1);
         config.set("velocity-multiplier", 0.75);
         config.set("launch-delay-server-ticks", 5);
         return config;
@@ -96,6 +98,8 @@ public class SkillChaosStream extends ActiveSkill {
     public SkillResult use(Hero hero, String[] args) {
         Player player = hero.getPlayer();
 
+        broadcastExecuteText(hero);
+
         double mult = SkillConfigManager.getUseSetting(hero, this, "velocity-multiplier", 0.75, false);
         int numFireballs = SkillConfigManager.getUseSetting(hero, this, "total-projectile-count", 20, false);
         int projectilesPerLaunch = SkillConfigManager.getUseSetting(hero, this, "projectiles-per-launch", 2, false);
@@ -103,8 +107,8 @@ public class SkillChaosStream extends ActiveSkill {
         int ticksBeforeDrop = SkillConfigManager.getUseSetting(hero, this, "ticks-before-drop", 6, false);
         final double yValue = SkillConfigManager.getUseSetting(hero, this, "y-value-drop", 0.35, false);
 
-        final double randomMin = -0.1;
-        final double randomMax = 0.1;
+        final double randomMin = SkillConfigManager.getUseSetting(hero, this, "proj-spread-min", -0.1, false);
+        final double randomMax = SkillConfigManager.getUseSetting(hero, this, "proj-spread-max", 0.1, false);
 
         player.getWorld().playSound(player.getLocation(), Sound.ENTITY_BLAZE_AMBIENT, 1F, 0.533F);
 
@@ -113,14 +117,23 @@ public class SkillChaosStream extends ActiveSkill {
 
             Bukkit.getScheduler().scheduleSyncDelayedTask(plugin, new Runnable() {
                 public void run() {
-
-                    for(int launchedThisLoop = 0; launchedThisLoop < projectilesPerLaunch; launchedThisLoop++) {
+                    for (int launchedThisLoop = 0; launchedThisLoop < projectilesPerLaunch; launchedThisLoop++) {
                         EnderPearl projectile = player.launchProjectile(EnderPearl.class);
 
-                        Vector newVelocity = player.getLocation().getDirection().normalize()
-                                .add(new Vector(ThreadLocalRandom.current().nextDouble(randomMin, randomMax), 0, ThreadLocalRandom.current().nextDouble(randomMin, randomMax)))
-                                .multiply(mult);
+                        projectile.setFireTicks(100);
+                        projectiles.put(projectile, System.currentTimeMillis());
+                        projectile.setShooter(player);
                         projectile.setGravity(true);
+
+                        Vector newVelocity = player.getLocation().getDirection().normalize();
+                        if (randomMin != 0 && randomMax != 0 && randomMin < randomMax) {
+                            newVelocity.add(new Vector(
+                                    ThreadLocalRandom.current().nextDouble(randomMin, randomMax),
+                                    0,
+                                    ThreadLocalRandom.current().nextDouble(randomMin, randomMax)
+                            ));
+                        }
+                        newVelocity.multiply(mult);
                         projectile.setVelocity(newVelocity);
 
                         // Nesting schedulers weeeee.
@@ -131,18 +144,12 @@ public class SkillChaosStream extends ActiveSkill {
                                 }
                             }
                         }, ticksBeforeDrop);
-
-                        projectile.setFireTicks(100);
-                        projectiles.put(projectile, System.currentTimeMillis());
-                        projectile.setShooter(player);
                     }
 
                     player.getWorld().playSound(player.getLocation(), Sound.ENTITY_BLAZE_SHOOT, 0.3F, 0.6F);
                 }
             }, launchLoopCount * launchDelay);
         }
-
-        broadcastExecuteText(hero);
 
         return SkillResult.NORMAL;
     }

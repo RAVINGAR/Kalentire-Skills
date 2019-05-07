@@ -62,10 +62,10 @@ public class SkillFirebolt extends ActiveSkill {
         double burnMultipliaer = SkillConfigManager.getUseSetting(hero, this, "burn-damage-multiplier", 2.0, false);
         double totalBurnDamage = plugin.getDamageManager().calculateFireTickDamage((int) (burnDuration / 50), burnMultipliaer);
 
-        String formattedDamage = Util.decFormat.format(damage);
-        String formattedBurnDamage = Util.decFormat.format(totalBurnDamage);
-        String formattedBurnDuration = Util.decFormat.format(burnDuration / 1000);
-        return getDescription().replace("$1", formattedDamage).replace("$2", formattedBurnDamage).replace("$3", formattedBurnDuration);
+        return getDescription()
+                .replace("$1", Util.decFormat.format(damage))
+                .replace("$2", Util.decFormat.format(totalBurnDamage))
+                .replace("$3", Util.decFormat.format(burnDuration / 1000.0));
     }
 
     @Override

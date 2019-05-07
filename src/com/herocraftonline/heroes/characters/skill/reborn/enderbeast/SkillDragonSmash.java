@@ -233,7 +233,7 @@ public class SkillDragonSmash extends ActiveSkill implements Listener {
         }.runTaskTimer(plugin, 0, 1);
     }
 
-    @EventHandler
+    @EventHandler(priority = EventPriority.LOWEST, ignoreCancelled = false)
     public void onBlockChangeState(EntityChangeBlockEvent event) {
         Entity ent = event.getEntity();
         if (!(ent instanceof FallingBlock))

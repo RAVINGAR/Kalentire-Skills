@@ -46,7 +46,7 @@ public class SkillPyromania extends PassiveSkill {
                 .replace("$1", Util.decFormat.format(reductionPercent * 100))
                 .replace("$2", Util.decFormat.format(increasePerFireTickSecond * 100))
                 .replace("$3", Util.decFormat.format(maxPercentIncrease * 100))
-                .replace("$3", Util.decFormat.format(manaRegainPerDamage));
+                .replace("$4", Util.decFormat.format(manaRegainPerDamage));
     }
 
     @Override

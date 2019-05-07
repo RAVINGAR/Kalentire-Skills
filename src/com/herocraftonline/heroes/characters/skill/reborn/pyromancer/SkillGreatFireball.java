@@ -2,6 +2,7 @@ package com.herocraftonline.heroes.characters.skill.reborn.pyromancer;
 
 import com.herocraftonline.heroes.Heroes;
 import com.herocraftonline.heroes.api.SkillResult;
+import com.herocraftonline.heroes.attributes.AttributeType;
 import com.herocraftonline.heroes.characters.CharacterTemplate;
 import com.herocraftonline.heroes.characters.Hero;
 import com.herocraftonline.heroes.characters.effects.common.BurningEffect;
@@ -36,7 +37,8 @@ public class SkillGreatFireball extends ActiveSkill {
 
     public SkillGreatFireball(Heroes plugin) {
         super(plugin, "GreatFireball");
-        setDescription("Conjure up a massive orb of pure fire. The orb deals $1 damage to any target hit and ");
+        setDescription("Conjure up a massive orb of pure fire. Direct hits deal $1 damage and will ignite the target, dealing $2 burning damage over the next $3 second(s). " +
+                "The explosion will do an additional $4 damage to all enemies within $5 blocks and set the ground on fire.");
         setUsage("/skill greatfireball");
         setIdentifiers("skill greatfireball");
         setArgumentRange(0, 0);
@@ -46,8 +48,22 @@ public class SkillGreatFireball extends ActiveSkill {
     @Override
     public String getDescription(Hero hero) {
         double damage = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE, 80.0, false);
+        double damageIncrease = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE_INCREASE_PER_INTELLECT, 0.0, false);
+        damage += damageIncrease * hero.getAttributeValue(AttributeType.INTELLECT);
+
+        int burnDuration = SkillConfigManager.getUseSetting(hero, this, "burn-duration", 2000, false);
+        double burnMultipliaer = SkillConfigManager.getUseSetting(hero, this, "burn-damage-multiplier", 2.0, false);
+        double totalBurnDamage = plugin.getDamageManager().calculateFireTickDamage((int) (burnDuration / 50), burnMultipliaer);
+
+        double explosionDamage = SkillConfigManager.getUseSetting(hero, this, "explosion-damage", 25.0, false);
+        double explosionRadius = SkillConfigManager.getUseSetting(hero, this, "explosion-radius", 4.0, false);
+
         return getDescription()
-                .replace("$1", Util.decFormat.format(damage));
+                .replace("$1", Util.decFormat.format(damage))
+                .replace("$2", Util.decFormat.format(totalBurnDamage))
+                .replace("$3", Util.decFormat.format(burnDuration / 1000.0))
+                .replace("$4", Util.decFormat.format(explosionDamage))
+                .replace("$5", Util.decFormat.format(explosionRadius));
     }
 
     @Override
@@ -92,8 +108,11 @@ public class SkillGreatFireball extends ActiveSkill {
 
             setRemainingLife(SkillConfigManager.getUseSetting(hero, skill, "projectile-max-ticks-lived", 20, false));
             setGravity(SkillConfigManager.getUseSetting(hero, skill, "projectile-gravity", 5.0, false));
-            
-            this.damage = SkillConfigManager.getUseSetting(hero, skill, SkillSetting.DAMAGE, 45.0, false);
+
+            double damage = SkillConfigManager.getUseSetting(hero, skill, SkillSetting.DAMAGE, 90.0, false);
+            double damageIncrease = SkillConfigManager.getUseSetting(hero, skill, SkillSetting.DAMAGE_INCREASE_PER_INTELLECT, 0.0, false);
+            damage += damageIncrease * hero.getAttributeValue(AttributeType.INTELLECT);
+            this.damage = damage;
             this.burnDuration = SkillConfigManager.getUseSetting(hero, skill, "burn-duration", 3000, false);
             this.burnMultipliaer = SkillConfigManager.getUseSetting(hero, skill, "burn-damage-multiplier", 2.0, false);
             this.explosionDamage = SkillConfigManager.getUseSetting(hero, skill, "explosion-damage", 25.0, false);
