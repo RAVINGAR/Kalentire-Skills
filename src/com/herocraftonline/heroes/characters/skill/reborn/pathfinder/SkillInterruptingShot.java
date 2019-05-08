@@ -53,7 +53,7 @@ public class SkillInterruptingShot extends ActiveSkill {
 
     public SkillInterruptingShot(Heroes plugin) {
         super(plugin, "InterruptingShot");
-        setDescription("Your next arrow will interrupt your targets casting and silence them for $2 second(s).");
+        setDescription("For the next $1 seconds, the first target hit will silence your target for $2 seconds.");
         setUsage("/skill InterruptingShot");
         setIdentifiers("skill interruptingshot", "skill is");
         setArgumentRange(0, 0);
@@ -64,7 +64,12 @@ public class SkillInterruptingShot extends ActiveSkill {
 
     @Override
     public String getDescription(Hero hero) {
-        return getDescription();
+        int duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, 6000, false);
+        int silDuration = SkillConfigManager.getUseSetting(hero, this, "silence-duration", 2000, false);
+
+        return getDescription()
+                .replace("$1", Util.decFormat.format(duration / 1000.0))
+                .replace("$2", Util.decFormat.format(silDuration / 1000.0));
     }
 
     @Override
@@ -72,6 +77,8 @@ public class SkillInterruptingShot extends ActiveSkill {
         ConfigurationSection config = super.getDefaultConfig();
         config.set(SkillSetting.DURATION.node(), 6000);
         config.set("silence-duration", 2000);
+        config.set(SkillSetting.APPLY_TEXT.node(), ChatComponents.GENERIC_SKILL + "%hero% has interrupting arrows attached to their bow.");
+        config.set(SkillSetting.EXPIRE_TEXT.node(), ChatComponents.GENERIC_SKILL + "%hero%'s bow no longer has interrupting arrows attached to their bow.");
         return config;
     }
 
@@ -79,6 +86,13 @@ public class SkillInterruptingShot extends ActiveSkill {
     public void init() {
         super.init();
 
+        applyText = SkillConfigManager.getRaw(this, SkillSetting.APPLY_TEXT,
+                ChatComponents.GENERIC_SKILL + "%hero% has interrupting arrows attached to their bow.")
+                .replace("%hero%", "$1");
+
+        expireText = SkillConfigManager.getRaw(this, SkillSetting.EXPIRE_TEXT,
+                ChatComponents.GENERIC_SKILL + "%hero%'s bow no longer has interrupting arrows attached to their bow.")
+                .replace("%hero%", "$1");
 
     }
 

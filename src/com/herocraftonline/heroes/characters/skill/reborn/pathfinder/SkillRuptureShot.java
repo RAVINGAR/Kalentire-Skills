@@ -28,9 +28,8 @@ public class SkillRuptureShot extends ActiveSkill {
 
     public SkillRuptureShot(Heroes plugin) {
         super(plugin, "RuptureShot");
-        setDescription("You concentrate on rupturing your target with your arrows for the next $1 seconds. " +
-                "While active, your next successful shot will rupture the target, " +
-                "draining $2 stamina, $3 mana, and dealing $4 damage every $5 second(s) over the next $6 second(s).");
+        setDescription("You attach rupturing arrows to your bow. " +
+                "For the next $1 seconds, the first target hit will be delt $2 damage, drain $4 stamina and $5 mana every $3 seconds for the next $6 seconds");
         setUsage("/skill ruptureshot");
         setIdentifiers("skill ruptureshot", "skill ruptureshot");
         setArgumentRange(0, 0);
@@ -41,29 +40,31 @@ public class SkillRuptureShot extends ActiveSkill {
     }
 
     public String getDescription(Hero hero) {
-//        long duration = SkillConfigManager.getUseSetting(hero, this, "rupture-duration", 6000, false);
-//        long period = SkillConfigManager.getUseSetting(hero, this, SkillSetting.PERIOD, 1000, true);
-//        int tickDamage = SkillConfigManager.getUseSetting(hero, this, "tick-damage", 15, false);
-//        int staminaDrain = SkillConfigManager.getUseSetting(hero, this, "stamina-drain-per-tick", 35, false);
-//        int manaDrain = SkillConfigManager.getUseSetting(hero, this, "mana-drain-per-tick", 25, false);
+        long ruptureDuration = SkillConfigManager.getUseSetting(hero, this, "rupture-duration", 3000, false);
+        long duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, 3000, false);
+        long period = SkillConfigManager.getUseSetting(hero, this, SkillSetting.PERIOD, 1000, true);
+        int tickDamage = SkillConfigManager.getUseSetting(hero, this, "tick-damage", 30, false);
+        int staminaDrain = SkillConfigManager.getUseSetting(hero, this, "stamina-drain-per-tick", 50, false);
+        int manaDrain = SkillConfigManager.getUseSetting(hero, this, "mana-drain-per-tick", 50, false);
 
-        return getDescription();
-//                .replace("$1", Util.decFormat.format())
-//                .replace("$2", Util.decFormat.format())
-//                .replace("$3", Util.decFormat.format())
-//                .replace("$4", Util.decFormat.format())
-//                .replace("$1", Util.decFormat.format());
+        return getDescription()
+                .replace("$1", Util.decFormat.format(duration / 1000.0))
+                .replace("$2", Util.decFormat.format(tickDamage))
+                .replace("$3", Util.decFormat.format(period / 1000.0))
+                .replace("$4", Util.decFormat.format(staminaDrain))
+                .replace("$5", Util.decFormat.format(manaDrain))
+                .replace("$6", Util.decFormat.format(ruptureDuration / 1000.0));
     }
 
     @Override
     public ConfigurationSection getDefaultConfig() {
         ConfigurationSection config = super.getDefaultConfig();
-        config.set(SkillSetting.DURATION.node(), 10000);
+        config.set(SkillSetting.DURATION.node(), 3000);
         config.set(SkillSetting.PERIOD.node(), 1000);
-        config.set(SkillSetting.DAMAGE_TICK.node(), 15.0);
+        config.set(SkillSetting.DAMAGE_TICK.node(), 30.0);
         config.set("rupture-duration", 4000);
-        config.set("mana-drain-per-tick", 25);
-        config.set("stamina-drain-per-tick", 35);
+        config.set("mana-drain-per-tick", 50);
+        config.set("stamina-drain-per-tick", 50);
         config.set(SkillSetting.APPLY_TEXT.node(), "%target% is ruptured!");
         config.set(SkillSetting.EXPIRE_TEXT.node(), "%target% has recovered from the rupture!");
         return config;

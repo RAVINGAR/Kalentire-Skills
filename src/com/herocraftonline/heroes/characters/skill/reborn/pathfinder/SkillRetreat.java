@@ -12,6 +12,7 @@ import com.herocraftonline.heroes.characters.skill.*;
 import com.herocraftonline.heroes.characters.skill.ncp.NCPFunction;
 import com.herocraftonline.heroes.characters.skill.ncp.NCPUtils;
 import com.herocraftonline.heroes.chat.ChatComponents;
+import com.herocraftonline.heroes.util.Util;
 import org.bukkit.*;
 import org.bukkit.block.BlockFace;
 import org.bukkit.configuration.ConfigurationSection;
@@ -47,7 +48,7 @@ public class SkillRetreat extends ActiveSkill {
 
     public SkillRetreat(Heroes plugin) {
         super(plugin, "Retreat");
-        setDescription("Retreat from your enemies, your next arrow will stun your enemy. ");
+        setDescription("You retreat away from the direction you are facing. The next arrow fired within $1 seconds will stun your enemy for $2 seconds");
         setUsage("/skill retreat");
         setIdentifiers("skill retreat");
         setArgumentRange(0, 0);
@@ -58,13 +59,18 @@ public class SkillRetreat extends ActiveSkill {
 
     @Override
     public String getDescription(Hero hero) {
-        return getDescription();
+        int duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, 2500, false);
+        int stunDuration = SkillConfigManager.getUseSetting(hero, this, "stun-duration", 1500, false);
+
+        return getDescription()
+                .replace("$1", Util.decFormat.format(duration / 1000.0))
+                .replace("$2", Util.decFormat.format(stunDuration / 1000.0));
     }
 
     @Override
     public ConfigurationSection getDefaultConfig() {
         ConfigurationSection config = super.getDefaultConfig();
-        config.set(SkillSetting.DURATION.node(), 6000);
+        config.set(SkillSetting.DURATION.node(), 2500);
         config.set("stun-duration", 1500);
         config.set("horizontal-power", 0.5);
         config.set("vertical-power", 0.5);

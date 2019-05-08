@@ -22,7 +22,7 @@ public class SkillTrack extends ActiveSkill {
 
     public SkillTrack(Heroes plugin) {
         super(plugin, "Track");
-        setDescription("Track your target, and learn of their location in the world, specific up to $1 blocks. Your compass will point to the target for $2 second(s) after tracking them.");
+        setDescription("Track your target, and learn of their location in the world, specific up to $1 blocks. Your compass will point to the target for $2 seconds after tracking them.");
         setUsage("/skill track <player>");
         setArgumentRange(1, 1);
         setIdentifiers("skill track");
@@ -31,7 +31,7 @@ public class SkillTrack extends ActiveSkill {
     @Override
     public String getDescription(Hero hero) {
         int randomness = SkillConfigManager.getUseSetting(hero, this, "randomness", 50, true);
-        int duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.COOLDOWN, 30000, false);
+        int duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, 30000, false);
 
         String formattedDuration = Util.decFormat.format(duration / 1000.0);
 
@@ -41,6 +41,7 @@ public class SkillTrack extends ActiveSkill {
     @Override
     public ConfigurationSection getDefaultConfig() {
         ConfigurationSection config = super.getDefaultConfig();
+        config.set(SkillSetting.DURATION.node(), 30000);
         config.set("randomness", 50);
         config.set("target-min-combat-level", 10);
         return config;

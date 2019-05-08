@@ -25,8 +25,8 @@ public class SkillTrap extends SkillBaseGroundEffect {
 
     public SkillTrap(Heroes plugin) {
         super(plugin, "Trap");
-        setDescription("You set a trap underneath you that is $1 blocks wide and lasts for $2 second(s). " +
-                "The first target who sets off the trap will be rooted for $3 second(s).");
+        setDescription("You set a trap $1 blocks wide underneath you that lasts for $2 seconds. " +
+                "The first target who sets off the trap will be rooted for $3 seconds.");
         setUsage("/skill trap");
         setIdentifiers("skill trap");
         setArgumentRange(0, 0);
@@ -35,12 +35,12 @@ public class SkillTrap extends SkillBaseGroundEffect {
 
     @Override
     public String getDescription(Hero hero) {
-        final double radius = SkillConfigManager.getUseSetting(hero, this, SkillSetting.RADIUS, 3.0, false);
+        final double radius = SkillConfigManager.getUseSetting(hero, this, SkillSetting.RADIUS, 1.5, false);
         long duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, 30000, false);
-        long rootDuration = SkillConfigManager.getUseSetting(hero, this, "root-duration", 2000, false);
+        long rootDuration = SkillConfigManager.getUseSetting(hero, this, "root-duration", 35000, false);
 
         return getDescription()
-                .replace("$2", Util.decFormat.format(radius))
+                .replace("$1", Util.decFormat.format(radius))
                 .replace("$2", Util.decFormat.format(duration / 1000.0))
                 .replace("$3", Util.decFormat.format(rootDuration / 1000.0));
     }

@@ -48,9 +48,9 @@ public class SkillExplosiveShot extends ActiveSkill {
 
     public SkillExplosiveShot(Heroes plugin) {
         super(plugin, "ExplosiveShot");
-        setDescription("Apply a explosive charge to $1 of your arrows. " +
-                "Once attached, your $2 fired within the next $3 seconds will damage all targets within $4 blocks for $5 damage. " +
-                "Targets that are hit with the blast are also knocked away from the explosion.");
+        setDescription("You apply an explosive charge to $1 of your arrows. " +
+                "Once attached, your $2 fired within the next $3 seconds will damage all targets within $4 a block radius for $5 damage. " +
+                "Targets hit by the blast are blasted away from the explosion.");
         setUsage("/skill explosiveshot");
         setArgumentRange(0, 0);
         setIdentifiers("skill explosiveshot");
@@ -71,12 +71,10 @@ public class SkillExplosiveShot extends ActiveSkill {
         else
             numShotsString = "next shot";
 
-        int duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, 7500, false);
-        double radius = SkillConfigManager.getUseSetting(hero, this, SkillSetting.RADIUS, 5.0, false);
+        int duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, 4000, false);
+        double radius = SkillConfigManager.getUseSetting(hero, this, SkillSetting.RADIUS, 4.0, false);
 
         double damage = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE, 80.0, false);
-        double damageIncrease = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE_INCREASE_PER_INTELLECT, 0.0, false);
-        damage += damageIncrease * hero.getAttributeValue(AttributeType.INTELLECT);
 
         String formattedDuration = Util.decFormat.format(duration / 1000.0);
         String formattedDamage = Util.decFormat.format(damage);
@@ -93,7 +91,12 @@ public class SkillExplosiveShot extends ActiveSkill {
             directHitEffect = " The arrow deals standard Bow damage on hitting a target directly.";
         }
 
-        return getDescription().replace("$1", numShots + "").replace("$2", numShotsString + "").replace("$3", formattedDuration).replace("$4", radius + "").replace("$5", formattedDamage) + directHitEffect;
+        return getDescription()
+                .replace("$1", numShots + "")
+                .replace("$2", numShotsString + "")
+                .replace("$3", formattedDuration)
+                .replace("$4", radius + "")
+                .replace("$5", formattedDamage) + directHitEffect;
     }
 
     public ConfigurationSection getDefaultConfig() {
@@ -128,7 +131,7 @@ public class SkillExplosiveShot extends ActiveSkill {
 
         shotText = SkillConfigManager.getRaw(this, "shot-text",
                 ChatComponents.GENERIC_SKILL + "%hero% has unleashed an " + ChatColor.WHITE + ChatColor.BOLD + "Explosive Shot" + ChatColor.RESET + "!")
-                .replace("%hero%", "$1");
+                .replace("%hero%", "%hero%");
     }
 
     public SkillResult use(Hero hero, String[] args) {

@@ -17,7 +17,7 @@ public class SkillSummonArrow extends ActiveSkill {
 
     public SkillSummonArrow(Heroes plugin) {
         super(plugin, "SummonArrow");
-        this.setDescription("You summon $1 arrows.");
+        this.setDescription("You summon 16 arrows.");
         this.setUsage("/skill summonarrow");
         this.setArgumentRange(0, 0);
         this.setIdentifiers("skill summonarrow", "skill sarrow");
@@ -27,7 +27,7 @@ public class SkillSummonArrow extends ActiveSkill {
     @Override
     public ConfigurationSection getDefaultConfig() {
         final ConfigurationSection node = super.getDefaultConfig();
-        node.set(SkillSetting.AMOUNT.node(), 2);
+        node.set(SkillSetting.AMOUNT.node(), 16);
         return node;
     }
 

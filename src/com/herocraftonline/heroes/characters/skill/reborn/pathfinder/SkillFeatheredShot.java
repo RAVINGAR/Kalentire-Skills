@@ -29,7 +29,8 @@ public class SkillFeatheredShot extends ActiveSkill {
 
     public SkillFeatheredShot(Heroes plugin) {
         super(plugin, "FeatheredShot");
-        setDescription("For the next $1 second(s), your arrows will apply a jump boost and slow fall to slow down your target.");
+        setDescription("You attach deadly feathers to your bow. "+
+                "For the next $1 seconds, the first target hit will levitate your target for $2 seconds.");
         setUsage("/skill featheredshot");
         setIdentifiers("skill featheredshot");
         setArgumentRange(0, 0);
@@ -40,24 +41,19 @@ public class SkillFeatheredShot extends ActiveSkill {
 
     @Override
     public String getDescription(Hero hero) {
-        int duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, 10000, false);
-        double damage = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE, 5, false);
-
-        String formattedDamage = Util.decFormat.format(damage);
-        String formattedDuration = Util.decFormat.format(duration / 1000.0);
+        int duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, 8000, false);
+        int levDuration = SkillConfigManager.getUseSetting(hero, this, "shot-duration", 1500, false);
 
         return getDescription()
-                .replace("$1", formattedDuration)
-                .replace("$2", formattedDamage);
+                .replace("$1", Util.decFormat.format(duration / 1000.0))
+                .replace("$2", Util.decFormat.format(levDuration / 1000.0));
     }
 
     @Override
     public ConfigurationSection getDefaultConfig() {
         ConfigurationSection config = super.getDefaultConfig();
-        config.set(SkillSetting.DURATION.node(), 10000);
-        config.set(SkillSetting.DAMAGE.node(), 15.0);
-        config.set(SkillSetting.DAMAGE_INCREASE_PER_INTELLECT.node(), 0.0);
-        config.set("shot-duration", 4000);
+        config.set(SkillSetting.DURATION.node(), 8000);
+        config.set("shot-duration", 1500);
         config.set("slow-fall-amplifier", 3);
         config.set("jump-boost-amplifier", 4);
         config.set(SkillSetting.APPLY_TEXT.node(), ChatComponents.GENERIC_SKILL + "%hero% has deadly feathers attached to their bow.");

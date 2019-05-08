@@ -24,7 +24,7 @@ public class SkillSerratedArrows extends PassiveSkill {
 
     public SkillSerratedArrows(Heroes plugin) {
         super(plugin, "SerratedArrows");
-        setDescription("Your third arrow hit against the same target within $1 second(s) will deal $2 armor piercing damage.");
+        setDescription("Your arrows cut deep, breaking through armor with every third shot landed within $1 seconds on a single target, dealing $2 damage.");
         setUsage("/skill serratedarrows");
         setArgumentRange(0, 0);
         setIdentifiers("skill serratedarrows");
@@ -34,7 +34,7 @@ public class SkillSerratedArrows extends PassiveSkill {
 
     @Override
     public String getDescription(Hero hero) {
-        double damage = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE, 90, false);
+        double damage = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE, 95, false);
         long duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, 5000, false);
 
         return getDescription()
@@ -46,7 +46,7 @@ public class SkillSerratedArrows extends PassiveSkill {
     public ConfigurationSection getDefaultConfig() {
         ConfigurationSection config = super.getDefaultConfig();
         config.set(SkillSetting.DURATION.node(), 5000);
-        config.set(SkillSetting.DAMAGE.node(), 90);
+        config.set(SkillSetting.DAMAGE.node(), 95);
         return config;
     }
 
