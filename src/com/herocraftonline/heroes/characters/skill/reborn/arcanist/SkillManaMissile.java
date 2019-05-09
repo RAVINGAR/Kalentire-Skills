@@ -246,7 +246,7 @@ public class SkillManaMissile extends PassiveSkill {
         protected boolean onCollideWithEntity(Entity entity) {
             if (shouldPierce)
                 return false;
-            return entity instanceof LivingEntity;
+            return entity instanceof LivingEntity && !hero.isAlliedTo((LivingEntity) entity);
         }
 
         @Override
@@ -266,6 +266,27 @@ public class SkillManaMissile extends PassiveSkill {
             if (!shouldPierce)
                 this.kill();
         }
+
+        // Dunno if I actually need this. Never tested.
+        // @Override
+        // protected void onEntityHit(Entity entity, Vector hitOrigin, Vector hitForce) {
+        //     if (shouldPierce) {
+        //         // We already handle damage for pierce in the "onEntityPassed" method. Exit out so that we don't double up.
+        //         return;
+        //     }
+
+        //     if (!(entity instanceof LivingEntity) || hitTargets.contains(entity)) {
+        //         return;
+        //     }
+
+        //     LivingEntity target = (LivingEntity) entity;
+        //     if (!Skill.damageCheck(player, target))
+        //         return;
+
+        //     addSpellTarget(target, hero);
+        //     damageEntity(target, player, damage, EntityDamageEvent.DamageCause.MAGIC, knockBackOnHit);
+        //     hitTargets.add(target);
+        // }
     }
 
     private class ManaMissileVisualEffect extends Effect {

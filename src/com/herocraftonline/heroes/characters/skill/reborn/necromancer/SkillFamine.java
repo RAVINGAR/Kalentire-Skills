@@ -21,14 +21,16 @@ import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 
 public class SkillFamine extends TargettedSkill {
-	
+    private static String degenPartEffectName = "Famined-Degen-Slow-Part";
+
     private String applyText;
     private String expireText;
 
     public SkillFamine(Heroes plugin) {
         super(plugin, "Famine");
         setDescription("Cause a wave of famine to your target and all enemies within $1 blocks of that target. " +
-                "Famine causes all affected targets to lose $2 stamina over $3 second(s).");
+                "Famine causes stamina regeneration to be reduced by $2%, and they will also lose $3 stamina over the next $4 second(s). " +
+                "Monsters will be slowed instead.");
         setUsage("/skill famine");
         setIdentifiers("skill famine");
         setArgumentRange(0, 0);
@@ -41,24 +43,28 @@ public class SkillFamine extends TargettedSkill {
         int duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, 3000, false);
         int period = SkillConfigManager.getUseSetting(hero, this, SkillSetting.PERIOD, 1000, true);
 
+        double degenPercent = SkillConfigManager.getUseSetting(hero, this, "stamina-degen-percent", 0.5, false);
+
         int staminaDrain = SkillConfigManager.getUseSetting(hero, this, "stamina-drain-per-tick", 60, false);
-        double staminaIncrease = SkillConfigManager.getUseSetting(hero, this, "stamina-drain-increase-intellect", 0.0, false);
-        staminaDrain += hero.getAttributeValue(AttributeType.INTELLECT) * staminaIncrease;
+        double drainIncrease = SkillConfigManager.getUseSetting(hero, this, "stamina-drain-increase-intellect", 0.0, false);
+        drainIncrease += (int) (hero.getAttributeValue(AttributeType.INTELLECT) * drainIncrease);
 
         return getDescription()
                 .replace("$1", Util.decFormat.format(radius))
-                .replace("$2", Util.decFormat.format(staminaDrain * ((double) duration / (double) period)))
-                .replace("$3", Util.decFormat.format(duration / 1000.0));
+                .replace("$2", Util.decFormat.format(degenPercent * 100))
+                .replace("$3", Util.decFormat.format(staminaDrain * ((double) duration / (double) period)))
+                .replace("$4", Util.decFormat.format(duration / 1000.0));
     }
 
     public ConfigurationSection getDefaultConfig() {
         ConfigurationSection config = super.getDefaultConfig();
-        config.set(SkillSetting.MAX_DISTANCE.node(), 7);
-        config.set("stamina-drain-per-tick", 60);
-        config.set("stamina-drain-increase-intellect", 1);
-        config.set(SkillSetting.RADIUS.node(), 4);
-        config.set(SkillSetting.DURATION.node(), 6000);
-        config.set(SkillSetting.PERIOD.node(), 1500);
+        config.set(SkillSetting.MAX_DISTANCE.node(), 10);
+        config.set("stamina-degen-percent", 0.5);
+        config.set("stamina-drain-per-tick", 25);
+        config.set("stamina-drain-increase-intellect", 0.0);
+        config.set(SkillSetting.RADIUS.node(), 6.0);
+        config.set(SkillSetting.DURATION.node(), 5000);
+        config.set(SkillSetting.PERIOD.node(), 1000);
         config.set(SkillSetting.APPLY_TEXT.node(), ChatComponents.GENERIC_SKILL + "%target%'s has been overcome with famine!");
         config.set(SkillSetting.EXPIRE_TEXT.node(), ChatComponents.GENERIC_SKILL + "%target%'s famine has ended.");
         return config;
@@ -68,42 +74,47 @@ public class SkillFamine extends TargettedSkill {
     public void init() {
         super.init();
 
-        applyText = SkillConfigManager.getRaw(this, SkillSetting.APPLY_TEXT, ChatComponents.GENERIC_SKILL + "%target%'s has been overcome with famine!").replace("%target%", "$1");
-        expireText = SkillConfigManager.getRaw(this, SkillSetting.EXPIRE_TEXT, ChatComponents.GENERIC_SKILL + "%target%'s famine has ended.").replace("%target%", "$1");
+        applyText = SkillConfigManager.getRaw(this, SkillSetting.APPLY_TEXT,
+                ChatComponents.GENERIC_SKILL + "%target%'s has been overcome with famine!")
+                .replace("%target%", "$1");
+
+        expireText = SkillConfigManager.getRaw(this, SkillSetting.EXPIRE_TEXT,
+                ChatComponents.GENERIC_SKILL + "%target%'s famine has ended.")
+                .replace("%target%", "$1");
     }
 
     public SkillResult use(Hero hero, LivingEntity target, String[] args) {
-
-        if (!(target instanceof Player))
-            return SkillResult.INVALID_TARGET;
 
         Player player = hero.getPlayer();
 
         broadcastExecuteText(hero, target);
 
-        int radius = SkillConfigManager.getUseSetting(hero, this, SkillSetting.RADIUS, 4, false);
+        double radius = SkillConfigManager.getUseSetting(hero, this, SkillSetting.RADIUS, 4.0, false);
 
         // Get Debuff values
-        int duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, 6000, false);
-        int period = SkillConfigManager.getUseSetting(hero, this, SkillSetting.PERIOD, 1500, true);
+        int duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, 5000, false);
+        int period = SkillConfigManager.getUseSetting(hero, this, SkillSetting.PERIOD, 1000, true);
+
+        double degenPercent = SkillConfigManager.getUseSetting(hero, this, "stamina-degen-percent", 0.5, false);
+
         int staminaDrain = SkillConfigManager.getUseSetting(hero, this, "stamina-drain-per-tick", 60, false);
-        int staminaIncrease = SkillConfigManager.getUseSetting(hero, this, "stamina-drain-increase-intellect", 1, false);
-        staminaDrain += hero.getAttributeValue(AttributeType.INTELLECT) * staminaIncrease;
+        double drainIncrease = SkillConfigManager.getUseSetting(hero, this, "stamina-drain-increase-intellect", 0.0, false);
+        drainIncrease += (int) (hero.getAttributeValue(AttributeType.INTELLECT) * drainIncrease);
 
         // Famine the first target
-        FamineEffect tbEffect = new FamineEffect(this, player, period, duration, staminaDrain);
+        FamineEffect effect = new FamineEffect(this, player, period, duration, staminaDrain);
         CharacterTemplate targCT = plugin.getCharacterManager().getCharacter(target);
-        targCT.addEffect(tbEffect);
+        targCT.addEffect(effect);
 
         // Famine the rest
-        for (Entity entity : target.getNearbyEntities(radius, radius, radius)) {
+        for (Entity entity : target.getNearbyEntities(radius, radius / 2.0, radius)) {
             if (entity instanceof LivingEntity) {
                 if (!damageCheck(player, (LivingEntity) entity)) {
                     continue;
                 }
 
                 CharacterTemplate newTargCT = plugin.getCharacterManager().getCharacter((LivingEntity) entity);
-                newTargCT.addEffect(tbEffect);
+                newTargCT.addEffect(effect);
             }
         }
 
@@ -114,10 +125,11 @@ public class SkillFamine extends TargettedSkill {
         return SkillResult.NORMAL;
     }
 
-    public class FamineEffect extends PeriodicExpirableEffect {
+    class FamineEffect extends PeriodicExpirableEffect {
         private final int staminaDrain;
+        private final double degenPercent;
 
-        public FamineEffect(Skill skill, Player applier, int period, int duration, int staminaDrain) {
+        public FamineEffect(Skill skill, Player applier, int period, int duration, double degenPercent, int staminaDrain) {
             super(skill, "Famined", applier, period, duration, applyText, expireText);
 
             types.add(EffectType.MAGIC);
@@ -128,8 +140,21 @@ public class SkillFamine extends TargettedSkill {
             types.add(EffectType.STAMINA_DECREASING);
 
             this.staminaDrain = staminaDrain;
+            this.degenPercent = degenPercent
 
             addPotionEffect(new PotionEffect(PotionEffectType.HUNGER, duration / 1000 * 20, 0));
+        }
+
+        @Override
+        public void applyTohero(Hero hero) {
+            super.applyToHero(hero);
+            hero.addEffect(new FamineDegenPartEffect(skill, getApplier(), getDuration(), this.degenPercent));
+        }
+
+        @Override
+        public void applyToMonster(Monster monster) {
+            super.applyToMonster(monster);
+            monster.addEffect(new FamineDegenPartEffect(skill, getApplier(), getDuration(), this.degenPercent));
         }
 
         @Override
@@ -139,5 +164,33 @@ public class SkillFamine extends TargettedSkill {
 
         @Override
         public void tickMonster(Monster monster) {}
+
+        @Override
+        public void removeFromhero(Hero hero) {
+            super.removeFromHero(hero);
+            if (hero.hasEffect(degenPartEffectName))
+                hero.removeEffect(hero.getEffect(degenPartEffectName));
+        }
+
+        @Override
+        public void removeFromMonster(Monster monster) {
+            super.removeFromMonster(monster);
+            if (monster.hasEffect(degenPartEffectName))
+                monster.removeEffect(monster.getEffect(degenPartEffectName));
+        }
+    }
+
+    class FamineDegenPartEffect extends StaminaRegenPercentDecreaseEffect {
+
+        FamineDegenPartEffect(Skill skill, Player applier, long duration, double degenPercent) {
+            super(skill, degenPartEffectName, applier, duration, degenPercent, null, null);
+        }
+
+        @Override
+        public void applyToMonster(Monster monster) {
+            addPotionEffect(new PotionEffect(PotionEffectType.SLOW, (int) (getDuration() / 50), 1));
+
+            super.applyToMonster(monster);
+        }
     }
 }
