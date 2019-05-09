@@ -35,16 +35,17 @@ public class SkillKick extends TargettedSkill {
         damage += damageIncrease * hero.getAttributeValue(AttributeType.STRENGTH);
 
         int duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, 2000, false);
-        String formattedDuration = Util.decFormat.format(duration / 1000.0);
 
-        return getDescription().replace("$1", damage + "").replace("$2", formattedDuration);
+        return getDescription()
+                .replace("$1", Util.decFormat.format(damage))
+                .replace("$2", Util.decFormat.format(duration / 1000.0));
     }
 
     @Override
     public ConfigurationSection getDefaultConfig() {
         ConfigurationSection config = super.getDefaultConfig();
         config.set(SkillSetting.MAX_DISTANCE.node(), 3.5);
-        config.set(SkillSetting.ON_INTERRUPT_FORCE_COOLDOWN.node(), 2500);
+//        config.set(SkillSetting.ON_INTERRUPT_FORCE_COOLDOWN.node(), 2500);
         config.set(SkillSetting.DAMAGE.node(), 40.0);
         config.set(SkillSetting.DAMAGE_INCREASE_PER_STRENGTH.node(), 0.0);
         config.set(SkillSetting.DURATION.node(), 2000);
