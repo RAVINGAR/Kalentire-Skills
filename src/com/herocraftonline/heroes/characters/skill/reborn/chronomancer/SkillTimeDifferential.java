@@ -8,6 +8,7 @@ import com.herocraftonline.heroes.characters.effects.Effect;
 import com.herocraftonline.heroes.characters.effects.EffectType;
 import com.herocraftonline.heroes.characters.effects.common.interfaces.Stacked;
 import com.herocraftonline.heroes.characters.skill.*;
+import com.herocraftonline.heroes.chat.ChatComponents;
 import com.herocraftonline.heroes.util.Util;
 import de.slikey.effectlib.EffectManager;
 import de.slikey.effectlib.effect.SphereEffect;
@@ -79,6 +80,7 @@ public class SkillTimeDifferential extends TargettedSkill {
         final double healingPerStack = SkillConfigManager.getUseSetting(hero, this, "healing-per-temporal-effect", 10.0, false);
 
         double healing = baseHealing;
+        int totalStackCount = 0;
         for (Effect effect : targetCT.getEffects()) {
             if (!effect.isType(EffectType.TEMPORAL))
                 continue;
@@ -86,11 +88,14 @@ public class SkillTimeDifferential extends TargettedSkill {
             if (effect instanceof Stacked) {
                 Stacked stack = (Stacked) effect;
                 healing += (healingPerStack * stack.getStackCount());
+                totalStackCount += stack.getStackCount();
             } else {
                 healing += healingPerStack;
+                totalStackCount += 1;
             }
             targetCT.removeEffect(effect);
         }
+
 
         final Skill skill = this;
         final LivingEntity target = targetCT.getEntity();
@@ -98,6 +103,7 @@ public class SkillTimeDifferential extends TargettedSkill {
         final Location loc = target.getLocation();
         final double finalHealing = getScaledHealing(hero, healing);
         final int delaySeconds = SkillConfigManager.getUseSetting(hero, this, "healing-delay", 1000, false);
+        final int finalCount = totalStackCount;
 
         EffectManager em = new EffectManager(plugin);
         SphereEffect visualEffect = buildBaseVisualEffect(em, target, delaySeconds);
@@ -110,8 +116,10 @@ public class SkillTimeDifferential extends TargettedSkill {
                     return;
 
                 // TODO: Better sound.
-                if (targetCT.tryHeal(hero, skill, finalHealing))
+                if (targetCT.tryHeal(hero, skill, finalHealing)) {
                     world.playSound(loc, Sound.BLOCK_NOTE_HARP, 1.0f, 1.0F);
+                }
+                player.sendMessage("    " + ChatComponents.GENERIC_SKILL + ChatColor.DARK_AQUA + "You remove " + finalCount + " temporal effects from " + target.getName());
             }
         };
 
@@ -143,6 +151,7 @@ public class SkillTimeDifferential extends TargettedSkill {
         double baseDamage = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE, 40.0, false);
         final double damagePerStack = SkillConfigManager.getUseSetting(hero, this, "damage-per-temporal-effect", 10.0, false);
 
+        int totalStackCount = 0;
         double damage = baseDamage;
         for (Effect effect : ctTarget.getEffects()) {
             if (!effect.isType(EffectType.TEMPORAL))
@@ -151,8 +160,10 @@ public class SkillTimeDifferential extends TargettedSkill {
             if (effect instanceof Stacked) {
                 Stacked stack = (Stacked) effect;
                 damage += (damagePerStack * stack.getStackCount());
+                totalStackCount += stack.getStackCount();
             } else {
                 damage += damagePerStack;
+                totalStackCount++;
             }
             ctTarget.removeEffect(effect);
         }
@@ -161,6 +172,7 @@ public class SkillTimeDifferential extends TargettedSkill {
         final World world = target.getWorld();
         final Location loc = target.getLocation();
         final double finalDamage = damage;
+        final int finalCount = totalStackCount;
         final int delaySeconds = SkillConfigManager.getUseSetting(hero, this, "damage-delay", 1000, false);
 
         EffectManager em = new EffectManager(plugin);
@@ -176,6 +188,7 @@ public class SkillTimeDifferential extends TargettedSkill {
                 plugin.getDamageManager().addSpellTarget(target, hero, skill);
                 damageEntity(target, player, finalDamage, DamageCause.MAGIC, false);
                 world.playSound(loc, Sound.BLOCK_GLASS_BREAK, 1.0f, 1.0F);
+                player.sendMessage("    " + ChatComponents.GENERIC_SKILL + ChatColor.DARK_AQUA + "You remove " + finalCount + " temporal effects from " + target.getName());
             }
         };
 

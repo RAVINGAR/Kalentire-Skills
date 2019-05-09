@@ -21,7 +21,10 @@ import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 
+import java.util.Arrays;
+
 public class SkillTimeShift extends TargettedSkill {
+    public static String skillName = "TimeShift";
 
     private String upShiftApplyText;
     private String upShiftExpireText;
@@ -80,6 +83,9 @@ public class SkillTimeShift extends TargettedSkill {
     public SkillResult use(Hero hero, LivingEntity target, String[] args) {
         Player player = hero.getPlayer();
 
+        // This is necessary for compatibility with AoE versions of this skill.
+        boolean shouldBroadcast = args == null || args.length == 0 || Arrays.stream(args).noneMatch(x -> x.equalsIgnoreCase("NoBroadcast"));
+
         CharacterTemplate ctTarget = plugin.getCharacterManager().getCharacter(target);
         if (ctTarget == null)
             return SkillResult.INVALID_TARGET;
@@ -93,12 +99,12 @@ public class SkillTimeShift extends TargettedSkill {
         int maxStacks = SkillConfigManager.getUseSetting(hero, this, "max-stacks", 5, false);
 
         if (hero.isAlliedTo(target))
-            return acceleratedShift(player, hero, target, ctTarget, duration, maxStacks);
+            return acceleratedShift(player, hero, target, ctTarget, duration, maxStacks, shouldBroadcast);
 
-        return deceleratedShift(player, hero, target, ctTarget, duration, maxStacks);
+        return deceleratedShift(player, hero, target, ctTarget, duration, maxStacks, shouldBroadcast);
     }
 
-    private SkillResult deceleratedShift(Player player, Hero hero, LivingEntity target, CharacterTemplate targetCT, int duration, int maxStacks) {
+    public SkillResult deceleratedShift(Player player, Hero hero, LivingEntity target, CharacterTemplate targetCT, int duration, int maxStacks, boolean shouldBroadcast) {
         double speedDecrease = SkillConfigManager.getUseSetting(hero, this, "enemy-percent-speed-decrease", 0.1, false);
 
         DeceleratedShiftedTime effect = null;
@@ -115,7 +121,8 @@ public class SkillTimeShift extends TargettedSkill {
             return SkillResult.INVALID_TARGET_NO_MSG;
         }
 
-        broadcastExecuteText(hero, target);
+        if (shouldBroadcast)
+            broadcastExecuteText(hero, target);
 
         double damage = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE, 20.0, false);
         addSpellTarget(target, hero);
@@ -128,7 +135,7 @@ public class SkillTimeShift extends TargettedSkill {
         return SkillResult.NORMAL;
     }
 
-    private SkillResult acceleratedShift(Player player, Hero hero, LivingEntity target, CharacterTemplate targetCT, int duration, int maxStacks) {
+    public SkillResult acceleratedShift(Player player, Hero hero, LivingEntity target, CharacterTemplate targetCT, int duration, int maxStacks, boolean shouldBroadcast) {
         double speedIncrease = SkillConfigManager.getUseSetting(hero, this, "ally-percent-speed-increase", 0.1, false);
 
         AcceleratedShiftedTime effect = null;
@@ -145,7 +152,8 @@ public class SkillTimeShift extends TargettedSkill {
             return SkillResult.INVALID_TARGET_NO_MSG;
         }
 
-        broadcastExecuteText(hero, target);
+        if (shouldBroadcast)
+            broadcastExecuteText(hero, target);
 
         double healing = SkillConfigManager.getUseSetting(hero, this, SkillSetting.HEALING, 20.0, false);
         targetCT.tryHeal(hero, this, healing);  // Ignore failures

@@ -39,10 +39,10 @@ public class SkillStampede extends ActiveSkill {
     private final EntityType animalArray[] = {
             EntityType.COW,
             EntityType.PIG,
-            EntityType.LLAMA,
             EntityType.SHEEP,
+            EntityType.MUSHROOM_COW,
             EntityType.WOLF,
-            EntityType.OCELOT
+            EntityType.LLAMA
     };
 
     public SkillStampede(Heroes plugin) {
@@ -83,6 +83,7 @@ public class SkillStampede extends ActiveSkill {
         config.set("minion-duration", 60000);
         config.set("minion-speed-amplifier", -1);
         config.set("launch-velocity", 2.0);
+        config.set("animal-summoned", 3);
         return config;
     }
 
@@ -153,8 +154,10 @@ public class SkillStampede extends ActiveSkill {
                 Random rand = new Random();
                 int randomNum = rand.nextInt(animalArray.length);
                 DisguiseType disguiseType = DisguiseType.getType(animalArray[randomNum]);
+                /*
                 if (disguiseType == DisguiseType.WOLF)  // We already have wolves, no need to disguise them.
                     return;
+                 */
 
                 MobDisguise disguise = new MobDisguise(disguiseType, true);
                 disguise.setKeepDisguiseOnPlayerDeath(true);
