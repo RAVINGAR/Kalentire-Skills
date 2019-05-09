@@ -35,8 +35,8 @@ public class SkillBackstab extends ActiveSkill {
         super(plugin, "Backstab");
         setDescription("When attacking a target from behind, you $1 an additional $2% damage.");
         setUsage("/skill backstab");
-        setArgumentRange(0, 0);
         setIdentifiers("skill backstab");
+        setArgumentRange(0, 0);
         setTypes(SkillType.ABILITY_PROPERTY_PHYSICAL, SkillType.AGGRESSIVE, SkillType.UNBINDABLE);
 
         Bukkit.getServer().getPluginManager().registerEvents(new SkillHeroesListener(this), plugin);

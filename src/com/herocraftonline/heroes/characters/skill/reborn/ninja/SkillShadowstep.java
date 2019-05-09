@@ -30,7 +30,7 @@ public class SkillShadowstep extends TargettedSkill {
         setUsage("/skill shadowstep");
         setIdentifiers("skill shadowstep");
         setArgumentRange(0, 0);
-        setTypes(SkillType.ABILITY_PROPERTY_DARK, SkillType.DAMAGING, SkillType.AGGRESSIVE, SkillType.TELEPORTING, SkillType.SILENCEABLE);
+        setTypes(SkillType.ABILITY_PROPERTY_DARK, SkillType.DAMAGING, SkillType.AGGRESSIVE, SkillType.TELEPORTING, SkillType.SILENCEABLE, SkillType.STEALTHY);
     }
 
     @Override

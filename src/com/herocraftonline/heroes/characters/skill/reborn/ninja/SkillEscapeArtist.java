@@ -22,8 +22,8 @@ public class SkillEscapeArtist extends ActiveSkill {
         setDescription("You break free of any effects that impede your movement. " +
                 "Will escape from " + ChatColor.ITALIC + "any" + ChatColor.RESET + " effect, even those that are not normally dispellable.");
         setUsage("/skill escapeartist");
-        setArgumentRange(0, 0);
         setIdentifiers("skill escapeartist");
+        setArgumentRange(0, 0);
         setTypes(SkillType.MOVEMENT_PREVENTION_COUNTERING, SkillType.ABILITY_PROPERTY_PHYSICAL, SkillType.STEALTHY);
     }
 

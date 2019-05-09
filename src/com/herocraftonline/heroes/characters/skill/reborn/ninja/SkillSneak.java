@@ -36,20 +36,20 @@ import java.util.Set;
 import java.util.UUID;
 
 public class SkillSneak extends ActiveSkill {
-
+    private static String toggleableEffectName = toggleableEffectName;
     private boolean damageCancels;
     private boolean attackCancels;
 
     public SkillSneak(Heroes plugin) {
         super(plugin, "Sneak");
         setDescription("You crouch into the shadows.");
-        setUsage("/skill stealth");
+        setUsage("/skill sneak");
+        setIdentifiers("skill sneak", "skill stealth");
         setArgumentRange(0, 0);
-        setIdentifiers("skill sneak");
         setTypes(SkillType.BUFFING, SkillType.ABILITY_PROPERTY_PHYSICAL, SkillType.STEALTHY);
 
-        setToggleableEffectName("Sneak");
-        GhostManager ghostManager = new GhostManager(plugin);
+        setToggleableEffectName(toggleableEffectName);
+        //GhostManager ghostManager = new GhostManager(plugin);
         Bukkit.getServer().getPluginManager().registerEvents(new SkillEventListener(), plugin);
     }
 
@@ -76,8 +76,8 @@ public class SkillSneak extends ActiveSkill {
 
     @Override
     public SkillResult use(Hero hero, String[] args) {
-        if (hero.hasEffect("Sneak")) {
-            hero.removeEffect(hero.getEffect("Sneak"));
+        if (hero.hasEffect(toggleableEffectName)) {
+            hero.removeEffect(hero.getEffect(toggleableEffectName));
             return SkillResult.REMOVED_EFFECT;
         }
 
@@ -95,7 +95,7 @@ public class SkillSneak extends ActiveSkill {
         private boolean vanillaSneaking;
 
         public SneakEffect(Skill skill, Player applier, int period) {
-            this(skill, "Sneak", applier, period, ChatComponents.GENERIC_SKILL + "You are now sneaking", ChatComponents.GENERIC_SKILL + "You are no longer sneaking");
+            this(skill, toggleableEffectName, applier, period, ChatComponents.GENERIC_SKILL + "You are now sneaking", ChatComponents.GENERIC_SKILL + "You are no longer sneaking");
         }
 
         public SneakEffect(Skill skill, String name, Player applier, int period) {
@@ -103,7 +103,7 @@ public class SkillSneak extends ActiveSkill {
         }
 
         public SneakEffect(Skill skill, Player applier, int period, String applyText, String expireText) {
-            this(skill, "Sneak", applier, period, applyText, expireText);
+            this(skill, toggleableEffectName, applier, period, applyText, expireText);
         }
 
         public SneakEffect(Skill skill, String name, Player applier, long period, String applyText, String expireText) {
@@ -175,9 +175,9 @@ public class SkillSneak extends ActiveSkill {
             if (event.getEntity() instanceof Player) {
                 player = (Player) event.getEntity();
                 final Hero hero = plugin.getCharacterManager().getHero(player);
-                if (hero.hasEffect("Sneak")) {
+                if (hero.hasEffect(toggleableEffectName)) {
                     player.setSneaking(false);
-                    hero.removeEffect(hero.getEffect("Sneak"));
+                    hero.removeEffect(hero.getEffect(toggleableEffectName));
                 }
             }
 
@@ -194,9 +194,9 @@ public class SkillSneak extends ActiveSkill {
 
                 if (player != null) {
                     final Hero hero = plugin.getCharacterManager().getHero(player);
-                    if (hero.hasEffect("Sneak")) {
+                    if (hero.hasEffect(toggleableEffectName)) {
                         player.setSneaking(false);
-                        hero.removeEffect(hero.getEffect("Sneak"));
+                        hero.removeEffect(hero.getEffect(toggleableEffectName));
                     }
                 }
             }
@@ -221,7 +221,7 @@ public class SkillSneak extends ActiveSkill {
                 return;
 
             Hero hero = plugin.getCharacterManager().getHero(event.getPlayer());
-            if (hero.hasEffect("Sneak")) {
+            if (hero.hasEffect(toggleableEffectName)) {
                 // We need to cancel the "blocking" portion of the sword
                 // So that he interacts with the block as normal.
                 event.setUseItemInHand(Event.Result.DENY);
@@ -231,8 +231,8 @@ public class SkillSneak extends ActiveSkill {
         @EventHandler(priority = EventPriority.HIGHEST)
         public void onPlayerToggleSneak(PlayerToggleSneakEvent event) {
             final Hero hero = plugin.getCharacterManager().getHero(event.getPlayer());
-            if (hero.hasEffect("Sneak")) {
-                SneakEffect sEffect = (SneakEffect) hero.getEffect("Sneak");
+            if (hero.hasEffect(toggleableEffectName)) {
+                SneakEffect sEffect = (SneakEffect) hero.getEffect(toggleableEffectName);
 
                 // Messaging.send(hero.getPlayer(), "Sneak Toggle Event. Switching to sneak == " + event.isSneaking());	// DEBUG
                 if (!event.isSneaking()) {

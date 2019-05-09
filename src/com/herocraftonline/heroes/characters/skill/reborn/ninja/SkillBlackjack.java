@@ -25,8 +25,8 @@ public class SkillBlackjack extends TargettedSkill {
         super(plugin, "Blackjack");
         setDescription("Strike your target with a Blackjack, dealing $1 damage and stunning the target for $2 second(s).$3");
         setUsage("/skill blackjack");
-        setArgumentRange(0, 0);
         setIdentifiers("skill blackjack");
+        setArgumentRange(0, 0);
         setTypes(SkillType.ABILITY_PROPERTY_PHYSICAL, SkillType.AGGRESSIVE, SkillType.DAMAGING, SkillType.STEALTHY);
     }
 
