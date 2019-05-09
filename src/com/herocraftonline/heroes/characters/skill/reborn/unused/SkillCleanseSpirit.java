@@ -1,4 +1,4 @@
-package com.herocraftonline.heroes.characters.skill.reborn.druid;
+package com.herocraftonline.heroes.characters.skill.reborn.unused;
 
 import com.herocraftonline.heroes.Heroes;
 import com.herocraftonline.heroes.attributes.AttributeType;
@@ -24,8 +24,8 @@ public class SkillCleanseSpirit extends SkillBaseHeal {
         setDescription("Cleanse the spirit of the target, restoring $1 of their health$4" +
                 "You are only healed for $3 health from this ability.");
         setUsage("/skill cleansespirit <target>");
-        setArgumentRange(0, 1);
         setIdentifiers("skill cleansespirit");
+        setArgumentRange(0, 1);
         setTypes(SkillType.ABILITY_PROPERTY_LIGHT, SkillType.DISPELLING, SkillType.NAME_TARGETTING_ENABLED, SkillType.HEALING, SkillType.SILENCEABLE);
     }
 

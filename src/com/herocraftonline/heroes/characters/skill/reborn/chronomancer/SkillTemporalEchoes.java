@@ -80,6 +80,8 @@ public class SkillTemporalEchoes extends ActiveSkill {
     public SkillResult use(Hero hero, String[] args) {
         Player player = hero.getPlayer();
 
+        broadcastExecuteText(hero);
+
         long duration = SkillConfigManager.getUseSetting(hero, this, "minion-duration", 6000, false);
         double launchVelocity = SkillConfigManager.getUseSetting(hero, this, "launch-velocity", 1.2, false);
         int numEchoes = SkillConfigManager.getUseSetting(hero, this, "echoes-summoned", 4, false);

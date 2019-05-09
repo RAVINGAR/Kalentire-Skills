@@ -52,8 +52,13 @@ public class SkillSmokeBomb extends ActiveSkill {
     public void init() {
         super.init();
 
-        applyText = SkillConfigManager.getRaw(this, SkillSetting.APPLY_TEXT, ChatComponents.GENERIC_SKILL + "Someone vanished in a cloud of smoke!").replace("%hero%", "$1");
-        expireText = SkillConfigManager.getRaw(this, SkillSetting.EXPIRE_TEXT, ChatComponents.GENERIC_SKILL + "%hero% has reappeared!").replace("%hero%", "$1");
+        applyText = SkillConfigManager.getRaw(this, SkillSetting.APPLY_TEXT,
+                ChatComponents.GENERIC_SKILL + "Someone vanished in a cloud of smoke!")
+                .replace("%hero%", "$1");
+
+        expireText = SkillConfigManager.getRaw(this, SkillSetting.EXPIRE_TEXT,
+                ChatComponents.GENERIC_SKILL + "%hero% has reappeared!")
+                .replace("%hero%", "$1");
     }
 
     @Override

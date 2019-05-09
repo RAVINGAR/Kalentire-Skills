@@ -1,4 +1,4 @@
-package com.herocraftonline.heroes.characters.skill.reborn.necromancer;
+package com.herocraftonline.heroes.characters.skill.reborn.unused;
 
 import com.herocraftonline.heroes.Heroes;
 import com.herocraftonline.heroes.api.SkillResult;
@@ -6,7 +6,7 @@ import com.herocraftonline.heroes.characters.CharacterTemplate;
 import com.herocraftonline.heroes.characters.Hero;
 import com.herocraftonline.heroes.characters.Monster;
 import com.herocraftonline.heroes.characters.effects.EffectType;
-import com.herocraftonline.heroes.characters.effects.PeriodicDamageEffect;
+import com.herocraftonline.heroes.characters.effects.common.SlowEffect;
 import com.herocraftonline.heroes.characters.effects.common.SummonEffect;
 import com.herocraftonline.heroes.characters.skill.ActiveSkill;
 import com.herocraftonline.heroes.characters.skill.Skill;
@@ -31,19 +31,20 @@ import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 
-public class SkillNoxiousMinion extends ActiveSkill {
+public class SkillAnkleBiter extends ActiveSkill {
 
-    private final String minionEffectName = "NoxiousMinion";
+    private final String minionEffectName = "AnkleBiter";
     private boolean disguiseApiLoaded;
 
-    public SkillNoxiousMinion(Heroes plugin) {
-        super(plugin, "NoxiousMinion");
-        setDescription("Conjures a noxious minion to obey your commands. "
-                + "The minion has $1 Health and deals $2 damage per hit. $9");
-        setUsage("/skill noxiousminion");
+    public SkillAnkleBiter(Heroes plugin) {
+        super(plugin, "AnkleBiter");
+        setDescription("Conjures a very fast minion to obey your commands. " +
+                "The minion has $1 HP and deals $2 damage per hit. " +
+                "When the minion attacks an enemy, they will be slowed for $3 second(s). $9");
+        setUsage("/skill anklebiter");
+        setIdentifiers("skill anklebiter");
         setArgumentRange(0, 0);
-        setIdentifiers("skill noxiousminion");
-        setTypes(SkillType.SUMMONING, SkillType.ABILITY_PROPERTY_DARK, SkillType.ABILITY_PROPERTY_DISEASE, SkillType.SILENCEABLE);
+        setTypes(SkillType.SUMMONING, SkillType.ABILITY_PROPERTY_DARK, SkillType.SILENCEABLE);
 
         if (Bukkit.getServer().getPluginManager().getPlugin("LibsDisguises") != null) {
             disguiseApiLoaded = true;
@@ -59,6 +60,7 @@ public class SkillNoxiousMinion extends ActiveSkill {
         hitDmg += SkillConfigManager.getUseSetting(hero, this, "minion-attack-damage-per-level", 0.4, false) * hero.getHeroLevel(this);
 
         long duration = SkillConfigManager.getUseSetting(hero, this, "minion-duration", 45000, false);
+        long slowDuration = SkillConfigManager.getUseSetting(hero, this, "minion-on-hit-slow-duration", 2000, false);
 
         String speedText = "";
         int speedAmplifier = SkillConfigManager.getUseSetting(hero, this, "minion-speed-amplifier", -1, false);
@@ -76,21 +78,21 @@ public class SkillNoxiousMinion extends ActiveSkill {
                 .replace("$1", Util.decFormat.format(maxHp))
                 .replace("$2", Util.decFormat.format(hitDmg))
                 .replace("$3", Util.decFormat.format(duration / 1000.0))
+                .replace("$4", Util.decFormat.format(slowDuration / 1000.0))
                 .replace("$9", speedText);
     }
 
     public ConfigurationSection getDefaultConfig() {
         ConfigurationSection config = super.getDefaultConfig();
         config.set("minion-attack-damage", 10.0);
-        config.set("minion-attack-damage-per-level", 0.2);
-        config.set("minion-max-hp", 125.0);
-        config.set("minion-max-hp-per-level", 1.0);
-        config.set("minion-on-hit-debuff-tick-damage", 10.0);
-        config.set("minion-on-hit-debuff-period", 500);
-        config.set("minion-on-hit-debuff-duration", 2000);
-        config.set("minion-speed-amplifier", 1);
-        config.set("minion-duration", 8000);
-        config.set("launch-velocity", 1.5);
+        config.set("minion-attack-damage-per-level", 0.3);
+        config.set("minion-max-hp", 65.0);
+        config.set("minion-max-hp-per-level", 0.7);
+        config.set("minion-on-hit-slow-duration", 2000);
+        config.set("minion-on-hit-slow-amplifier", 2);
+        config.set("minion-duration", 7000);
+        config.set("minion-speed-amplifier", 2);
+        config.set("launch-velocity", 2.0);
         return config;
     }
 
@@ -99,7 +101,7 @@ public class SkillNoxiousMinion extends ActiveSkill {
 
         broadcastExecuteText(hero);
 
-        double launchVelocity = SkillConfigManager.getUseSetting(hero, this, "launch-velocity", 1.5, false);
+        double launchVelocity = SkillConfigManager.getUseSetting(hero, this, "launch-velocity", 2.0, false);
         long duration = SkillConfigManager.getUseSetting(hero, this, "minion-duration", 10000, false);
 
         // Wolfs have the most reliable default AI for following and helping the player. We'll disguise it as something else later.
@@ -108,7 +110,7 @@ public class SkillNoxiousMinion extends ActiveSkill {
 
         final Monster monster = plugin.getCharacterManager().getMonster(minion);
         monster.setExperience(0);
-        monster.addEffect(new NoxiousMinionEffect(this, hero, duration));
+        monster.addEffect(new AnkleBiterEffect(this, hero, duration));
 
         minion.setVelocity(player.getLocation().getDirection().normalize().multiply(launchVelocity));
         minion.setFallDistance(-7F);
@@ -125,38 +127,29 @@ public class SkillNoxiousMinion extends ActiveSkill {
 
         @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
         public void onEntityDamage(EntityDamageByEntityEvent event) {
-            if (event.getDamage() == 0 || !(event.getDamager() instanceof Wolf) || !(event.getEntity() instanceof LivingEntity))
+            if (event.getDamage() <= 0 || !(event.getDamager() instanceof Wolf) || !(event.getEntity() instanceof LivingEntity))
                 return;
 
             CharacterTemplate attackerCT = plugin.getCharacterManager().getCharacter((LivingEntity) event.getDamager());
             if (!attackerCT.hasEffect(minionEffectName))
                 return;
 
-            Hero summoner = ((NoxiousMinionEffect) attackerCT.getEffect(minionEffectName)).getSummoner();
+            Hero summoner = ((AnkleBiterEffect) attackerCT.getEffect(minionEffectName)).getSummoner();
 
             CharacterTemplate defenderCT = plugin.getCharacterManager().getCharacter((LivingEntity) event.getEntity());
-            double tickDamage = SkillConfigManager.getUseSetting(summoner, skill, "minion-on-hit-debuff-tick-damage", 15.0, false);
-            long period = SkillConfigManager.getUseSetting(summoner, skill, "minion-on-hit-debuff-period", 500, false);
-            long duration = SkillConfigManager.getUseSetting(summoner, skill, "minion-on-hit-debuff-duration", 2000, false);
+            long duration = SkillConfigManager.getUseSetting(summoner, skill, "minion-on-hit-slow-duration", 2000, false);
+            int amplifier = SkillConfigManager.getUseSetting(summoner, skill, "minion-on-hit-slow-amplifier", 2, false);
 
-            defenderCT.addEffect(new NoxiousPoisonEffect(skill, summoner.getPlayer(), period, duration, tickDamage));
+            defenderCT.addEffect(new SlowEffect(skill, summoner.getPlayer(), duration, amplifier));
         }
     }
 
-    private class NoxiousPoisonEffect extends PeriodicDamageEffect {
-        NoxiousPoisonEffect(Skill skill, Player applier, long period, long duration, double tickDamage) {
-            super(skill, "NoxiousPoison", applier, period, duration, tickDamage, false, null, null);
-
-            types.add(EffectType.POISON);
-            addPotionEffect(new PotionEffect(PotionEffectType.POISON, (int) (duration / 50), 0));
-        }
-    }
-
-    private class NoxiousMinionEffect extends SummonEffect {
-        NoxiousMinionEffect(Skill skill, Hero summoner, long duration) {
+    public class AnkleBiterEffect extends SummonEffect {
+        public AnkleBiterEffect(Skill skill, Hero summoner, long duration) {
             super(skill, minionEffectName, duration, summoner, null);
 
-            types.add(EffectType.POISON);
+            types.add(EffectType.DISEASE);
+            types.add(EffectType.WATER_BREATHING);
 
             int speedAmplifier = SkillConfigManager.getUseSetting(summoner, skill, "minion-speed-amplifier", 2, false);
 
@@ -168,11 +161,11 @@ public class SkillNoxiousMinion extends ActiveSkill {
         public void applyToMonster(Monster monster) {
             super.applyToMonster(monster);
 
-            double maxHp = SkillConfigManager.getUseSetting(getSummoner(), skill, "minion-max-hp", 125.0, false);
-            maxHp += SkillConfigManager.getUseSetting(getSummoner(), skill, "minion-max-hp-per-level", 1.0, false) * getSummoner().getHeroLevel(skill);
+            double maxHp = SkillConfigManager.getUseSetting(getSummoner(), skill, "minion-max-hp", 100.0, false);
+            maxHp += SkillConfigManager.getUseSetting(getSummoner(), skill, "minion-max-hp-per-level", 0.0, false) * getSummoner().getHeroLevel(skill);
 
-            double hitDmg = SkillConfigManager.getUseSetting(getSummoner(), skill, "minion-attack-damage", 10.0, false);
-            hitDmg += SkillConfigManager.getUseSetting(getSummoner(), skill, "minion-attack-damage-per-level", 0.2, false) * getSummoner().getHeroLevel(skill);
+            double hitDmg = SkillConfigManager.getUseSetting(getSummoner(), skill, "minion-attack-damage", 25.0, false);
+            hitDmg += SkillConfigManager.getUseSetting(getSummoner(), skill, "minion-attack-damage-per-level", 0.0, false) * getSummoner().getHeroLevel(skill);
 
             LivingEntity minion = monster.getEntity();
             minion.setMaxHealth(maxHp);
@@ -186,7 +179,7 @@ public class SkillNoxiousMinion extends ActiveSkill {
                     DisguiseAPI.undisguiseToAll(minion);
                 }
 
-                MobDisguise disguise = new MobDisguise(DisguiseType.getType(EntityType.CAVE_SPIDER), true);
+                MobDisguise disguise = new MobDisguise(DisguiseType.getType(EntityType.ZOMBIE), false);
                 disguise.setEntity(minion);
                 disguise.setShowName(true);
                 disguise.setModifyBoundingBox(false);

@@ -123,8 +123,8 @@ public class SkillPyromania extends PassiveSkill {
             if (!(event.getDamager() instanceof Hero) || !event.getDamager().hasEffect(skill.getName()))
                 return;
 
-            Player player = (Player)event.getDamager();
-            Hero hero = plugin.getCharacterManager().getHero(player);
+            Hero hero = (Hero) event.getDamager();
+            Player player = hero.getPlayer();
             PyromaniaEffect effect = (PyromaniaEffect)hero.getEffect(skill.getName());
             if (effect.getDamageIncrease() <= 0.0)
                 return;
