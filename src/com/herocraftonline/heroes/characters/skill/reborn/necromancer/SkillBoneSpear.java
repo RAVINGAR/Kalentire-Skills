@@ -97,7 +97,7 @@ public class SkillBoneSpear extends ActiveSkill {
             this.damage = SkillConfigManager.getUseSetting(hero, skill, SkillSetting.DAMAGE, 75.0, false);
 
             Vector playerDirection = player.getEyeLocation().getDirection().normalize();
-            Location missileLoc = player.getLocation().clone().setDirection(playerDirection);
+            Location missileLoc = player.getEyeLocation().clone().subtract(0, player.getEyeHeight() / 2, 0).setDirection(playerDirection);
 
             this.setLocationAndSpeed(missileLoc, projectileSpeed);
         }
@@ -105,10 +105,10 @@ public class SkillBoneSpear extends ActiveSkill {
         private void updateVisualLocation() {
             FireworkEffect firework = FireworkEffect.builder()
                     .flicker(false)
-                    .trail(false)
-                    .withColor(Color.BLUE)
-                    .withColor(Color.BLUE)
-                    .withColor(Color.WHITE)
+                    .trail(true)
+                    .withColor(Color.AQUA)
+                    .withColor(Color.AQUA)
+                    .withColor(Color.GRAY)
                     .with(FireworkEffect.Type.BURST)
                     .build();
             VisualEffect.playInstantFirework(firework, getLocation());

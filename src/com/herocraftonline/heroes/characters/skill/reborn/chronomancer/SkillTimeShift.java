@@ -80,33 +80,17 @@ public class SkillTimeShift extends TargettedSkill {
         config.set("enemy-percent-speed-decrease", 0.05);
         config.set("max-stacks", 5);
         config.set(SkillSetting.DURATION.node(), 8000);
-        config.set("time-link-distance", 10);
         return config;
     }
 
     @Override
     public SkillResult use(Hero hero, LivingEntity target, String[] args) {
         Player player = hero.getPlayer();
-        // This is for time link
-        String timeLinkName = timeLinkEffectName+hero.getName();
-        if (hero.hasEffect(timeLinkName)) {
-            SkillTimeLink.TimeLinkEffect effect = (SkillTimeLink.TimeLinkEffect) hero.getEffect(timeLinkName);
-            timeLinkTargetCT = effect.getTargetCT();
-            timeLinkTarget = timeLinkTargetCT.getEntity();
-
-            int radius = SkillConfigManager.getUseSetting(hero, this, "time-link-distance", 10, false);
-            if ((hero.getPlayer().getLocation().distanceSquared(timeLinkTarget.getLocation()) <= radius * radius))
-                usedTimeLink = true;
-        }
-
 
         // This is necessary for compatibility with AoE versions of this skill.
         boolean shouldBroadcast = args == null || args.length == 0 || Arrays.stream(args).noneMatch(x -> x.equalsIgnoreCase("NoBroadcast"));
 
         CharacterTemplate ctTarget = plugin.getCharacterManager().getCharacter(target);
-        if (ctTarget == null)
-            return SkillResult.INVALID_TARGET;
-
         if (ctTarget.hasEffect("TemporallyWarded")) {
             player.sendMessage(ChatColor.WHITE + "Unable to shift " + target.getName() + "'s time. They are currently warded against time altering effects!");
             return SkillResult.INVALID_TARGET;
@@ -115,13 +99,23 @@ public class SkillTimeShift extends TargettedSkill {
         int duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, 8000, false);
         int maxStacks = SkillConfigManager.getUseSetting(hero, this, "max-stacks", 5, false);
 
-        if (hero.isAlliedTo(target)) {
-            if (usedTimeLink)
-                acceleratedShift(player, hero, timeLinkTarget, timeLinkTargetCT, duration, maxStacks, shouldBroadcast);
-            return acceleratedShift(player, hero, target, ctTarget, duration, maxStacks, shouldBroadcast);
+        SkillResult result = timeLinkTarget(hero, target, player, shouldBroadcast, ctTarget, duration, maxStacks);
+        if (result == SkillResult.NORMAL) {
+            if (hero.hasEffect(SkillTimeLink.timeLinkEffectName)) {
+                SkillTimeLink.TimeLinkEffect effect = (SkillTimeLink.TimeLinkEffect) hero.getEffect(timeLinkEffectName);
+                timeLinkTargetCT = effect.getTargetCT();
+                if (timeLinkTargetCT != null) {
+                    timeLinkTarget(hero, target, player, shouldBroadcast, ctTarget, duration, maxStacks);
+                }
+            }
         }
-        if (usedTimeLink)
-            deceleratedShift(player, hero, timeLinkTarget, timeLinkTargetCT, duration, maxStacks, shouldBroadcast);
+
+        return result;
+    }
+
+    public SkillResult timeLinkTarget(Hero hero, LivingEntity target, Player player, boolean shouldBroadcast, CharacterTemplate ctTarget, int duration, int maxStacks) {
+        if (hero.isAlliedTo(target))
+            return acceleratedShift(player, hero, target, ctTarget, duration, maxStacks, shouldBroadcast);
         return deceleratedShift(player, hero, target, ctTarget, duration, maxStacks, shouldBroadcast);
     }
 

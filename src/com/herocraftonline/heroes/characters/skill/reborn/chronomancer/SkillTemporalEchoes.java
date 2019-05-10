@@ -30,6 +30,7 @@ import org.bukkit.potion.PotionEffectType;
 import org.bukkit.util.Vector;
 
 import java.util.concurrent.ThreadLocalRandom;
+import java.util.logging.Level;
 
 public class SkillTemporalEchoes extends ActiveSkill {
 
@@ -136,6 +137,7 @@ public class SkillTemporalEchoes extends ActiveSkill {
             monster.setDamage(hitDmg);
 
             if (disguiseApiLoaded) {
+                try {
                 if (!DisguiseAPI.isDisguised(minion)) {
                     DisguiseAPI.undisguiseToAll(minion);
                 }
@@ -152,6 +154,9 @@ public class SkillTemporalEchoes extends ActiveSkill {
                 watcher.setItemInMainHand(inventory.getItemInMainHand().clone());
                 watcher.setItemInOffHand(inventory.getItemInOffHand().clone());
                 disguise.startDisguise();
+                } catch (Exception ex) {
+                    Heroes.log(Level.WARNING, "We got that LibsDisguises error again. Not an actual problem, but yeah.");
+                }
             }
         }
 

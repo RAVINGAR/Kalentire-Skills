@@ -162,71 +162,70 @@ public class SkillEnderPearls extends PassiveSkill {
         // Ender pearls are rather...exploity. This event will watch the teleports and moderate them.
         @EventHandler(priority = EventPriority.HIGHEST)
         public void onPlayerTeleport(PlayerTeleportEvent event) {
-            if (event.getCause() == TeleportCause.ENDER_PEARL) {
+            if (event.getCause() != TeleportCause.ENDER_PEARL)
+                return;
 
-                event.setCancelled(true);       // Cancel the event because we don't want players to be dealt "ender pearl damage"
+            event.setCancelled(true);       // Cancel the event because we don't want players to be dealt "ender pearl damage"
 
-                Hero hero = plugin.getCharacterManager().getHero(event.getPlayer());
-                if (hero.hasEffectType(EffectType.ROOT) || hero.hasEffectType(EffectType.DISABLE)) {
-                    event.getPlayer().sendMessage("    " + ChatComponents.GENERIC_SKILL + "You cannot teleport while rooted!");
-                    return;
-                }
-
-                // Store some of the original teleport location variables
-                Location teleportLoc = event.getTo();
-                Block teleportLocBlock = teleportLoc.getBlock();
-                Material teleportLocBlockType = teleportLocBlock.getType();
-                float pitch = teleportLoc.getPitch();
-                float yaw = teleportLoc.getYaw();
-
-                int verticalLeniency = SkillConfigManager.getUseSetting(hero, skill, "vertical-leniency", 2, false);
-
-                boolean validLocation = false;
-                int i = 0;
-                do {
-                    if (Util.transparentBlocks.contains(teleportLocBlockType)) {
-                        if (Util.transparentBlocks.contains(teleportLocBlock.getRelative(BlockFace.UP).getType())) {
-                            validLocation = true;
-                            break;
-                        }
-
-                        // Give them a block of wiggle room if we've got an invalid location.
-                        if (Util.transparentBlocks.contains(teleportLocBlock.getRelative(BlockFace.DOWN).getType())) {
-                            teleportLoc = teleportLoc.subtract(0, 1, 0);
-                            teleportLocBlock = teleportLoc.getBlock();
-                            teleportLocBlockType = teleportLocBlock.getType();
-                        } else
-                            break;
-                    }
-                    i++;
-                }
-                while (i <= verticalLeniency);
-
-                if (!validLocation) {
-                    // Going up, we only ever need 1 block of vertical leniency, so just do a single block check.
-                    teleportLoc = event.getTo().add(0, 1, 0);
-                    teleportLocBlock = teleportLoc.getBlock();
-                    teleportLocBlockType = teleportLocBlock.getType();
-
-                    if (Util.transparentBlocks.contains(teleportLocBlockType) && Util.transparentBlocks.contains(teleportLocBlock.getRelative(BlockFace.UP).getType()))
-                        validLocation = true;
-                }
-
-                if (!validLocation) {
-                    event.getPlayer().sendMessage("    " + ChatComponents.GENERIC_SKILL + "A mysterious force prevents you from teleporting to your ender pearl location.");
-                    return;
-                }
-
-                // Move our location to the block it landed on, and center it. This fixes several exploit issues.
-                teleportLoc = teleportLoc.getBlock().getLocation().clone();
-                teleportLoc.add(new Vector(.5, .5, .5));
-                teleportLocBlock = teleportLoc.getBlock();
-
-                teleportLoc.setPitch(pitch);
-                teleportLoc.setYaw(yaw);
-
-                event.getPlayer().teleport(teleportLoc);    // Manually teleport the player.
+            Hero hero = plugin.getCharacterManager().getHero(event.getPlayer());
+            if (hero.hasEffectType(EffectType.ROOT) || hero.hasEffectType(EffectType.DISABLE)) {
+                event.getPlayer().sendMessage("    " + ChatComponents.GENERIC_SKILL + "You cannot teleport while rooted!");
+                return;
             }
+
+            // Store some of the original teleport location variables
+            Location teleportLoc = event.getTo();
+            Block teleportLocBlock = teleportLoc.getBlock();
+            Material teleportLocBlockType = teleportLocBlock.getType();
+            float pitch = teleportLoc.getPitch();
+            float yaw = teleportLoc.getYaw();
+
+            int verticalLeniency = SkillConfigManager.getUseSetting(hero, skill, "vertical-leniency", 2, false);
+
+            boolean validLocation = false;
+            int i = 0;
+            do {
+                if (Util.transparentBlocks.contains(teleportLocBlockType)) {
+                    if (Util.transparentBlocks.contains(teleportLocBlock.getRelative(BlockFace.UP).getType())) {
+                        validLocation = true;
+                        break;
+                    }
+
+                    // Give them a block of wiggle room if we've got an invalid location.
+                    if (Util.transparentBlocks.contains(teleportLocBlock.getRelative(BlockFace.DOWN).getType())) {
+                        teleportLoc = teleportLoc.subtract(0, 1, 0);
+                        teleportLocBlock = teleportLoc.getBlock();
+                        teleportLocBlockType = teleportLocBlock.getType();
+                    } else
+                        break;
+                }
+                i++;
+            }
+            while (i <= verticalLeniency);
+
+            if (!validLocation) {
+                // Going up, we only ever need 1 block of vertical leniency, so just do a single block check.
+                teleportLoc = event.getTo().add(0, 1, 0);
+                teleportLocBlock = teleportLoc.getBlock();
+                teleportLocBlockType = teleportLocBlock.getType();
+
+                if (Util.transparentBlocks.contains(teleportLocBlockType) && Util.transparentBlocks.contains(teleportLocBlock.getRelative(BlockFace.UP).getType()))
+                    validLocation = true;
+            }
+
+            if (!validLocation) {
+                event.getPlayer().sendMessage("    " + ChatComponents.GENERIC_SKILL + "A mysterious force prevents you from teleporting to your ender pearl location.");
+                return;
+            }
+
+            // Move our location to the block it landed on, and center it. This fixes several exploit issues.
+            teleportLoc = teleportLoc.getBlock().getLocation().clone();
+            teleportLoc.add(new Vector(.5, .5, .5));
+
+            teleportLoc.setPitch(pitch);
+            teleportLoc.setYaw(yaw);
+
+            event.getPlayer().teleport(teleportLoc);    // Manually teleport the player.
         }
     }
 
