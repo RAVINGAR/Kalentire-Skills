@@ -8,7 +8,9 @@ import com.herocraftonline.heroes.characters.skill.*;
 import com.herocraftonline.heroes.chat.ChatComponents;
 import com.herocraftonline.heroes.nms.NMSHandler;
 import com.herocraftonline.heroes.util.Util;
+import de.slikey.effectlib.util.VectorUtils;
 import org.bukkit.Bukkit;
+import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.*;
@@ -58,24 +60,26 @@ public class SkillShurikens extends PassiveSkill {
             numShurikenText = "a Shuriken! Shuriken deal";
 
         double damage = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE, 20.0, false);
-        double damageIncrease = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE_INCREASE_PER_DEXTERITY, 0.6, false);
-        damage += (int) (hero.getAttributeValue(AttributeType.DEXTERITY) * damageIncrease);
+        double damageIncrease = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE_INCREASE_PER_DEXTERITY, 0.0, false);
+        damage += (hero.getAttributeValue(AttributeType.DEXTERITY) * damageIncrease);
 
-        int cooldown = SkillConfigManager.getUseSetting(hero, this, "shuriken-toss-cooldown", 1000, false);
-        String formattedCooldown = Util.decFormat.format(cooldown / 1000.0);
+        int cooldown = SkillConfigManager.getUseSetting(hero, this, SkillSetting.COOLDOWN, 1000, false);
 
-        return getDescription().replace("$1", numShurikenText).replace("$2", damage + "").replace("$3", formattedCooldown);
+        return getDescription()
+                .replace("$1", numShurikenText)
+                .replace("$2", Util.decFormat.format(damage))
+                .replace("$3", Util.decFormat.format(cooldown / 1000.0));
     }
 
     public ConfigurationSection getDefaultConfig() {
         ConfigurationSection config = super.getDefaultConfig();
         config.set("toss-weapons", defaultWeapons);
-        config.set(SkillSetting.DAMAGE.node(), 35.0);
-        config.set(SkillSetting.DAMAGE_INCREASE_PER_DEXTERITY.node(), 0.4);
+        config.set(SkillSetting.DAMAGE.node(), 20.0);
+        config.set(SkillSetting.DAMAGE_INCREASE_PER_DEXTERITY.node(), 0.0);
         config.set(SkillSetting.STAMINA.node(), 100);
-        config.set("shuriken-toss-cooldown", 1000);
+        config.set(SkillSetting.COOLDOWN.node(), 1000);
         config.set("num-shuriken", 3);
-        config.set("degrees", (double) 10);
+        config.set("degrees", 10.0);
         config.set("interval", 0.15);
         config.set("velocity-multiplier", 3.0);
         return config;
@@ -138,7 +142,7 @@ public class SkillShurikens extends PassiveSkill {
                 return;
 
             // Delete the projectile so it cannot be picked up by any players.
-            Bukkit.getScheduler().runTaskLaterAsynchronously(plugin, new Runnable() {
+            Bukkit.getScheduler().runTaskLater(plugin, new Runnable() {
                 @Override
                 public void run() {
                     shurikens.remove(projectile);
@@ -147,7 +151,7 @@ public class SkillShurikens extends PassiveSkill {
             }, 2L);
         }
 
-        @EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
+        @EventHandler(priority = EventPriority.LOWEST, ignoreCancelled = true)
         public void onEntityDamage(EntityDamageEvent event) {
             if ((!(event instanceof EntityDamageByEntityEvent)) || (!(event.getEntity() instanceof LivingEntity)))
                 return;
@@ -185,7 +189,7 @@ public class SkillShurikens extends PassiveSkill {
         Hero hero = plugin.getCharacterManager().getHero(player);
         int numShuriken = SkillConfigManager.getUseSetting(hero, this, "num-shuriken", 3, false);
 
-        double degrees = SkillConfigManager.getUseSetting(hero, this, "degrees", 10, false);
+        double degrees = SkillConfigManager.getUseSetting(hero, this, "degrees", 10.0, false);
         double interval = SkillConfigManager.getUseSetting(hero, this, "interval", 0.15, false);
         double velocityMultiplier = SkillConfigManager.getUseSetting(hero, this, "velocity-multiplier", 3.0, false);
 
@@ -224,7 +228,7 @@ public class SkillShurikens extends PassiveSkill {
                 @Override
                 public void run() {
                     // Convert yaw to radians
-                    double yaw = player.getLocation().getYaw();
+                    double yaw = player.getEyeLocation().getYaw();
                     yaw = yaw * (Math.PI / 180);
 
                     // Offset Yaw
@@ -236,15 +240,11 @@ public class SkillShurikens extends PassiveSkill {
                     pitch = pitch * (Math.PI / 180);
 
                     Arrow shuriken = player.launchProjectile(Arrow.class);
-                    double yValue = shuriken.getVelocity().getY();
+                    double yVel = shuriken.getVelocity().getY();
 
                     // Create our velocity direction based on where the player is facing.
-                    Vector vel = new Vector(Math.cos(yaw + finalA), 0, Math.sin(yaw + finalA));
-                    vel.multiply(velocityMultiplier);
-                    vel.setY(yValue * velocityMultiplier);
-
-                    shuriken.setVelocity(vel);
-                    shuriken.setShooter(player);
+                    Vector velocity = new Vector(Math.cos(yaw + finalA), yVel, Math.sin(yaw + finalA)).multiply(velocityMultiplier);
+                    shuriken.setVelocity(velocity.setY(yVel));
                     shurikens.put(shuriken, System.currentTimeMillis());
                 }
 
@@ -254,8 +254,17 @@ public class SkillShurikens extends PassiveSkill {
         }
 
         // Add the cooldown effect
-        int cdDuration = SkillConfigManager.getUseSetting(hero, this, "shuriken-toss-cooldown", 1000, false);
+        int cdDuration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.COOLDOWN, 1000, false);
         hero.addEffect(new ShurikenTossCooldown(this, player, cdDuration));
+    }
+
+    public Vector rotateVector(Vector vector, double angle) {
+        double sin = Math.sin(angle);
+        double cos = Math.cos(angle);
+        double x = vector.getX() * cos + vector.getZ() * sin;
+        double z = vector.getX() * -sin + vector.getZ() * cos;
+
+        return vector.setX(x).setZ(z);
     }
 
     // Effect required for implementing an internal cooldown

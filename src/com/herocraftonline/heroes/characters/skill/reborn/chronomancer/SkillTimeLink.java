@@ -25,7 +25,7 @@ public class SkillTimeLink extends TargettedSkill {
                 + "If your target is within $2 blocks any TimeShift used on any target will also be applied to the linked target");
         setUsage("/skill timelink");
         setIdentifiers("skill timelink");
-        setTypes(SkillType.MULTI_GRESSIVE, SkillType.NO_SELF_TARGETTING, SkillType.BUFFING, SkillType.DEBUFFING);
+        setTypes(SkillType.MULTI_GRESSIVE, SkillType.NO_SELF_TARGETTING);
     }
 
     @Override

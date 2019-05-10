@@ -2,10 +2,12 @@ package com.herocraftonline.heroes.characters.skill.reborn.chronomancer;
 
 import com.herocraftonline.heroes.Heroes;
 import com.herocraftonline.heroes.api.SkillResult;
-import com.herocraftonline.heroes.attributes.AttributeType;
 import com.herocraftonline.heroes.characters.CharacterTemplate;
 import com.herocraftonline.heroes.characters.Hero;
-import com.herocraftonline.heroes.characters.effects.common.*;
+import com.herocraftonline.heroes.characters.effects.common.ManaRegenPercentDecreaseEffect;
+import com.herocraftonline.heroes.characters.effects.common.ManaRegenPercentIncreaseEffect;
+import com.herocraftonline.heroes.characters.effects.common.StaminaRegenPercentDecreaseEffect;
+import com.herocraftonline.heroes.characters.effects.common.StaminaRegenPercentIncreaseEffect;
 import com.herocraftonline.heroes.characters.skill.*;
 import com.herocraftonline.heroes.characters.skill.tools.BasicMissile;
 import com.herocraftonline.heroes.util.Util;
@@ -33,10 +35,10 @@ public class SkillTimeBomb extends ActiveSkill {
 
     public SkillTimeBomb(Heroes plugin) {
         super(plugin, "TimeBomb");
-        setDescription("You throw a time bomb dealing $1 damage. " +
-                        "Any ally hit will regain extra $2% mana $3% stamina for $6 seconds" +
-                        "Any enemy hit will regain less extra $4% mana $5% stamina for $6 seconds" +
-                        "It will also apply 1 TimeShift on all entities hit. ");
+        setDescription("You throw a bomb of rejuvinating time. " +
+                "Any ally hit will regain extra $2% mana $3% stamina for $6 seconds" +
+                "Any enemy hit will regain less extra $4% mana $5% stamina for $6 seconds" +
+                "It will also apply 1 TimeShift on all entities hit. ");
         setUsage("/skill timebomb");
         setIdentifiers("skill timebomb");
         setArgumentRange(0, 0);
@@ -45,7 +47,6 @@ public class SkillTimeBomb extends ActiveSkill {
 
     @Override
     public String getDescription(Hero hero) {
-        double damage = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE, 80.0, false);
 
         double manaPercentIncrease = SkillConfigManager.getUseSetting(hero, this, "mana-percent-increase", 1.25, false);
         double staminaPercentIncrease = SkillConfigManager.getUseSetting(hero, this, "stamina-percent-increase", 1.25, false);
@@ -55,7 +56,6 @@ public class SkillTimeBomb extends ActiveSkill {
         double duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, 5000, false);
 
         return getDescription()
-                .replace("$1", Util.decFormat.format(damage))
                 .replace("$2", Util.decFormat.format(manaPercentIncrease))
                 .replace("$3", Util.decFormat.format(staminaPercentIncrease))
                 .replace("$4", Util.decFormat.format(manaPercentDecrease))
@@ -98,7 +98,6 @@ public class SkillTimeBomb extends ActiveSkill {
     }
 
     class TimeBombMissile extends BasicMissile {
-        private double explosionDamage;
         private double explosionRadius;
 
         TimeBombMissile(Plugin plugin, Skill skill, Hero hero, double projectileSize, double projVelocity) {
@@ -107,9 +106,6 @@ public class SkillTimeBomb extends ActiveSkill {
             setRemainingLife(SkillConfigManager.getUseSetting(hero, skill, "projectile-max-ticks-lived", 20, false));
             setGravity(SkillConfigManager.getUseSetting(hero, skill, "projectile-gravity", 5.0, false));
 
-            double damage = SkillConfigManager.getUseSetting(hero, skill, SkillSetting.DAMAGE, 90.0, false);
-            this.damage = damage;
-            this.explosionDamage = SkillConfigManager.getUseSetting(hero, skill, "explosion-damage", 25.0, false);
             this.explosionRadius = SkillConfigManager.getUseSetting(hero, skill, "explosion-radius", 4.0, false);
             this.visualEffect = new TimeBombVisualEffect(this.effectManager, projectileSize, 0);
         }
@@ -158,28 +154,29 @@ public class SkillTimeBomb extends ActiveSkill {
                     continue;
 
                 LivingEntity target = (LivingEntity) ent;
-                Skill timeShiftSkill = (SkillTimeShift) plugin.getSkillManager().getSkill(SkillTimeShift.skillName);
+                SkillTimeShift timeShiftSkill = (SkillTimeShift) plugin.getSkillManager().getSkill(SkillTimeShift.skillName);
                 CharacterTemplate targetCt = plugin.getCharacterManager().getCharacter(target);
                 if (hero.isAlliedTo(target)) {
                     if (hero.getPlayer() != target)
-                    ((SkillTimeShift) timeShiftSkill).use(hero, target, new String[]{"NoBroadcast"});
-                    targetCt.addEffect( new ManaIncreaseEffect(skill, player, (long) duration, manaPercentIncrease));
-                    targetCt.addEffect( new StaminaIncreaseEffect(skill, player, (long) duration, staminaPercentIncrease));
-                }
-                else if (!damageCheck(player, target)) {
-                    continue;
+                        timeShiftSkill.use(hero, target, new String[]{"NoBroadcast"});
+                    targetCt.addEffect(new ManaIncreaseEffect(skill, player, (long) duration, manaPercentIncrease));
+                    targetCt.addEffect(new StaminaIncreaseEffect(skill, player, (long) duration, staminaPercentIncrease));
                 } else {
-                    ((SkillTimeShift) timeShiftSkill).use(hero, target, new String[]{"NoBroadcast"});
-                    targetCt.addEffect( new ManaDecreaseEffect(skill, player, (long) duration, manaPercentDecrease));
-                    targetCt.addEffect( new StaminaDecreaseEffect(skill, player, (long) duration, staminaPercentDecrease));
+                    if (!damageCheck(player, target))
+                        continue;
+
+                    timeShiftSkill.use(hero, target, new String[]{"NoBroadcast"});
+                    targetCt.addEffect(new ManaDecreaseEffect(skill, player, (long) duration, manaPercentDecrease));
+                    targetCt.addEffect(new StaminaDecreaseEffect(skill, player, (long) duration, staminaPercentDecrease));
                 }
             }
         }
     }
+
     class ManaIncreaseEffect extends ManaRegenPercentIncreaseEffect {
 
-        public ManaIncreaseEffect(Skill skill, Player applier, long duration, double delta) {
-            super(skill, applier, duration, delta);
+        ManaIncreaseEffect(Skill skill, Player applier, long duration, double delta) {
+            super(skill, applier, duration, delta, null, null);
         }
 
         @Override
@@ -192,10 +189,11 @@ public class SkillTimeBomb extends ActiveSkill {
             super.removeFromHero(hero);
         }
     }
+
     class ManaDecreaseEffect extends ManaRegenPercentDecreaseEffect {
 
         public ManaDecreaseEffect(Skill skill, Player applier, long duration, double delta) {
-            super(skill, applier, duration, delta);
+            super(skill, applier, duration, delta, null, null);
         }
 
         @Override
@@ -208,10 +206,11 @@ public class SkillTimeBomb extends ActiveSkill {
             super.removeFromHero(hero);
         }
     }
+
     class StaminaIncreaseEffect extends StaminaRegenPercentIncreaseEffect {
 
         public StaminaIncreaseEffect(Skill skill, Player applier, long duration, double delta) {
-            super(skill, applier, duration, delta);
+            super(skill, applier, duration, delta, null, null);
         }
 
         @Override
@@ -224,10 +223,11 @@ public class SkillTimeBomb extends ActiveSkill {
             super.removeFromHero(hero);
         }
     }
+
     class StaminaDecreaseEffect extends StaminaRegenPercentDecreaseEffect {
 
         public StaminaDecreaseEffect(Skill skill, Player applier, long duration, double delta) {
-            super(skill, applier, duration, delta);
+            super(skill, applier, duration, delta, null, null);
         }
 
         @Override

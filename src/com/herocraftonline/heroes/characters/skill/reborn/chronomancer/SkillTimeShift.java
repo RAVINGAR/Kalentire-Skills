@@ -13,7 +13,10 @@ import com.herocraftonline.heroes.characters.effects.common.interfaces.Stacked;
 import com.herocraftonline.heroes.characters.skill.*;
 import com.herocraftonline.heroes.chat.ChatComponents;
 import com.herocraftonline.heroes.util.Util;
-import org.bukkit.*;
+import org.bukkit.ChatColor;
+import org.bukkit.Effect;
+import org.bukkit.Location;
+import org.bukkit.World;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
@@ -33,11 +36,7 @@ public class SkillTimeShift extends TargettedSkill {
 
     private String accelEffectName = "AcceleratedShiftedTime";
     private String decelEffectName = "DeceleratedShiftedTime";
-    private String timeLinkEffectName = "TimeLinkEffect-";
     private String maxStacksErrorMessage = ChatComponents.GENERIC_SKILL + "Your target is already shifted as far as they can go!";
-    private CharacterTemplate timeLinkTargetCT;
-    private LivingEntity timeLinkTarget;
-    private boolean usedTimeLink = false;
 
     public SkillTimeShift(Heroes plugin) {
         super(plugin, "TimeShift");
@@ -90,22 +89,19 @@ public class SkillTimeShift extends TargettedSkill {
         // This is necessary for compatibility with AoE versions of this skill.
         boolean shouldBroadcast = args == null || args.length == 0 || Arrays.stream(args).noneMatch(x -> x.equalsIgnoreCase("NoBroadcast"));
 
-        CharacterTemplate ctTarget = plugin.getCharacterManager().getCharacter(target);
-        if (ctTarget.hasEffect("TemporallyWarded")) {
+        CharacterTemplate targetCT = plugin.getCharacterManager().getCharacter(target);
+        if (targetCT.hasEffect("TemporallyWarded")) {
             player.sendMessage(ChatColor.WHITE + "Unable to shift " + target.getName() + "'s time. They are currently warded against time altering effects!");
             return SkillResult.INVALID_TARGET;
         }
 
-        int duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, 8000, false);
-        int maxStacks = SkillConfigManager.getUseSetting(hero, this, "max-stacks", 5, false);
-
-        SkillResult result = timeLinkTarget(hero, target, player, shouldBroadcast, ctTarget, duration, maxStacks);
+        SkillResult result = timeLinkTarget(hero, target, player, shouldBroadcast, targetCT);
         if (result == SkillResult.NORMAL) {
             if (hero.hasEffect(SkillTimeLink.timeLinkEffectName)) {
-                SkillTimeLink.TimeLinkEffect effect = (SkillTimeLink.TimeLinkEffect) hero.getEffect(timeLinkEffectName);
-                timeLinkTargetCT = effect.getTargetCT();
-                if (timeLinkTargetCT != null) {
-                    timeLinkTarget(hero, target, player, shouldBroadcast, ctTarget, duration, maxStacks);
+                SkillTimeLink.TimeLinkEffect effect = (SkillTimeLink.TimeLinkEffect) hero.getEffect(SkillTimeLink.timeLinkEffectName);
+                CharacterTemplate linkedTargetCT = effect.getTargetCT();
+                if (linkedTargetCT != null && !targetCT.equals(linkedTargetCT)) {
+                    timeLinkTarget(hero, linkedTargetCT.getEntity(), player, shouldBroadcast, linkedTargetCT);
                 }
             }
         }
@@ -113,12 +109,14 @@ public class SkillTimeShift extends TargettedSkill {
         return result;
     }
 
-    public SkillResult timeLinkTarget(Hero hero, LivingEntity target, Player player, boolean shouldBroadcast, CharacterTemplate ctTarget, int duration, int maxStacks) {
+    public SkillResult timeLinkTarget(Hero hero, LivingEntity target, Player player, boolean shouldBroadcast, CharacterTemplate ctTarget) {
+        int duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, 8000, false);
+        int maxStacks = SkillConfigManager.getUseSetting(hero, this, "max-stacks", 5, false);
+
         if (hero.isAlliedTo(target))
             return acceleratedShift(player, hero, target, ctTarget, duration, maxStacks, shouldBroadcast);
         return deceleratedShift(player, hero, target, ctTarget, duration, maxStacks, shouldBroadcast);
     }
-
 
     public SkillResult deceleratedShift(Player player, Hero hero, LivingEntity target, CharacterTemplate targetCT, int duration, int maxStacks, boolean shouldBroadcast) {
         double speedDecrease = SkillConfigManager.getUseSetting(hero, this, "enemy-percent-speed-decrease", 0.1, false);
