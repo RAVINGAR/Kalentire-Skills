@@ -21,8 +21,9 @@ public class SkillTimeLink extends TargettedSkill {
 
     public SkillTimeLink(Heroes plugin) {
         super(plugin, "TimeLink");
-        setDescription("You create a time link with your target for $1 seconds "
-                + "If your target is within $2 blocks any TimeShift used on any target will also be applied to the linked target");
+        setDescription("You create a time link with your target for $1 second(s). " +
+                "While linked, any of your spells that Time Shift a player will also shift your linked target. " +
+                "The link has a maximum range of $2");
         setUsage("/skill timelink");
         setIdentifiers("skill timelink");
         setTypes(SkillType.MULTI_GRESSIVE, SkillType.NO_SELF_TARGETTING);
@@ -31,9 +32,11 @@ public class SkillTimeLink extends TargettedSkill {
     @Override
     public String getDescription(Hero hero) {
         long duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, 12000, false);
+        double breakDistance = SkillConfigManager.getUseSetting(hero, this, "break-distance", 16.0, false);
 
         return getDescription()
-                .replace("$1", Util.decFormat.format((double) duration / 1000.0));
+                .replace("$1", Util.decFormat.format(duration / 1000.0))
+                .replace("$1", Util.decFormat.format(breakDistance));
     }
 
     @Override
