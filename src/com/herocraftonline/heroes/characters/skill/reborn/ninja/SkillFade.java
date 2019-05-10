@@ -1,18 +1,17 @@
-package com.herocraftonline.heroes.characters.skill.pack8;
+package com.herocraftonline.heroes.characters.skill.reborn.ninja;
 
 import com.herocraftonline.heroes.Heroes;
 import com.herocraftonline.heroes.api.SkillResult;
 import com.herocraftonline.heroes.characters.Hero;
 import com.herocraftonline.heroes.characters.effects.common.InvisibleEffect;
-import com.herocraftonline.heroes.characters.party.HeroParty;
 import com.herocraftonline.heroes.characters.skill.*;
 import com.herocraftonline.heroes.chat.ChatComponents;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Entity;
+import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
-import org.bukkit.Sound;
 
 import java.util.HashMap;
 import java.util.Iterator;
@@ -55,7 +54,7 @@ public class SkillFade extends ActiveSkill {
         config.set("detection-range", 0.5);
         config.set("max-light-level", -1);
         config.set("max-move-distance", 1.5);
-        return node;
+        return config;
     }
 
     @Override
@@ -83,7 +82,7 @@ public class SkillFade extends ActiveSkill {
         long duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, 30000, false);
 
         player.getWorld().playEffect(loc, org.bukkit.Effect.EXTINGUISH, 0, 10);
-        hero.addEffect(new InvisibleEffect(this, player, effectName, duration, applyText, expireText));
+        hero.addEffect(new InvisibleEffect(this, effectName, player, duration, applyText, expireText));
 
         moveChecker.addHero(hero);
         return SkillResult.NORMAL;
@@ -103,8 +102,8 @@ public class SkillFade extends ActiveSkill {
             Iterator<Entry<Hero, Location>> heroes = oldLocations.entrySet().iterator();
             while (heroes.hasNext()) {
                 Entry<Hero, Location> entry = heroes.next();
-                Player player = hero.getPlayer();
                 Hero hero = entry.getKey();
+                Player player = hero.getPlayer();
                 Location oldLoc = entry.getValue();
                 if (!hero.hasEffect(effectName)) {
                     heroes.remove();
@@ -118,9 +117,9 @@ public class SkillFade extends ActiveSkill {
                     continue;
                 }
 
-                double requiredLightLevel = SkillConfigManager.getUseSetting(hero, this, "max-light-level", 8, false);
+                int requiredLightLevel = SkillConfigManager.getUseSetting(hero, skill, "max-light-level", 8, false);
                 if (requiredLightLevel > -1) {
-                    if (newLoc.getBlock().getLightLevel() > SkillConfigManager.getUseSetting(hero, skill, "max-light-level", 8, false)) {
+                    if (newLoc.getBlock().getLightLevel() > requiredLightLevel) {
                         hero.removeEffect(hero.getEffect(effectName));
                         heroes.remove();
                         continue;
@@ -129,10 +128,10 @@ public class SkillFade extends ActiveSkill {
 
                 double detectRange = SkillConfigManager.getUseSetting(hero, skill, "detection-range", 0.0, false);
                 for (Entity entity : player.getNearbyEntities(detectRange, detectRange, detectRange)) {
-                    if (!(entity instanceof LivingEntity)) {
+                    if (!(entity instanceof LivingEntity))
                         continue;
 
-                    if (hero.isAlliedTo((LivingEntity) entity));
+                    if (hero.isAlliedTo((LivingEntity) entity))
                         continue;
 
                     hero.removeEffect(hero.getEffect(effectName));
@@ -141,7 +140,7 @@ public class SkillFade extends ActiveSkill {
             }
         }
 
-        public void addHero(Hero hero) {
+        void addHero(Hero hero) {
             if (!hero.hasEffect(effectName))
                 return;
 
