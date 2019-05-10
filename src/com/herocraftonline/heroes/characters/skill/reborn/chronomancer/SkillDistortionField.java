@@ -188,8 +188,12 @@ public class SkillDistortionField extends TargettedLocationSkill {
                         ctTarget.removeEffect(ctTarget.getEffect(accelerateEffectName));
                         ctTarget.addEffect(new AcceleratedTimeEffect(skill, player, tempDuration, flatSpeedIncrease, projVMultiIncrease));
                     } else {
-                        ctTarget.removeEffect(ctTarget.getEffect(decelerateEffectName));
-                        ctTarget.addEffect(new DeceleratedTimeEffect(skill, player, tempDuration, flatDecrease, projVMultiDecrease));
+                        if (!hero.isAlliedTo(target)) {
+                            if (!damageCheck(player, target))
+                                continue;
+                            ctTarget.removeEffect(ctTarget.getEffect(decelerateEffectName));
+                            ctTarget.addEffect(new DeceleratedTimeEffect(skill, player, tempDuration, flatDecrease, projVMultiDecrease));
+                        }
 
                     }
                 }

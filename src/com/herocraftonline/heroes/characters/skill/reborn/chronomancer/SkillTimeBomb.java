@@ -5,10 +5,9 @@ import com.herocraftonline.heroes.api.SkillResult;
 import com.herocraftonline.heroes.attributes.AttributeType;
 import com.herocraftonline.heroes.characters.CharacterTemplate;
 import com.herocraftonline.heroes.characters.Hero;
-import com.herocraftonline.heroes.characters.effects.common.BurningEffect;
+import com.herocraftonline.heroes.characters.effects.common.*;
 import com.herocraftonline.heroes.characters.skill.*;
 import com.herocraftonline.heroes.characters.skill.tools.BasicMissile;
-import com.herocraftonline.heroes.util.GeometryUtil;
 import com.herocraftonline.heroes.util.Util;
 import de.slikey.effectlib.Effect;
 import de.slikey.effectlib.EffectManager;
@@ -24,7 +23,6 @@ import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
-import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.util.Vector;
 
@@ -33,47 +31,47 @@ import java.util.logging.Level;
 
 public class SkillTimeBomb extends ActiveSkill {
 
-    private static final Color FIRE_ORANGE = Color.fromRGB(226, 88, 34);
-    private static final Color FIRE_RED = Color.fromRGB(236, 60, 30);
-
     public SkillTimeBomb(Heroes plugin) {
         super(plugin, "TimeBomb");
-        setDescription("Conjure up a massive orb of pure fire. Direct hits deal $1 damage and will ignite the target, dealing $2 burning damage over the next $3 second(s). " +
-                "The explosion will do an additional $4 damage to all enemies within $5 blocks and set the ground on fire.");
+        setDescription("You throw a time bomb dealing $1 damage. " +
+                        "Any ally hit will regain extra $2% mana $3% stamina for $6 seconds" +
+                        "Any enemy hit will regain less extra $4% mana $5% stamina for $6 seconds" +
+                        "It will also apply 1 TimeShift on all entities hit. ");
         setUsage("/skill timebomb");
         setIdentifiers("skill timebomb");
         setArgumentRange(0, 0);
-        setTypes(SkillType.MULTI_GRESSIVE, SkillType.NO_SELF_TARGETTING, SkillType.MOVEMENT_INCREASING, SkillType.MOVEMENT_SLOWING);
+        setTypes(SkillType.MULTI_GRESSIVE, SkillType.NO_SELF_TARGETTING);
     }
 
     @Override
     public String getDescription(Hero hero) {
         double damage = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE, 80.0, false);
-        double damageIncrease = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE_INCREASE_PER_INTELLECT, 0.0, false);
-        damage += damageIncrease * hero.getAttributeValue(AttributeType.INTELLECT);
 
-        int burnDuration = SkillConfigManager.getUseSetting(hero, this, "burn-duration", 2000, false);
-        double burnMultipliaer = SkillConfigManager.getUseSetting(hero, this, "burn-damage-multiplier", 2.0, false);
-        double totalBurnDamage = plugin.getDamageManager().calculateFireTickDamage((int) (burnDuration / 50), burnMultipliaer);
+        double manaPercentIncrease = SkillConfigManager.getUseSetting(hero, this, "mana-percent-increase", 1.25, false);
+        double staminaPercentIncrease = SkillConfigManager.getUseSetting(hero, this, "stamina-percent-increase", 1.25, false);
+        double manaPercentDecrease = SkillConfigManager.getUseSetting(hero, this, "mana-percent-decrease", 0.75, false);
+        double staminaPercentDecrease = SkillConfigManager.getUseSetting(hero, this, "stamina-percent-decrease", 0.75, false);
 
-        double explosionDamage = SkillConfigManager.getUseSetting(hero, this, "explosion-damage", 25.0, false);
-        double explosionRadius = SkillConfigManager.getUseSetting(hero, this, "explosion-radius", 4.0, false);
+        double duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, 5000, false);
 
         return getDescription()
                 .replace("$1", Util.decFormat.format(damage))
-                .replace("$2", Util.decFormat.format(totalBurnDamage))
-                .replace("$3", Util.decFormat.format(burnDuration / 1000.0))
-                .replace("$4", Util.decFormat.format(explosionDamage))
-                .replace("$5", Util.decFormat.format(explosionRadius));
+                .replace("$2", Util.decFormat.format(manaPercentIncrease))
+                .replace("$3", Util.decFormat.format(staminaPercentIncrease))
+                .replace("$4", Util.decFormat.format(manaPercentDecrease))
+                .replace("$5", Util.decFormat.format(staminaPercentDecrease))
+                .replace("$6", Util.decFormat.format(duration / 1000.0));
     }
 
     @Override
     public ConfigurationSection getDefaultConfig() {
         ConfigurationSection config = super.getDefaultConfig();
         config.set(SkillSetting.DAMAGE.node(), 45.0);
-        config.set("projectile-size", 0.65);
-        config.set("projectile-velocity", 35.0);
-        config.set("projectile-gravity", 22.05675);
+        config.set(SkillSetting.DURATION.node(), 5000);
+        config.set("mana-percent-increase", 1.25);
+        config.set("stamina-percent-increase", 1.25);
+        config.set("mana-percent-decrease", 0.75);
+        config.set("stamina-percent-decrease", 0.75);
         return config;
     }
 
@@ -93,29 +91,27 @@ public class SkillTimeBomb extends ActiveSkill {
 
         double projSize = SkillConfigManager.getUseSetting(hero, this, "projectile-size", 0.5, false);
         double projVelocity = SkillConfigManager.getUseSetting(hero, this, "projectile-velocity", 20, false);
-        GreatFireballMissile missile = new GreatFireballMissile(plugin, this, hero, projSize, projVelocity);
+        TimeBombMissile missile = new TimeBombMissile(plugin, this, hero, projSize, projVelocity);
         missile.fireMissile();
 
         return SkillResult.NORMAL;
     }
 
-    class GreatFireballMissile extends BasicMissile {
+    class TimeBombMissile extends BasicMissile {
         private double explosionDamage;
         private double explosionRadius;
 
-        GreatFireballMissile(Plugin plugin, Skill skill, Hero hero, double projectileSize, double projVelocity) {
+        TimeBombMissile(Plugin plugin, Skill skill, Hero hero, double projectileSize, double projVelocity) {
             super(plugin, skill, hero, projectileSize, projVelocity);
 
             setRemainingLife(SkillConfigManager.getUseSetting(hero, skill, "projectile-max-ticks-lived", 20, false));
             setGravity(SkillConfigManager.getUseSetting(hero, skill, "projectile-gravity", 5.0, false));
 
             double damage = SkillConfigManager.getUseSetting(hero, skill, SkillSetting.DAMAGE, 90.0, false);
-            double damageIncrease = SkillConfigManager.getUseSetting(hero, skill, SkillSetting.DAMAGE_INCREASE_PER_INTELLECT, 0.0, false);
-            damage += damageIncrease * hero.getAttributeValue(AttributeType.INTELLECT);
             this.damage = damage;
             this.explosionDamage = SkillConfigManager.getUseSetting(hero, skill, "explosion-damage", 25.0, false);
             this.explosionRadius = SkillConfigManager.getUseSetting(hero, skill, "explosion-radius", 4.0, false);
-            this.visualEffect = new GreatFireballVisualEffect(this.effectManager, projectileSize, 0);
+            this.visualEffect = new TimeBombVisualEffect(this.effectManager, projectileSize, 0);
         }
 
         @Override
@@ -148,7 +144,13 @@ public class SkillTimeBomb extends ActiveSkill {
         }
 
         private void performExplosion() {
-            getWorld().playSound(getLocation(), Sound.ENTITY_GENERIC_EXPLODE, 1.0F, 0.8F);
+            double manaPercentIncrease = SkillConfigManager.getUseSetting(hero, skill, "mana-percent-increase", 1.25, false);
+            double staminaPercentIncrease = SkillConfigManager.getUseSetting(hero, skill, "stamina-percent-increase", 1.25, false);
+            double manaPercentDecrease = SkillConfigManager.getUseSetting(hero, skill, "mana-percent-decrease", 0.75, false);
+            double staminaPercentDecrease = SkillConfigManager.getUseSetting(hero, skill, "stamina-percent-decrease", 0.75, false);
+            double duration = SkillConfigManager.getUseSetting(hero, skill, SkillSetting.DURATION, 5000, false);
+
+            getWorld().playSound(getLocation(), Sound.BLOCK_GLASS_BREAK, 1.0F, 0.8F);
 
             Collection<Entity> nearbyEnts = getWorld().getNearbyEntities(getLocation(), this.explosionRadius, this.explosionRadius, this.explosionRadius);
             for (Entity ent : nearbyEnts) {
@@ -156,16 +158,90 @@ public class SkillTimeBomb extends ActiveSkill {
                     continue;
 
                 LivingEntity target = (LivingEntity) ent;
-                if (!damageCheck(player, target))
-                    continue;
-
                 Skill timeShiftSkill = (SkillTimeShift) plugin.getSkillManager().getSkill(SkillTimeShift.skillName);
-                SkillResult result = ((SkillTimeShift) timeShiftSkill).use(hero, target, new String[]{"NoBroadcast"});
+                CharacterTemplate targetCt = plugin.getCharacterManager().getCharacter(target);
+                if (hero.isAlliedTo(target)) {
+                    if (hero.getPlayer() != target)
+                    ((SkillTimeShift) timeShiftSkill).use(hero, target, new String[]{"NoBroadcast"});
+                    targetCt.addEffect( new ManaIncreaseEffect(skill, player, (long) duration, manaPercentIncrease));
+                    targetCt.addEffect( new StaminaIncreaseEffect(skill, player, (long) duration, staminaPercentIncrease));
+                }
+                else if (!damageCheck(player, target)) {
+                    continue;
+                } else {
+                    ((SkillTimeShift) timeShiftSkill).use(hero, target, new String[]{"NoBroadcast"});
+                    targetCt.addEffect( new ManaDecreaseEffect(skill, player, (long) duration, manaPercentDecrease));
+                    targetCt.addEffect( new StaminaDecreaseEffect(skill, player, (long) duration, staminaPercentDecrease));
+                }
             }
         }
     }
+    class ManaIncreaseEffect extends ManaRegenPercentIncreaseEffect {
 
-    class GreatFireballVisualEffect extends Effect {
+        public ManaIncreaseEffect(Skill skill, Player applier, long duration, double delta) {
+            super(skill, applier, duration, delta);
+        }
+
+        @Override
+        public void applyToHero(Hero hero) {
+            super.applyToHero(hero);
+        }
+
+        @Override
+        public void removeFromHero(Hero hero) {
+            super.removeFromHero(hero);
+        }
+    }
+    class ManaDecreaseEffect extends ManaRegenPercentDecreaseEffect {
+
+        public ManaDecreaseEffect(Skill skill, Player applier, long duration, double delta) {
+            super(skill, applier, duration, delta);
+        }
+
+        @Override
+        public void applyToHero(Hero hero) {
+            super.applyToHero(hero);
+        }
+
+        @Override
+        public void removeFromHero(Hero hero) {
+            super.removeFromHero(hero);
+        }
+    }
+    class StaminaIncreaseEffect extends StaminaRegenPercentIncreaseEffect {
+
+        public StaminaIncreaseEffect(Skill skill, Player applier, long duration, double delta) {
+            super(skill, applier, duration, delta);
+        }
+
+        @Override
+        public void applyToHero(Hero hero) {
+            super.applyToHero(hero);
+        }
+
+        @Override
+        public void removeFromHero(Hero hero) {
+            super.removeFromHero(hero);
+        }
+    }
+    class StaminaDecreaseEffect extends StaminaRegenPercentDecreaseEffect {
+
+        public StaminaDecreaseEffect(Skill skill, Player applier, long duration, double delta) {
+            super(skill, applier, duration, delta);
+        }
+
+        @Override
+        public void applyToHero(Hero hero) {
+            super.applyToHero(hero);
+        }
+
+        @Override
+        public void removeFromHero(Hero hero) {
+            super.removeFromHero(hero);
+        }
+    }
+
+    class TimeBombVisualEffect extends Effect {
         private Particle primaryParticle;
         private Color primaryColor;
         private double primaryRadius;
@@ -180,7 +256,7 @@ public class SkillTimeBomb extends ActiveSkill {
         private int secondaryParticleCount;
         private double secondaryRadiusDecrease;
 
-        GreatFireballVisualEffect(EffectManager effectManager, double radius, double decreasePerTick) {
+        TimeBombVisualEffect(EffectManager effectManager, double radius, double decreasePerTick) {
             super(effectManager);
 
             this.period = 1;
@@ -188,14 +264,14 @@ public class SkillTimeBomb extends ActiveSkill {
             this.type = EffectType.REPEATING;
 
             this.primaryParticle = Particle.REDSTONE;
-            this.primaryColor = FIRE_ORANGE;
+            this.primaryColor = Color.GRAY;
             this.primaryRadius = radius;
             this.primaryRadiusDecrease = decreasePerTick / this.period;
             this.primaryYOffset = 0.0D;
             this.primaryParticleCount = 10;
 
             this.secondaryParticle = Particle.SPELL_MOB;
-            this.secondaryColor = FIRE_ORANGE;
+            this.secondaryColor = Color.GRAY;
             this.secondaryRadius = secondaryRadiusMultiplier(radius);
             this.secondaryRadiusDecrease = secondaryRadiusMultiplier(decreasePerTick) / this.period;
             this.secondaryYOffset = 0.0D;
@@ -224,7 +300,7 @@ public class SkillTimeBomb extends ActiveSkill {
             Location location = this.getLocation();
             Vector vector = new Vector(0.0D, primaryYOffset, 0.0D);
             location.add(vector);
-            this.display(Particle.LAVA, location);
+//            this.display(Particle.LAVA, location);
             location.subtract(vector);
         }
 
