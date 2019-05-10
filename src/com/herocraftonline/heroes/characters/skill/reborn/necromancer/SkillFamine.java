@@ -4,15 +4,17 @@ import com.herocraftonline.heroes.Heroes;
 import com.herocraftonline.heroes.api.SkillResult;
 import com.herocraftonline.heroes.attributes.AttributeType;
 import com.herocraftonline.heroes.characters.CharacterTemplate;
-import com.herocraftonline.heroes.characters.CustomNameManager;
 import com.herocraftonline.heroes.characters.Hero;
 import com.herocraftonline.heroes.characters.Monster;
 import com.herocraftonline.heroes.characters.effects.EffectType;
 import com.herocraftonline.heroes.characters.effects.PeriodicExpirableEffect;
+import com.herocraftonline.heroes.characters.effects.common.StaminaRegenPercentDecreaseEffect;
 import com.herocraftonline.heroes.characters.skill.*;
 import com.herocraftonline.heroes.chat.ChatComponents;
 import com.herocraftonline.heroes.util.Util;
-import org.bukkit.*;
+import org.bukkit.Effect;
+import org.bukkit.Material;
+import org.bukkit.Sound;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
@@ -102,7 +104,7 @@ public class SkillFamine extends TargettedSkill {
         drainIncrease += (int) (hero.getAttributeValue(AttributeType.INTELLECT) * drainIncrease);
 
         // Famine the first target
-        FamineEffect effect = new FamineEffect(this, player, period, duration, staminaDrain);
+        FamineEffect effect = new FamineEffect(this, player, period, duration, degenPercent, staminaDrain);
         CharacterTemplate targCT = plugin.getCharacterManager().getCharacter(target);
         targCT.addEffect(effect);
 
@@ -140,13 +142,13 @@ public class SkillFamine extends TargettedSkill {
             types.add(EffectType.STAMINA_DECREASING);
 
             this.staminaDrain = staminaDrain;
-            this.degenPercent = degenPercent
+            this.degenPercent = degenPercent;
 
             addPotionEffect(new PotionEffect(PotionEffectType.HUNGER, duration / 1000 * 20, 0));
         }
 
         @Override
-        public void applyTohero(Hero hero) {
+        public void applyToHero(Hero hero) {
             super.applyToHero(hero);
             hero.addEffect(new FamineDegenPartEffect(skill, getApplier(), getDuration(), this.degenPercent));
         }
@@ -166,7 +168,7 @@ public class SkillFamine extends TargettedSkill {
         public void tickMonster(Monster monster) {}
 
         @Override
-        public void removeFromhero(Hero hero) {
+        public void removeFromHero(Hero hero) {
             super.removeFromHero(hero);
             if (hero.hasEffect(degenPartEffectName))
                 hero.removeEffect(hero.getEffect(degenPartEffectName));

@@ -1,53 +1,45 @@
-package com.herocraftonline.heroes.characters.skill.skills;
-
-import java.util.ArrayList;
-import java.util.List;
-
-import org.bukkit.Bukkit;
-import org.bukkit.Color;
-import org.bukkit.FireworkEffect;
-import org.bukkit.Location;
-import org.bukkit.Material;
-import org.bukkit.block.Block;
-import org.bukkit.configuration.ConfigurationSection;
-import org.bukkit.entity.Entity;
-import org.bukkit.entity.LivingEntity;
-import org.bukkit.entity.Player;
-import org.bukkit.event.entity.EntityDamageEvent.DamageCause;
-import org.bukkit.util.BlockIterator;
-import org.bukkit.util.Vector;
+package com.herocraftonline.heroes.characters.skill.reborn.necromancer;
 
 import com.herocraftonline.heroes.Heroes;
 import com.herocraftonline.heroes.api.SkillResult;
 import com.herocraftonline.heroes.attributes.AttributeType;
 import com.herocraftonline.heroes.characters.Hero;
-import com.herocraftonline.heroes.characters.skill.ActiveSkill;
-import com.herocraftonline.heroes.characters.skill.SkillConfigManager;
-import com.herocraftonline.heroes.characters.skill.SkillSetting;
-import com.herocraftonline.heroes.characters.skill.SkillType;
-import com.herocraftonline.heroes.characters.skill.VisualEffect;
+import com.herocraftonline.heroes.characters.skill.*;
+import com.herocraftonline.heroes.characters.skill.tools.Missile;
 import com.herocraftonline.heroes.util.Util;
+import org.bukkit.Color;
+import org.bukkit.FireworkEffect;
+import org.bukkit.Location;
+import org.bukkit.configuration.ConfigurationSection;
+import org.bukkit.entity.Entity;
+import org.bukkit.entity.LivingEntity;
+import org.bukkit.entity.Player;
+import org.bukkit.event.entity.EntityDamageEvent;
+import org.bukkit.util.Vector;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class SkillBoneSpear extends ActiveSkill {
 
     public SkillBoneSpear(Heroes plugin) {
         super(plugin, "BoneSpear");
         setDescription("Launch a magical spear of bone in front of you. " +
-                        "The spear will $1deal $2 damage to any targets it hits.");
+                "The spear will $1deal $2 damage to any targets it hits.");
         setUsage("/skill bonespear");
         setIdentifiers("skill bonespear");
         setArgumentRange(0, 0);
-        setTypes(SkillType.DAMAGING, SkillType.ABILITY_PROPERTY_MAGICAL, SkillType.SILENCABLE, SkillType.AGGRESSIVE);
+        setTypes(SkillType.DAMAGING, SkillType.ABILITY_PROPERTY_MAGICAL, SkillType.SILENCEABLE, SkillType.AGGRESSIVE);
     }
 
     public String getDescription(Hero hero) {
-
         boolean pierces = SkillConfigManager.getUseSetting(hero, this, "projectile-pierces-on-hit", false);
         String pierceText = pierces ? "pierce enemies and " : "";
 
         double damage = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE, 75.0, false);
         double damageIncrease = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE_INCREASE_PER_INTELLECT, 0.0, false);
         damage += damageIncrease * hero.getAttributeValue(AttributeType.INTELLECT);
+
         return getDescription()
                 .replace("$1", pierceText)
                 .replace("$2", Util.decFormat.format(damage));
@@ -72,17 +64,17 @@ public class SkillBoneSpear extends ActiveSkill {
 
         broadcastExecuteText(hero);
 
-        BoneSpearProjectile missile = new BoneSpearProjectile(hero);
+        BoneSpearProjectile missile = new BoneSpearProjectile(this, hero);
         missile.fireMissile();
-
 
         return SkillResult.NORMAL;
     }
 
-    private class BoneSpearProjectile extends Missile {
+    class BoneSpearProjectile extends Missile {
         private final Hero hero;
         private final Player player;
 
+        private final double damage;
         private final int visualTickRate;
         private final boolean knockBackOnHit;
         private final boolean shouldPierce;
@@ -90,7 +82,7 @@ public class SkillBoneSpear extends ActiveSkill {
         private double defaultSpeed;
         private List<LivingEntity> hitTargets = new ArrayList<LivingEntity>();
 
-        public BoneSpearProjectile(Hero hero) {
+        BoneSpearProjectile(Skill skill, Hero hero) {
             this.hero = hero;
             this.player = hero.getPlayer();
 
@@ -105,20 +97,20 @@ public class SkillBoneSpear extends ActiveSkill {
             this.damage = SkillConfigManager.getUseSetting(hero, skill, SkillSetting.DAMAGE, 75.0, false);
 
             Vector playerDirection = player.getEyeLocation().getDirection().normalize();
-            Location missileLoc = visualEffect.getLocation().clone().setDirection(playerDirection);
+            Location missileLoc = player.getLocation().clone().setDirection(playerDirection);
 
             this.setLocationAndSpeed(missileLoc, projectileSpeed);
         }
 
         private void updateVisualLocation() {
             FireworkEffect firework = FireworkEffect.builder()
-                .flicker(false)
-                .trail(false)
-                .withColor(Color.BLUE)
-                .withColor(Color.BLUE)
-                .withColor(Color.WHITE)
-                .with(FireworkEffect.Type.BURST)
-                .build();
+                    .flicker(false)
+                    .trail(false)
+                    .withColor(Color.BLUE)
+                    .withColor(Color.BLUE)
+                    .withColor(Color.WHITE)
+                    .with(FireworkEffect.Type.BURST)
+                    .build();
             VisualEffect.playInstantFirework(firework, getLocation());
         }
 
