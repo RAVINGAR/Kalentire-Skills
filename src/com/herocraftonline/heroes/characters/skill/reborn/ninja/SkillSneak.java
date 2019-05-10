@@ -36,7 +36,7 @@ import java.util.Set;
 import java.util.UUID;
 
 public class SkillSneak extends ActiveSkill {
-    private static String toggleableEffectName = toggleableEffectName;
+    private static String toggleableEffectName = "Sneaking";
     private boolean damageCancels;
     private boolean attackCancels;
 
