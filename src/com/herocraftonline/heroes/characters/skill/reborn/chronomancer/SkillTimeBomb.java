@@ -11,6 +11,7 @@ import com.herocraftonline.heroes.characters.effects.common.StaminaRegenPercentD
 import com.herocraftonline.heroes.characters.effects.common.StaminaRegenPercentIncreaseEffect;
 import com.herocraftonline.heroes.characters.skill.*;
 import com.herocraftonline.heroes.characters.skill.tools.BasicMissile;
+import com.herocraftonline.heroes.chat.ChatComponents;
 import com.herocraftonline.heroes.util.Util;
 import de.slikey.effectlib.Effect;
 import de.slikey.effectlib.EffectManager;
@@ -33,6 +34,11 @@ import java.util.logging.Level;
 
 public class SkillTimeBomb extends ActiveSkill {
 
+    private String applyText;
+    private String expireText;
+    private String badApplyText;
+    private String badExpireText;
+
     public SkillTimeBomb(Heroes plugin) {
         super(plugin, "TimeBomb");
         setDescription("You throw a bomb of rejuvinating time. " +
@@ -43,6 +49,17 @@ public class SkillTimeBomb extends ActiveSkill {
         setIdentifiers("skill timebomb");
         setArgumentRange(0, 0);
         setTypes(SkillType.MULTI_GRESSIVE, SkillType.NO_SELF_TARGETTING);
+    }
+
+    @Override
+    public void init() {
+        super.init();
+
+        applyText = SkillConfigManager.getRaw(this, SkillSetting.APPLY_TEXT, ChatComponents.GENERIC_SKILL + "Your mana and stamina regeneration has increased!");
+        expireText = SkillConfigManager.getRaw(this, SkillSetting.EXPIRE_TEXT, ChatComponents.GENERIC_SKILL + "Your mana and stamina regeneration has returned back to normal.");
+
+        badApplyText = SkillConfigManager.getRaw(this, SkillSetting.APPLY_TEXT, ChatComponents.GENERIC_SKILL + "Your mana and stamina regeneration has decreased!");
+        badExpireText = SkillConfigManager.getRaw(this, SkillSetting.EXPIRE_TEXT, ChatComponents.GENERIC_SKILL + "Your mana and stamina regeneration has returned back to normal.");
     }
 
     @Override
@@ -176,7 +193,7 @@ public class SkillTimeBomb extends ActiveSkill {
     class ManaIncreaseEffect extends ManaRegenPercentIncreaseEffect {
 
         ManaIncreaseEffect(Skill skill, Player applier, long duration, double delta) {
-            super(skill, applier, duration, delta, null, null);
+            super(skill, applier, duration, delta, applyText, expireText);
             types.add(EffectType.TEMPORAL);
         }
 
@@ -194,7 +211,7 @@ public class SkillTimeBomb extends ActiveSkill {
     class ManaDecreaseEffect extends ManaRegenPercentDecreaseEffect {
 
         public ManaDecreaseEffect(Skill skill, Player applier, long duration, double delta) {
-            super(skill, applier, duration, delta, null, null);
+            super(skill, applier, duration, delta, badApplyText, badExpireText);
             types.add(EffectType.TEMPORAL);
         }
 
