@@ -4,6 +4,7 @@ import com.herocraftonline.heroes.Heroes;
 import com.herocraftonline.heroes.api.SkillResult;
 import com.herocraftonline.heroes.characters.CharacterTemplate;
 import com.herocraftonline.heroes.characters.Hero;
+import com.herocraftonline.heroes.characters.effects.EffectType;
 import com.herocraftonline.heroes.characters.effects.common.ManaRegenPercentDecreaseEffect;
 import com.herocraftonline.heroes.characters.effects.common.ManaRegenPercentIncreaseEffect;
 import com.herocraftonline.heroes.characters.effects.common.StaminaRegenPercentDecreaseEffect;
@@ -13,7 +14,6 @@ import com.herocraftonline.heroes.characters.skill.tools.BasicMissile;
 import com.herocraftonline.heroes.util.Util;
 import de.slikey.effectlib.Effect;
 import de.slikey.effectlib.EffectManager;
-import de.slikey.effectlib.EffectType;
 import de.slikey.effectlib.util.RandomUtils;
 import org.bukkit.Color;
 import org.bukkit.Location;
@@ -177,6 +177,7 @@ public class SkillTimeBomb extends ActiveSkill {
 
         ManaIncreaseEffect(Skill skill, Player applier, long duration, double delta) {
             super(skill, applier, duration, delta, null, null);
+            types.add(EffectType.TEMPORAL);
         }
 
         @Override
@@ -194,6 +195,7 @@ public class SkillTimeBomb extends ActiveSkill {
 
         public ManaDecreaseEffect(Skill skill, Player applier, long duration, double delta) {
             super(skill, applier, duration, delta, null, null);
+            types.add(EffectType.TEMPORAL);
         }
 
         @Override
@@ -261,7 +263,6 @@ public class SkillTimeBomb extends ActiveSkill {
 
             this.period = 1;
             this.iterations = 500;
-            this.type = EffectType.REPEATING;
 
             this.primaryParticle = Particle.REDSTONE;
             this.primaryColor = Color.GRAY;

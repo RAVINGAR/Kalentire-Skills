@@ -36,7 +36,7 @@ public class SkillTimeShift extends TargettedSkill {
 
     private String accelEffectName = "AcceleratedShiftedTime";
     private String decelEffectName = "DeceleratedShiftedTime";
-    private String maxStacksErrorMessage = ChatComponents.GENERIC_SKILL + "Your target is already shifted as far as they can go!";
+    private String maxStacksErrorMessage = ChatComponents.GENERIC_SKILL + "$1 is already shifted as far as they can go!";
 
     public SkillTimeShift(Heroes plugin) {
         super(plugin, "TimeShift");
@@ -131,7 +131,7 @@ public class SkillTimeShift extends TargettedSkill {
 
         boolean addedNewStack = effect.addStack(targetCT);
         if (!addedNewStack) {
-            player.sendMessage(maxStacksErrorMessage);
+            player.sendMessage(maxStacksErrorMessage.replace("$1", target.getName()));
             return SkillResult.INVALID_TARGET_NO_MSG;
         }
 
@@ -162,7 +162,7 @@ public class SkillTimeShift extends TargettedSkill {
 
         boolean addedNewStack = effect.addStack(targetCT);
         if (!addedNewStack) {
-            player.sendMessage(maxStacksErrorMessage);
+            player.sendMessage(maxStacksErrorMessage.replace("$1", target.getName()));
             return SkillResult.INVALID_TARGET_NO_MSG;
         }
 
