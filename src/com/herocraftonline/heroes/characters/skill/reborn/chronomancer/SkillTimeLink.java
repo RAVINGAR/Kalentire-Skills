@@ -4,9 +4,11 @@ import com.herocraftonline.heroes.Heroes;
 import com.herocraftonline.heroes.api.SkillResult;
 import com.herocraftonline.heroes.characters.CharacterTemplate;
 import com.herocraftonline.heroes.characters.Hero;
+import com.herocraftonline.heroes.characters.effects.EffectType;
 import com.herocraftonline.heroes.characters.effects.ExpirableEffect;
 import com.herocraftonline.heroes.characters.skill.*;
 import com.herocraftonline.heroes.chat.ChatComponents;
+import com.herocraftonline.heroes.util.Messaging;
 import com.herocraftonline.heroes.util.Util;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.LivingEntity;
@@ -88,7 +90,7 @@ public class SkillTimeLink extends TargettedSkill {
         private CharacterTemplate linkedTarget;
 
         TimeLinkEffect(Skill skill, Player applier, long duration, CharacterTemplate target, double breakDistance) {
-            super(skill, timeLinkEffectName, applier, duration, null, expireText);
+            super(skill, timeLinkEffectName, applier, duration, null, null);
             this.linkedTarget = target;
             this.breakDistSquared = breakDistance * breakDistance;
         }
@@ -111,6 +113,25 @@ public class SkillTimeLink extends TargettedSkill {
             }
 
             return this.linkedTarget;
+        }
+
+        @Override
+        public void removeFromHero(Hero hero) {
+            super.removeFromHero(hero);
+
+            Player player = hero.getPlayer();
+            LivingEntity linkedEntity = linkedTarget.getEntity();
+            if (expireText != null && expireText.length() > 0) {
+                if (hero.hasEffectType(EffectType.SILENT_ACTIONS)) {
+                    Messaging.send(player, "    " + expireText, player.getName(), linkedEntity == null
+                            ? "<UNKNOWN PLAYER>"
+                            : linkedEntity.getName(), this.skill.getName());
+                } else {
+                    this.broadcast(player.getLocation(), "    " + expireText, player.getName(), linkedEntity == null
+                            ? "<UNKNOWN PLAYER>"
+                            : linkedEntity.getName(), this.skill.getName());
+                }
+            }
         }
     }
 }

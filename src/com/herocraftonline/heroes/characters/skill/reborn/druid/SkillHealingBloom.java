@@ -23,20 +23,21 @@ public class SkillHealingBloom extends ActiveSkill {
 
     public SkillHealingBloom(Heroes plugin) {
         super(plugin, "HealingBloom");
-        setDescription("Apply a Healing Bloom to party members within $1 blocks, healing them for $2 health over $3 second(s). You are only healed for $3 health from this effect.");
+        setDescription("Apply a Healing Bloom to party members within $1 blocks, healing them for $2 health over $3 second(s). " +
+                "You are only healed for $3 health from this effect.");
         setUsage("/skill healingbloom");
         setIdentifiers("skill healingbloom");
-        setTypes(SkillType.SILENCEABLE, SkillType.AREA_OF_EFFECT, SkillType.HEALING, SkillType.ABILITY_PROPERTY_EARTH);
         setArgumentRange(0, 0);
+        setTypes(SkillType.SILENCEABLE, SkillType.AREA_OF_EFFECT, SkillType.HEALING, SkillType.ABILITY_PROPERTY_EARTH);
     }
 
     public String getDescription(Hero hero) {
-        int radius = SkillConfigManager.getUseSetting(hero, this, SkillSetting.RADIUS, 15, false);
+        double radius = SkillConfigManager.getUseSetting(hero, this, SkillSetting.RADIUS, 15.0, false);
 
         int period = SkillConfigManager.getUseSetting(hero, this, SkillSetting.PERIOD, 2000, false);
         int duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION.node(), 20000, false);
 
-        double healing = SkillConfigManager.getUseSetting(hero, this, SkillSetting.HEALING_TICK, 17, false);
+        double healing = SkillConfigManager.getUseSetting(hero, this, SkillSetting.HEALING_TICK, 17.0, false);
         healing = getScaledHealing(hero, healing);
 
         String formattedHealing = Util.decFormat.format(healing * ((double) duration / (double) period));
@@ -61,15 +62,13 @@ public class SkillHealingBloom extends ActiveSkill {
     public SkillResult use(Hero hero, String[] args) {
         Player player = hero.getPlayer();
 
-        int radius = SkillConfigManager.getUseSetting(hero, this, SkillSetting.RADIUS, 15, false);
-        int radiusSquared = radius * radius;
+        double radius = SkillConfigManager.getUseSetting(hero, this, SkillSetting.RADIUS, 15.0, false);
+        double radiusSquared = radius * radius;
         int duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION.node(), 20000, false);
-        double healing = SkillConfigManager.getUseSetting(hero, this, SkillSetting.HEALING_TICK, 17, false);
+        double healing = SkillConfigManager.getUseSetting(hero, this, SkillSetting.HEALING_TICK, 17.0, false);
         healing = getScaledHealing(hero, healing);
 
-
         int period = SkillConfigManager.getUseSetting(hero, this, SkillSetting.PERIOD, 2000, false);
-
 
         broadcastExecuteText(hero);
 
@@ -92,7 +91,6 @@ public class SkillHealingBloom extends ActiveSkill {
             // Add the effect to just the player
             hero.addEffect(new PeriodicHealEffect(this, "HealingBloom", player, period, duration, healing));
             playVisuals(hero.getEntity(), duration);
-
         }
 
         return SkillResult.NORMAL;

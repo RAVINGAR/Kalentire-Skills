@@ -27,8 +27,8 @@ public class SkillGust extends TargettedSkill {
         super(plugin, "Gust");
         setDescription("You strike the target with nature's gust for $1 earth damage.");
         setUsage("/skill gust");
-        setArgumentRange(0, 0);
         setIdentifiers("skill gust");
+        setArgumentRange(0, 0);
         setTypes(SkillType.ABILITY_PROPERTY_MAGICAL, SkillType.DAMAGING, SkillType.ABILITY_PROPERTY_EARTH, SkillType.SILENCEABLE, SkillType.AGGRESSIVE, SkillType.FORCE);
     }
 
@@ -41,18 +41,17 @@ public class SkillGust extends TargettedSkill {
     }
 
     public ConfigurationSection getDefaultConfig() {
-        ConfigurationSection node = super.getDefaultConfig();
-
-        node.set(SkillSetting.MAX_DISTANCE.node(), 12);
-        node.set(SkillSetting.DAMAGE.node(), 80);
-        node.set(SkillSetting.DAMAGE_INCREASE_PER_INTELLECT.node(), 0.75);
-        node.set("horizontal-power", 0.30);
-        node.set("horizontal-power-increase-per-intellect", 0.0375);
-        node.set("vertical-power", 0.15);
-        node.set("vertical-power-increase-per-intellect", 0.0075);
-        node.set("ncp-exemption-duration", 1500);
-        node.set("push-delay", 0.2);
-        return node;
+        ConfigurationSection config = super.getDefaultConfig();
+        config.set(SkillSetting.MAX_DISTANCE.node(), 12);
+        config.set(SkillSetting.DAMAGE.node(), 80);
+        config.set(SkillSetting.DAMAGE_INCREASE_PER_INTELLECT.node(), 0.75);
+        config.set("horizontal-power", 0.30);
+        config.set("horizontal-power-increase-per-intellect", 0.0375);
+        config.set("vertical-power", 0.15);
+        config.set("vertical-power-increase-per-intellect", 0.0075);
+        config.set("ncp-exemption-duration", 1500);
+        config.set("push-delay", 0.2);
+        return config;
     }
 
     public SkillResult use(Hero hero, LivingEntity target, String[] args) {
@@ -60,7 +59,7 @@ public class SkillGust extends TargettedSkill {
 
         double damage = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE, 80, false);
         double damageIncrease = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE_INCREASE_PER_INTELLECT, 0.75, false);
-        damage += (damageIncrease * hero.getAttributeValue(AttributeType.INTELLECT));
+        damage += damageIncrease * hero.getAttributeValue(AttributeType.INTELLECT);
 
         addSpellTarget(target, hero);
         damageEntity(target, player, damage, DamageCause.MAGIC, false);

@@ -10,6 +10,8 @@ import com.herocraftonline.heroes.util.Util;
 import org.bukkit.Color;
 import org.bukkit.FireworkEffect;
 import org.bukkit.Location;
+import org.bukkit.block.Block;
+import org.bukkit.block.BlockFace;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
@@ -50,8 +52,9 @@ public class SkillBoneSpear extends ActiveSkill {
         config.set(SkillSetting.DAMAGE.node(), 75.0);
         config.set(SkillSetting.DAMAGE_INCREASE_PER_INTELLECT.node(), 0.0);
         config.set("projectile-size", 1.5);
-        config.set("projectile-velocity", 40.0);
-        config.set("projectile-ticks-lived", 30);
+        config.set("projectile-velocity", 20.0);
+        config.set("projectile-max-ticks-lived", 20);
+        config.set("projectile-block-collision-size", 0.35);
         config.set("projectile-gravity", 0.0);
         config.set("projectile-pierces-on-hit", true);
         config.set("projectile-knocks-back-on-hit", false);
@@ -75,6 +78,7 @@ public class SkillBoneSpear extends ActiveSkill {
         private final Player player;
 
         private final double damage;
+        private final double blockCollisionSizeSquared;
         private final int visualTickRate;
         private final boolean knockBackOnHit;
         private final boolean shouldPierce;
@@ -86,9 +90,11 @@ public class SkillBoneSpear extends ActiveSkill {
             this.hero = hero;
             this.player = hero.getPlayer();
 
-            setRemainingLife(SkillConfigManager.getUseSetting(hero, skill, "projectile-max-ticks-lived", 30, false));
+            setRemainingLife(SkillConfigManager.getUseSetting(hero, skill, "projectile-max-ticks-lived", 20, false));
             setGravity(SkillConfigManager.getUseSetting(hero, skill, "projectile-gravity", 0.0, false));
             setEntityDetectRadius(SkillConfigManager.getUseSetting(hero, skill, "projectile-size", 1.5, false));
+            double size = SkillConfigManager.getUseSetting(hero, skill, "projectile-block-collision-size", 0.35, false);
+            this.blockCollisionSizeSquared = size * size;
             double projectileSpeed = SkillConfigManager.getUseSetting(hero, skill, "projectile-velocity", 20.0, false);
 
             this.knockBackOnHit = SkillConfigManager.getUseSetting(hero, skill, "projectile-knocks-back-on-hit", false);
@@ -136,6 +142,11 @@ public class SkillBoneSpear extends ActiveSkill {
             if (shouldPierce)
                 return false;
             return entity instanceof LivingEntity && !hero.isAlliedTo((LivingEntity) entity);
+        }
+
+        @Override
+        protected boolean onCollideWithBlock(Block block, Vector point, BlockFace face) {
+            return getLocation().distanceSquared(block.getLocation()) >= this.blockCollisionSizeSquared;
         }
 
         @Override

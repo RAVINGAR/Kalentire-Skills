@@ -117,8 +117,10 @@ public class SkillHealingSpores extends ActiveSkill {
         private int maxProjectiles;
         private double projectileRadius;
         private List<Pair<EffectManager, SphereEffect>> missileVisuals = new ArrayList<Pair<EffectManager, SphereEffect>>();
+        
         HealingSporesEffect(Skill skill, Player applier, long duration) {
             super(skill, sporeEffectName, applier, duration);
+
             this.types.add(EffectType.HEALING);
         }
 

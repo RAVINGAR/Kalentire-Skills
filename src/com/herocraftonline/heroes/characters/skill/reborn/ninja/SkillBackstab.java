@@ -10,7 +10,6 @@ import com.herocraftonline.heroes.characters.effects.EffectType;
 import com.herocraftonline.heroes.characters.skill.*;
 import com.herocraftonline.heroes.nms.NMSHandler;
 import com.herocraftonline.heroes.util.Util;
-
 import org.apache.commons.lang.WordUtils;
 import org.bukkit.*;
 import org.bukkit.configuration.ConfigurationSection;
@@ -18,7 +17,6 @@ import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Monster;
 import org.bukkit.entity.Player;
-import org.bukkit.Sound;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
@@ -33,7 +31,8 @@ public class SkillBackstab extends ActiveSkill {
 
     public SkillBackstab(Heroes plugin) {
         super(plugin, "Backstab");
-        setDescription("When attacking a target from behind, you $1 an additional $2% damage.");
+        setDescription("When attacking a target from behind, you $1 an additional $2% damage. " +
+                "While sneaking, your attacks are more precise, and $3 an additional $4% damage.");
         setUsage("/skill backstab");
         setIdentifiers("skill backstab");
         setArgumentRange(0, 0);
@@ -60,29 +59,31 @@ public class SkillBackstab extends ActiveSkill {
 
         String ambushString = "deal";
         if (ambushChance > -1)
-            backstabString = "have a " + Util.decFormat.format(ambushChance) + "% chance to deal";
+            ambushString = "have a " + Util.decFormat.format(ambushChance) + "% chance to deal";
 
         String formattedBackstabDamageModifier = Util.decFormat.format(backstabDamageModifier * 100);
         String formattedAmbushDamageModifier = Util.decFormat.format(ambushDamageModifier * 100);
 
-        return getDescription().replace("$1", backstabString + "").replace("$2", formattedBackstabDamageModifier).replace("$3", ambushString + "").replace("$4", formattedAmbushDamageModifier);
+        return getDescription()
+                .replace("$1", backstabString)
+                .replace("$2", formattedBackstabDamageModifier)
+                .replace("$3", ambushString)
+                .replace("$4", formattedAmbushDamageModifier);
     }
 
     public ConfigurationSection getDefaultConfig() {
-        ConfigurationSection node = super.getDefaultConfig();
-
-        node.set(SkillSetting.USE_TEXT.node(), "");
-        node.set("backstab-text", "");
-        node.set("weapons", Util.swords);
-        node.set("backstab-chance", -1.0);
-        node.set("backstab-bonus", 0.05);
-        node.set("backstab-bonus-increase-per-dexterity", 0.04125);
-        node.set("ambush-chance", -1.0);
-        node.set("ambush-bonus", 0.10);
-        node.set("ambush-bonus-increase-per-dexterity", 0.06375);
-        node.set("allow-vanilla-sneaking", true);
-
-        return node;
+        ConfigurationSection config = super.getDefaultConfig();
+        config.set(SkillSetting.USE_TEXT.node(), "");
+        config.set("backstab-text", "");
+        config.set("weapons", Util.swords);
+        config.set("backstab-chance", -1.0);
+        config.set("backstab-bonus", 0.05);
+        config.set("backstab-bonus-increase-per-dexterity", 0.04125);
+        config.set("ambush-chance", -1.0);
+        config.set("ambush-bonus", 0.10);
+        config.set("ambush-bonus-increase-per-dexterity", 0.06375);
+        config.set("allow-vanilla-sneaking", true);
+        return config;
     }
 
     public void init() {
@@ -197,7 +198,12 @@ public class SkillBackstab extends ActiveSkill {
                 target.getWorld().spigot().playEffect(target.getLocation().add(0, 0.5, 0), Effect.COLOURED_DUST, 0, 0, 0.2F, 0.0F, 0.2F, 0.0F, 30, 16);
 //                target.getWorld().spawnParticle(Particle.REDSTONE, target.getLocation().add(0, 0.5, 0), 30, 0.2, 0, 0.2, new Particle.DustOptions(Color.RED, 1));
                 target.getWorld().playSound(target.getLocation(), Sound.ENTITY_ENDERDRAGON_HURT, 0.5F, 0.6F);
-                broadcast(player.getLocation(), backstabText.replace("%hero%", player.getName()).replace("%target%", CustomNameManager.getName(target)));
+                if (backstabText != null && backstabText.length() > 0) {
+                    if (target instanceof Monster)
+                        broadcast(player.getLocation(), backstabText.replace("%hero%", player.getName()).replace("%target%", CustomNameManager.getName(target)));
+                    else if (target instanceof Player)
+                        broadcast(player.getLocation(), backstabText.replace("%hero%", player.getName()).replace("%target%", target.getName()));
+                }
             }
         }
     }

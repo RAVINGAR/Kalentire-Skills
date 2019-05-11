@@ -24,7 +24,7 @@ public class SkillRejuvenate extends TargettedSkill {
         setUsage("/skill rejuvenate <target>");
         setArgumentRange(0, 1);
         setIdentifiers("skill rejuvenate");
-        setTypes(SkillType.BUFFING, SkillType.HEALING, SkillType.SILENCEABLE);
+        setTypes(SkillType.BUFFING, SkillType.HEALING, SkillType.SILENCEABLE, SkillType.NAME_TARGETTING_ENABLED);
     }
 
     public String getDescription(Hero hero) {
@@ -57,8 +57,13 @@ public class SkillRejuvenate extends TargettedSkill {
     public void init() {
         super.init();
 
-        applyText = SkillConfigManager.getRaw(this, SkillSetting.APPLY_TEXT, ChatComponents.GENERIC_SKILL + "%target% is rejuvenating health!").replace("%target%", "$1");
-        expireText = SkillConfigManager.getRaw(this, SkillSetting.EXPIRE_TEXT, ChatComponents.GENERIC_SKILL + "%target% has stopped rejuvenating health!").replace("%target%", "$1");
+        applyText = SkillConfigManager.getRaw(this, SkillSetting.APPLY_TEXT,
+                ChatComponents.GENERIC_SKILL + "%target% is rejuvenating health!")
+                .replace("%target%", "$1");
+
+        expireText = SkillConfigManager.getRaw(this, SkillSetting.EXPIRE_TEXT,
+                ChatComponents.GENERIC_SKILL + "%target% has stopped rejuvenating health!")
+                .replace("%target%", "$1");
     }
 
     @Override
@@ -91,7 +96,7 @@ public class SkillRejuvenate extends TargettedSkill {
     public class RejuvenateEffect extends PeriodicHealEffect {
 
         public RejuvenateEffect(Skill skill, Player applier, long period, long duration, double tickHealth) {
-            super(skill, "Rejuvenate", applier, period, duration, tickHealth);
+            super(skill, "Rejuvenate-" + applier.getName(), applier, period, duration, tickHealth, applyText, expireText);
 
             types.add(EffectType.MAGIC);
             types.add(EffectType.DISPELLABLE);
@@ -101,14 +106,12 @@ public class SkillRejuvenate extends TargettedSkill {
         public void applyToHero(Hero hero) {
             super.applyToHero(hero);
             Player player = hero.getPlayer();
-            broadcast(player.getLocation(), "    " + applyText, player.getName());
         }
 
         @Override
         public void removeFromHero(Hero hero) {
             super.removeFromHero(hero);
             Player player = hero.getPlayer();
-            broadcast(player.getLocation(), "    " + expireText, player.getName());
         }
         
         public void tickHero(Hero hero)
