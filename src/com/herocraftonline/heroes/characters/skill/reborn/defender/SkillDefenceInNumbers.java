@@ -164,7 +164,9 @@ public class SkillDefenceInNumbers extends PassiveSkill {
                 }
 
                 // If in range reapply effect
-                if (defendingPlayer.getLocation().distance(ally.getPlayer().getLocation()) <= radius) {
+                Player allyPlayer = ally.getPlayer();
+                if (defendingPlayer.getWorld().equals(allyPlayer.getWorld())
+                        && defendingPlayer.getLocation().distance(allyPlayer.getLocation()) <= radius) {
                     ally.addEffect(new DefenceInNumbersAllyEffect(skill, allyEffectName, defendingPlayer,
                             getIncomingMultiplier(hero), getPeriod(),
                             allyApplyText.replace("%hero%", defendingPlayer.getName()),
@@ -235,7 +237,9 @@ public class SkillDefenceInNumbers extends PassiveSkill {
             }
 
             // If in range apply effect
-            if (defendingPlayer.getLocation().distance(joiningHero.getPlayer().getLocation()) <= radius) {
+            Player joiningPlayer = joiningHero.getPlayer();
+            if (defendingPlayer.getWorld().equals(joiningPlayer.getWorld())
+                    && defendingPlayer.getLocation().distance(joiningPlayer.getLocation()) <= radius) {
                 DefenceInNumbersAllyEffect effect = new DefenceInNumbersAllyEffect(
                         skill, allyEffectName, defendingPlayer, getIncomingMultiplier(defendingHero), period,
                         allyApplyText.replace("%hero%", defendingPlayer.getName()),
