@@ -25,7 +25,7 @@ import org.bukkit.inventory.ItemStack;
 import java.util.List;
 import java.util.logging.Level;
 
-public class SkillBackstab extends ActiveSkill {
+public class SkillBackstab extends ActiveSkill implements Passive {
 
     private String backstabText;
 
@@ -137,6 +137,21 @@ public class SkillBackstab extends ActiveSkill {
         player.sendMessage(ChatColor.GREEN + weaponName + ": "
                 + ChatColor.WHITE + "Backstab: " + ChatColor.GRAY + Util.decFormat.format(backstabDamage)
                 + ChatColor.WHITE + ", Sneaking Backstab: " + ChatColor.GRAY + Util.decFormat.format(ambushDamage));
+    }
+
+    @Override
+    public void tryApplying(Hero hero) {
+
+    }
+
+    @Override
+    public void apply(Hero hero) {
+
+    }
+
+    @Override
+    public void unapply(Hero hero) {
+
     }
 
     public class SkillHeroesListener implements Listener {
