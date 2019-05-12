@@ -195,6 +195,7 @@ public class SkillTimeBomb extends ActiveSkill {
         ManaIncreaseEffect(Skill skill, Player applier, long duration, double delta) {
             super(skill, applier, duration, delta, applyText, expireText);
             types.add(EffectType.TEMPORAL);
+            types.add(EffectType.SILENT_ACTIONS);
         }
 
         @Override
@@ -213,6 +214,7 @@ public class SkillTimeBomb extends ActiveSkill {
         public ManaDecreaseEffect(Skill skill, Player applier, long duration, double delta) {
             super(skill, applier, duration, delta, badApplyText, badExpireText);
             types.add(EffectType.TEMPORAL);
+            types.add(EffectType.SILENT_ACTIONS);
         }
 
         @Override
@@ -230,6 +232,7 @@ public class SkillTimeBomb extends ActiveSkill {
 
         public StaminaIncreaseEffect(Skill skill, Player applier, long duration, double delta) {
             super(skill, applier, duration, delta, null, null);
+            types.add(EffectType.SILENT_ACTIONS);
         }
 
         @Override
@@ -247,6 +250,7 @@ public class SkillTimeBomb extends ActiveSkill {
 
         public StaminaDecreaseEffect(Skill skill, Player applier, long duration, double delta) {
             super(skill, applier, duration, delta, null, null);
+            types.add(EffectType.SILENT_ACTIONS);
         }
 
         @Override

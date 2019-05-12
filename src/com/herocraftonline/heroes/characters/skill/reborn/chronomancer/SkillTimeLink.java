@@ -47,7 +47,7 @@ public class SkillTimeLink extends TargettedSkill {
         config.set(SkillSetting.MAX_DISTANCE.node(), 12);
         config.set(SkillSetting.DURATION.node(), 12000);
         config.set("break-distance", 16.0);
-        config.set(SkillSetting.EXPIRE_TEXT.node(), ChatComponents.GENERIC_SKILL + "%hero%'s link with %target% has vanished!");
+        config.set(SkillSetting.EXPIRE_TEXT.node(), ChatComponents.GENERIC_SKILL + "%hero%'s time link with %target% has vanished!");
         return config;
     }
 
@@ -56,9 +56,9 @@ public class SkillTimeLink extends TargettedSkill {
         super.init();
 
         expireText = SkillConfigManager.getRaw(this,
-                SkillSetting.EXPIRE_TEXT, ChatComponents.GENERIC_SKILL + "%hero%'s link with %target% has vanished!")
-                .replace("%hero%", "$2")
-                .replace("%target%", "$1");
+                SkillSetting.EXPIRE_TEXT, ChatComponents.GENERIC_SKILL + "%hero%'s time link with %target% has vanished!")
+                .replace("%hero%", "$1")
+                .replace("%target%", "$2");
     }
 
     @Override

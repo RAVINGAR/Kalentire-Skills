@@ -106,22 +106,17 @@ public class SkillTimeDifferential extends TargettedSkill {
         final int finalCount = totalStackCount;
 
         EffectManager em = new EffectManager(plugin);
-        SphereEffect visualEffect = buildBaseVisualEffect(em, target, delaySeconds);
+        SphereEffect visualEffect = buildBaseVisualEffect(em, target, 0);
         visualEffect.color = Color.GREEN;
 
-        visualEffect.callback = new Runnable() {
-            @Override
-            public void run() {
-                if (target.getHealth() < 0 || target.isDead())
-                    return;
+        if (target.getHealth() < 0 || target.isDead())
+            return;
 
-                // TODO: Better sound.
-                if (targetCT.tryHeal(hero, skill, finalHealing)) {
-                    world.playSound(loc, Sound.BLOCK_NOTE_HARP, 1.0f, 1.0F);
-                }
-                player.sendMessage("    " + ChatComponents.GENERIC_SKILL + ChatColor.DARK_AQUA + "You remove " + finalCount + " temporal effects from " + target.getName());
-            }
-        };
+        // TODO: Better sound.
+        if (targetCT.tryHeal(hero, skill, finalHealing)) {
+            world.playSound(loc, Sound.BLOCK_NOTE_HARP, 1.0f, 1.0F);
+        }
+        player.sendMessage("    " + ChatComponents.GENERIC_SKILL + ChatColor.DARK_AQUA + "You remove " + finalCount + " temporal effects from " + target.getName());
 
         em.start(visualEffect);
         em.disposeOnTermination();
@@ -176,21 +171,16 @@ public class SkillTimeDifferential extends TargettedSkill {
         final int delaySeconds = SkillConfigManager.getUseSetting(hero, this, "damage-delay", 1000, false);
 
         EffectManager em = new EffectManager(plugin);
-        SphereEffect visualEffect = buildBaseVisualEffect(em, target, delaySeconds);
+        SphereEffect visualEffect = buildBaseVisualEffect(em, target, 0);
         visualEffect.color = Color.ORANGE;
 
-        visualEffect.callback = new Runnable() {
-            @Override
-            public void run() {
-                if (target.getHealth() < 0 || target.isDead())
-                    return;
+        if (target.getHealth() < 0 || target.isDead())
+            return;
 
-                plugin.getDamageManager().addSpellTarget(target, hero, skill);
-                damageEntity(target, player, finalDamage, DamageCause.MAGIC, false);
-                world.playSound(loc, Sound.BLOCK_GLASS_BREAK, 1.0f, 1.0F);
-                player.sendMessage("    " + ChatComponents.GENERIC_SKILL + ChatColor.DARK_AQUA + "You remove " + finalCount + " temporal effects from " + target.getName());
-            }
-        };
+        plugin.getDamageManager().addSpellTarget(target, hero, skill);
+        damageEntity(target, player, finalDamage, DamageCause.MAGIC, false);
+        world.playSound(loc, Sound.BLOCK_GLASS_BREAK, 1.0f, 1.0F);
+        player.sendMessage("    " + ChatComponents.GENERIC_SKILL + ChatColor.DARK_AQUA + "You remove " + finalCount + " temporal effects from " + target.getName());
 
         em.start(visualEffect);
         em.disposeOnTermination();
