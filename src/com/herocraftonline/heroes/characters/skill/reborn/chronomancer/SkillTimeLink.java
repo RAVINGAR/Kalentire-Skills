@@ -28,7 +28,7 @@ public class SkillTimeLink extends TargettedSkill {
                 "The link has a maximum range of $2");
         setUsage("/skill timelink");
         setIdentifiers("skill timelink");
-        setTypes(SkillType.MULTI_GRESSIVE, SkillType.NO_SELF_TARGETTING);
+        setTypes(SkillType.ABILITY_PROPERTY_TEMPORAL, SkillType.MULTI_GRESSIVE, SkillType.NO_SELF_TARGETTING, SkillType.SILENCEABLE);
     }
 
     @Override

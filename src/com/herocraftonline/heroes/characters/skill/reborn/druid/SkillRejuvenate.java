@@ -24,7 +24,7 @@ public class SkillRejuvenate extends TargettedSkill {
         setUsage("/skill rejuvenate <target>");
         setArgumentRange(0, 1);
         setIdentifiers("skill rejuvenate");
-        setTypes(SkillType.BUFFING, SkillType.HEALING, SkillType.SILENCEABLE, SkillType.NAME_TARGETTING_ENABLED);
+        setTypes(SkillType.ABILITY_PROPERTY_MAGICAL, SkillType.BUFFING, SkillType.HEALING, SkillType.SILENCEABLE, SkillType.NAME_TARGETTING_ENABLED);
     }
 
     public String getDescription(Hero hero) {

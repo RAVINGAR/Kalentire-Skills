@@ -132,7 +132,7 @@ public class SkillBackflip extends ActiveSkill {
                 SkillShurikens shurikenSkill = (SkillShurikens) plugin.getSkillManager().getSkill("Shurikens");
 
                 if (shurikenSkill != null)
-                    shurikenSkill.shurikenToss(player);
+                    shurikenSkill.tryShurikenToss(hero, false);
             }
         }
 

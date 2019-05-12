@@ -126,15 +126,19 @@ public class SkillGravityFlux extends TargettedLocationSkill {
         @Override
         public void applyToHero(Hero hero) {
             super.applyToHero(hero);
+            Player player = hero.getPlayer();
 
-            applyVisuals(hero.getPlayer());
+            player.setFallDistance(0);
+            applyVisuals(player);
         }
 
         @Override
         public void applyToMonster(Monster monster) {
             super.applyToMonster(monster);
 
-            applyVisuals(monster.getEntity());
+            LivingEntity monsterLE = monster.getEntity();
+            monsterLE.setFallDistance(0);
+            applyVisuals(monsterLE);
         }
 
         @Override

@@ -22,7 +22,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class SkillGiftOfEir extends ActiveSkill {
-
     private String expireText;
 
     public SkillGiftOfEir(Heroes plugin) {

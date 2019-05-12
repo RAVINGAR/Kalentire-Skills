@@ -27,7 +27,7 @@ public class SkillBoneSpear extends ActiveSkill {
     public SkillBoneSpear(Heroes plugin) {
         super(plugin, "BoneSpear");
         setDescription("Launch a magical spear of bone in front of you. " +
-                "The spear will $1deal $2 damage to any targets it hits.");
+                "The spear will $1deal $2 damage to any targets it hits$3");
         setUsage("/skill bonespear");
         setIdentifiers("skill bonespear");
         setArgumentRange(0, 0);
@@ -38,26 +38,44 @@ public class SkillBoneSpear extends ActiveSkill {
         boolean pierces = SkillConfigManager.getUseSetting(hero, this, "projectile-pierces-on-hit", false);
         String pierceText = pierces ? "pierce enemies and " : "";
 
+        double knockbackPower = SkillConfigManager.getUseSetting(hero, this, "projectile-knockback-force", 2.0, false);
+        String knockbackText = "";
+        if (knockbackPower <= 0) {
+            knockbackText = ".";
+        } else {
+            knockbackText = ", and knock them back ";
+            if (knockbackPower >= 2.0) {
+                knockbackText+= "with exessive force.";
+            } else if (knockbackPower >= 1.5) {
+                knockbackText+= "by a significant amount.";
+            } else if (knockbackPower >= 1.0) {
+                knockbackText+= "by a decent amount.";
+            } else {
+                knockbackText += "slightly.";
+            }
+        }
+
         double damage = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE, 75.0, false);
         double damageIncrease = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE_INCREASE_PER_INTELLECT, 0.0, false);
         damage += damageIncrease * hero.getAttributeValue(AttributeType.INTELLECT);
 
         return getDescription()
                 .replace("$1", pierceText)
-                .replace("$2", Util.decFormat.format(damage));
+                .replace("$2", Util.decFormat.format(damage)
+                .replace("$3", knockbackText));
     }
 
     public ConfigurationSection getDefaultConfig() {
         ConfigurationSection config = super.getDefaultConfig();
         config.set(SkillSetting.DAMAGE.node(), 75.0);
         config.set(SkillSetting.DAMAGE_INCREASE_PER_INTELLECT.node(), 0.0);
-        config.set("projectile-size", 1.5);
+        config.set("projectile-size", 2.0);
         config.set("projectile-velocity", 20.0);
         config.set("projectile-max-ticks-lived", 20);
         config.set("projectile-block-collision-size", 0.35);
         config.set("projectile-gravity", 0.0);
         config.set("projectile-pierces-on-hit", true);
-        config.set("projectile-knocks-back-on-hit", false);
+        config.set("projectile-knockback-force", 2.0);
         config.set("projectile-effect-display-servertick-rate", 10);
         return config;
     }
@@ -80,8 +98,8 @@ public class SkillBoneSpear extends ActiveSkill {
         private final double damage;
         private final double blockCollisionSizeSquared;
         private final int visualTickRate;
-        private final boolean knockBackOnHit;
         private final boolean shouldPierce;
+        private final double knockbackPower;
 
         private double defaultSpeed;
         private List<LivingEntity> hitTargets = new ArrayList<LivingEntity>();
@@ -97,7 +115,7 @@ public class SkillBoneSpear extends ActiveSkill {
             this.blockCollisionSizeSquared = size * size;
             double projectileSpeed = SkillConfigManager.getUseSetting(hero, skill, "projectile-velocity", 20.0, false);
 
-            this.knockBackOnHit = SkillConfigManager.getUseSetting(hero, skill, "projectile-knocks-back-on-hit", false);
+            this.knockbackPower = SkillConfigManager.getUseSetting(hero, skill, "projectile-knockback-force", 2.0, false);
             this.shouldPierce = SkillConfigManager.getUseSetting(hero, skill, "projectile-pierces-on-hit", false);
             this.visualTickRate = SkillConfigManager.getUseSetting(hero, skill, "projectile-effect-display-servertick-rate", 10, false);
             this.damage = SkillConfigManager.getUseSetting(hero, skill, SkillSetting.DAMAGE, 75.0, false);
@@ -159,9 +177,14 @@ public class SkillBoneSpear extends ActiveSkill {
             if (!Skill.damageCheck(player, target))
                 return;
 
-            addSpellTarget(target, hero);
-            damageEntity(target, player, damage, EntityDamageEvent.DamageCause.MAGIC, knockBackOnHit);
             hitTargets.add(target);
+
+            addSpellTarget(target, hero);
+            damageEntity(target, player, damage, EntityDamageEvent.DamageCause.MAGIC, false);
+
+            if (knockbackPower > 0.0) {
+                target.setVelocity(passForce.normalize().multiply(this.knockbackPower));
+            }
 
             if (!shouldPierce)
                 this.kill();

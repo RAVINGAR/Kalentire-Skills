@@ -47,7 +47,8 @@ public class SkillTimeShift extends TargettedSkill {
         setUsage("/skill timeshift");
         setArgumentRange(0, 0);
         setIdentifiers("skill timeshift");
-        setTypes(SkillType.MULTI_GRESSIVE, SkillType.NO_SELF_TARGETTING, SkillType.MOVEMENT_INCREASING, SkillType.MOVEMENT_SLOWING);
+        setTypes(SkillType.ABILITY_PROPERTY_TEMPORAL, SkillType.MULTI_GRESSIVE, SkillType.NO_SELF_TARGETTING,
+                SkillType.MOVEMENT_INCREASING, SkillType.MOVEMENT_SLOWING, SkillType.SILENCEABLE);
     }
 
     @Override

@@ -36,8 +36,8 @@ public class SkillHook extends ActiveSkill {
 
     public SkillHook(Heroes plugin) {
         super(plugin, "Hook");
-        setDescription("You pull a chain from your chainbelt and attach a hook to it, then throw it forwards at high speeds. " +
-                "The hook will latch onto whatever it hits for the next $1 seconds. " +
+        setDescription("You throw a hook and chain forwards at high speeds. " +
+                "The hook will latch onto whatever it hits for the next $1 seconds, enabling many of your other abilities. " +
                 "Enemies will be dealt $2 damage on hit. Any targets that run over $3 blocks away will be yanked back slightly and have their hook dislodged.");
         setUsage("/skill hook");
         setIdentifiers("skill hook");
@@ -48,7 +48,7 @@ public class SkillHook extends ActiveSkill {
     @Override
     public String getDescription(Hero hero) {
         long duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, 10000, false);
-        double damage = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE, 1, false);
+        double damage = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE, 30.0, false);
         double hookLeashDistance = SkillConfigManager.getUseSetting(hero, this, "hook-leash-distance", 20.0, false);
 
         return getDescription()

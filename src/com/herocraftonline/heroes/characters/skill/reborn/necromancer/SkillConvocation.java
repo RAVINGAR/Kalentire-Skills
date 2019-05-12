@@ -7,6 +7,7 @@ import com.herocraftonline.heroes.characters.Hero;
 import com.herocraftonline.heroes.characters.Monster;
 import com.herocraftonline.heroes.characters.effects.Effect;
 import com.herocraftonline.heroes.characters.effects.EffectType;
+import com.herocraftonline.heroes.characters.effects.PeriodicHealEffect;
 import com.herocraftonline.heroes.characters.effects.common.SpeedEffect;
 import com.herocraftonline.heroes.characters.effects.common.SummonEffect;
 import com.herocraftonline.heroes.characters.skill.*;
@@ -66,6 +67,7 @@ public class SkillConvocation extends ActiveSkill {
             summon.setTargetIfAble(null, false);
             summon.getEntity().teleport(playerLoc);
             summon.addEffect(new SpeedEffect(this, "ConvocationSpeed", player, duration, speedAmplifier));
+//            summon.addEffect(new PeriodicHealEffect(this, "ConvocationHealing", player, duration, speedAmplifier));   // TODO: Add this
         }
 
 //        player.getWorld().playEffect(player.getLocation(), Effect.ENDEREYE_LAUNCH, 3);

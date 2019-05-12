@@ -48,7 +48,7 @@ public class SkillTimeBomb extends ActiveSkill {
         setUsage("/skill timebomb");
         setIdentifiers("skill timebomb");
         setArgumentRange(0, 0);
-        setTypes(SkillType.MULTI_GRESSIVE, SkillType.NO_SELF_TARGETTING);
+        setTypes(SkillType.ABILITY_PROPERTY_TEMPORAL, SkillType.MULTI_GRESSIVE, SkillType.NO_SELF_TARGETTING, SkillType.SILENCEABLE);
     }
 
     @Override

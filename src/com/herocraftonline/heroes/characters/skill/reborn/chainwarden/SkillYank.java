@@ -29,8 +29,9 @@ public class SkillYank extends TargettedSkill {
 
     public SkillYank(Heroes plugin) {
         super(plugin, "Yank");
-        setDescription("After aiming at a hooked target, you yank on their chains, removing the hook and pulling them towards you, dealing $1 damage. " +
-                "Chained allies are more willing to allow this to happen, and so they do not take damage and are pulled harder.");
+        setDescription("You yank on the chains of a hooked target, removing the hook and pulling them towards you, dealing $1 damage. " +
+                "Chained allies are more willing to allow this to happen, and so they do not take damage and are pulled harder. " +
+                "You must first hook a target in order to use this ability on them.");
         setUsage("/skill yank");
         setIdentifiers("skill yank");
         setArgumentRange(0, 0);
@@ -38,7 +39,7 @@ public class SkillYank extends TargettedSkill {
     }
 
     public String getDescription(Hero hero) {
-        double damage = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE, 50, false);
+        double damage = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE, 50.0, false);
         double damageIncrease = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE_INCREASE_PER_STRENGTH, 0.0, false);
         damage += damageIncrease * hero.getAttributeValue(AttributeType.STRENGTH);
 

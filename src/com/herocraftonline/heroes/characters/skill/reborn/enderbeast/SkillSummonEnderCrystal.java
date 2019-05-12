@@ -75,7 +75,8 @@ public class SkillSummonEnderCrystal extends TargettedLocationSkill {
         config.set(SkillSetting.PERIOD.node(), 1000);
         config.set("crystal-height", 3);
         config.set("heal-distance", 20.0);
-        config.set("heal-tick", 30.0D);
+        config.set("heal-tick", 20.0);
+        config.set("human-heal-tick", 7.5);
         return config;
     }
 
@@ -86,7 +87,7 @@ public class SkillSummonEnderCrystal extends TargettedLocationSkill {
 
         double healDist = SkillConfigManager.getUseSetting(hero, this, "heal-distance", 20.0, false);
         double healAmount = SkillConfigManager.getUseSetting(hero, this, "heal-tick", 20.0, false);
-        double humanHealAmount = SkillConfigManager.getUseSetting(hero, this, "human-heal-tick", 5.0, false);
+        double humanHealAmount = SkillConfigManager.getUseSetting(hero, this, "human-heal-tick", 7.5, false);
         long period = SkillConfigManager.getUseSetting(hero, this, SkillSetting.PERIOD, 400, false);
         long duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, 20000, false);
         int height = SkillConfigManager.getUseSetting(hero, this, "crystal-height", 2, false);

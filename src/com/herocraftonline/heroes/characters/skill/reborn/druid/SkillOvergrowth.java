@@ -42,10 +42,11 @@ public class SkillOvergrowth extends TargettedLocationSkill {
                 "Anyone that is near the overgrowth when it grows will be transported on top of it. " +
                 "The overgrowth lasts for a maximum of $3 seconds, and anyone that remains on top of it when it ends will be granted safety from fall damage.");
         setUsage("/skill overgrowth");
-        setArgumentRange(0, 0);
         setIdentifiers("skill overgrowth");
-        setToggleableEffectName("Overgrowth");
+        setArgumentRange(0, 0);
         setTypes(SkillType.ABILITY_PROPERTY_EARTH, SkillType.SILENCEABLE, SkillType.BLOCK_CREATING);
+
+        setToggleableEffectName("Overgrowth");
     }
 
     public ConfigurationSection getDefaultConfig() {

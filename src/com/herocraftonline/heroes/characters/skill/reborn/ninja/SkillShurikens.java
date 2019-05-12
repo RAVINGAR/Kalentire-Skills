@@ -1,6 +1,8 @@
 package com.herocraftonline.heroes.characters.skill.reborn.ninja;
 
 import com.herocraftonline.heroes.Heroes;
+import com.herocraftonline.heroes.api.SkillResult;
+import com.herocraftonline.heroes.api.events.SkillUseEvent;
 import com.herocraftonline.heroes.attributes.AttributeType;
 import com.herocraftonline.heroes.characters.Hero;
 import com.herocraftonline.heroes.characters.effects.ExpirableEffect;
@@ -8,9 +10,7 @@ import com.herocraftonline.heroes.characters.skill.*;
 import com.herocraftonline.heroes.chat.ChatComponents;
 import com.herocraftonline.heroes.nms.NMSHandler;
 import com.herocraftonline.heroes.util.Util;
-import de.slikey.effectlib.util.VectorUtils;
 import org.bukkit.Bukkit;
-import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.*;
@@ -30,6 +30,8 @@ import org.bukkit.util.Vector;
 import java.util.*;
 
 public class SkillShurikens extends PassiveSkill {
+    private static String cooldownEffectName = "ShurikenTossCooldown";
+
     private static List<String> defaultWeapons = new ArrayList<String>(Arrays.asList(Material.NETHER_STAR.name()));
 
     private Map<Arrow, Long> shurikens = new LinkedHashMap<Arrow, Long>(100) {
@@ -42,7 +44,8 @@ public class SkillShurikens extends PassiveSkill {
 
     public SkillShurikens(Heroes plugin) {
         super(plugin, "Shurikens");
-        setDescription("Right click with a shear in hand to throw $1 $2 damage and can be thrown every $3 second(s).");
+        setDescription("Right click with a $4 in hand to throw $1 $2 damage and can be thrown every $3 second(s). " +
+                "Offhanding works too!");
         setArgumentRange(0, 0);
         setTypes(SkillType.AGGRESSIVE, SkillType.DAMAGING, SkillType.ABILITY_PROPERTY_PROJECTILE, SkillType.UNBINDABLE);
 
@@ -85,108 +88,11 @@ public class SkillShurikens extends PassiveSkill {
         return config;
     }
 
-    public class SkillEntityListener implements Listener {
+    public boolean tryShurikenToss(Hero hero, boolean applyCosts) {
+        Player player = hero.getPlayer();
+        if (!validateCanCast(hero, applyCosts))
+            return false;
 
-        private Skill skill;
-
-        public SkillEntityListener(Skill skill) {
-            this.skill = skill;
-        }
-
-        @EventHandler(priority = EventPriority.MONITOR)
-        public void onPlayerInteract(PlayerInteractEvent event) {
-            if (event.getAction() != Action.RIGHT_CLICK_AIR && event.getAction() != Action.RIGHT_CLICK_BLOCK)
-                return;
-
-            Player player = event.getPlayer();
-            Hero hero = plugin.getCharacterManager().getHero(player);
-            if (!hero.canUseSkill(skill))
-                return;
-            if (hero.hasEffect("ShurikenTossCooldown"))
-                return;
-
-            if (event.getClickedBlock() != null) {
-                if ((Util.interactableBlocks.contains(event.getClickedBlock().getType()))) {
-                    return;
-                }
-            }
-
-            PlayerInventory playerInv = player.getInventory();
-            ItemStack mainHand = NMSHandler.getInterface().getItemInMainHand(playerInv);
-            ItemStack offHand = NMSHandler.getInterface().getItemInOffHand(playerInv);
-            List<String> weapons = SkillConfigManager.getUseSetting(hero, skill, "toss-weapons", defaultWeapons);
-            if ((mainHand == null || !weapons.contains(mainHand.getType().name())) && (offHand == null || !weapons.contains(offHand.getType().name())))
-                return;
-
-            int staminaCost = SkillConfigManager.getUseSetting(hero, skill, SkillSetting.STAMINA, 100, false);
-            if (staminaCost > 0) {
-                if (hero.getStamina() < staminaCost) {
-                    player.sendMessage("    " + ChatComponents.GENERIC_SKILL + "You are too fatigued!");
-                    return;
-                }
-                hero.setStamina(hero.getStamina() - staminaCost);
-            }
-
-            shurikenToss(player);
-        }
-
-        @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
-        public void onProjectileHit(ProjectileHitEvent event) {
-            if (!(event.getEntity() instanceof Arrow))
-                return;
-
-            final Arrow projectile = (Arrow) event.getEntity();
-            if ((!(projectile.getShooter() instanceof Player)))
-                return;
-            if (!(shurikens.containsKey(projectile)))
-                return;
-
-            // Delete the projectile so it cannot be picked up by any players.
-            Bukkit.getScheduler().runTaskLater(plugin, new Runnable() {
-                @Override
-                public void run() {
-                    shurikens.remove(projectile);
-                    projectile.remove();
-                }
-            }, 2L);
-        }
-
-        @EventHandler(priority = EventPriority.LOWEST, ignoreCancelled = true)
-        public void onEntityDamage(EntityDamageEvent event) {
-            if ((!(event instanceof EntityDamageByEntityEvent)) || (!(event.getEntity() instanceof LivingEntity)))
-                return;
-
-            Entity projectile = ((EntityDamageByEntityEvent) event).getDamager();
-            if ((!(projectile instanceof Arrow)) || (!(((Projectile) projectile).getShooter() instanceof Player)))
-                return;
-            if (!(shurikens.containsKey(projectile)))
-                return;
-
-            Arrow shuriken = (Arrow) projectile;
-            Player player = (Player) shuriken.getShooter();
-            Hero hero = plugin.getCharacterManager().getHero(player);
-
-            shurikens.remove(shuriken);
-
-            LivingEntity target = (LivingEntity) event.getEntity();
-
-            // Damage the target
-            double damage = SkillConfigManager.getUseSetting(hero, skill, SkillSetting.DAMAGE, 35.0, false);
-            double damageIncrease = SkillConfigManager.getUseSetting(hero, skill, SkillSetting.DAMAGE_INCREASE_PER_DEXTERITY, 0.0, false);
-            damage += hero.getAttributeValue(AttributeType.DEXTERITY) * damageIncrease;
-
-            addSpellTarget(target, hero);
-            damageEntity(target, player, damage, DamageCause.ENTITY_ATTACK, false);
-
-            // Prevent arrow from dealing damage
-            shuriken.remove();
-            event.setDamage(0.0);
-            event.setCancelled(true);
-        }
-    }
-
-    public void shurikenToss(Player player) {
-        Hero hero = plugin.getCharacterManager().getHero(player);
         int numShuriken = SkillConfigManager.getUseSetting(hero, this, "num-shuriken", 3, false);
 
         double degrees = SkillConfigManager.getUseSetting(hero, this, "degrees", 10.0, false);
@@ -194,12 +100,93 @@ public class SkillShurikens extends PassiveSkill {
         double velocityMultiplier = SkillConfigManager.getUseSetting(hero, this, "velocity-multiplier", 3.0, false);
 
         shurikenToss(player, numShuriken, degrees, interval, velocityMultiplier);
+        return true;
     }
 
-    public void shurikenToss(final Player player, int numShuriken, double degrees, double interval, final double velocityMultiplier) {
+    public boolean validateCanCast(Hero hero, boolean applyCosts) {
+        if (!hero.canUseSkill(this))
+            return false;
+
+        if (hero.hasEffect(cooldownEffectName)) {
+            double remainingTime = ((ShurikenTossCooldown) hero.getEffect(cooldownEffectName)).getRemainingTime() / 1000.0;
+            if (remainingTime > 0.0) {    // Sometimes we are below zero with this thing. Kinda weird.
+                String formattedRemainingTime = Util.decFormatCDs.format(remainingTime);
+                ActiveSkill.sendResultMessage(hero, this, new SkillResult(SkillResult.ResultType.ON_COOLDOWN, true, this.getName(), formattedRemainingTime));
+                return false;
+            }
+        }
+
+        Player player = hero.getPlayer();
+        PlayerInventory playerInv = player.getInventory();
+        ItemStack mainHand = NMSHandler.getInterface().getItemInMainHand(playerInv);
+        ItemStack offHand = NMSHandler.getInterface().getItemInOffHand(playerInv);
+        List<String> weapons = SkillConfigManager.getUseSetting(hero, this, "toss-weapons", defaultWeapons);
+        if ((mainHand == null || !weapons.contains(mainHand.getType().name())) && (offHand == null || !weapons.contains(offHand.getType().name())))
+            return false;
+
+        double healthCost = SkillConfigManager.getUseSetting(hero, this, SkillSetting.HEALTH_COST, 0.0, false);
+        int stamCost = SkillConfigManager.getUseSetting(hero, this, SkillSetting.STAMINA, 0, false);
+        int manaCost = SkillConfigManager.getUseSetting(hero, this, SkillSetting.MANA, 0, false);
+
+        final SkillUseEvent skillEvent = new SkillUseEvent(this, player, hero, manaCost, healthCost, stamCost, null, null);
+        plugin.getServer().getPluginManager().callEvent(skillEvent);
+        if (skillEvent.isCancelled()) {
+            ActiveSkill.sendResultMessage(hero, this, SkillResult.CANCELLED);
+            return false;
+        }
+
+        // Update manaCost with result of SkillUseEvent
+        manaCost = skillEvent.getManaCost();
+        if (manaCost > hero.getMana()) {
+            ActiveSkill.sendResultMessage(hero, this, SkillResult.LOW_MANA);
+            return false;
+        }
+
+        // Update healthCost with results of SkillUseEvent
+        healthCost = skillEvent.getHealthCost();
+        if (healthCost > 0 && (hero.getPlayer().getHealth() <= healthCost)) {
+            ActiveSkill.sendResultMessage(hero, this, SkillResult.LOW_HEALTH);
+            return false;
+        }
+
+        //Update staminaCost with results of SkilluseEvent
+        stamCost = skillEvent.getStaminaCost();
+        if (stamCost > 0 && (hero.getStamina() < stamCost)) {
+            ActiveSkill.sendResultMessage(hero, this, SkillResult.LOW_STAMINA);
+            return false;
+        }
+
+        if (!applyCosts)
+            return true;
+
+        // Deduct health
+        if (healthCost > 0) {
+            player.setHealth(player.getHealth() - healthCost);
+        }
+
+        // Deduct mana
+        if (manaCost > 0) {
+            hero.setMana(hero.getMana() - manaCost);
+            if (hero.isVerboseMana()) {
+                hero.getPlayer().sendMessage(ChatComponents.Bars.mana(hero.getMana(), hero.getMaxMana(), true));
+            }
+        }
+
+        // Deduct stamina
+        if (stamCost > 0) {
+            hero.setStamina(hero.getStamina() - stamCost);
+            if (hero.isVerboseStamina()) {
+                hero.getPlayer().sendMessage(ChatComponents.Bars.stamina(hero.getStamina(), hero.getMaxStamina(), true));
+            }
+        }
+
+        return true;
+    }
+
+    private void shurikenToss(final Player player, int numShuriken, double degrees, double interval, final double velocityMultiplier) {
         Hero hero = plugin.getCharacterManager().getHero(player);
 
-        if (numShuriken < 1 || hero.hasEffect("ShurikenTossCooldown")) {
+        if (numShuriken < 1 || hero.hasEffect(cooldownEffectName)) {
             return;
         } else if (numShuriken == 1) {
             // If we're only firing a single shuriken, there is no need for fancy math.
@@ -258,19 +245,91 @@ public class SkillShurikens extends PassiveSkill {
         hero.addEffect(new ShurikenTossCooldown(this, player, cdDuration));
     }
 
-    public Vector rotateVector(Vector vector, double angle) {
-        double sin = Math.sin(angle);
-        double cos = Math.cos(angle);
-        double x = vector.getX() * cos + vector.getZ() * sin;
-        double z = vector.getX() * -sin + vector.getZ() * cos;
+    public class SkillEntityListener implements Listener {
+        private Skill skill;
 
-        return vector.setX(x).setZ(z);
+        public SkillEntityListener(Skill skill) {
+            this.skill = skill;
+        }
+
+        @EventHandler(priority = EventPriority.MONITOR)
+        public void onPlayerInteract(PlayerInteractEvent event) {
+            if (event.getAction() != Action.RIGHT_CLICK_AIR && event.getAction() != Action.RIGHT_CLICK_BLOCK)
+                return;
+
+            Player player = event.getPlayer();
+            Hero hero = plugin.getCharacterManager().getHero(player);
+            if (!hero.canUseSkill(skill))
+                return;
+
+            if (event.getClickedBlock() != null) {
+                if ((Util.interactableBlocks.contains(event.getClickedBlock().getType()))) {
+                    return;
+                }
+            }
+
+            tryShurikenToss(hero, true);
+        }
+
+        @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
+        public void onProjectileHit(ProjectileHitEvent event) {
+            if (!(event.getEntity() instanceof Arrow))
+                return;
+
+            final Arrow projectile = (Arrow) event.getEntity();
+            if ((!(projectile.getShooter() instanceof Player)))
+                return;
+            if (!(shurikens.containsKey(projectile)))
+                return;
+
+            // Delete the projectile so it cannot be picked up by any players.
+            Bukkit.getScheduler().runTaskLater(plugin, new Runnable() {
+                @Override
+                public void run() {
+                    shurikens.remove(projectile);
+                    projectile.remove();
+                }
+            }, 2L);
+        }
+
+        @EventHandler(priority = EventPriority.LOWEST, ignoreCancelled = true)
+        public void onEntityDamage(EntityDamageEvent event) {
+            if ((!(event instanceof EntityDamageByEntityEvent)) || (!(event.getEntity() instanceof LivingEntity)))
+                return;
+
+            Entity projectile = ((EntityDamageByEntityEvent) event).getDamager();
+            if ((!(projectile instanceof Arrow)) || (!(((Projectile) projectile).getShooter() instanceof Player)))
+                return;
+            if (!(shurikens.containsKey(projectile)))
+                return;
+
+            Arrow shuriken = (Arrow) projectile;
+            Player player = (Player) shuriken.getShooter();
+            Hero hero = plugin.getCharacterManager().getHero(player);
+
+            shurikens.remove(shuriken);
+
+            LivingEntity target = (LivingEntity) event.getEntity();
+
+            // Damage the target
+            double damage = SkillConfigManager.getUseSetting(hero, skill, SkillSetting.DAMAGE, 35.0, false);
+            double damageIncrease = SkillConfigManager.getUseSetting(hero, skill, SkillSetting.DAMAGE_INCREASE_PER_DEXTERITY, 0.0, false);
+            damage += hero.getAttributeValue(AttributeType.DEXTERITY) * damageIncrease;
+
+            addSpellTarget(target, hero);
+            damageEntity(target, player, damage, DamageCause.ENTITY_ATTACK, false);
+
+            // Prevent arrow from dealing damage
+            shuriken.remove();
+            event.setDamage(0.0);
+            event.setCancelled(true);
+        }
     }
 
     // Effect required for implementing an internal cooldown
     private class ShurikenTossCooldown extends ExpirableEffect {
         ShurikenTossCooldown(Skill skill, Player applier, long duration) {
-            super(skill, "ShurikenTossCooldown", applier, duration);
+            super(skill, cooldownEffectName, applier, duration);
         }
     }
 }

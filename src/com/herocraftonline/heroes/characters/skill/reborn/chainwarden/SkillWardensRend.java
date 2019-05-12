@@ -31,7 +31,7 @@ public class SkillWardensRend extends ActiveSkill {
     @Override
     public ConfigurationSection getDefaultConfig() {
         ConfigurationSection config = super.getDefaultConfig();
-        config.set(SkillSetting.RADIUS.node(), 30);
+        config.set(SkillSetting.RADIUS.node(), 30.0);
         return config;
     }
 

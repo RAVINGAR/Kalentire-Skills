@@ -29,7 +29,7 @@ public class SkillTimeDifferential extends TargettedSkill {
         setUsage("/skill timedifferential");
         setArgumentRange(0, 0);
         setIdentifiers("skill timedifferential");
-        setTypes(SkillType.ABILITY_PROPERTY_MAGICAL, SkillType.SILENCEABLE, SkillType.DAMAGING, SkillType.MULTI_GRESSIVE, SkillType.NO_SELF_TARGETTING);
+        setTypes(SkillType.ABILITY_PROPERTY_TEMPORAL, SkillType.DAMAGING, SkillType.MULTI_GRESSIVE, SkillType.NO_SELF_TARGETTING, SkillType.SILENCEABLE);
     }
 
     @Override

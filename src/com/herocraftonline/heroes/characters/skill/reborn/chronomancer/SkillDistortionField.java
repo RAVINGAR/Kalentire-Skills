@@ -36,7 +36,8 @@ public class SkillDistortionField extends TargettedLocationSkill {
         setUsage("/skill distortionfield");
         setArgumentRange(0, 0);
         setIdentifiers("skill distortionfield");
-        setTypes(SkillType.MULTI_GRESSIVE, SkillType.MOVEMENT_INCREASING, SkillType.MOVEMENT_SLOWING, SkillType.AREA_OF_EFFECT);
+        setTypes(SkillType.ABILITY_PROPERTY_TEMPORAL, SkillType.MULTI_GRESSIVE, SkillType.MOVEMENT_INCREASING,
+                SkillType.MOVEMENT_SLOWING, SkillType.AREA_OF_EFFECT, SkillType.SILENCEABLE);
     }
 
     @Override

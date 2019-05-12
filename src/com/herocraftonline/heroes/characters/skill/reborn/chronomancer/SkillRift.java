@@ -102,7 +102,9 @@ public class SkillRift extends TargettedSkill {
         playFirework(originalTargetLoc);
 
         player.teleport(flippedTargetLoc);
+        player.setFallDistance(0);
         target.teleport(flippedPlayerLoc);
+        target.setFallDistance(0);
 
         return SkillResult.NORMAL;
     }

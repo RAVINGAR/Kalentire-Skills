@@ -34,12 +34,12 @@ public class SkillNightmare extends ActiveSkill {
         setIdentifiers("skill nightmare");
         setArgumentRange(0, 0);
         setTypes(SkillType.ABILITY_PROPERTY_MAGICAL, SkillType.ABILITY_PROPERTY_DARK, SkillType.AREA_OF_EFFECT,
-                SkillType.BLINDING, SkillType.DAMAGING, SkillType.SILENCEABLE, SkillType.AGGRESSIVE);
+                SkillType.BLINDING, SkillType.DAMAGING, SkillType.SILENCEABLE, SkillType.INTERRUPTING, SkillType.AGGRESSIVE);
     }
 
     @Override
     public String getDescription(Hero hero) {
-        double radius = SkillConfigManager.getUseSetting(hero, this, SkillSetting.RADIUS, 5, false);
+        double radius = SkillConfigManager.getUseSetting(hero, this, SkillSetting.RADIUS, 5.0, false);
 
         int duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION.node(), 4000, false);
         int durationIncrease = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION_INCREASE_PER_CHARISMA, 50, false);
@@ -53,9 +53,8 @@ public class SkillNightmare extends ActiveSkill {
     @Override
     public ConfigurationSection getDefaultConfig() {
         ConfigurationSection config = super.getDefaultConfig();
-        config.set(SkillSetting.DAMAGE.node(), 55);
-        config.set(SkillSetting.DAMAGE_INCREASE_PER_INTELLECT.node(), 0.5);
-        config.set(SkillSetting.RADIUS.node(), 8);
+        config.set(SkillSetting.ON_INTERRUPT_FORCE_COOLDOWN.node(), 2000);
+        config.set(SkillSetting.RADIUS.node(), 8.0);
         config.set(SkillSetting.DURATION.node(), 4000);
         config.set(SkillSetting.DURATION_INCREASE_PER_CHARISMA.node(), 50);
         config.set(SkillSetting.APPLY_TEXT.node(), ChatComponents.GENERIC_SKILL + "%hero% has blinded %target% with %skill%!");
@@ -87,8 +86,10 @@ public class SkillNightmare extends ActiveSkill {
         double radius = SkillConfigManager.getUseSetting(hero, this, SkillSetting.RADIUS, 5.0, false);
 
         int duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION.node(), 4000, false);
-        int durationIncrease = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION_INCREASE_PER_CHARISMA, 50, false);
+        int durationIncrease = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION_INCREASE_PER_CHARISMA, 0, false);
         duration += hero.getAttributeValue(AttributeType.CHARISMA) * durationIncrease;
+
+        long interruptForceCooldown = SkillConfigManager.getUseSetting(hero, this, SkillSetting.ON_INTERRUPT_FORCE_COOLDOWN, 2000, false);
 
         broadcastExecuteText(hero);
 
@@ -100,6 +101,9 @@ public class SkillNightmare extends ActiveSkill {
 
             CharacterTemplate character = plugin.getCharacterManager().getCharacter((LivingEntity) entity);
             character.addEffect(dEffect);
+            if (character instanceof Hero) {
+                ((Hero) character).interruptDelayedSkill(interruptForceCooldown);
+            }
         }
 
         for (double r = 1.0; r < radius * 2.0; r++) {

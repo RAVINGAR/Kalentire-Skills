@@ -36,8 +36,8 @@ public class SkillCorruptedSeed extends TargettedSkill {
         setDescription("Plant a corrupted seed in yourself or an ally, recasting this ability will explode the seed silencing nearby enemies. " +
                 "While the user is holding a seed they will take periodic damage");
         setUsage("/skill corruptedseed");
-        setArgumentRange(0, 0);
         setIdentifiers("skill corruptedseed");
+        setArgumentRange(0, 0);
         setTypes(SkillType.ABILITY_PROPERTY_DARK, SkillType.SILENCEABLE, SkillType.BUFFING);
 
         setToggleableEffectName(toggleableEffectName);

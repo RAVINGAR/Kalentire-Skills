@@ -117,6 +117,7 @@ public class SkillManaMissile extends PassiveSkill {
 
             event.setDamage(0.0);
             event.setCancelled(true);
+            fireProjectile(player, hero);
         }
 
         private void fireProjectile(Player player, Hero hero) {

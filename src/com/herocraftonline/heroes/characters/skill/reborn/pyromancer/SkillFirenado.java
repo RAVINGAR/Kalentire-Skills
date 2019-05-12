@@ -263,16 +263,17 @@ public class SkillFirenado extends ActiveSkill {
 
         @Override
         protected boolean onCollideWithBlock(Block block, Vector point, BlockFace face) {
-            Location location = getLocation();
-
-            // Make it "bounce" and go the other way.
-            Vector direction = getDirection();
-            setLocation(location.clone().subtract(direction));
-            setDirectionAndSpeed(direction.multiply(-1).setY(0.5), this.defaultSpeed);
-            if (currentTarget != null) {
-                tempIgnoreTargets.add(currentTarget);
-                currentTarget = null;
-            }
+            // I could never make this work well enough to be used...
+//            Location location = getLocation();
+//
+//            // Make it "bounce" and go the other way.
+//            Vector direction = getDirection();
+//            setLocation(location.clone().subtract(direction));
+//            setDirectionAndSpeed(direction.multiply(-1).setY(0.5), this.defaultSpeed);
+//            if (currentTarget != null) {
+//                tempIgnoreTargets.add(currentTarget);
+//                currentTarget = null;
+//            }
             return false;
         }
 

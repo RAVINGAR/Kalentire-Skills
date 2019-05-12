@@ -20,7 +20,7 @@ public class SkillQuantizedTime extends PassiveSkill{
     public SkillQuantizedTime(Heroes plugin) {
         super(plugin, "QuantizedTime");
         setDescription("You regain $1 health, $3 mana and $4 stamina every $2 seconds.");
-        setEffectTypes(EffectType.BENEFICIAL, EffectType.HEALING);
+        setEffectTypes(EffectType.TEMPORAL, EffectType.BENEFICIAL, EffectType.HEALING);
     }
 
     @Override
