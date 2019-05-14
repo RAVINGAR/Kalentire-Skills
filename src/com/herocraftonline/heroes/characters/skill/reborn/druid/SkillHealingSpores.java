@@ -36,6 +36,7 @@ import java.util.logging.Level;
 
 public class SkillHealingSpores extends ActiveSkill {
     private static String sporeEffectName = "FloatingHealingSpores";
+    private static Color FEL_GREEN = Color.fromRGB(19, 255, 41);
 
     public SkillHealingSpores(Heroes plugin) {
         super(plugin, "HealingSpores");
@@ -104,10 +105,8 @@ public class SkillHealingSpores extends ActiveSkill {
             if (!hero.hasEffect(sporeEffectName))
                 return;
 
-            if (hero.hasEffect(sporeEffectName)) {
-                HealingSporesEffect effect = (HealingSporesEffect) hero.getEffect(sporeEffectName);
-                effect.launchSpore(hero);
-            }
+            HealingSporesEffect effect = (HealingSporesEffect) hero.getEffect(sporeEffectName);
+            effect.launchSpore(hero);
         }
     }
 
@@ -147,7 +146,7 @@ public class SkillHealingSpores extends ActiveSkill {
                 missileVisual.iterations = (int) (getDuration() / 50) + projDurationTicks;
                 missileVisual.radius = this.projectileRadius;
                 missileVisual.particle = Particle.REDSTONE;
-                missileVisual.color = Color.GREEN;
+                missileVisual.color = FEL_GREEN;
                 missileVisual.particles = 10;
                 missileVisual.radiusIncrease = 0;
                 effectManager.start(missileVisual);
@@ -169,6 +168,9 @@ public class SkillHealingSpores extends ActiveSkill {
         public void launchSpore(Hero hero) {
             final Player player = hero.getPlayer();
 
+            if (missileVisuals.isEmpty())
+                return;
+
             Pair<EffectManager, SphereEffect> pair = missileVisuals.get(firedProjectiles);
             SphereEffect missileVisual = pair.getRight();
             Location eyeLocation = hero.getPlayer().getEyeLocation();
@@ -178,7 +180,7 @@ public class SkillHealingSpores extends ActiveSkill {
             spore.fireMissile();
 
             firedProjectiles++;
-            if (firedProjectiles == maxProjectiles) {
+            if (firedProjectiles >= maxProjectiles) {
                 removeFromHero(hero);
             }
         }

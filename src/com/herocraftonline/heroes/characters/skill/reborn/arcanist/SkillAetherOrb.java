@@ -66,7 +66,7 @@ public class SkillAetherOrb extends ActiveSkill {
 		node.set(SkillSetting.DURATION.node(), 6000);
 		node.set(SkillSetting.DAMAGE_TICK.node(), 50d);
 		node.set(BasicMissile.PROJECTILE_VELOCITY_NODE, 20.0);
-        node.set(BasicMissile.PROJECTILE_SIZE_NODE, 20.0);
+        node.set(BasicMissile.PROJECTILE_SIZE_NODE, 0.2);
 		node.set("max-targets-per-pulse", 4);
 		node.set("visual-orb-radius", 1.0);
 		return node;
