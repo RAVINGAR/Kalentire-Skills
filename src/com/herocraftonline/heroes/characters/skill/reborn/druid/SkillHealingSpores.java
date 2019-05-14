@@ -17,10 +17,10 @@ import de.slikey.effectlib.EffectManager;
 import de.slikey.effectlib.effect.SphereEffect;
 import de.slikey.effectlib.util.DynamicLocation;
 import org.bukkit.Bukkit;
+import org.bukkit.Color;
 import org.bukkit.Location;
 import org.bukkit.Particle;
 import org.bukkit.configuration.ConfigurationSection;
-import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -32,7 +32,6 @@ import org.bukkit.util.Vector;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Queue;
 import java.util.logging.Level;
 
 public class SkillHealingSpores extends ActiveSkill {
@@ -104,13 +103,11 @@ public class SkillHealingSpores extends ActiveSkill {
             Hero hero = plugin.getCharacterManager().getHero(player);
             if (!hero.hasEffect(sporeEffectName))
                 return;
-//
+
             if (hero.hasEffect(sporeEffectName)) {
                 HealingSporesEffect effect = (HealingSporesEffect) hero.getEffect(sporeEffectName);
                 effect.launchSpore(hero);
-
             }
-
         }
     }
 
@@ -119,7 +116,7 @@ public class SkillHealingSpores extends ActiveSkill {
         private int maxProjectiles;
         private double projectileRadius;
         private List<Pair<EffectManager, SphereEffect>> missileVisuals = new ArrayList<Pair<EffectManager, SphereEffect>>();
-        
+
         HealingSporesEffect(Skill skill, Player applier, long duration) {
             super(skill, sporeEffectName, applier, duration);
 
@@ -149,8 +146,9 @@ public class SkillHealingSpores extends ActiveSkill {
                 missileVisual.setDynamicOrigin(dynamicLoc);
                 missileVisual.iterations = (int) (getDuration() / 50) + projDurationTicks;
                 missileVisual.radius = this.projectileRadius;
-                missileVisual.particle = Particle.VILLAGER_HAPPY;
-                missileVisual.particles = 15;
+                missileVisual.particle = Particle.REDSTONE;
+                missileVisual.color = Color.GREEN;
+                missileVisual.particles = 10;
                 missileVisual.radiusIncrease = 0;
                 effectManager.start(missileVisual);
 
@@ -181,7 +179,7 @@ public class SkillHealingSpores extends ActiveSkill {
 
             firedProjectiles++;
             if (firedProjectiles == maxProjectiles) {
-               removeFromHero(hero);
+                removeFromHero(hero);
             }
         }
     }
@@ -191,13 +189,23 @@ public class SkillHealingSpores extends ActiveSkill {
     }
 
     private class HealingSpore extends BasicHealMissile {
-
         HealingSpore(Heroes plugin, Hero hero, Skill skill, EffectManager effectManager, SphereEffect visualEffect) {
             super(plugin, skill, hero);
 
             replaceEffects(effectManager, visualEffect);
             Location newMissileLoc = visualEffect.getLocation().clone().setDirection(player.getEyeLocation().getDirection());
             visualEffect.setLocation(newMissileLoc);
+        }
+
+        @Override
+        protected void onStart() {
+            // Override the onStart because we don't want it to reset our already running effect manager.
+            this.visualEffect.setLocation(getLocation());
+        }
+
+        @Override
+        protected void onTick() {
+            this.visualEffect.setLocation(getLocation());
         }
 
         protected void onValidTargetFound(LivingEntity target, Vector origin, Vector force) {

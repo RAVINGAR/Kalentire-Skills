@@ -183,6 +183,13 @@ public class SkillAetherMissiles extends ActiveSkill {
             visualEffect.setLocation(newMissileLoc);
         }
 
+        @Override
+        protected void onStart() {
+            // Override the onStart because we don't want it to reset our already running effect manager.
+            this.visualEffect.setLocation(getLocation());
+        }
+
+        @Override
         protected void onTick() {
             this.visualEffect.setLocation(getLocation());
         }
