@@ -2,7 +2,6 @@ package com.herocraftonline.heroes.characters.skill.reborn.pathfinder;
 
 import com.herocraftonline.heroes.Heroes;
 import com.herocraftonline.heroes.api.SkillResult;
-import com.herocraftonline.heroes.attributes.AttributeType;
 import com.herocraftonline.heroes.characters.CharacterTemplate;
 import com.herocraftonline.heroes.characters.Hero;
 import com.herocraftonline.heroes.characters.effects.Effect;
@@ -32,7 +31,6 @@ import java.util.Map;
 public class SkillExplosiveShot extends ActiveSkill {
 
     private boolean ncpEnabled = false;
-    public VisualEffect fplayer = new VisualEffect();
 
     private Map<Arrow, Long> explosiveShots = new LinkedHashMap<Arrow, Long>(100) {
         private static final long serialVersionUID = 1L;
@@ -71,10 +69,10 @@ public class SkillExplosiveShot extends ActiveSkill {
         else
             numShotsString = "next shot";
 
-        int duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, 4000, false);
-        double radius = SkillConfigManager.getUseSetting(hero, this, SkillSetting.RADIUS, 4.0, false);
+        int duration = SkillConfigManager.getScaledUseSettingInt(hero, this, SkillSetting.DURATION, false);
+        double radius = SkillConfigManager.getScaledUseSettingDouble(hero, this, SkillSetting.RADIUS, false);
 
-        double damage = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE, 80.0, false);
+        double damage = SkillConfigManager.getScaledUseSettingDouble(hero, this, SkillSetting.DAMAGE, false);
 
         String formattedDuration = Util.decFormat.format(duration / 1000.0);
         String formattedDamage = Util.decFormat.format(damage);
@@ -136,7 +134,7 @@ public class SkillExplosiveShot extends ActiveSkill {
 
     public SkillResult use(Hero hero, String[] args) {
         Player player = hero.getPlayer();
-        int duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, 4000, false);
+        int duration = SkillConfigManager.getScaledUseSettingInt(hero, this, SkillSetting.DURATION, false);
         int numShots = SkillConfigManager.getUseSetting(hero, this, "num-shots", 1, false);
 
         hero.addEffect(new ExplosiveShotBuffEffect(this, player, duration, numShots));
@@ -282,22 +280,21 @@ public class SkillExplosiveShot extends ActiveSkill {
         projectile.getWorld().spawnParticle(Particle.EXPLOSION_LARGE, projectile.getLocation(), 10, 1, 1, 1, 0);
         //projectile.getWorld().playSound(projectile.getLocation(), Sound.ENTITY_GENERIC_EXPLODE, 1.0F, 1.0F);
 
-        int radius = SkillConfigManager.getUseSetting(hero, this, SkillSetting.RADIUS, 4, false);
-        double damage = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE, 80.0, false);
-        double damageIncrease = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE_INCREASE_PER_INTELLECT, 0.0, false);
-        damage += damageIncrease * hero.getAttributeValue(AttributeType.INTELLECT);
+        double radius = SkillConfigManager.getScaledUseSettingDouble(hero, this, SkillSetting.RADIUS, false);
+        double damage = SkillConfigManager.getScaledUseSettingDouble(hero, this, SkillSetting.DAMAGE, false);
 
         // Play an effect, but only if we actually hit a target.
         // Play explosion effect
         projectile.getWorld().playEffect(projectile.getLocation(), org.bukkit.Effect.SMOKE, 4);
-        try {
-            fplayer.playFirework(projectile.getWorld(), projectile.getLocation(), FireworkEffect.builder().flicker(false).trail(true).with(FireworkEffect.Type.BURST).withColor(Color.ORANGE).withFade(Color.RED).build());
-        } catch (IllegalArgumentException e) {
-            e.printStackTrace();
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
 
+        VisualEffect.playInstantFirework(FireworkEffect.builder()
+                        .flicker(false)
+                        .trail(true)
+                        .with(FireworkEffect.Type.BURST)
+                        .withColor(Color.ORANGE)
+                        .withFade(Color.RED)
+                        .build(),
+                projectile.getLocation());
 
         // Prep some variables
         Location arrowLoc = projectile.getLocation();

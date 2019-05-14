@@ -49,9 +49,7 @@ public class SkillWeb extends TargettedSkill {
 
     @Override
     public String getDescription(Hero hero) {
-        int duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION.node(), 4000, false);
-        int durationIncrease = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION_INCREASE_PER_CHARISMA, 50, false);
-        duration += hero.getAttributeValue(AttributeType.CHARISMA) * durationIncrease;
+        int duration = SkillConfigManager.getScaledUseSettingInt(hero, this, SkillSetting.DURATION, false);
 
         String formattedDuration = Util.decFormat.format(duration / 1000.0);
 
@@ -84,9 +82,7 @@ public class SkillWeb extends TargettedSkill {
     public SkillResult use(Hero hero, LivingEntity target, String[] args) {
         Player player = hero.getPlayer();
 
-        int duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION.node(), 4000, false);
-        int durationIncrease = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION_INCREASE_PER_CHARISMA, 0, false);
-        duration += hero.getAttributeValue(AttributeType.CHARISMA) * durationIncrease;
+        int duration = SkillConfigManager.getScaledUseSettingInt(hero, this, SkillSetting.DURATION, false);
 
         long rootDuration = SkillConfigManager.getUseSetting(hero, this, "root-duration", 500, false);
         WebEffect wEffect = new WebEffect(this, player, duration, rootDuration);

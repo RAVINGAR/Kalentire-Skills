@@ -32,21 +32,11 @@ public class SkillBlackjack extends TargettedSkill {
 
     @Override
     public String getDescription(Hero hero) {
-        int str = hero.getAttributeValue(AttributeType.STRENGTH);
-        int cha = hero.getAttributeValue(AttributeType.CHARISMA);
 
-        double damage = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE, 60, false);
-        double stealthyDamage = SkillConfigManager.getUseSetting(hero, this, "stealthy-damage", 60, false);
-        long duration = SkillConfigManager.getUseSetting(hero, this, "stun-duration", 500, false);
-        long stealthyDuration = SkillConfigManager.getUseSetting(hero, this, "stealthy-duration", 60, false);
-
-        double damageIncrease = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE_INCREASE_PER_STRENGTH, 1, false);
-        damage += str * damageIncrease;
-        stealthyDamage += str * damageIncrease;
-
-        long durationIncrease = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION_INCREASE_PER_CHARISMA, 15, false);
-        duration += cha * durationIncrease;
-        stealthyDuration += cha * durationIncrease;
+        double damage = SkillConfigManager.getScaledUseSettingDouble(hero, this, SkillSetting.DAMAGE, false);
+        double stealthyDamage = SkillConfigManager.getScaledUseSettingDouble(hero, this, "stealthy-damage", false);
+        long duration = SkillConfigManager.getScaledUseSettingInt(hero, this, "stun-duration", 500, false);
+        long stealthyDuration = SkillConfigManager.getScaledUseSettingInt(hero, this, "stealthy-duration", false);
 
         String endText = "";
         if (stealthyDamage > 0 || stealthyDuration > 0) {
@@ -55,7 +45,7 @@ public class SkillBlackjack extends TargettedSkill {
         if (stealthyDamage > 0) {
             endText += "do " + stealthyDamage + " damage";
             if (stealthyDuration > 0)
-                endText+= " and";
+                endText+= " and ";
             else
                 endText += ".";
         }
@@ -88,21 +78,11 @@ public class SkillBlackjack extends TargettedSkill {
 
         broadcastExecuteText(hero, target);
 
-        int str = hero.getAttributeValue(AttributeType.STRENGTH);
-        int cha = hero.getAttributeValue(AttributeType.CHARISMA);
 
-        double damage = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE, 60, false);
-        double stealthyDamage = SkillConfigManager.getUseSetting(hero, this, "stealthy-damage", 60, false);
-        long duration = SkillConfigManager.getUseSetting(hero, this, "stun-duration", 500, false);
-        long stealthyDuration = SkillConfigManager.getUseSetting(hero, this, "stealthy-duration", 60, false);
-
-        double damageIncrease = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE_INCREASE_PER_STRENGTH, 1, false);
-        damage += str * damageIncrease;
-        stealthyDamage += str * damageIncrease;
-
-        long durationIncrease = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION_INCREASE_PER_CHARISMA, 15, false);
-        duration += cha * durationIncrease;
-        stealthyDuration += cha * durationIncrease;
+        double damage = SkillConfigManager.getScaledUseSettingDouble(hero, this, SkillSetting.DAMAGE, false);
+        double stealthyDamage = SkillConfigManager.getScaledUseSettingDouble(hero, this, "stealthy-damage", false);
+        long duration = SkillConfigManager.getScaledUseSettingInt(hero, this, "stun-duration", false);
+        long stealthyDuration = SkillConfigManager.getScaledUseSettingInt(hero, this, "stealthy-duration", false);
 
         boolean isStealthy = false;
         for (Effect effect : hero.getEffects()) {

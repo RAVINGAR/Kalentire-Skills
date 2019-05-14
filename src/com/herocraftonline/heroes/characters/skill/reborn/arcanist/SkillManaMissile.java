@@ -7,6 +7,7 @@ import com.herocraftonline.heroes.api.events.WeaponDamageEvent;
 import com.herocraftonline.heroes.characters.Hero;
 import com.herocraftonline.heroes.characters.effects.ExpirableEffect;
 import com.herocraftonline.heroes.characters.skill.*;
+import com.herocraftonline.heroes.characters.skill.tools.BasicDamageMissile;
 import com.herocraftonline.heroes.characters.skill.tools.BasicMissile;
 import com.herocraftonline.heroes.chat.ChatComponents;
 import com.herocraftonline.heroes.nms.NMSHandler;
@@ -52,7 +53,7 @@ public class SkillManaMissile extends PassiveSkill {
     }
 
     public String getDescription(Hero hero) {
-        final double damage = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE, 50.0, false);
+        final double damage = SkillConfigManager.getScaledUseSettingDouble(hero, this, SkillSetting.DAMAGE, false);
 
         return getDescription()
                 .replace("$1", Util.decFormat.format(damage));
@@ -62,12 +63,12 @@ public class SkillManaMissile extends PassiveSkill {
         ConfigurationSection config = super.getDefaultConfig();
         config.set(SkillSetting.DAMAGE.node(), 40.0);
         config.set("catalysts", Util.hoes);
-        config.set("projectile-size", 0.3);
-        config.set("projectile-velocity", 75.0);
-        config.set("projectile-ticks-lived", 30);
-        config.set("projectile-gravity", 0.0);
-        config.set("projectile-pierces-on-hit", true);
-        config.set("knockback-on-hit", false);
+        config.set(BasicMissile.PROJECTILE_SIZE_NODE, 0.3);
+        config.set(BasicMissile.PROJECTILE_VELOCITY_NODE, 75.0);
+        config.set(BasicMissile.PROJECTILE_DURATION_TICKS_NODE, 15);
+        config.set(BasicMissile.PROJECTILE_GRAVITY_NODE, 0.0);
+        config.set(BasicDamageMissile.PROJECTILE_PIERCES_ON_HIT_NODE, false);
+        config.set(BasicDamageMissile.PROJECTILE_KNOCKS_BACK_ON_HIT_NODE, true);
         config.set(SkillSetting.COOLDOWN.node(), 500);
         config.set(SkillSetting.APPLY_TEXT.node(), "");
         config.set(SkillSetting.UNAPPLY_TEXT.node(), "");
@@ -104,26 +105,16 @@ public class SkillManaMissile extends PassiveSkill {
                 return;
 
             Hero hero = ((Hero) event.getDamager());
-            if (!hero.canUseSkill(skill))
-                return;
-
-            Player player = hero.getPlayer();
-            PlayerInventory playerInv = player.getInventory();
-            ItemStack mainHand = NMSHandler.getInterface().getItemInMainHand(playerInv);
-
-            List<String> allowedCatalysts = SkillConfigManager.getUseSetting(hero, skill, "catalysts", Util.hoes);
-            if (mainHand == null || !allowedCatalysts.contains(mainHand.getType().name()))
+            if (!validateCanCast(hero, true))
                 return;
 
             event.setDamage(0.0);
             event.setCancelled(true);
-            fireProjectile(player, hero);
+            fireProjectile(hero.getPlayer(), hero);
         }
 
         private void fireProjectile(Player player, Hero hero) {
-            double projSize = SkillConfigManager.getUseSetting(hero, skill, "projectile-size", 0.25, false);
-            double projVelocity = SkillConfigManager.getUseSetting(hero, skill, "projectile-velocity", 20.0, false);
-            ManaProjectile missile = new ManaProjectile(plugin, skill, hero, projSize, projVelocity);
+            ManaProjectile missile = new ManaProjectile(plugin, skill, hero);
             missile.fireMissile();
             player.getWorld().playSound(player.getLocation(), Sound.ENTITY_VEX_HURT, 2F, 1F);
 
@@ -213,81 +204,23 @@ public class SkillManaMissile extends PassiveSkill {
     }
 
     private class CooldownEffect extends ExpirableEffect {
-        public CooldownEffect(Skill skill, Player applier, long duration) {
+        CooldownEffect(Skill skill, Player applier, long duration) {
             super(skill, cooldownEffectName, applier, duration);
         }
     }
 
-    private class ManaProjectile extends BasicMissile {
-        private final boolean knockBackOnHit;
-        private final boolean shouldPierce;
-        private List<LivingEntity> hitTargets = new ArrayList<LivingEntity>();
+    private class ManaProjectile extends BasicDamageMissile {
+        ManaProjectile(Heroes plugin, Skill skill, Hero hero) {
+            super(plugin, skill, hero);
 
-        public ManaProjectile(Plugin plugin, Skill skill, Hero hero, double projectileSize, double projVelocity) {
-            super(plugin, skill, hero, projectileSize, projVelocity);
-
-            setRemainingLife(SkillConfigManager.getUseSetting(hero, skill, "projectile-max-ticks-lived", 30, false));
-            setGravity(SkillConfigManager.getUseSetting(hero, skill, "projectile-gravity", 0.0, false));
-            this.knockBackOnHit = SkillConfigManager.getUseSetting(hero, skill, "knockback-on-hit", false);
-            this.shouldPierce = SkillConfigManager.getUseSetting(hero, skill, "projectile-pierces-on-hit", false);
-            this.damage = SkillConfigManager.getUseSetting(hero, skill, SkillSetting.DAMAGE, 50.0, false);
             this.visualEffect = new ManaMissileVisualEffect(this.effectManager);
         }
 
         @Override
         protected void onTick() {
-            Location loc = getLocation();
-            this.visualEffect.setLocation(loc);
-//			if (this.getTicksLived() % 2 == 0) {
-//				loc.getWorld().playSound(loc, Sound.ENTITY_VEX_HURT, 2F, 1F);
-//			}
+            // Update visuals every tick
+            this.visualEffect.setLocation(getLocation());
         }
-
-        @Override
-        protected boolean onCollideWithEntity(Entity entity) {
-            if (shouldPierce)
-                return false;
-            return entity instanceof LivingEntity && !hero.isAlliedTo((LivingEntity) entity);
-        }
-
-        @Override
-        protected void onEntityPassed(Entity entity, Vector passOrigin, Vector passForce) {
-            if (!(entity instanceof LivingEntity) || hitTargets.contains(entity)) {
-                return;
-            }
-
-            LivingEntity target = (LivingEntity) entity;
-            if (!Skill.damageCheck(player, target))
-                return;
-
-            addSpellTarget(target, hero);
-            damageEntity(target, player, damage, EntityDamageEvent.DamageCause.MAGIC, knockBackOnHit);
-            hitTargets.add(target);
-
-            if (!shouldPierce)
-                this.kill();
-        }
-
-        // Dunno if I actually need this. Never tested.
-        // @Override
-        // protected void onEntityHit(Entity entity, Vector hitOrigin, Vector hitForce) {
-        //     if (shouldPierce) {
-        //         // We already handle damage for pierce in the "onEntityPassed" method. Exit out so that we don't double up.
-        //         return;
-        //     }
-
-        //     if (!(entity instanceof LivingEntity) || hitTargets.contains(entity)) {
-        //         return;
-        //     }
-
-        //     LivingEntity target = (LivingEntity) entity;
-        //     if (!Skill.damageCheck(player, target))
-        //         return;
-
-        //     addSpellTarget(target, hero);
-        //     damageEntity(target, player, damage, EntityDamageEvent.DamageCause.MAGIC, knockBackOnHit);
-        //     hitTargets.add(target);
-        // }
     }
 
     private class ManaMissileVisualEffect extends Effect {

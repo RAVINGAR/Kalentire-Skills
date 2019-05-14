@@ -33,7 +33,7 @@ public class SkillBlink extends ActiveSkill {
 
     @Override
     public String getDescription(Hero hero) {
-        int distance = SkillConfigManager.getUseSetting(hero, this, SkillSetting.MAX_DISTANCE, 6, false);
+        int distance = SkillConfigManager.getScaledUseSettingInt(hero, this, SkillSetting.MAX_DISTANCE, false);
 
         return getDescription()
                 .replace("$1", distance + "");
@@ -56,9 +56,7 @@ public class SkillBlink extends ActiveSkill {
             return SkillResult.FAIL;
         }
 
-        int distance = SkillConfigManager.getUseSetting(hero, this, SkillSetting.MAX_DISTANCE, 9, false);
-        double distIncrease = SkillConfigManager.getUseSetting(hero, this, SkillSetting.MAX_DISTANCE_INCREASE_PER_INTELLECT, 0.0, false);
-        distance += (int) (distIncrease * hero.getAttributeValue(AttributeType.INTELLECT));
+        int distance = SkillConfigManager.getScaledUseSettingInt(hero, this, SkillSetting.MAX_DISTANCE, false);
 
         Material mat = player.getLocation().getBlock().getRelative(BlockFace.DOWN).getType();
         switch (mat) {

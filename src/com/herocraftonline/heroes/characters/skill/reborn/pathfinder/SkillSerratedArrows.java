@@ -34,8 +34,8 @@ public class SkillSerratedArrows extends PassiveSkill {
 
     @Override
     public String getDescription(Hero hero) {
-        double damage = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE, 95, false);
-        long duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, 5000, false);
+        double damage = SkillConfigManager.getScaledUseSettingDouble(hero, this, SkillSetting.DAMAGE, false);
+        long duration = SkillConfigManager.getScaledUseSettingInt(hero, this, SkillSetting.DURATION, false);
 
         return getDescription()
                 .replace("$1", Util.decFormat.format(duration / 1000.0))

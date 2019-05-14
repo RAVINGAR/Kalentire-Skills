@@ -34,9 +34,9 @@ public class SkillLockup extends ActiveSkill {
     }
 
     public String getDescription(Hero hero) {
-        double damage = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE, 35.0, false);
-        double radius = SkillConfigManager.getUseSetting(hero, this, SkillSetting.RADIUS, 12.0, false);
-        long duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, 5000, false);
+        double damage = SkillConfigManager.getScaledUseSettingDouble(hero, this, SkillSetting.DAMAGE, false);
+        double radius = SkillConfigManager.getScaledUseSettingDouble(hero, this, SkillSetting.RADIUS, false);
+        long duration = SkillConfigManager.getScaledUseSettingInt(hero, this, SkillSetting.DURATION, false);
 
         return super.getDescription()
                 .replace("$1", Util.decFormat.format(radius))
@@ -74,9 +74,9 @@ public class SkillLockup extends ActiveSkill {
 
         broadcastExecuteText(hero);
 
-        double damage = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE, 35.0, false);
-        double radius = SkillConfigManager.getUseSetting(hero, this, SkillSetting.RADIUS, 12.0, false);
-        long duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, 5000, false);
+        double damage = SkillConfigManager.getScaledUseSettingDouble(hero, this, SkillSetting.DAMAGE, false);
+        double radius = SkillConfigManager.getScaledUseSettingDouble(hero, this, SkillSetting.RADIUS, false);
+        long duration = SkillConfigManager.getScaledUseSettingInt(hero, this, SkillSetting.DURATION, false);
         double hookLeashDistance = SkillConfigManager.getUseSetting(hero, this, "hook-leash-distance", 15.0, false);
         double hookLeashPower = SkillConfigManager.getUseSetting(hero, this, "hook-leash-power", 1.0, false);
 

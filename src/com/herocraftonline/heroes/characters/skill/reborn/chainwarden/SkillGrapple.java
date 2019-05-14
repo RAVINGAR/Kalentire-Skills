@@ -61,7 +61,7 @@ public class SkillGrapple extends ActiveSkill {
         Player player = hero.getPlayer();
         World world = player.getWorld();
 
-        double maxDistance = SkillConfigManager.getUseSetting(hero, this, SkillSetting.MAX_DISTANCE, 25.0, false);
+        double maxDistance = SkillConfigManager.getScaledUseSettingDouble(hero, this, SkillSetting.MAX_DISTANCE, false);
         Location eyeLocation = player.getEyeLocation();
         Vector normal = eyeLocation.getDirection();
         Vector start = eyeLocation.toVector();

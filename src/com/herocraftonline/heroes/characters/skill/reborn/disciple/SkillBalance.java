@@ -69,10 +69,8 @@ public class SkillBalance extends ActiveSkill {
         Iterator<Hero> partyMembers = heroParty.getMembers().iterator();
         Location playerLocation = player.getLocation();
 
-        int radius = SkillConfigManager.getUseSetting(hero, this, SkillSetting.RADIUS, 7, false);
-        double radiusIncrease = SkillConfigManager.getUseSetting(hero, this, SkillSetting.RADIUS_INCREASE_PER_WISDOM, 0.1, false);
-        radius += (int) Math.floor(radiusIncrease * hero.getAttributeValue(AttributeType.WISDOM));
-        int radiusSquared = radius * radius;
+        double radius = SkillConfigManager.getScaledUseSettingDouble(hero, this, SkillSetting.RADIUS, false);
+        double radiusSquared = radius * radius;
 
         boolean skipRangeCheck = (radius == 0);                        //0 for no maximum range
         while (partyMembers.hasNext()) {

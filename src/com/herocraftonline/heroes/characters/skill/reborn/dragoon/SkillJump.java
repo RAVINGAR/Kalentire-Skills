@@ -82,11 +82,8 @@ public class SkillJump extends ActiveSkill {
                 break;
         }
 
-        int dexterity = hero.getAttributeValue(AttributeType.DEXTERITY);
 
-        double vPower = SkillConfigManager.getUseSetting(hero, this, "vertical-power", 0.5, false);
-        double vPowerIncrease = SkillConfigManager.getUseSetting(hero, this, "vertical-power-increase-per-dexterity", 0.0125, false);
-        vPower += dexterity * vPowerIncrease;
+        double vPower = SkillConfigManager.getScaledUseSettingDouble(hero, this, "vertical-power", false);
 
         if (vPower > 2.0)
             vPower = 2.0;
@@ -102,9 +99,7 @@ public class SkillJump extends ActiveSkill {
         directionVector.multiply(multiplier);
 
         velocity.add(directionVector);
-        double hPower = SkillConfigManager.getUseSetting(hero, this, "horizontal-power", 0.5, false);
-        double hPowerIncrease = SkillConfigManager.getUseSetting(hero, this, "horizontal-power-increase-per-dexterity", 0.0125, false);
-        hPower += dexterity * hPowerIncrease;
+        double hPower = SkillConfigManager.getScaledUseSettingDouble(hero, this, "horizontal-power", false);
 
         if (weakenVelocity)
             hPower *= 0.75;

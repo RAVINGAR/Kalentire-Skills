@@ -52,7 +52,7 @@ public class SkillRecklessFlurry extends ActiveSkill {
 
     @Override
     public String getDescription(Hero hero) {
-        int duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, 5000, false);
+        int duration = SkillConfigManager.getScaledUseSettingInt(hero, this, SkillSetting.DURATION, false);
         double incomingDamageIncrease = SkillConfigManager.getUseSetting(hero, this, "incoming-damage-increase", 0.5, false);
         double invulnFrameReductionPercent = SkillConfigManager.getUseSetting(hero, this, "invuln-frame-reduction-percent", 0.35, false);
 
@@ -85,7 +85,7 @@ public class SkillRecklessFlurry extends ActiveSkill {
     public SkillResult use(Hero hero, String[] args) {
         Player player = hero.getPlayer();
 
-        int duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, 7000, false);
+        int duration = SkillConfigManager.getScaledUseSettingInt(hero, this, SkillSetting.DURATION, false);
 
         double incomingDamageIncrease = SkillConfigManager.getUseSetting(hero, this, "incoming-damage-increase", 0.5, false);
         double invulnFrameReductionPercent = SkillConfigManager.getUseSetting(hero, this, "invuln-frame-reduction-percent", 0.35, false);

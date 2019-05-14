@@ -37,12 +37,7 @@ public class SkillTumble extends PassiveSkill {
     public String getDescription(Hero hero) {
         String description = "";
 
-        double distance = SkillConfigManager.getUseSetting(hero, this, "base-distance", 3, false);
-        double perLevel = SkillConfigManager.getUseSetting(hero, this, "distance-increase-per-level", 0.16, false);
-        double perDex = SkillConfigManager.getUseSetting(hero, this, "distance-increase-per-dexterity-level", 0.16, false);
-        distance += hero.getAttributeValue(AttributeType.DEXTERITY) * perDex;
-        distance += hero.getHeroLevel() * perLevel;
-
+        double distance = SkillConfigManager.getScaledUseSettingInt(hero, this, "distance", false);
         if (distance == 3)
             description = "You aren't very good at breaking your fall, and will take full fall damage when falling down a block height greater than 3.";
         else if (distance > 0 && distance < 3)
@@ -85,12 +80,7 @@ public class SkillTumble extends PassiveSkill {
                 return;
             }
 
-            double distance = SkillConfigManager.getUseSetting(hero, skill, "base-distance", 3, false);
-            double perLevel = SkillConfigManager.getUseSetting(hero, skill, "distance-increase-per-level", 0.16, false);
-            double perDex = SkillConfigManager.getUseSetting(hero, skill, "distance-increase-per-dexterity-level", 0.16, false);
-            distance += hero.getAttributeValue(AttributeType.DEXTERITY) * perDex;
-            distance += hero.getHeroLevel() * perLevel;
-
+            double distance = SkillConfigManager.getScaledUseSettingInt(hero, skill, "distance", false);
             double fallDistance = event.getDamage();
             fallDistance -= distance;
 

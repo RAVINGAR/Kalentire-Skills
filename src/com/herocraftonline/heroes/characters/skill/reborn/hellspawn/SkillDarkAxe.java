@@ -27,11 +27,9 @@ public class SkillDarkAxe extends TargettedSkill {
     }
 
     public String getDescription(Hero hero) {
-        double damage = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE, 50.0, false);
-        double damageIncrease = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE_INCREASE_PER_INTELLECT, 0.0, false);
-        damage += damageIncrease * hero.getAttributeValue(AttributeType.INTELLECT);
+        double damage = SkillConfigManager.getScaledUseSettingDouble(hero, this, SkillSetting.DAMAGE, false);
 
-        int duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, 3000, false);
+        int duration = SkillConfigManager.getScaledUseSettingInt(hero, this, SkillSetting.DURATION, false);
 
         return getDescription()
                 .replace("$1", Util.decFormat.format(damage))
@@ -63,15 +61,13 @@ public class SkillDarkAxe extends TargettedSkill {
         CharacterTemplate targCT = plugin.getCharacterManager().getCharacter(target);
 
         // Damage the target and add the slow effect.
-        double damage = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE, 50.0, false);
-        double damageIncrease = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE_INCREASE_PER_INTELLECT, 0.0, false);
-        damage += damageIncrease * hero.getAttributeValue(AttributeType.INTELLECT);
+        double damage = SkillConfigManager.getScaledUseSettingDouble(hero, this, SkillSetting.DAMAGE, false);
 
         addSpellTarget(target, hero);
         damageEntity(target, player, damage, DamageCause.MAGIC);
 
         // Create the effect and blind the target
-        long duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, 3000, false);
+        long duration = SkillConfigManager.getScaledUseSettingInt(hero, this, SkillSetting.DURATION, false);
         BlindEffect sEffect = new BlindEffect(this, player, duration);
         targCT.addEffect(sEffect);
 

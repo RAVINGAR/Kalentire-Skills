@@ -35,8 +35,8 @@ public class SkillTrap extends SkillBaseGroundEffect {
 
     @Override
     public String getDescription(Hero hero) {
-        final double radius = SkillConfigManager.getUseSetting(hero, this, SkillSetting.RADIUS, 1.5, false);
-        long duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, 30000, false);
+        final double radius = SkillConfigManager.getScaledUseSettingDouble(hero, this, SkillSetting.RADIUS, false);
+        long duration = SkillConfigManager.getScaledUseSettingInt(hero, this, SkillSetting.DURATION, false);
         long rootDuration = SkillConfigManager.getUseSetting(hero, this, "root-duration", 35000, false);
 
         return getDescription()
@@ -70,9 +70,9 @@ public class SkillTrap extends SkillBaseGroundEffect {
 
         broadcastExecuteText(hero);
 
-        final double radius = SkillConfigManager.getUseSetting(hero, this, SkillSetting.RADIUS, 3.0, false);
+        final double radius = SkillConfigManager.getScaledUseSettingDouble(hero, this, SkillSetting.RADIUS, false);
         double height = SkillConfigManager.getUseSetting(hero, this, HEIGHT_NODE, 2d, false);
-        long duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, 30000, false);
+        long duration = SkillConfigManager.getScaledUseSettingInt(hero, this, SkillSetting.DURATION, false);
         final long period = SkillConfigManager.getUseSetting(hero, this, SkillSetting.PERIOD, 500, false);
         long rootDuration = SkillConfigManager.getUseSetting(hero, this, "root-duration", 2000, false);
         applyAreaGroundEffectEffect(hero, period, duration, player.getLocation(), radius, height, new GroundEffectActions() {

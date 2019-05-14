@@ -9,6 +9,7 @@ import com.herocraftonline.heroes.characters.Hero;
 import com.herocraftonline.heroes.characters.skill.*;
 import com.herocraftonline.heroes.characters.skill.ncp.NCPFunction;
 import com.herocraftonline.heroes.characters.skill.ncp.NCPUtils;
+import com.herocraftonline.heroes.characters.skill.tools.BasicDamageMissile;
 import com.herocraftonline.heroes.characters.skill.tools.BasicMissile;
 import com.herocraftonline.heroes.nms.NMSHandler;
 import com.herocraftonline.heroes.util.Util;
@@ -38,11 +39,10 @@ public class SkillSpear extends ActiveSkill {
 
     @Override
     public String getDescription(Hero hero) {
-        int damage = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE, 30, false);
-        double damageIncrease = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE_INCREASE_PER_STRENGTH, 0.0, false);
-        damage += (int) (damageIncrease * hero.getAttributeValue(AttributeType.STRENGTH));
+        double damage = SkillConfigManager.getScaledUseSettingDouble(hero, this, SkillSetting.DAMAGE, false);
 
-        return getDescription().replace("$1", damage + "");
+        return getDescription()
+                .replace("$1", Util.decFormat.format(damage));
     }
 
     @Override
@@ -51,10 +51,10 @@ public class SkillSpear extends ActiveSkill {
         config.set(SkillSetting.ON_INTERRUPT_FORCE_COOLDOWN.node(), 1500);
         config.set(SkillSetting.DAMAGE.node(), 45);
         config.set(SkillSetting.DAMAGE_INCREASE_PER_STRENGTH.node(), 0.0);
-        config.set("projectile-size", 0.25);
-        config.set("projectile-velocity", 35.0);
-        config.set("projectile-gravity", 2.5);
-        config.set("projectile-max-ticks-lived", 12);
+        config.set(BasicMissile.PROJECTILE_SIZE_NODE, 0.25);
+        config.set(BasicMissile.PROJECTILE_VELOCITY_NODE, 35.0);
+        config.set(BasicMissile.PROJECTILE_GRAVITY_NODE, 2.5);
+        config.set(BasicMissile.PROJECTILE_DURATION_TICKS_NODE, 12);
         config.set("vertical-power", 0.4);
         config.set("horizontal-power-multiplier", 1.5);
         config.set("horizontal-power-increase-per-strength", 0.0);
@@ -69,9 +69,7 @@ public class SkillSpear extends ActiveSkill {
 
         broadcastExecuteText(hero);
 
-        double projSize = SkillConfigManager.getUseSetting(hero, this, "projectile-size", 0.25, false);
-        double projVelocity = SkillConfigManager.getUseSetting(hero, this, "projectile-velocity", 20.0, false);
-        SpearProjectile missile = new SpearProjectile(plugin, this, hero, projSize, projVelocity);
+        SpearProjectile missile = new SpearProjectile(plugin, this, hero);
         missile.fireMissile();
 
 //        player.getWorld().playSound(player.getLocation(), Sound.ITEM_TRIDENT_RIPTIDE_3, 1.0F, 0.7F);
@@ -79,13 +77,9 @@ public class SkillSpear extends ActiveSkill {
         return SkillResult.NORMAL;
     }
 
-    private class SpearProjectile extends BasicMissile {
-        SpearProjectile(Plugin plugin, Skill skill, Hero hero, double projectileSize, double projVelocity) {
-            super(plugin, skill, hero, projectileSize, projVelocity);
-
-            setRemainingLife(SkillConfigManager.getUseSetting(hero, skill, "projectile-max-ticks-lived", 5, false));
-            setGravity(SkillConfigManager.getUseSetting(hero, skill, "projectile-gravity", 2.5, false));
-            this.damage = SkillConfigManager.getUseSetting(hero, skill, SkillSetting.DAMAGE, 50.0, false);
+    private class SpearProjectile extends BasicDamageMissile {
+        SpearProjectile(Heroes plugin, Skill skill, Hero hero) {
+            super(plugin, skill, hero);
 
             this.visualEffect = getSpearVisual(this.effectManager, player, getLocation());
         }
@@ -96,14 +90,7 @@ public class SkillSpear extends ActiveSkill {
         }
 
         @Override
-        protected void onEntityHit(Entity entity, Vector hitOrigin, Vector hitForce) {
-            if (!(entity instanceof LivingEntity))
-                return;
-
-            LivingEntity target = (LivingEntity) entity;
-            if (!damageCheck(this.player, target))
-                return;
-
+        protected void onValidTargetFound(LivingEntity target, Vector origin, Vector force) {
             damageEnemy(hero, target, player);
             spearEnemy(hero, player, target);
             player.getWorld().playSound(player.getLocation(), Sound.ENTITY_PLAYER_HURT, 0.8F, 1.0F);
@@ -111,9 +98,7 @@ public class SkillSpear extends ActiveSkill {
     }
 
     private void damageEnemy(Hero hero, LivingEntity target, Player player) {
-        double damage = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE, 50.0, false);
-        double damageIncrease = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE_INCREASE_PER_STRENGTH, 1.6, false);
-        damage += damageIncrease * hero.getAttributeValue(AttributeType.STRENGTH);
+        double damage = SkillConfigManager.getScaledUseSettingDouble(hero, this, SkillSetting.DAMAGE, false);
 
         if (damage > 0) {
             addSpellTarget(target, hero);
@@ -148,9 +133,7 @@ public class SkillSpear extends ActiveSkill {
     private void pullTarget(Hero hero, LivingEntity target, double vPower, Vector locDiff) {
         double delay = SkillConfigManager.getUseSetting(hero, this, "pull-delay-ticks", 4, false);
 
-        double hPower = SkillConfigManager.getUseSetting(hero, this, "horizontal-power-multiplier", 0.5, false);
-        double hPowerIncrease = SkillConfigManager.getUseSetting(hero, this, "horizontal-power-increase-per-strength", 0.0, false);
-        hPower+= hPowerIncrease * hero.getAttributeValue(AttributeType.STRENGTH);
+        double hPower = SkillConfigManager.getScaledUseSettingDouble(hero, this, "horizontal-power-multiplier", false);
 
         final double finalHPower = hPower;
         Bukkit.getScheduler().scheduleSyncDelayedTask(plugin, new Runnable() {

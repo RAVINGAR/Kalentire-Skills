@@ -39,13 +39,8 @@ public class SkillForcePull extends TargettedSkill {
 
     @Override
     public String getDescription(Hero hero) {
-        double damage = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE, 50.0, false);
-        double damageIncrease = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE_INCREASE_PER_INTELLECT, 0.0, false);
-        damage += damageIncrease * hero.getAttributeValue(AttributeType.INTELLECT);
-
-        double healing = SkillConfigManager.getUseSetting(hero, this, SkillSetting.HEALING, 50.0, false);
-        double healingIncrease = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE_INCREASE_PER_WISDOM, 1.6, false);
-        healing += healingIncrease * hero.getAttributeValue(AttributeType.INTELLECT);
+        double damage = SkillConfigManager.getScaledUseSettingDouble(hero, this, SkillSetting.DAMAGE, false);
+        double healing = SkillConfigManager.getScaledUseSettingDouble(hero, this, SkillSetting.HEALING, false);
 
         return getDescription()
                 .replace("$1", Util.decFormat.format(damage))
@@ -110,9 +105,7 @@ public class SkillForcePull extends TargettedSkill {
         final double xDir = (playerLoc.getX() - targetLoc.getX()) / 3;
         final double zDir = (playerLoc.getZ() - targetLoc.getZ()) / 3;
 
-        double tempHPower = SkillConfigManager.getUseSetting(hero, this, "horizontal-power", 0.5, false);
-        double hPowerIncrease = SkillConfigManager.getUseSetting(hero, this, "horizontal-power-increase-per-intellect", 0.0125, false);
-        tempHPower += (hPowerIncrease * hero.getAttributeValue(AttributeType.INTELLECT));
+        double tempHPower = SkillConfigManager.getScaledUseSettingDouble(hero, this, "horizontal-power", false);
 
         if (weakenVelocity)
             tempHPower *= 0.75;
@@ -131,17 +124,13 @@ public class SkillForcePull extends TargettedSkill {
         }, (long) (delay * 20));
 
         if (hero.isAlliedTo(target)) {
-            double healing = SkillConfigManager.getUseSetting(hero, this, SkillSetting.HEALING, 50.0, false);
-            double healingIncrease = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE_INCREASE_PER_WISDOM, 1.6, false);
-            healing += healingIncrease * hero.getAttributeValue(AttributeType.INTELLECT);
+            double healing = SkillConfigManager.getScaledUseSettingDouble(hero, this, SkillSetting.HEALING, false);
             target.setFallDistance(-1);
 
             CharacterTemplate targetCT = plugin.getCharacterManager().getCharacter(target);
             targetCT.tryHeal(hero, this, healing);  // Ignore failures
         } else {
-            double damage = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE, 50, false);
-            double damageIncrease = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE_INCREASE_PER_INTELLECT, 1.6, false);
-            damage += damageIncrease * hero.getAttributeValue(AttributeType.INTELLECT);
+            double damage = SkillConfigManager.getScaledUseSettingDouble(hero, this, SkillSetting.DAMAGE, false);
 
             if (damage > 0) {
                 addSpellTarget(target, hero);

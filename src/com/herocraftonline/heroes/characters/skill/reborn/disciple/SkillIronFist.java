@@ -31,7 +31,8 @@ public class SkillIronFist extends ActiveSkill {
 
     public SkillIronFist(Heroes plugin) {
         super(plugin, "IronFist");
-        setDescription("Strike the ground with an iron fist, striking all targets within $1 blocks, dealing $2 damage and knocking them away from you. Targets hit will also be slowed for $3 second(s).");
+        setDescription("Strike the ground with an iron fist, striking all targets within $1 blocks, dealing $2 damage and knocking them away from you. " +
+                "Targets hit will also be slowed for $3 second(s).");
         setUsage("/skill ironfist");
         setArgumentRange(0, 0);
         setIdentifiers("skill ironfist");
@@ -40,18 +41,14 @@ public class SkillIronFist extends ActiveSkill {
 
     @Override
     public String getDescription(Hero hero) {
-        int radius = SkillConfigManager.getUseSetting(hero, this, SkillSetting.RADIUS, 5, false);
-
-        double damage = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE, 50.0, false);
-        double damageIncrease = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE_INCREASE_PER_STRENGTH, 1.6, false);
-        damage += damageIncrease * hero.getAttributeValue(AttributeType.STRENGTH);
-
-        int duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, 3000, false);
+        double radius = SkillConfigManager.getScaledUseSettingDouble(hero, this, SkillSetting.RADIUS, false);
+        double damage = SkillConfigManager.getScaledUseSettingDouble(hero, this, SkillSetting.DAMAGE, false);
+        int duration = SkillConfigManager.getScaledUseSettingInt(hero, this, SkillSetting.DURATION, false);
 
         String formattedDamage = Util.decFormat.format(damage);
         String formattedDuration = Util.decFormat.format(duration / 1000.0);
 
-        return getDescription().replace("$1", radius + "").replace("$2", formattedDamage).replace("$3", formattedDuration);
+        return getDescription().replace("$1", Util.decFormat.format(radius)).replace("$2", formattedDamage).replace("$3", formattedDuration);
     }
 
     @Override
@@ -96,21 +93,11 @@ public class SkillIronFist extends ActiveSkill {
     public SkillResult use(Hero hero, String[] args) {
         Player player = hero.getPlayer();
 
-        int radius = SkillConfigManager.getUseSetting(hero, this, SkillSetting.RADIUS, 5, false);
-
-        double damage = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE, 50.0, false);
-        double damageIncrease = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE_INCREASE_PER_STRENGTH, 1.125, false);
-        damage += damageIncrease * hero.getAttributeValue(AttributeType.STRENGTH);
-
-        double hPower = SkillConfigManager.getUseSetting(hero, this, "horizontal-power", 0.4, false);
-        double hPowerIncrease = SkillConfigManager.getUseSetting(hero, this, "horizontal-power-increase-per-intellect", 0.015, false);
-        hPower += hPowerIncrease * hero.getAttributeValue(AttributeType.INTELLECT);
-
-        double vPower = SkillConfigManager.getUseSetting(hero, this, "vertical-power", 0.0, false);
-        double vPowerIncrease = SkillConfigManager.getUseSetting(hero, this, "vertical-power-increase-per-intellect", 0.0, false);
-        vPower += vPowerIncrease * hero.getAttributeValue(AttributeType.INTELLECT);
-
-        int duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, 3000, false);
+        double radius = SkillConfigManager.getScaledUseSettingDouble(hero, this, SkillSetting.RADIUS, false);
+        double damage = SkillConfigManager.getScaledUseSettingDouble(hero, this, SkillSetting.DAMAGE, false);
+        double hPower = SkillConfigManager.getScaledUseSettingDouble(hero, this, "horizontal-power", false);
+        double vPower = SkillConfigManager.getScaledUseSettingDouble(hero, this, "vertical-power", false);
+        int duration = SkillConfigManager.getScaledUseSettingInt(hero, this, SkillSetting.DURATION, false);
 
         int slowAmplifier = SkillConfigManager.getUseSetting(hero, this, "slow-amplifier", 1, false);
 

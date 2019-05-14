@@ -30,9 +30,7 @@ public class SkillBolt extends TargettedSkill {
 
     @Override
     public String getDescription(Hero hero) {
-        int damage = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE, 150, false);
-        double damageIncrease = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE_INCREASE_PER_INTELLECT, 0.0, false);
-        damage += (damageIncrease * hero.getAttributeValue(AttributeType.INTELLECT));
+        double damage = SkillConfigManager.getScaledUseSettingDouble(hero, this, SkillSetting.DAMAGE, false);
 
         return getDescription()
                 .replace("$1", Util.decFormat.format(damage));
@@ -56,9 +54,7 @@ public class SkillBolt extends TargettedSkill {
         Player player = hero.getPlayer();
 
         broadcastExecuteText(hero, target);
-        double damage = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE, 180, false);
-        double damageIncrease = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE_INCREASE_PER_INTELLECT, 0.0, false);
-        damage += (damageIncrease * hero.getAttributeValue(AttributeType.INTELLECT));
+        double damage = SkillConfigManager.getScaledUseSettingDouble(hero, this, SkillSetting.DAMAGE, false);
 
         float lightningVolume = (float) SkillConfigManager.getUseSetting(hero, this, "lightning-volume", 0.5F, false);
 

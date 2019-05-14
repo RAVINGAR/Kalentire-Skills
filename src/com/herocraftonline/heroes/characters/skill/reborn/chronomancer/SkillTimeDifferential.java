@@ -34,9 +34,9 @@ public class SkillTimeDifferential extends TargettedSkill {
 
     @Override
     public String getDescription(Hero hero) {
-        double healing = SkillConfigManager.getUseSetting(hero, this, SkillSetting.HEALING, 40.0, false);
+        double healing = SkillConfigManager.getScaledUseSettingDouble(hero, this, SkillSetting.HEALING, false);
         double healingPerStack = SkillConfigManager.getUseSetting(hero, this, "healing-per-temporal-effect", 10.0, false);
-        double damage = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE, 40.0, false);
+        double damage = SkillConfigManager.getScaledUseSettingDouble(hero, this, SkillSetting.DAMAGE, false);
         double damagePerStack = SkillConfigManager.getUseSetting(hero, this, "damage-per-temporal-effect", 10.0, false);
 
         return getDescription()
@@ -76,7 +76,7 @@ public class SkillTimeDifferential extends TargettedSkill {
 
     private void healTarget(Hero hero, CharacterTemplate targetCT) {
         final Player player = hero.getPlayer();
-        double baseHealing = SkillConfigManager.getUseSetting(hero, this, SkillSetting.HEALING, 40.0, false);
+        double baseHealing = SkillConfigManager.getScaledUseSettingDouble(hero, this, SkillSetting.HEALING, false);
         final double healingPerStack = SkillConfigManager.getUseSetting(hero, this, "healing-per-temporal-effect", 10.0, false);
 
         double healing = baseHealing;
@@ -143,7 +143,7 @@ public class SkillTimeDifferential extends TargettedSkill {
 
     private void damageTarget(Hero hero, CharacterTemplate ctTarget, LivingEntity target) {
         final Player player = hero.getPlayer();
-        double baseDamage = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE, 40.0, false);
+        double baseDamage = SkillConfigManager.getScaledUseSettingDouble(hero, this, SkillSetting.DAMAGE, false);
         final double damagePerStack = SkillConfigManager.getUseSetting(hero, this, "damage-per-temporal-effect", 10.0, false);
 
         int totalStackCount = 0;

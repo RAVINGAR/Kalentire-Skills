@@ -62,7 +62,7 @@ public class SkillDefenceInNumbers extends PassiveSkill {
     public String getDescription(Hero hero) {
 
         long period = SkillConfigManager.getUseSetting(hero, this, SkillSetting.PERIOD.node(), 5000, false);
-        double radius = SkillConfigManager.getUseSetting(hero, this, SkillSetting.RADIUS.node(), 20, false);
+        double radius = SkillConfigManager.getScaledUseSettingDouble(hero, this, SkillSetting.RADIUS, false);;
         double incomingMultiplierBase = SkillConfigManager.getUseSetting(hero, this,
                 "incoming-multiplier-base", 1.0, true);
         double incomingMultiplierPerAlly = SkillConfigManager.getUseSetting(hero, this,
@@ -149,7 +149,7 @@ public class SkillDefenceInNumbers extends PassiveSkill {
                 return;
             }
 
-            double radius = SkillConfigManager.getUseSetting(hero, skill, SkillSetting.RADIUS.node(), 20, false);
+            double radius = SkillConfigManager.getScaledUseSettingDouble(hero, skill, SkillSetting.RADIUS, false);;
 
             // Apply protection to allies in range of the hero with this passive
             final Player defendingPlayer = hero.getPlayer();

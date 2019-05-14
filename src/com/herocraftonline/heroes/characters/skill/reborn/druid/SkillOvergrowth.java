@@ -49,6 +49,17 @@ public class SkillOvergrowth extends TargettedLocationSkill {
         setToggleableEffectName("Overgrowth");
     }
 
+    public String getDescription(Hero hero) {
+        double radius = SkillConfigManager.getScaledUseSettingDouble(hero, this, SkillSetting.RADIUS, false);
+        long duration = SkillConfigManager.getScaledUseSettingInt(hero, this, SkillSetting.DURATION, false);
+        int height = SkillConfigManager.getUseSetting(hero, this, "height", 16, false);
+
+        return getDescription()
+                .replace("$1", radius + "")
+                .replace("$2", height + "")
+                .replace("$3", Util.decFormat.format((double) duration / 1000));
+    }
+
     public ConfigurationSection getDefaultConfig() {
         ConfigurationSection config = super.getDefaultConfig();
         config.set(SkillSetting.MAX_DISTANCE.node(), 12);
@@ -61,22 +72,11 @@ public class SkillOvergrowth extends TargettedLocationSkill {
         return config;
     }
 
-    public String getDescription(Hero hero) {
-        double radius = SkillConfigManager.getUseSetting(hero, this, SkillSetting.RADIUS, 4, false);
-        long duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, 7500, false);
-        int height = SkillConfigManager.getUseSetting(hero, this, "height", 16, false);
-
-        return getDescription()
-                .replace("$1", radius + "")
-                .replace("$2", height + "")
-                .replace("$3", Util.decFormat.format((double) duration / 1000));
-    }
-
     public SkillResult use(Hero hero, Location targetLocation, String[] args) {
         Player player = hero.getPlayer();
 
-        double radius = SkillConfigManager.getUseSetting(hero, this, SkillSetting.RADIUS, 4, false);
-        long duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, 7500, false);
+        double radius = SkillConfigManager.getScaledUseSettingDouble(hero, this, SkillSetting.RADIUS, false);
+        long duration = SkillConfigManager.getScaledUseSettingInt(hero, this, SkillSetting.DURATION, false);
         int height = SkillConfigManager.getUseSetting(hero, this, "height", 18, false);
         int heightWithoutBaseBlock = height - 1;
 

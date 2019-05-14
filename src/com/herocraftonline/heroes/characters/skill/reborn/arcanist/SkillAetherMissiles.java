@@ -2,13 +2,13 @@ package com.herocraftonline.heroes.characters.skill.reborn.arcanist;
 
 import com.herocraftonline.heroes.Heroes;
 import com.herocraftonline.heroes.api.SkillResult;
-import com.herocraftonline.heroes.api.events.WeaponDamageEvent;
-import com.herocraftonline.heroes.characters.CharacterManager;
 import com.herocraftonline.heroes.characters.CharacterTemplate;
 import com.herocraftonline.heroes.characters.Hero;
 import com.herocraftonline.heroes.characters.effects.EffectType;
 import com.herocraftonline.heroes.characters.effects.ExpirableEffect;
 import com.herocraftonline.heroes.characters.skill.*;
+import com.herocraftonline.heroes.characters.skill.tools.BasicDamageMissile;
+import com.herocraftonline.heroes.characters.skill.tools.BasicMissile;
 import com.herocraftonline.heroes.characters.skill.tools.Missile;
 import com.herocraftonline.heroes.util.GeometryUtil;
 import com.herocraftonline.heroes.util.Pair;
@@ -21,12 +21,7 @@ import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
-import org.bukkit.event.EventHandler;
-import org.bukkit.event.EventPriority;
-import org.bukkit.event.Listener;
-import org.bukkit.event.block.Action;
 import org.bukkit.event.entity.EntityDamageEvent;
-import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.util.Vector;
 
 import java.util.ArrayList;
@@ -56,7 +51,7 @@ public class SkillAetherMissiles extends ActiveSkill {
     @Override
     public String getDescription(Hero hero) {
         int numProjectiles = SkillConfigManager.getUseSetting(hero, this, "num-projectiles", 4, false);
-        long duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, 15000, false);
+        long duration = SkillConfigManager.getScaledUseSettingInt(hero, this, SkillSetting.DURATION, false);
         double damage = SkillConfigManager.getUseSetting(hero, this, "projectile-damage", 25.0, false);
         double damageIncreasePerHit = SkillConfigManager.getUseSetting(hero, this, "projectile-damage-increase-per-hit", 10.0, false);
 
@@ -78,11 +73,13 @@ public class SkillAetherMissiles extends ActiveSkill {
     public ConfigurationSection getDefaultConfig() {
         ConfigurationSection config = super.getDefaultConfig();
         config.set(SkillSetting.DURATION.node(), 15000);
-        config.set("projectile-damage", 25.0);
-        config.set("projectile-damage-increase-per-hit", 10.0);
-        config.set("projectile-velocity", 65.0);
-        config.set("projectile-max-ticks-lived", 30);
-        config.set("projectile-radius", 0.25);
+        config.set(SkillSetting.DAMAGE.node(), 25.0);
+        config.set("damage-increase-per-hit", 10.0);
+        config.set(BasicMissile.PROJECTILE_VELOCITY_NODE, 65.0);
+        config.set(BasicDamageMissile.PROJECTILE_PIERCES_ON_HIT_NODE, true);
+        config.set(BasicDamageMissile.PROJECTILE_KNOCKS_BACK_ON_HIT_NODE, false);
+        config.set(BasicMissile.PROJECTILE_DURATION_TICKS_NODE, 30);
+        config.set(BasicMissile.PROJECTILE_SIZE_NODE, 0.25);
         config.set("projectile-launch-delay-ticks", 15);
         config.set("num-projectiles", 5);
         return config;
@@ -93,7 +90,7 @@ public class SkillAetherMissiles extends ActiveSkill {
         Player player = hero.getPlayer();
 
         broadcastExecuteText(hero);
-        int duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, 15000, false);
+        int duration = SkillConfigManager.getScaledUseSettingInt(hero, this, SkillSetting.DURATION, false);
         hero.addEffect(new AetherMissilesEffect(this, player, duration));
         return SkillResult.NORMAL;
     }
@@ -114,8 +111,8 @@ public class SkillAetherMissiles extends ActiveSkill {
             super.applyToHero(hero);
 
             this.numProjectiles = SkillConfigManager.getUseSetting(hero, skill, "num-projectiles", 4, false);
-            this.projectileRadius = SkillConfigManager.getUseSetting(hero, skill, "projectile-radius", 0.15, false);
-            int projDurationTicks = SkillConfigManager.getUseSetting(hero, skill, "projectile-max-ticks-lived", 30, false);
+            this.projectileRadius = SkillConfigManager.getUseSetting(hero, skill, BasicMissile.PROJECTILE_SIZE_NODE, 0.15, false);
+            int projDurationTicks = SkillConfigManager.getUseSetting(hero, skill, BasicMissile.PROJECTILE_DURATION_TICKS_NODE, 30, false);
 
             List<Location> missileLocations = GeometryUtil.circle(applier.getLocation().clone().add(new Vector(0, 0.8, 0)), numProjectiles, 1.5);
             if (missileLocations.size() < numProjectiles) {
@@ -159,7 +156,7 @@ public class SkillAetherMissiles extends ActiveSkill {
 
                         Location eyeLocation = hero.getPlayer().getEyeLocation();
                         missileVisual.setLocation(eyeLocation.clone().add(eyeLocation.getDirection()));
-                        AetherMissile missile = new AetherMissile(hero, skill, projectileRadius, pair.getLeft(), missileVisual);
+                        AetherMissile missile = new AetherMissile(plugin, skill, hero, projectileRadius, pair.getLeft(), missileVisual);
                         missile.fireMissile();
                         eyeLocation.getWorld().playSound(eyeLocation, Sound.ENTITY_VEX_HURT, 2F, 0.5F);
                     }
@@ -172,70 +169,25 @@ public class SkillAetherMissiles extends ActiveSkill {
         void onMissileDeath(Missile missile);
     }
 
-    private class AetherMissile extends Missile {
-
-        private final EffectManager effectManager;
-        private final SphereEffect visualEffect;
-        private final Hero hero;
-        private final Player player;
-        private final Skill skill;
-
-        private final int durationTicks;
-        private final double projectileDamage;
+    // Aether missiles is more complicated than most other missiles because we are "passing off" the visuals from the player buff.
+    private class AetherMissile extends BasicDamageMissile {
         private final double damageIncreasePerHit;
 
-        private double defaultSpeed;
+        AetherMissile(Heroes plugin, Skill skill, Hero hero, double radius, EffectManager effectManager, SphereEffect visualEffect) {
+            super(plugin, skill, hero);
 
-        AetherMissile(Hero hero, Skill skill, double radius, EffectManager effectManager, SphereEffect visualEffect) {
-            this.hero = hero;
-            this.skill = skill;
-            this.player = hero.getPlayer();
-            this.effectManager = effectManager;
-            this.visualEffect = visualEffect;
-
-            double projectileSpeed = SkillConfigManager.getUseSetting(hero, skill, "projectile-velocity", 20.0, false);
-            this.projectileDamage = SkillConfigManager.getUseSetting(hero, skill, "projectile-damage", 25.0, false);
-            this.damageIncreasePerHit = SkillConfigManager.getUseSetting(hero, skill, "projectile-damage-increase-per-hit", 10.0, false);
-            this.durationTicks = SkillConfigManager.getUseSetting(hero, skill, "projectile-max-duration", 2000, false) / 50;
-
-            setNoGravity();
+            this.damageIncreasePerHit = SkillConfigManager.getUseSetting(hero, skill, "damage-increase-per-hit", 10.0, false);
             setEntityDetectRadius(radius);
-            setRemainingLife(this.durationTicks);
-
-            Vector playerDirection = player.getEyeLocation().getDirection().normalize();
-            Location missileLoc = visualEffect.getLocation().clone().setDirection(playerDirection);
-            visualEffect.setLocation(missileLoc);
-
-            this.setLocationAndSpeed(missileLoc, projectileSpeed);
-        }
-
-        private void updateVisualLocation() {
-            this.visualEffect.setLocation(getLocation());
-        }
-
-        protected void onStart() {
-            this.defaultSpeed = getVelocity().length();
-            updateVisualLocation();
+            replaceEffects(effectManager, visualEffect);
+            Location newMissileLoc = visualEffect.getLocation().clone().setDirection(player.getEyeLocation().getDirection());
+            visualEffect.setLocation(newMissileLoc);
         }
 
         protected void onTick() {
-            updateVisualLocation();
+            this.visualEffect.setLocation(getLocation());
         }
 
-        protected void onFinalTick() {
-            effectManager.dispose();
-        }
-
-        protected boolean onCollideWithEntity(Entity entity) {
-            return entity instanceof LivingEntity && !hero.isAlliedTo((LivingEntity) entity);
-        }
-
-        protected void onEntityHit(Entity entity, Vector hitOrigin, Vector hitForce) {
-            LivingEntity target = (LivingEntity) entity;
-            if (!damageCheck(player, (LivingEntity) entity))
-                return;
-
-            double damage = this.projectileDamage;
+        protected void onValidTargetFound(LivingEntity target, Vector origin, Vector force) {
             CharacterTemplate targetCT = plugin.getCharacterManager().getCharacter(target);
             String effectName = getMultiHitEffectName(player);
             if (targetCT.hasEffect(effectName)) {
@@ -247,7 +199,7 @@ public class SkillAetherMissiles extends ActiveSkill {
             }
 
             addSpellTarget(target, hero);
-            damageEntity(target, player, damage, EntityDamageEvent.DamageCause.MAGIC);
+            damageEntity(target, player, damage, EntityDamageEvent.DamageCause.MAGIC, knockBackOnHit);
         }
 
         private String getMultiHitEffectName(Player player) {

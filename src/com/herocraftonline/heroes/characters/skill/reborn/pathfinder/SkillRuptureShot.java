@@ -41,7 +41,7 @@ public class SkillRuptureShot extends ActiveSkill {
 
     public String getDescription(Hero hero) {
         long ruptureDuration = SkillConfigManager.getUseSetting(hero, this, "rupture-duration", 3000, false);
-        long duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, 3000, false);
+        long duration = SkillConfigManager.getScaledUseSettingInt(hero, this, SkillSetting.DURATION, false);
         long period = SkillConfigManager.getUseSetting(hero, this, SkillSetting.PERIOD, 1000, true);
         int tickDamage = SkillConfigManager.getUseSetting(hero, this, "tick-damage", 30, false);
         int staminaDrain = SkillConfigManager.getUseSetting(hero, this, "stamina-drain-per-tick", 50, false);

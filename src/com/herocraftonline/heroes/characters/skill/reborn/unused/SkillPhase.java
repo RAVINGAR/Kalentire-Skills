@@ -33,7 +33,7 @@ public class SkillPhase extends ActiveSkill {
 
     @Override
     public String getDescription(Hero hero) {
-        int duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, 7500, false);
+        int duration = SkillConfigManager.getScaledUseSettingInt(hero, this, SkillSetting.DURATION, false);
         String formattedDuration = Util.decFormat.format(duration / 1000.0);
 
         return getDescription().replace("$1", formattedDuration);
@@ -63,7 +63,7 @@ public class SkillPhase extends ActiveSkill {
         broadcastExecuteText(hero);
 
         long period = SkillConfigManager.getUseSetting(hero, this, SkillSetting.PERIOD, 1500, false);
-        long duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, 7500, false);
+        long duration = SkillConfigManager.getScaledUseSettingInt(hero, this, SkillSetting.DURATION, false);
         long phaseDuration = SkillConfigManager.getUseSetting(hero, this, "phase-duration", 500, false);
         hero.addEffect(new PhasingEffect(this, hero.getPlayer(), period, duration, phaseDuration));
 

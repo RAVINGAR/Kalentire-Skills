@@ -40,24 +40,20 @@ public class SkillFistOfJin extends PassiveSkill {
 
     @Override
     public String getDescription(Hero hero) {
-
         double cdDuration = Util.formatDouble(SkillConfigManager.getUseSetting(hero, this, "healing-internal-cooldown", 1000.0, false) / 1000.0);
 
-        double selfHeal = SkillConfigManager.getUseSetting(hero, this, "heal-per-hit-self", 8, false);
+        double selfHeal = SkillConfigManager.getScaledUseSettingDouble(hero, this, "heal-per-hit-self", false);
         selfHeal = getScaledHealing(hero, selfHeal);
-        double partyHeal = SkillConfigManager.getUseSetting(hero, this, "heal-per-hit-party", 3, false);
+        double partyHeal = SkillConfigManager.getScaledUseSettingDouble(hero, this, "heal-per-hit-party", false);
         partyHeal = getScaledHealing(hero, partyHeal);
 
-        double healingIncrease = SkillConfigManager.getUseSetting(hero, this, SkillSetting.HEALING_INCREASE_PER_WISDOM, 0.15, false);
-        double calculatedIncrease = (hero.getAttributeValue(AttributeType.WISDOM) * healingIncrease);
-        selfHeal += calculatedIncrease;
-        partyHeal += calculatedIncrease;
+        double radius = SkillConfigManager.getScaledUseSettingDouble(hero, this, SkillSetting.RADIUS, false);
 
-        int radius = SkillConfigManager.getUseSetting(hero, this, SkillSetting.RADIUS, 8, false);
-        double radiusIncrease = SkillConfigManager.getUseSetting(hero, this, SkillSetting.RADIUS_INCREASE_PER_WISDOM, 0.1, false);
-        radius += (int) (radiusIncrease * hero.getAttributeValue(AttributeType.WISDOM));
-
-        return getDescription().replace("$1", ((int) selfHeal) + "").replace("$2", ((int) partyHeal) + "").replace("$3", radius + "").replace("$4", cdDuration + "");
+        return getDescription()
+                .replace("$1", Util.decFormat.format(selfHeal))
+                .replace("$2", Util.decFormat.format(partyHeal))
+                .replace("$3", Util.decFormat.format(radius))
+                .replace("$4", cdDuration + "");
     }
 
     @Override
@@ -122,22 +118,14 @@ public class SkillFistOfJin extends PassiveSkill {
                     return;
             }
 
-            int wisdom = hero.getAttributeValue(AttributeType.WISDOM);
 
-            double selfHeal = SkillConfigManager.getUseSetting(hero, skill, "heal-per-hit-self", 8, false);
+            double selfHeal = SkillConfigManager.getScaledUseSettingDouble(hero, skill, "heal-per-hit-self", false);
             selfHeal = getScaledHealing(hero, selfHeal);
-            double partyHeal = SkillConfigManager.getUseSetting(hero, skill, "heal-per-hit-party", 3, false);
+            double partyHeal = SkillConfigManager.getScaledUseSettingDouble(hero, skill, "heal-per-hit-party", false);
             partyHeal = getScaledHealing(hero, partyHeal);
 
-            double healingIncrease = SkillConfigManager.getUseSetting(hero, skill, SkillSetting.HEALING_INCREASE_PER_WISDOM, 0.15, false);
-            double calculatedIncrease = wisdom * healingIncrease;
-            selfHeal += calculatedIncrease;
-            partyHeal += calculatedIncrease;
-
-            int radius = SkillConfigManager.getUseSetting(hero, skill, SkillSetting.RADIUS, 8, false);
-            double radiusIncrease = SkillConfigManager.getUseSetting(hero, skill, SkillSetting.RADIUS_INCREASE_PER_WISDOM, 0.1, false);
-            radius += (int) Math.floor(radiusIncrease * wisdom);
-            int radiusSquared = radius * radius;
+            double radius = SkillConfigManager.getScaledUseSettingDouble(hero, skill, SkillSetting.RADIUS, false);
+            double radiusSquared = radius * radius;
 
             int cdDuration = SkillConfigManager.getUseSetting(hero, skill, "healing-internal-cooldown", 1000, false);
 
@@ -198,9 +186,9 @@ public class SkillFistOfJin extends PassiveSkill {
      * @return if health scaling enabled with a scaling expression return healing * expression scaling, otherwise return base healing.
      */
     public double getScaledHealing(Hero hero, double healing) {
-        boolean scaledHealing = SkillConfigManager.getUseSetting(hero, this, SkillSetting.IS_SCALED_HEALING.node(), false);
+        boolean scaledHealing = SkillConfigManager.getUseSetting(hero, this, SkillSetting.IS_SCALED_HEALING, false);
         if (scaledHealing) {
-            String expression = SkillConfigManager.getUseSetting(hero, this, SkillSetting.HEALING_SCALE_EXPRESSION.node(), "1");
+            String expression = SkillConfigManager.getUseSetting(hero, this, SkillSetting.HEALING_SCALE_EXPRESSION, "1");
             if (!expression.equals("1")) {
                 Scaling healingScaling = new ExpressionScaling(hero.getHeroClass(), expression);
                 healing = healing * healingScaling.getScaled(hero);

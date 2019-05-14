@@ -44,7 +44,7 @@ public class SkillTemporalWard extends TargettedSkill {
 
     @Override
     public String getDescription(Hero hero) {
-        int duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, 4000, false);
+        int duration = SkillConfigManager.getScaledUseSettingInt(hero, this, SkillSetting.DURATION, false);
 
         String formattedDuration = Util.decFormat.format(duration / 1000.0);
 
@@ -64,7 +64,7 @@ public class SkillTemporalWard extends TargettedSkill {
     public SkillResult use(Hero hero, LivingEntity target, String[] args) {
         Player player = hero.getPlayer();
 
-        int duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, 4000, false);
+        int duration = SkillConfigManager.getScaledUseSettingInt(hero, this, SkillSetting.DURATION, false);
 
         CharacterTemplate ctTarget = plugin.getCharacterManager().getCharacter(target);
         //addSpellTarget(target, hero); // dont think I need to do this for this skill

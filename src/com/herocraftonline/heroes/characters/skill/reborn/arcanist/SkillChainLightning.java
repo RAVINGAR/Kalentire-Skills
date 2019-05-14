@@ -41,9 +41,7 @@ public class SkillChainLightning extends TargettedSkill {
 
     @Override
     public String getDescription(Hero hero) {
-        int damage = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE, 100, false);
-        double damageIncrease = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE_INCREASE_PER_INTELLECT, 0.0, false);
-        damage += damageIncrease * hero.getAttributeValue(AttributeType.INTELLECT);
+        double damage = SkillConfigManager.getScaledUseSettingDouble(hero, this, SkillSetting.DAMAGE, false);
 
         int maxTargets = SkillConfigManager.getUseSetting(hero, this, "max-targets", 5, false);
         int maxChainDistance = SkillConfigManager.getUseSetting(hero, this, "max-chain-distance", 5, false);
@@ -110,9 +108,7 @@ public class SkillChainLightning extends TargettedSkill {
         public void applyToHero(Hero hero) {
             super.applyToHero(hero);
 
-            double baseDamage = SkillConfigManager.getUseSetting(hero, skill, SkillSetting.DAMAGE, 100, false);
-            double damageIncrease = SkillConfigManager.getUseSetting(hero, skill, SkillSetting.DAMAGE_INCREASE_PER_INTELLECT, 0.0, false);
-            this.damage = baseDamage + (damageIncrease * hero.getAttributeValue(AttributeType.INTELLECT));
+            double baseDamage = SkillConfigManager.getScaledUseSettingDouble(hero, skill, SkillSetting.DAMAGE, false);
 
             this.maxTargets = SkillConfigManager.getUseSetting(hero, skill, "max-targets", 5, false);
             this.maxChainDistance = SkillConfigManager.getUseSetting(hero, skill, "max-chain-distance", 5, false);

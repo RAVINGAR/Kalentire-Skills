@@ -40,11 +40,9 @@ public class SkillImpale extends TargettedSkill {
 
     @Override
     public String getDescription(Hero hero) {
-        int damage = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE, 50, false);
-        double damageIncrease = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE_INCREASE_PER_STRENGTH, 0.0, false);
-        damage += (int) (damageIncrease * hero.getAttributeValue(AttributeType.STRENGTH));
+        double damage = SkillConfigManager.getScaledUseSettingDouble(hero, this, SkillSetting.DAMAGE, false);
 
-        int duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, 3000, false);
+        int duration = SkillConfigManager.getScaledUseSettingInt(hero, this, SkillSetting.DURATION, false);
         int stunDuration = SkillConfigManager.getUseSetting(hero, this, "pinned-stun-duration", 2000, false);
 
         return getDescription()
@@ -92,9 +90,7 @@ public class SkillImpale extends TargettedSkill {
 
         broadcastExecuteText(hero, target);
 
-        double damage = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE, 50, false);
-        double damageIncrease = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE_INCREASE_PER_STRENGTH, 0.0, false);
-        damage += damageIncrease * hero.getAttributeValue(AttributeType.STRENGTH);
+        double damage = SkillConfigManager.getScaledUseSettingDouble(hero, this, SkillSetting.DAMAGE, false);
         damageEntity(target, player, damage, DamageCause.ENTITY_ATTACK);
         addSpellTarget(target, hero);
 
@@ -115,7 +111,7 @@ public class SkillImpale extends TargettedSkill {
         }
 
         // Add the slow effect
-        duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, 3000, false);
+        duration = SkillConfigManager.getScaledUseSettingInt(hero, this, SkillSetting.DURATION, false);
         amplitude = SkillConfigManager.getUseSetting(hero, this, "slow-amplitude", 2, false);
 
         SlowEffect effect = new SlowEffect(this, player, duration, amplitude, applyText, expireText);

@@ -73,7 +73,7 @@
 //    public String getDescription(Hero hero) {
 //        //int height = SkillConfigManager.getUseSetting(hero, this, "height", 3, false) * 2;
 //        //int width = SkillConfigManager.getUseSetting(hero, this, "width", 2, false) * 2;
-////        int maxDist = SkillConfigManager.getUseSetting(hero, this, SkillSetting.MAX_DISTANCE, 12, false);
+////        int maxDist = SkillConfigManager.getScaledUseSettingDouble(hero, this, SkillSetting.MAX_DISTANCE, false);
 //
 //        return getDescription();//.replace("$1", maxDist + "");//.replace("$2", width + "").replace("$3", height + "");
 //    }
@@ -91,9 +91,9 @@
 //        Player player = hero.getPlayer();
 //        World world = player.getWorld();
 //
-//        int maxDist = SkillConfigManager.getUseSetting(hero, this, SkillSetting.MAX_DISTANCE, 12, false);
-//        int radius = SkillConfigManager.getUseSetting(hero, this, SkillSetting.RADIUS, 4, false);
-//        long duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, 5000, false);
+//        int maxDist = SkillConfigManager.getScaledUseSettingDouble(hero, this, SkillSetting.MAX_DISTANCE, false);
+//        int radius = SkillConfigManager.getScaledUseSettingDouble(hero, this, SkillSetting.RADIUS, false);
+//        long duration = SkillConfigManager.getScaledUseSettingInt(hero, this, SkillSetting.DURATION, false);
 //
 //        if (!(damageCheck(player, targetEnt)))
 //            return SkillResult.INVALID_TARGET_NO_MSG;

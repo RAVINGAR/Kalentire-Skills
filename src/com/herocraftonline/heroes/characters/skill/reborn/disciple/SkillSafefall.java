@@ -25,7 +25,7 @@ public class SkillSafefall extends ActiveSkill {
 
     @Override
     public String getDescription(Hero hero) {
-        int duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, 6000, false);
+        int duration = SkillConfigManager.getScaledUseSettingInt(hero, this, SkillSetting.DURATION, false);
         return getDescription().replace("$1", duration / 1000 + "");
     }
 
@@ -41,7 +41,7 @@ public class SkillSafefall extends ActiveSkill {
         Player player = hero.getPlayer();
         broadcastExecuteText(hero);
 
-        int duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, 6000, false);
+        int duration = SkillConfigManager.getScaledUseSettingInt(hero, this, SkillSetting.DURATION, false);
         hero.addEffect(new SafeFallEffect(this, player, duration));
 
         player.getWorld().playSound(player.getLocation(), Sound.ENTITY_BAT_LOOP, 1.0F, 1.0F);

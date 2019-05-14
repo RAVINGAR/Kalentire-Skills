@@ -39,7 +39,7 @@ public class SkillMagicWard extends ActiveSkill {
 
     @Override
     public String getDescription(Hero hero) {
-        int duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, 4000, false);
+        int duration = SkillConfigManager.getScaledUseSettingInt(hero, this, SkillSetting.DURATION, false);
         double damageReduction = SkillConfigManager.getUseSetting(hero, this, "damage-reduction", 0.2, false);
         int maxAlliesProtected = SkillConfigManager.getUseSetting(hero, this, "max-allies-protected", -1, false);
         boolean requireShieldToActivate = SkillConfigManager.getUseSetting(hero, this, "require-shield-to-activate", false);
@@ -95,10 +95,10 @@ public class SkillMagicWard extends ActiveSkill {
             return SkillResult.FAIL;
         }
 
-        int duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, 4000, false);
+        int duration = SkillConfigManager.getScaledUseSettingInt(hero, this, SkillSetting.DURATION, false);
         double damageReduction = SkillConfigManager.getUseSetting(hero, this, "damage-reduction", 0.2, false);
         int maxAlliesProtected = SkillConfigManager.getUseSetting(hero, this, "max-allies-protected", -1, false);
-        double radius = SkillConfigManager.getUseSetting(hero, this, SkillSetting.RADIUS.node(), 10.0, false);
+        double radius = SkillConfigManager.getScaledUseSettingDouble(hero, this, SkillSetting.RADIUS, false);
 
         // Apply ward to party members
         if (hero.hasParty() && maxAlliesProtected != 0){

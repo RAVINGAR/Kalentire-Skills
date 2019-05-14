@@ -70,7 +70,7 @@ public class SkillTimeBomb extends ActiveSkill {
         double manaPercentDecrease = SkillConfigManager.getUseSetting(hero, this, "mana-percent-decrease", 0.75, false);
         double staminaPercentDecrease = SkillConfigManager.getUseSetting(hero, this, "stamina-percent-decrease", 0.75, false);
 
-        double duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, 5000, false);
+        double duration = SkillConfigManager.getScaledUseSettingInt(hero, this, SkillSetting.DURATION, false);
 
         return getDescription()
                 .replace("$2", Util.decFormat.format(manaPercentIncrease))
@@ -106,9 +106,7 @@ public class SkillTimeBomb extends ActiveSkill {
 
         broadcastExecuteText(hero);
 
-        double projSize = SkillConfigManager.getUseSetting(hero, this, "projectile-size", 0.5, false);
-        double projVelocity = SkillConfigManager.getUseSetting(hero, this, "projectile-velocity", 20, false);
-        TimeBombMissile missile = new TimeBombMissile(plugin, this, hero, projSize, projVelocity);
+        TimeBombMissile missile = new TimeBombMissile(plugin, this, hero);
         missile.fireMissile();
 
         return SkillResult.NORMAL;
@@ -117,14 +115,11 @@ public class SkillTimeBomb extends ActiveSkill {
     class TimeBombMissile extends BasicMissile {
         private double explosionRadius;
 
-        TimeBombMissile(Plugin plugin, Skill skill, Hero hero, double projectileSize, double projVelocity) {
-            super(plugin, skill, hero, projectileSize, projVelocity);
-
-            setRemainingLife(SkillConfigManager.getUseSetting(hero, skill, "projectile-max-ticks-lived", 20, false));
-            setGravity(SkillConfigManager.getUseSetting(hero, skill, "projectile-gravity", 5.0, false));
+        TimeBombMissile(Heroes plugin, Skill skill, Hero hero) {
+            super(plugin, skill, hero);
 
             this.explosionRadius = SkillConfigManager.getUseSetting(hero, skill, "explosion-radius", 4.0, false);
-            this.visualEffect = new TimeBombVisualEffect(this.effectManager, projectileSize, 0);
+            this.visualEffect = new TimeBombVisualEffect(this.effectManager, getEntityDetectRadius(), 0);
         }
 
         @Override
@@ -138,21 +133,13 @@ public class SkillTimeBomb extends ActiveSkill {
             }
         }
 
-        protected void onFinalTick() {
-            effectManager.dispose();
-        }
-
-        protected boolean onCollideWithEntity(Entity entity) {
-            return entity instanceof LivingEntity && !hero.isAlliedTo((LivingEntity) entity);
-        }
-
         @Override
         protected void onBlockHit(Block block, Vector hitPoint, BlockFace hitFace, Vector hitForce) {
             performExplosion();
         }
 
         @Override
-        protected void onEntityHit(Entity entity, Vector hitOrigin, Vector hitForce) {
+        protected void onValidTargetFound(LivingEntity target, Vector hitOrigin, Vector hitForce) {
             performExplosion();
         }
 
@@ -322,7 +309,7 @@ public class SkillTimeBomb extends ActiveSkill {
             Location location = this.getLocation();
             Vector vector = new Vector(0.0D, primaryYOffset, 0.0D);
             location.add(vector);
-//            this.display(Particle.LAVA, location);
+            this.display(Particle.SPIT, location);
             location.subtract(vector);
         }
 

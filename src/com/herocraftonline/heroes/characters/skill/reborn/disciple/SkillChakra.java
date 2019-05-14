@@ -34,25 +34,16 @@ public class SkillChakra extends ActiveSkill {
 
     @Override
     public String getDescription(Hero hero) {
-        int wisdom = hero.getAttributeValue(AttributeType.WISDOM);
-
-        int radius = SkillConfigManager.getUseSetting(hero, this, SkillSetting.RADIUS, 5, false);
-        double radiusIncrease = SkillConfigManager.getUseSetting(hero, this, SkillSetting.RADIUS_INCREASE_PER_WISDOM, 0.125, false);
-        radius += (int) (wisdom * radiusIncrease);
-
-        double healing = SkillConfigManager.getUseSetting(hero, this, SkillSetting.HEALING, 75, false);
+        double radius = SkillConfigManager.getScaledUseSettingDouble(hero, this, SkillSetting.RADIUS, false);
+        double healing = SkillConfigManager.getScaledUseSettingDouble(hero, this, SkillSetting.HEALING, false);
         healing = getScaledHealing(hero, healing);
-        double healingIncrease = SkillConfigManager.getUseSetting(hero, this, SkillSetting.HEALING_INCREASE_PER_WISDOM, 0.875, false);
-        healing += (wisdom * healingIncrease);
+        int removals = SkillConfigManager.getScaledUseSettingInt(hero, this, "max-removals", true);
 
-        int removals = SkillConfigManager.getUseSetting(hero, this, "max-removals", 0, true);
-        double removalsIncrease = SkillConfigManager.getUseSetting(hero, this, "max-removals-increase-per-wisdom", 0.05, false);
-        removals += Math.floor((wisdom * removalsIncrease));     // Round down
-
-        String formattedHealing = Util.decFormat.format(healing);
-        String formattedSelfHealing = Util.decFormat.format(healing * Heroes.properties.selfHeal);
-
-        return getDescription().replace("$1", formattedHealing).replace("$2", removals + "").replace("$3", radius + "").replace("$4", formattedSelfHealing);
+        return getDescription()
+                .replace("$1", Util.decFormat.format(healing))
+                .replace("$2", removals + "")
+                .replace("$3", Util.decFormat.format(radius))
+                .replace("$4", Util.decFormat.format(healing * Heroes.properties.selfHeal));
     }
 
     @Override
@@ -74,21 +65,14 @@ public class SkillChakra extends ActiveSkill {
         Player player = hero.getPlayer();
         Location castLoc = player.getLocation().clone();
 
-        int wisdom = hero.getAttributeValue(AttributeType.WISDOM);
 
-        int radius = SkillConfigManager.getUseSetting(hero, this, SkillSetting.RADIUS, 5, false);
-        double radiusIncrease = SkillConfigManager.getUseSetting(hero, this, SkillSetting.RADIUS_INCREASE_PER_WISDOM, 0.125, false);
-        radius += (int) (wisdom * radiusIncrease);
-        int radiusSquared = radius * radius;
+        double radius = SkillConfigManager.getScaledUseSettingDouble(hero, this, SkillSetting.RADIUS, false);
+        double radiusSquared = radius * radius;
 
-        double healing = SkillConfigManager.getUseSetting(hero, this, SkillSetting.HEALING, 75, false);
+        double healing = SkillConfigManager.getScaledUseSettingDouble(hero, this, SkillSetting.HEALING, false);
         healing = getScaledHealing(hero, healing);
-        double healingIncrease = SkillConfigManager.getUseSetting(hero, this, SkillSetting.HEALING_INCREASE_PER_WISDOM, 0.875, false);
-        healing += (wisdom * healingIncrease);
 
-        int removals = SkillConfigManager.getUseSetting(hero, this, "max-removals", 0, true);
-        double removalsIncrease = SkillConfigManager.getUseSetting(hero, this, "max-removals-increase-per-wisdom", 0.05, false);
-        removals += Math.floor(wisdom * removalsIncrease);     // Round down
+        int removals = SkillConfigManager.getScaledUseSettingInt(hero, this, "max-removals", true);
 
         if (hero.hasParty()) {
             for (Hero p : hero.getParty().getMembers()) {

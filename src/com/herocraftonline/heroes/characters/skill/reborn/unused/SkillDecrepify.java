@@ -32,9 +32,7 @@ public class SkillDecrepify extends TargettedSkill {
     }
 
     public String getDescription(Hero hero) {
-        int duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, 2000, false);
-        int durationIncrease = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION_INCREASE_PER_INTELLECT, 75, false);
-        duration += hero.getAttributeValue(AttributeType.INTELLECT) * durationIncrease;
+        int duration = SkillConfigManager.getScaledUseSettingInt(hero, this, SkillSetting.DURATION, false);
 
         double degenPercent = SkillConfigManager.getUseSetting(hero, this, "stamina-degen-percent", 0.5, false);
 
@@ -73,9 +71,7 @@ public class SkillDecrepify extends TargettedSkill {
         broadcastExecuteText(hero, target);
 
         // Get Debuff values
-        int duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, 8000, false);
-        int durationIncrease = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION_INCREASE_PER_INTELLECT, 0, false);
-        duration += hero.getAttributeValue(AttributeType.INTELLECT) * durationIncrease;
+        int duration = SkillConfigManager.getScaledUseSettingInt(hero, this, SkillSetting.DURATION, false);
 
         double degenPercent = SkillConfigManager.getUseSetting(hero, this, "stamina-degen-percent", 0.5, false);
 

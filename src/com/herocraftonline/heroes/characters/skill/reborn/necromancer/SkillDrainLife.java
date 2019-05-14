@@ -33,9 +33,7 @@ public class SkillDrainLife extends TargettedSkill {
 
     @Override
     public String getDescription(Hero hero) {
-        double damage = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE, 40, false);
-        double damageIncrease = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE_INCREASE_PER_INTELLECT, 0.0, false);
-        damage += damageIncrease * hero.getAttributeValue(AttributeType.INTELLECT);
+        double damage = SkillConfigManager.getScaledUseSettingDouble(hero, this, SkillSetting.DAMAGE, false);
 
         double healMult = SkillConfigManager.getUseSetting(hero, this, "healing-multiplier", 1.5, false);
 
@@ -62,9 +60,7 @@ public class SkillDrainLife extends TargettedSkill {
 
         broadcastExecuteText(hero, target);
 
-        double damage = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE, 40, false);
-        double damageIncrease = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE_INCREASE_PER_INTELLECT, 0.0, false);
-        damage += damageIncrease * hero.getAttributeValue(AttributeType.INTELLECT);
+        double damage = SkillConfigManager.getScaledUseSettingDouble(hero, this, SkillSetting.DAMAGE, false);
 
         addSpellTarget(target, hero);
         damageEntity(target, player, damage, DamageCause.MAGIC);

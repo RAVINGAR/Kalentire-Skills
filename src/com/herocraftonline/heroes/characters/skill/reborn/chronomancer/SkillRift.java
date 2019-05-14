@@ -38,8 +38,8 @@ public class SkillRift extends TargettedSkill {
 
     @Override
     public String getDescription(Hero hero) {
-        double radius = SkillConfigManager.getUseSetting(hero, this, SkillSetting.RADIUS, 4.0, false);
-        double damage = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE, 40.0, false);
+        double radius = SkillConfigManager.getScaledUseSettingDouble(hero, this, SkillSetting.RADIUS, false);
+        double damage = SkillConfigManager.getScaledUseSettingDouble(hero, this, SkillSetting.DAMAGE, false);
         int debuffRemovals = SkillConfigManager.getUseSetting(hero, this, "max-debuff-removals", 1, false);
         int buffRemovals = SkillConfigManager.getUseSetting(hero, this, "max-buff-removals", 1, false);
 
@@ -75,8 +75,8 @@ public class SkillRift extends TargettedSkill {
 
         broadcastExecuteText(hero, target);
 
-        double radius = SkillConfigManager.getUseSetting(hero, this, SkillSetting.RADIUS, 4.0, false);
-        double damage = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE, 40.0, false);
+        double radius = SkillConfigManager.getScaledUseSettingDouble(hero, this, SkillSetting.RADIUS, false);
+        double damage = SkillConfigManager.getScaledUseSettingDouble(hero, this, SkillSetting.DAMAGE, false);
 
         Location originalTargetLoc = target.getLocation();
         Location originalPlayerLoc = player.getLocation();

@@ -31,7 +31,7 @@ public class SkillSmokeBomb extends ActiveSkill {
 
     @Override
     public String getDescription(Hero hero) {
-        int duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, 3000, false);
+        int duration = SkillConfigManager.getScaledUseSettingInt(hero, this, SkillSetting.DURATION, false);
         String formattedDuration = Util.decFormat.format(duration / 1000.0);
 
         return getDescription().replace("$1", formattedDuration);
@@ -67,7 +67,7 @@ public class SkillSmokeBomb extends ActiveSkill {
 
         Player player = hero.getPlayer();
 
-        long duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, 4500, false);
+        long duration = SkillConfigManager.getScaledUseSettingInt(hero, this, SkillSetting.DURATION, false);
 
         Util.playClientEffect(player, "hugeexplosion", new Vector(0, 0, 0), 1F, 10, true);
         hero.addEffect(new SmokeEffect(this, player, duration));

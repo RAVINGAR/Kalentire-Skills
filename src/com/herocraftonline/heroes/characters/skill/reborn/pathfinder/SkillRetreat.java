@@ -59,7 +59,7 @@ public class SkillRetreat extends ActiveSkill {
 
     @Override
     public String getDescription(Hero hero) {
-        int duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, 2500, false);
+        int duration = SkillConfigManager.getScaledUseSettingInt(hero, this, SkillSetting.DURATION, false);
         int stunDuration = SkillConfigManager.getUseSetting(hero, this, "stun-duration", 1500, false);
 
         return getDescription()
@@ -98,7 +98,7 @@ public class SkillRetreat extends ActiveSkill {
 
         performBackflip(hero, player, belowMat);
 
-        long duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, 1500, false);
+        long duration = SkillConfigManager.getScaledUseSettingInt(hero, this, SkillSetting.DURATION, false);
         hero.addEffect(new RetreatBuff(this, player, duration));
 
         player.getWorld().playSound(player.getLocation(), Sound.ENTITY_ENDERDRAGON_FLAP, 4.0F, 1.0F);
@@ -138,11 +138,8 @@ public class SkillRetreat extends ActiveSkill {
                 break;
         }
 
-        int dexterity = hero.getAttributeValue(AttributeType.DEXTERITY);
 
         double vPower = SkillConfigManager.getUseSetting(hero, this, "vertical-power", 0.5, false);
-        double vPowerIncrease = SkillConfigManager.getUseSetting(hero, this, "vertical-power-increase-per-dexterity", 0.0125, false);
-        vPower += dexterity * vPowerIncrease;
 
         if (vPower > 2.0)
             vPower = 2.0;
@@ -159,8 +156,6 @@ public class SkillRetreat extends ActiveSkill {
 
         velocity.add(directionVector);
         double hPower = SkillConfigManager.getUseSetting(hero, this, "horizontal-power", 0.5, false);
-        double hPowerIncrease = SkillConfigManager.getUseSetting(hero, this, "horizontal-power-increase-per-dexterity", 0.0125, false);
-        hPower += dexterity * hPowerIncrease;
 
         if (weakenVelocity)
             hPower *= 0.75;

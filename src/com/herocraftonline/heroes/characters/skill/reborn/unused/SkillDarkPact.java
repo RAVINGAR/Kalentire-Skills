@@ -38,7 +38,7 @@ public class SkillDarkPact extends TargettedSkill {
 
     public String getDescription(Hero hero) {
         int period = SkillConfigManager.getUseSetting(hero, this, SkillSetting.PERIOD, 2000, false);
-        int duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION.node(), 10000, false);
+        int duration = SkillConfigManager.getScaledUseSettingInt(hero, this, SkillSetting.DURATION, false);
 
         double drainTick = SkillConfigManager.getUseSetting(hero, this, "drain-tick", 40.0, false);
 
@@ -84,7 +84,7 @@ public class SkillDarkPact extends TargettedSkill {
         broadcastExecuteText(hero, target);
 
         int period = SkillConfigManager.getUseSetting(hero, this, SkillSetting.PERIOD, 2000, false);
-        int duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION.node(), 10000, false);
+        int duration = SkillConfigManager.getScaledUseSettingInt(hero, this, SkillSetting.DURATION, false);
         double drainTick = SkillConfigManager.getUseSetting(hero, this, "drain-tick", 40.0, false);
 
         CharacterTemplate targetCT = plugin.getCharacterManager().getCharacter(target);

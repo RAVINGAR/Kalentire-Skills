@@ -32,7 +32,7 @@ public class SkillDisintegrate extends TargettedSkill {
     }
 
     public String getDescription(Hero hero) {
-        double baseDamage = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE, 25.0, false);
+        double baseDamage = SkillConfigManager.getScaledUseSettingDouble(hero, this, SkillSetting.DAMAGE, false);
         double damagePerStack = SkillConfigManager.getUseSetting(hero, this, "damage-per-effect-consumed", 20.0, false);
         double maximumBurningDamage = SkillConfigManager.getUseSetting(hero, this, "maximum-consume-damage", 100.0, false);
 
@@ -56,7 +56,7 @@ public class SkillDisintegrate extends TargettedSkill {
 
         broadcastExecuteText(hero, target);
 
-        double damage = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE, 25.0, false);
+        double damage = SkillConfigManager.getScaledUseSettingDouble(hero, this, SkillSetting.DAMAGE, false);
         double damagePerStack = SkillConfigManager.getUseSetting(hero, this, "damage-per-effect-consumed", 20.0, false);
         double addedDamage = 0;
 

@@ -37,7 +37,7 @@ public class SkillSkeletonKnight extends ActiveSkill {
     public SkillSkeletonKnight(Heroes plugin) {
         super(plugin, "SkeletonKnight");
         setDescription("Conjures a Skeleton Knight to obey your commands. " +
-                "The minion has $1 HP deals $2 damage per hit, and lasts for up to $3 seconds. $9");
+                "The minion has $1 HP, deals $2 damage per hit, and lasts for up to $3 seconds. $9");
         setUsage("/skill skeletonknight");
         setIdentifiers("skill skeletonknight");
         setArgumentRange(0, 0);

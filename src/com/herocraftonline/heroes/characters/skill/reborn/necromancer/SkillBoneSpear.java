@@ -2,10 +2,10 @@ package com.herocraftonline.heroes.characters.skill.reborn.necromancer;
 
 import com.herocraftonline.heroes.Heroes;
 import com.herocraftonline.heroes.api.SkillResult;
-import com.herocraftonline.heroes.attributes.AttributeType;
 import com.herocraftonline.heroes.characters.Hero;
 import com.herocraftonline.heroes.characters.skill.*;
-import com.herocraftonline.heroes.characters.skill.tools.Missile;
+import com.herocraftonline.heroes.characters.skill.tools.BasicDamageMissile;
+import com.herocraftonline.heroes.characters.skill.tools.BasicMissile;
 import com.herocraftonline.heroes.util.Util;
 import org.bukkit.Color;
 import org.bukkit.FireworkEffect;
@@ -13,14 +13,9 @@ import org.bukkit.Location;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
 import org.bukkit.configuration.ConfigurationSection;
-import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
-import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.util.Vector;
-
-import java.util.ArrayList;
-import java.util.List;
 
 public class SkillBoneSpear extends ActiveSkill {
 
@@ -35,7 +30,8 @@ public class SkillBoneSpear extends ActiveSkill {
     }
 
     public String getDescription(Hero hero) {
-        boolean pierces = SkillConfigManager.getUseSetting(hero, this, "projectile-pierces-on-hit", false);
+        double damage = SkillConfigManager.getScaledUseSettingDouble(hero, this, SkillSetting.DAMAGE, false);
+        boolean pierces = SkillConfigManager.getUseSetting(hero, this, BasicDamageMissile.PROJECTILE_PIERCES_ON_HIT_NODE, false);
         String pierceText = pierces ? "pierce enemies and " : "";
 
         double knockbackPower = SkillConfigManager.getUseSetting(hero, this, "projectile-knockback-force", 2.0, false);
@@ -45,37 +41,35 @@ public class SkillBoneSpear extends ActiveSkill {
         } else {
             knockbackText = ", and knock them back ";
             if (knockbackPower >= 2.0) {
-                knockbackText+= "with exessive force.";
+                knockbackText += "with exessive force.";
             } else if (knockbackPower >= 1.5) {
-                knockbackText+= "by a significant amount.";
+                knockbackText += "by a significant amount.";
             } else if (knockbackPower >= 1.0) {
-                knockbackText+= "by a decent amount.";
+                knockbackText += "by a decent amount.";
             } else {
                 knockbackText += "slightly.";
             }
         }
 
-        double damage = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE, 75.0, false);
-        double damageIncrease = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE_INCREASE_PER_INTELLECT, 0.0, false);
-        damage += damageIncrease * hero.getAttributeValue(AttributeType.INTELLECT);
-
         return getDescription()
                 .replace("$1", pierceText)
                 .replace("$2", Util.decFormat.format(damage)
-                .replace("$3", knockbackText));
+                        .replace("$3", knockbackText));
     }
 
     public ConfigurationSection getDefaultConfig() {
         ConfigurationSection config = super.getDefaultConfig();
         config.set(SkillSetting.DAMAGE.node(), 75.0);
         config.set(SkillSetting.DAMAGE_INCREASE_PER_INTELLECT.node(), 0.0);
-        config.set("projectile-size", 2.0);
-        config.set("projectile-velocity", 20.0);
-        config.set("projectile-max-ticks-lived", 20);
+        config.set(BasicMissile.PROJECTILE_SIZE_NODE, 2.0);
+        config.set(BasicMissile.PROJECTILE_VELOCITY_NODE, 20.0);
+        config.set(BasicMissile.PROJECTILE_DURATION_TICKS_NODE, 20);
         config.set("projectile-block-collision-size", 0.35);
-        config.set("projectile-gravity", 0.0);
-        config.set("projectile-pierces-on-hit", true);
-        config.set("projectile-knockback-force", 2.0);
+        config.set(BasicMissile.PROJECTILE_GRAVITY_NODE, 0.0);
+        config.set(BasicDamageMissile.PROJECTILE_PIERCES_ON_HIT_NODE, true);
+        config.set(BasicDamageMissile.PROJECTILE_KNOCKS_BACK_ON_HIT_NODE, true);
+        config.set(BasicDamageMissile.PROJECTILE_CUSTOM_KNOCKBACK_FORCE_NODE, 1.5);
+        config.set(BasicDamageMissile.PROJECTILE_CUSTOM_KNOCKBACK_Y_MULTIPLIER_NODE, 0.5);
         config.set("projectile-effect-display-servertick-rate", 10);
         return config;
     }
@@ -85,45 +79,29 @@ public class SkillBoneSpear extends ActiveSkill {
 
         broadcastExecuteText(hero);
 
-        BoneSpearProjectile missile = new BoneSpearProjectile(this, hero);
+        BoneSpearProjectile missile = new BoneSpearProjectile(plugin, this, hero);
         missile.fireMissile();
 
         return SkillResult.NORMAL;
     }
 
-    class BoneSpearProjectile extends Missile {
-        private final Hero hero;
-        private final Player player;
-
-        private final double damage;
+    class BoneSpearProjectile extends BasicDamageMissile {
         private final double blockCollisionSizeSquared;
         private final int visualTickRate;
-        private final boolean shouldPierce;
-        private final double knockbackPower;
 
-        private double defaultSpeed;
-        private List<LivingEntity> hitTargets = new ArrayList<LivingEntity>();
+        BoneSpearProjectile(Heroes plugin, Skill skill, Hero hero) {
+            super(plugin, skill, hero);
+            this.replaceEffects(null, null);
 
-        BoneSpearProjectile(Skill skill, Hero hero) {
-            this.hero = hero;
-            this.player = hero.getPlayer();
-
-            setRemainingLife(SkillConfigManager.getUseSetting(hero, skill, "projectile-max-ticks-lived", 20, false));
-            setGravity(SkillConfigManager.getUseSetting(hero, skill, "projectile-gravity", 0.0, false));
-            setEntityDetectRadius(SkillConfigManager.getUseSetting(hero, skill, "projectile-size", 1.5, false));
             double size = SkillConfigManager.getUseSetting(hero, skill, "projectile-block-collision-size", 0.35, false);
             this.blockCollisionSizeSquared = size * size;
-            double projectileSpeed = SkillConfigManager.getUseSetting(hero, skill, "projectile-velocity", 20.0, false);
-
-            this.knockbackPower = SkillConfigManager.getUseSetting(hero, skill, "projectile-knockback-force", 2.0, false);
-            this.shouldPierce = SkillConfigManager.getUseSetting(hero, skill, "projectile-pierces-on-hit", false);
             this.visualTickRate = SkillConfigManager.getUseSetting(hero, skill, "projectile-effect-display-servertick-rate", 10, false);
-            this.damage = SkillConfigManager.getUseSetting(hero, skill, SkillSetting.DAMAGE, 75.0, false);
+        }
 
-            Vector playerDirection = player.getEyeLocation().getDirection().normalize();
-            Location missileLoc = player.getEyeLocation().clone().subtract(0, player.getEyeHeight() / 2, 0).setDirection(playerDirection);
-
-            this.setLocationAndSpeed(missileLoc, projectileSpeed);
+        @Override
+        protected Location buildMissileStartLocation() {
+            // Center on the player
+            return player.getEyeLocation().clone().subtract(0, player.getEyeHeight() / 2, 0).setDirection(player.getEyeLocation().getDirection());
         }
 
         private void updateVisualLocation() {
@@ -140,7 +118,7 @@ public class SkillBoneSpear extends ActiveSkill {
 
         @Override
         protected void onStart() {
-            this.defaultSpeed = getVelocity().length();
+            super.onStart();
             updateVisualLocation();
         }
 
@@ -152,42 +130,14 @@ public class SkillBoneSpear extends ActiveSkill {
 
         @Override
         protected void onFinalTick() {
+            super.onStart();
             updateVisualLocation();
         }
 
         @Override
-        protected boolean onCollideWithEntity(Entity entity) {
-            if (shouldPierce)
-                return false;
-            return entity instanceof LivingEntity && !hero.isAlliedTo((LivingEntity) entity);
-        }
-
-        @Override
         protected boolean onCollideWithBlock(Block block, Vector point, BlockFace face) {
+            // Custom "block radius"
             return getLocation().distanceSquared(block.getLocation()) >= this.blockCollisionSizeSquared;
-        }
-
-        @Override
-        protected void onEntityPassed(Entity entity, Vector passOrigin, Vector passForce) {
-            if (!(entity instanceof LivingEntity) || hitTargets.contains(entity)) {
-                return;
-            }
-
-            LivingEntity target = (LivingEntity) entity;
-            if (!Skill.damageCheck(player, target))
-                return;
-
-            hitTargets.add(target);
-
-            addSpellTarget(target, hero);
-            damageEntity(target, player, damage, EntityDamageEvent.DamageCause.MAGIC, false);
-
-            if (knockbackPower > 0.0) {
-                target.setVelocity(passForce.normalize().multiply(this.knockbackPower));
-            }
-
-            if (!shouldPierce)
-                this.kill();
         }
     }
 }

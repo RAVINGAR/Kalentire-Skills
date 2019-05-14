@@ -41,7 +41,7 @@ public class SkillHardenScales extends ActiveSkill {
 
     @Override
     public String getDescription(Hero hero) {
-        long duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, 4000, false);
+        long duration = SkillConfigManager.getScaledUseSettingInt(hero, this, SkillSetting.DURATION, false);
         double damageReduction = SkillConfigManager.getUseSetting(hero, this, "damage-reduction-percent", 0.35, false);
 
         return getDescription()
@@ -78,7 +78,7 @@ public class SkillHardenScales extends ActiveSkill {
     public SkillResult use(Hero hero, String[] args) {
         Player player = hero.getPlayer();
 
-        int duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, 4000, false);
+        int duration = SkillConfigManager.getScaledUseSettingInt(hero, this, SkillSetting.DURATION, false);
         double damageReduction = SkillConfigManager.getUseSetting(hero, this, "damage-reduction-percent", 0.5, false);
         double movementPercentDecrease = SkillConfigManager.getUseSetting(hero, this, "movespeed-reduction-percent", 0.35, false);
 

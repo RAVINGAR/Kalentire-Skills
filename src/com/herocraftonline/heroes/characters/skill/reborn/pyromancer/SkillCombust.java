@@ -38,7 +38,7 @@ public class SkillCombust extends TargettedSkill {
     }
 
     public String getDescription(Hero hero) {
-        double damage = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE, 25.0, false);
+        double damage = SkillConfigManager.getScaledUseSettingDouble(hero, this, SkillSetting.DAMAGE, false);
         double damageEffectiveness = SkillConfigManager.getUseSetting(hero, this, "burning-damage-effectiveness", 1.5, false);
         double maximumBurningDamage = SkillConfigManager.getUseSetting(hero, this, "maximum-burning-damage", 100.0, false);
 
@@ -61,7 +61,7 @@ public class SkillCombust extends TargettedSkill {
 
         broadcastExecuteText(hero, target);
 
-        double damage = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE, 25.0, false);
+        double damage = SkillConfigManager.getScaledUseSettingDouble(hero, this, SkillSetting.DAMAGE, false);
         double damageEffectiveness = SkillConfigManager.getUseSetting(hero, this, "damage-effectiveness", 1.5, false);
         double addedDamage = 0;
 

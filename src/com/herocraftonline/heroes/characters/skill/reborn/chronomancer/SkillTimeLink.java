@@ -33,7 +33,7 @@ public class SkillTimeLink extends TargettedSkill {
 
     @Override
     public String getDescription(Hero hero) {
-        long duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, 12000, false);
+        long duration = SkillConfigManager.getScaledUseSettingInt(hero, this, SkillSetting.DURATION, false);
         double breakDistance = SkillConfigManager.getUseSetting(hero, this, "break-distance", 16.0, false);
 
         return getDescription()
@@ -75,7 +75,7 @@ public class SkillTimeLink extends TargettedSkill {
 
         broadcastExecuteText(hero, target);
 
-        long duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, 10000, false);
+        long duration = SkillConfigManager.getScaledUseSettingInt(hero, this, SkillSetting.DURATION, false);
         double breakDistance = SkillConfigManager.getUseSetting(hero, this, "break-distance", 16.0, false);
 
         CharacterTemplate targetCT = plugin.getCharacterManager().getCharacter(target);

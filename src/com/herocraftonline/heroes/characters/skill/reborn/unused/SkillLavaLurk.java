@@ -74,7 +74,7 @@ public class SkillLavaLurk extends ActiveSkill {
             return SkillResult.FAIL;
         }
 
-        long duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, 30000, false);
+        long duration = SkillConfigManager.getScaledUseSettingInt(hero, this, SkillSetting.DURATION, false);
         long onBreakDuration = SkillConfigManager.getUseSetting(hero, this, "on-break-delayed-fire-resist-duration", 1500, false);
 
         player.getWorld().playEffect(loc, org.bukkit.Effect.EXTINGUISH, 0, 10);

@@ -53,13 +53,13 @@ public class SkillTimeShift extends TargettedSkill {
 
     @Override
     public String getDescription(Hero hero) {
-        double healing = SkillConfigManager.getUseSetting(hero, this, SkillSetting.HEALING, 25.0, false);
-        double damage = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE, 25.0, false);
+        double healing = SkillConfigManager.getScaledUseSettingDouble(hero, this, SkillSetting.HEALING, false);
+        double damage = SkillConfigManager.getScaledUseSettingDouble(hero, this, SkillSetting.DAMAGE, false);
 
         double speedIncrease = SkillConfigManager.getUseSetting(hero, this, "ally-percent-speed-increase", 0.1, false);
         double speedDecrease = SkillConfigManager.getUseSetting(hero, this, "enemy-percent-speed-decrease", 0.1, false);
 
-        long duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, 10000, false);
+        long duration = SkillConfigManager.getScaledUseSettingInt(hero, this, SkillSetting.DURATION, false);
         int maxStacks = SkillConfigManager.getUseSetting(hero, this, "max-stacks", 10, false);
 
         return getDescription()
@@ -111,7 +111,7 @@ public class SkillTimeShift extends TargettedSkill {
     }
 
     public SkillResult timeLinkTarget(Hero hero, LivingEntity target, Player player, boolean shouldBroadcast, CharacterTemplate ctTarget) {
-        int duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, 8000, false);
+        int duration = SkillConfigManager.getScaledUseSettingInt(hero, this, SkillSetting.DURATION, false);
         int maxStacks = SkillConfigManager.getUseSetting(hero, this, "max-stacks", 5, false);
 
         if (hero.isAlliedTo(target))
@@ -139,7 +139,7 @@ public class SkillTimeShift extends TargettedSkill {
         if (shouldBroadcast)
             broadcastExecuteText(hero, target);
 
-        double damage = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE, 20.0, false);
+        double damage = SkillConfigManager.getScaledUseSettingDouble(hero, this, SkillSetting.DAMAGE, false);
         addSpellTarget(target, hero);
         damageEntity(target, player, damage, EntityDamageEvent.DamageCause.MAGIC, false);
 
@@ -170,7 +170,7 @@ public class SkillTimeShift extends TargettedSkill {
         if (shouldBroadcast)
             broadcastExecuteText(hero, target);
 
-        double healing = SkillConfigManager.getUseSetting(hero, this, SkillSetting.HEALING, 20.0, false);
+        double healing = SkillConfigManager.getScaledUseSettingDouble(hero, this, SkillSetting.HEALING, false);
         targetCT.tryHeal(hero, this, healing);  // Ignore failures
 
         World world = target.getWorld();

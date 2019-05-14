@@ -36,13 +36,9 @@ public class SkillForcePush extends TargettedSkill {
 
     @Override
     public String getDescription(Hero hero) {
-        double damage = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE, 50.0, false);
-        double damageIncrease = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE_INCREASE_PER_INTELLECT, 0.0, false);
-        damage += damageIncrease * hero.getAttributeValue(AttributeType.INTELLECT);
+        double damage = SkillConfigManager.getScaledUseSettingDouble(hero, this, SkillSetting.DAMAGE, false);
 
-        double healing = SkillConfigManager.getUseSetting(hero, this, SkillSetting.HEALING, 50.0, false);
-        double healingIncrease = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE_INCREASE_PER_WISDOM, 1.6, false);
-        healing += healingIncrease * hero.getAttributeValue(AttributeType.INTELLECT);
+        double healing = SkillConfigManager.getScaledUseSettingDouble(hero, this, SkillSetting.HEALING, false);
 
         return getDescription()
                 .replace("$1", Util.decFormat.format(damage))
@@ -88,9 +84,7 @@ public class SkillForcePush extends TargettedSkill {
                 break;
         }
 
-        double tempVPower = SkillConfigManager.getUseSetting(hero, this, "vertical-power", 0.25, false);
-        double vPowerIncrease = SkillConfigManager.getUseSetting(hero, this, "vertical-power-increase-per-intellect", 0.0075, false);
-        tempVPower += (vPowerIncrease * hero.getAttributeValue(AttributeType.INTELLECT));
+        double tempVPower = SkillConfigManager.getScaledUseSettingDouble(hero, this, "vertical-power", false);
 
         if (weakenVelocity)
             tempVPower *= 0.75;
@@ -110,9 +104,7 @@ public class SkillForcePush extends TargettedSkill {
         final double xDir = targetLoc.getX() - playerLoc.getX();
         final double zDir = targetLoc.getZ() - playerLoc.getZ();
 
-        double tempHPower = SkillConfigManager.getUseSetting(hero, this, "horizontal-power", 1.5, false);
-        double hPowerIncrease = SkillConfigManager.getUseSetting(hero, this, "horizontal-power-increase-per-intellect", 0.0375, false);
-        tempHPower += hPowerIncrease * hero.getAttributeValue(AttributeType.INTELLECT);
+        double tempHPower = SkillConfigManager.getScaledUseSettingDouble(hero, this, "horizontal-power", false);
 
         if (weakenVelocity)
             tempHPower *= 0.75;
@@ -131,17 +123,13 @@ public class SkillForcePush extends TargettedSkill {
         }, (long) (delay * 20));
 
         if (hero.isAlliedTo(target)) {
-            double healing = SkillConfigManager.getUseSetting(hero, this, SkillSetting.HEALING, 50.0, false);
-            double healingIncrease = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE_INCREASE_PER_WISDOM, 1.6, false);
-            healing += healingIncrease * hero.getAttributeValue(AttributeType.INTELLECT);
+            double healing = SkillConfigManager.getScaledUseSettingDouble(hero, this, SkillSetting.HEALING, false);
             target.setFallDistance(-1);
 
             CharacterTemplate targetCT = plugin.getCharacterManager().getCharacter(target);
             targetCT.tryHeal(hero, this, healing);  // Ignore failures
         } else {
-            double damage = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE, 50, false);
-            double damageIncrease = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE_INCREASE_PER_INTELLECT, 1.6, false);
-            damage += damageIncrease * hero.getAttributeValue(AttributeType.INTELLECT);
+            double damage = SkillConfigManager.getScaledUseSettingDouble(hero, this, SkillSetting.DAMAGE, false);
 
             if (damage > 0) {
                 addSpellTarget(target, hero);
@@ -157,7 +145,7 @@ public class SkillForcePush extends TargettedSkill {
 //                0, 0, 0,
 //                1,
 //                150,
-//                SkillConfigManager.getUseSetting(hero, this, SkillSetting.MAX_DISTANCE, 5, false) +
+//                SkillConfigManager.getScaledUseSettingDouble(hero, this, SkillSetting.MAX_DISTANCE, false) +
         player.getWorld().spawnParticle(Particle.SPELL_WITCH, target.getLocation().add(0, 0.5, 0), 150, 0, 0, 0, 1);
 
         return SkillResult.NORMAL;

@@ -39,17 +39,13 @@ public class SkillPlague extends TargettedSkill {
 
     @Override
     public String getDescription(Hero hero) {
-        int duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, 20000, false);
+        int duration = SkillConfigManager.getScaledUseSettingInt(hero, this, SkillSetting.DURATION, false);
         int period = SkillConfigManager.getUseSetting(hero, this, SkillSetting.PERIOD, 2500, false);
 
-        double radius = SkillConfigManager.getUseSetting(hero, this, SkillSetting.RADIUS, 4.0, false);
+        double radius = SkillConfigManager.getScaledUseSettingDouble(hero, this, SkillSetting.RADIUS, false);
         double healingReduction = SkillConfigManager.getUseSetting(hero, this, "healing-reduction-percent", 0.15, false);
 
-        double tickDamage = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE_TICK, 17.0, false);
-        double tickDamageIncrease = hero.getAttributeValue(AttributeType.INTELLECT) *
-                SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE_INCREASE_PER_INTELLECT, 0.17, false);
-
-        tickDamage += tickDamageIncrease;
+        double tickDamage = SkillConfigManager.getScaledUseSettingDouble(hero, this, SkillSetting.DAMAGE_TICK, false);
 
         return getDescription()
                 .replace("$1", Util.decFormat.format(duration / 1000.0))
@@ -93,14 +89,12 @@ public class SkillPlague extends TargettedSkill {
 
         broadcastExecuteText(hero, target);
 
-        long duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, 15000, false);
+        long duration = SkillConfigManager.getScaledUseSettingInt(hero, this, SkillSetting.DURATION, false);
         long period = SkillConfigManager.getUseSetting(hero, this, SkillSetting.PERIOD, 1500, true);
-        double radius = SkillConfigManager.getUseSetting(hero, this, SkillSetting.RADIUS, 4.0, false);
+        double radius = SkillConfigManager.getScaledUseSettingDouble(hero, this, SkillSetting.RADIUS, false);
         double healingReduction = SkillConfigManager.getUseSetting(hero, this, "healing-reduction-percent", 0.15, false);
 
-        double tickDamage = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE_TICK, 10.0, false);
-        double tickDamageIncrease = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE_TICK_INCREASE_PER_INTELLECT, 0.0, false);
-        tickDamage += tickDamageIncrease * hero.getAttributeValue(AttributeType.INTELLECT);
+        double tickDamage = SkillConfigManager.getScaledUseSettingDouble(hero, this, SkillSetting.DAMAGE_TICK, false);
 
         plugin.getCharacterManager().getCharacter(target).addEffect(new PlagueEffect(this, player, duration, period, radius, tickDamage, healingReduction));
 

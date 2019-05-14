@@ -10,6 +10,7 @@ import com.herocraftonline.heroes.characters.effects.EffectType;
 import com.herocraftonline.heroes.characters.effects.ExpirableEffect;
 import com.herocraftonline.heroes.characters.effects.PeriodicExpirableEffect;
 import com.herocraftonline.heroes.characters.skill.*;
+import com.herocraftonline.heroes.characters.skill.tools.BasicDamageMissile;
 import com.herocraftonline.heroes.characters.skill.tools.BasicMissile;
 import com.herocraftonline.heroes.chat.ChatComponents;
 import com.herocraftonline.heroes.util.Util;
@@ -47,8 +48,8 @@ public class SkillHook extends ActiveSkill {
 
     @Override
     public String getDescription(Hero hero) {
-        long duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, 10000, false);
-        double damage = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE, 30.0, false);
+        long duration = SkillConfigManager.getScaledUseSettingInt(hero, this, SkillSetting.DURATION, false);
+        double damage = SkillConfigManager.getScaledUseSettingDouble(hero, this, SkillSetting.DAMAGE, false);
         double hookLeashDistance = SkillConfigManager.getUseSetting(hero, this, "hook-leash-distance", 20.0, false);
 
         return getDescription()
@@ -62,10 +63,10 @@ public class SkillHook extends ActiveSkill {
         ConfigurationSection config = super.getDefaultConfig();
         config.set(SkillSetting.DAMAGE.node(), 40.0);
         config.set(SkillSetting.DURATION.node(), 18000);
-        config.set("projectile-size", 0.35);
-        config.set("projectile-velocity", 45.0);
-        config.set("projectile-gravity", 2.5);
-        config.set("projectile-max-ticks-lived", 20);
+        config.set(BasicMissile.PROJECTILE_SIZE_NODE, 0.35);
+        config.set(BasicMissile.PROJECTILE_VELOCITY_NODE, 45.0);
+        config.set(BasicMissile.PROJECTILE_GRAVITY_NODE, 2.5);
+        config.set(BasicMissile.PROJECTILE_DURATION_TICKS_NODE, 20);
         config.set("hook-leash-distance", 25.0);
         config.set("hook-leash-power", 1.25);
         return config;
@@ -235,23 +236,18 @@ public class SkillHook extends ActiveSkill {
 
 
     public SkillHook.HookProjectile createHookProjectile(Hero hero) {
-        double projSize = SkillConfigManager.getUseSetting(hero, this, "projectile-size", 0.25, false);
-        double projVelocity = SkillConfigManager.getUseSetting(hero, this, "projectile-velocity", 20, false);
-
-        return new HookProjectile(plugin, this, hero, projSize, projVelocity);
+        return new HookProjectile(plugin, this, hero);
     }
 
-    public class HookProjectile extends BasicMissile {
+    public class HookProjectile extends BasicDamageMissile {
         private final long hookedDuration;
         private final double hookLeashDistance;
         private final double hookLeashPower;
 
-        HookProjectile(Plugin plugin, Skill skill, Hero hero, double projectileSize, double projVelocity) {
-            super(plugin, skill, hero, projectileSize, projVelocity);
+        HookProjectile(Heroes plugin, Skill skill, Hero hero) {
+            super(plugin, skill, hero);
+            this.damageCause = DamageCause.ENTITY_ATTACK;
 
-            setRemainingLife(SkillConfigManager.getUseSetting(hero, skill, "projectile-max-ticks-lived", 20, false));
-            setGravity(SkillConfigManager.getUseSetting(hero, skill, "projectile-gravity", 2.5, false));
-            this.damage = SkillConfigManager.getUseSetting(hero, skill, SkillSetting.DAMAGE, 50.0, false);
             this.hookLeashDistance = SkillConfigManager.getUseSetting(hero, skill, "hook-leash-distance", 20.0, false);
             this.hookLeashPower = SkillConfigManager.getUseSetting(hero, skill, "hook-leash-power", 1.25, false);
             this.hookedDuration = SkillConfigManager.getUseSetting(hero, skill, SkillSetting.DURATION, 18000, false);
@@ -265,11 +261,6 @@ public class SkillHook extends ActiveSkill {
         }
 
         @Override
-        protected boolean onCollideWithEntity(Entity entity) {
-            return !player.equals(entity);  // Don't let them hook themselves.
-        }
-
-        @Override
         protected void onBlockHit(Block block, Vector hitPoint, BlockFace hitFace, Vector hitForce) {
             if (block == null || hitFace == null)
                 return;
@@ -280,13 +271,9 @@ public class SkillHook extends ActiveSkill {
         }
 
         @Override
-        protected void onEntityHit(Entity entity, Vector hitOrigin, Vector hitForce) {
-            if (!(entity instanceof LivingEntity))
-                return;
-
+        protected void onValidTargetFound(LivingEntity target, Vector origin, Vector force) {
 //            player.getWorld().playSound(player.getLocation(), Sound.ITEM_TRIDENT_HIT, 0.5F, 0.5F);
 
-            LivingEntity target = (LivingEntity)entity;
             CharacterTemplate targetCT = plugin.getCharacterManager().getCharacter(target);
             HookedEffect hookedEffect = new HookedEffect(skill, hero, hookedDuration, hookLeashDistance, hookLeashPower);
 
@@ -297,12 +284,9 @@ public class SkillHook extends ActiveSkill {
                 return;
             }
 
-            // We're dealing with an enemy now
-            if (!damageCheck(this.player, target))
-                return;
-
+            // We're dealing with an enemy. No need to damage check due to BasicDamageMissile doing it for us.
             skill.addSpellTarget(target, this.hero);
-            skill.damageEntity(target, this.player, this.damage, DamageCause.ENTITY_ATTACK);
+            skill.damageEntity(target, this.player, this.damage, damageCause);
 
             hookedEffect.types.add(EffectType.HARMFUL);
             targetCT.addEffect(hookedEffect);

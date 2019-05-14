@@ -41,8 +41,8 @@ public class SkillFlashHeal extends TargettedSkill {
 
     @Override
     public String getDescription(Hero hero) {
-        double healing = SkillConfigManager.getUseSetting(hero, this, SkillSetting.HEALING, 150, false);
-        int duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, 5000, false);
+        double healing = SkillConfigManager.getScaledUseSettingDouble(hero, this, SkillSetting.HEALING, false);
+        int duration = SkillConfigManager.getScaledUseSettingInt(hero, this, SkillSetting.DURATION, false);
         return getDescription();
     }
 
@@ -61,7 +61,7 @@ public class SkillFlashHeal extends TargettedSkill {
         Hero targetHero = plugin.getCharacterManager().getHero((Player) target);
 
         // instant heal
-        double healing = SkillConfigManager.getUseSetting(hero, this, SkillSetting.HEALING, 150, false);
+        double healing = SkillConfigManager.getScaledUseSettingDouble(hero, this, SkillSetting.HEALING, false);
         final HeroRegainHealthEvent hrhEvent = new HeroRegainHealthEvent(targetHero, healing, this, hero);
         this.plugin.getServer().getPluginManager().callEvent(hrhEvent);
         if (hrhEvent.isCancelled()) {
@@ -71,7 +71,7 @@ public class SkillFlashHeal extends TargettedSkill {
         targetHero.heal(hrhEvent.getDelta());
 
         // silence
-        int duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, 5000, false);
+        int duration = SkillConfigManager.getScaledUseSettingInt(hero, this, SkillSetting.DURATION, false);
         SilenceEffect silence = new SilenceEffect(this, hero.getPlayer(), duration);
         player.getWorld().playSound(hero.getPlayer().getLocation(), Sound.ENTITY_ENDERMEN_TELEPORT , 0.8F, 1.0F);
         targetHero.addEffect(silence);

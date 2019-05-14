@@ -72,7 +72,7 @@ public class SkillGrapplingHook extends ActiveSkill {
 
         //double velocityMultiplier = Util.formatDouble(SkillConfigManager.getUseSetting(hero, this, "velocity-multiplier", 0.5D, false));
         //velocityMultiplier = Util.formatDouble((1.0 - velocityMultiplier) * 100.0);
-        double duration = Util.formatDouble(SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, 5000, false) / 1000.0);
+        double duration = Util.formatDouble(SkillConfigManager.getScaledUseSettingInt(hero, this, SkillSetting.DURATION, false) / 1000.0);
 
         return getDescription().replace("$1", numShots + "").replace("$2", numShotsString + "").replace("$3", duration + "")/*.replace("$4", velocityMultiplier + "")*/;
     }
@@ -104,7 +104,7 @@ public class SkillGrapplingHook extends ActiveSkill {
 
     public SkillResult use(Hero hero, String[] args) {
 
-        int duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, 12000, false);
+        int duration = SkillConfigManager.getScaledUseSettingInt(hero, this, SkillSetting.DURATION, false);
         int numShots = SkillConfigManager.getUseSetting(hero, this, "num-shots", 1, false);
         hero.addEffect(new GrapplingHookBuffEffect(this, hero.getPlayer(), duration, numShots));
 

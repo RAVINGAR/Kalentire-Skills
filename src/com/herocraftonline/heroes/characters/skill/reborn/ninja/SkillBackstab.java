@@ -44,18 +44,14 @@ public class SkillBackstab extends ActiveSkill {
     public String getDescription(Hero hero) {
 
         double backstabChance = SkillConfigManager.getUseSetting(hero, this, "backstab-chance", -1.0, false);
-        double backstabDamageModifier = SkillConfigManager.getUseSetting(hero, this, "backstab-bonus", 0.85, false);
-        double backstabDamageModifierIncrease = SkillConfigManager.getUseSetting(hero, this, "backstab-bonus-increase-per-dexterity", 0.0, false);
-        backstabDamageModifier += hero.getAttributeValue(AttributeType.DEXTERITY) * backstabDamageModifierIncrease;
+        double backstabDamageModifier = SkillConfigManager.getScaledUseSettingDouble(hero, this, "backstab-bonus", false);
 
         String backstabString = "deal";
         if (backstabChance > -1)
             backstabString = "have a " + Util.decFormat.format(backstabChance) + "% chance to deal";
 
         double ambushChance = SkillConfigManager.getUseSetting(hero, this, "ambush-chance", -1.0, false);
-        double ambushDamageModifier = SkillConfigManager.getUseSetting(hero, this, "ambush-bonus", 0.85, false);
-        double ambushDamageModifierIncrease = SkillConfigManager.getUseSetting(hero, this, "ambush-bonus-increase-per-dexterity", 0.0, false);
-        ambushDamageModifier += hero.getAttributeValue(AttributeType.DEXTERITY) * ambushDamageModifierIncrease;
+        double ambushDamageModifier = SkillConfigManager.getScaledUseSettingDouble(hero, this, "ambush-bonus", false);
 
         String ambushString = "deal";
         if (ambushChance > -1)
@@ -98,13 +94,8 @@ public class SkillBackstab extends ActiveSkill {
 
         List<String> weapons = SkillConfigManager.getUseSetting(hero, this, "weapons", Util.swords);
 
-        double backstabDamageModifier = SkillConfigManager.getUseSetting(hero, this, "backstab-bonus", 0.85, false);
-        double backstabDamageModifierIncrease = SkillConfigManager.getUseSetting(hero, this, "backstab-bonus-increase-per-dexterity", 0.0, false);
-        backstabDamageModifier += 1 + (hero.getAttributeValue(AttributeType.DEXTERITY) * backstabDamageModifierIncrease);
-
-        double ambushDamageModifier = SkillConfigManager.getUseSetting(hero, this, "ambush-bonus", 0.85, false);
-        double ambushDamageModifierIncrease = SkillConfigManager.getUseSetting(hero, this, "ambush-bonus-increase-per-dexterity", 0.0, false);
-        ambushDamageModifier += 1 + (hero.getAttributeValue(AttributeType.DEXTERITY) * ambushDamageModifierIncrease);
+        double backstabDamageModifier = SkillConfigManager.getScaledUseSettingDouble(hero, this, "backstab-bonus", false);
+        double ambushDamageModifier = SkillConfigManager.getScaledUseSettingDouble(hero, this, "ambush-bonus", false);
 
         double backstabDamage = 0;
         double ambushDamage = 0;
@@ -175,15 +166,11 @@ public class SkillBackstab extends ActiveSkill {
             if (hero.hasEffectType(EffectType.SNEAK) || hero.hasEffectType(EffectType.INVIS) || hero.hasEffectType(EffectType.INVISIBILITY) || (allowVanillaSneaking && player.isSneaking())) {
                 chance = SkillConfigManager.getUseSetting(hero, skill, "ambush-chance", -1.0, false);
 
-                damageModifier = SkillConfigManager.getUseSetting(hero, skill, "ambush-bonus", 0.85, false);
-                double damageModifierIncrease = SkillConfigManager.getUseSetting(hero, skill, "ambush-bonus-increase-per-dexterity", 0.0, false);
-                damageModifier += 1 + (hero.getAttributeValue(AttributeType.DEXTERITY) * damageModifierIncrease);
+                damageModifier = SkillConfigManager.getScaledUseSettingDouble(hero, skill, "ambush-bonus", false);
             } else {
                 chance = SkillConfigManager.getUseSetting(hero, skill, "backstab-chance", -1.0, false);
 
-                damageModifier = SkillConfigManager.getUseSetting(hero, skill, "backstab-bonus", 0.85, false);
-                double damageModifierIncrease = SkillConfigManager.getUseSetting(hero, skill, "backstab-bonus-increase-per-dexterity", 0.0, false);
-                damageModifier += 1 + (hero.getAttributeValue(AttributeType.DEXTERITY) * damageModifierIncrease);
+                damageModifier = SkillConfigManager.getScaledUseSettingDouble(hero, skill, "backstab-bonus", false);
             }
 
             boolean backStab = false;

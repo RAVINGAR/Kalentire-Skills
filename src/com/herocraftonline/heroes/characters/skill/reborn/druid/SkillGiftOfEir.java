@@ -35,9 +35,9 @@ public class SkillGiftOfEir extends ActiveSkill {
 
     @Override
     public String getDescription(Hero hero) {
-        int duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, 5000, false);
+        int duration = SkillConfigManager.getScaledUseSettingInt(hero, this, SkillSetting.DURATION, false);
         double mana = SkillConfigManager.getUseSetting(hero, this, "mana-percent-cost", 0.40, false);
-        double radius = SkillConfigManager.getUseSetting(hero, this, SkillSetting.RADIUS, 5.0, false);
+        double radius = SkillConfigManager.getScaledUseSettingDouble(hero, this, SkillSetting.RADIUS, false);
 
         return getDescription()
                 .replace("$1", Util.decFormat.format((double) duration / 1000.0))
@@ -79,9 +79,9 @@ public class SkillGiftOfEir extends ActiveSkill {
             }
         }
 
-        long duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, 5000, false);
+        long duration = SkillConfigManager.getScaledUseSettingInt(hero, this, SkillSetting.DURATION, false);
         int period = SkillConfigManager.getUseSetting(hero, this, SkillSetting.PERIOD, 1000, false);
-        double radius = SkillConfigManager.getUseSetting(hero, this, SkillSetting.RADIUS, 5000, false);
+        double radius = SkillConfigManager.getScaledUseSettingDouble(hero, this, SkillSetting.RADIUS, false);
         double radiusSquared = radius * radius;
         hero.addEffect(new RootEffect(this, player, 100, duration, null, null));
         hero.addEffect(new ManaPoolEffect(this, player, period, duration, radiusSquared));

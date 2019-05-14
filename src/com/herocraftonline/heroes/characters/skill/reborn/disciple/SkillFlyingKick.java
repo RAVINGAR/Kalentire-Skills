@@ -35,9 +35,7 @@ public class SkillFlyingKick extends TargettedSkill {
 
     @Override
     public String getDescription(Hero hero) {
-        double damage = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE, 50, false);
-        double damageIncrease = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE_INCREASE_PER_STRENGTH, 0.75, false);
-        damage += damageIncrease * hero.getAttributeValue(AttributeType.STRENGTH);
+        double damage = SkillConfigManager.getScaledUseSettingDouble(hero, this, SkillSetting.DAMAGE, false);
 
         String formattedDamage = Util.decFormat.format(damage);
 
@@ -68,9 +66,7 @@ public class SkillFlyingKick extends TargettedSkill {
 
         player.getWorld().playSound(player.getLocation(), Sound.ENTITY_PLAYER_HURT, 18.0F, 0.4F);
 
-        double vPower = SkillConfigManager.getUseSetting(hero, this, "vertical-power", 0.25, false);
-        double vPowerIncrease = SkillConfigManager.getUseSetting(hero, this, "vertical-power-increase-per-dexterity", 0.0075, false);
-        vPower += (vPowerIncrease * hero.getAttributeValue(AttributeType.DEXTERITY));
+        double vPower = SkillConfigManager.getScaledUseSettingDouble(hero, this, "vertical-power", false);
         final Vector pushUpVector = new Vector(0, vPower, 0);
         // Let's bypass the nocheat issues...
         NCPUtils.applyExemptions(player, new NCPFunction() {
@@ -85,8 +81,7 @@ public class SkillFlyingKick extends TargettedSkill {
         final double verticalDivider = SkillConfigManager.getUseSetting(hero, this, "vertical-divider", 8, false);
         final double multiplier = SkillConfigManager.getUseSetting(hero, this, "multiplier", 1.2, false);
 
-        final double baseDamage = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE, 50, false);
-        final double damageIncrease = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE_INCREASE_PER_STRENGTH, 0.75, false);
+        final double damage = SkillConfigManager.getScaledUseSettingDouble(hero, this, SkillSetting.DAMAGE, false);
 
         double delay = SkillConfigManager.getUseSetting(hero, this, "jump-delay", 0.2, false);
         Bukkit.getScheduler().scheduleSyncDelayedTask(plugin, new Runnable() {
@@ -102,7 +97,6 @@ public class SkillFlyingKick extends TargettedSkill {
                 player.setVelocity(vec);
                 player.setFallDistance(-8f);
 
-                double damage = baseDamage + (damageIncrease * hero.getAttributeValue(AttributeType.STRENGTH));
 
                 addSpellTarget(target, hero);
                 damageEntity(target, player, damage, DamageCause.ENTITY_ATTACK);

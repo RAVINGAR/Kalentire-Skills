@@ -5,6 +5,7 @@ import com.herocraftonline.heroes.api.SkillResult;
 import com.herocraftonline.heroes.attributes.AttributeType;
 import com.herocraftonline.heroes.characters.Hero;
 import com.herocraftonline.heroes.characters.skill.*;
+import com.herocraftonline.heroes.characters.skill.tools.BasicDamageMissile;
 import com.herocraftonline.heroes.characters.skill.tools.BasicMissile;
 import com.herocraftonline.heroes.characters.skill.tools.Missile;
 import com.herocraftonline.heroes.util.Util;
@@ -37,7 +38,7 @@ public class SkillGust extends ActiveSkill {
     }
 
     public String getDescription(Hero hero) {
-        boolean pierces = SkillConfigManager.getUseSetting(hero, this, "projectile-pierces-on-hit", false);
+        boolean pierces = SkillConfigManager.getUseSetting(hero, this, BasicDamageMissile.PROJECTILE_PIERCES_ON_HIT_NODE, false);
         String pierceText = pierces ? "pass through enemies and " : "";
 
         double knockbackPower = SkillConfigManager.getUseSetting(hero, this, "projectile-knockback-force", 2.0, false);
@@ -57,9 +58,7 @@ public class SkillGust extends ActiveSkill {
             }
         }
 
-        double damage = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE, 75.0, false);
-        double damageIncrease = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE_INCREASE_PER_INTELLECT, 0.0, false);
-        damage += damageIncrease * hero.getAttributeValue(AttributeType.INTELLECT);
+        double damage = SkillConfigManager.getScaledUseSettingDouble(hero, this, SkillSetting.DAMAGE, false);
 
         return getDescription()
                 .replace("$1", pierceText)
@@ -71,13 +70,14 @@ public class SkillGust extends ActiveSkill {
         ConfigurationSection config = super.getDefaultConfig();
         config.set(SkillSetting.DAMAGE.node(), 40.0);
         config.set(SkillSetting.DAMAGE_INCREASE_PER_INTELLECT.node(), 0.0);
-        config.set("projectile-size", 2.5);
-        config.set("projectile-velocity", 35.0);
-        config.set("projectile-max-ticks-lived", 20);
+        config.set(BasicMissile.PROJECTILE_SIZE_NODE, 2.5);
+        config.set(BasicMissile.PROJECTILE_VELOCITY_NODE, 35.0);
+        config.set(BasicMissile.PROJECTILE_DURATION_TICKS_NODE, 20);
         config.set("projectile-block-collision-size", 0.35);
-        config.set("projectile-gravity", 0.0);
-        config.set("projectile-pierces-on-hit", true);
-        config.set("projectile-knockback-force", 2.0);
+        config.set(BasicMissile.PROJECTILE_GRAVITY_NODE, 0.0);
+        config.set(BasicDamageMissile.PROJECTILE_PIERCES_ON_HIT_NODE, true);
+        config.set(BasicDamageMissile.PROJECTILE_CUSTOM_KNOCKBACK_FORCE_NODE, 2.0);
+        config.set(BasicDamageMissile.PROJECTILE_CUSTOM_KNOCKBACK_Y_MULTIPLIER_NODE, 0.65);
         return config;
     }
 
@@ -86,72 +86,31 @@ public class SkillGust extends ActiveSkill {
 
         broadcastExecuteText(hero);
 
-        GustProjectile missile = new GustProjectile(this, hero);
+        GustProjectile missile = new GustProjectile(plugin, this, hero);
         missile.fireMissile();
 
         return SkillResult.NORMAL;
     }
 
-    class GustProjectile extends BasicMissile {
+    class GustProjectile extends BasicDamageMissile {
         private final double blockCollisionSizeSquared;
-        private final boolean shouldPierce;
-        private final double knockbackPower;
-        private final double knockbackYPower;
 
-        private double defaultSpeed;
-        private List<LivingEntity> hitTargets = new ArrayList<LivingEntity>();
+        GustProjectile(Heroes plugin, Skill skill, Hero hero) {
+            super(plugin, skill, hero, Particle.SWEEP_ATTACK);
 
-        GustProjectile(Skill skill, Hero hero) {
-            super(plugin, skill, hero,
-                    SkillConfigManager.getUseSetting(hero, skill, "projectile-size", 1.5, false),
-                    Particle.SWEEP_ATTACK,
-                    SkillConfigManager.getUseSetting(hero, skill, "projectile-velocity", 20.0, false),
-                    SkillConfigManager.getUseSetting(hero, skill, SkillSetting.DAMAGE, 75.0, false)
-            );
-
-            setRemainingLife(SkillConfigManager.getUseSetting(hero, skill, "projectile-max-ticks-lived", 20, false));
-            setGravity(SkillConfigManager.getUseSetting(hero, skill, "projectile-gravity", 0.0, false));
             double size = SkillConfigManager.getUseSetting(hero, skill, "projectile-block-collision-size", 0.35, false);
             this.blockCollisionSizeSquared = size * size;
-
-            this.knockbackPower = SkillConfigManager.getUseSetting(hero, skill, "projectile-knockback-force", 2.0, false);
-            this.knockbackYPower = SkillConfigManager.getUseSetting(hero, skill, "projectile-knockback-y-multiplier", 0.5, false);
-            this.shouldPierce = SkillConfigManager.getUseSetting(hero, skill, "projectile-pierces-on-hit", false);
         }
 
         @Override
-        protected boolean onCollideWithEntity(Entity entity) {
-            if (shouldPierce)
-                return false;
-            return entity instanceof LivingEntity && !hero.isAlliedTo((LivingEntity) entity);
+        protected Location buildMissileStartLocation() {
+            // Center on the player
+            return player.getEyeLocation().clone().subtract(0, player.getEyeHeight() / 2, 0).setDirection(player.getEyeLocation().getDirection());
         }
 
         @Override
         protected boolean onCollideWithBlock(Block block, Vector point, BlockFace face) {
             return getLocation().distanceSquared(block.getLocation()) >= this.blockCollisionSizeSquared;
-        }
-
-        @Override
-        protected void onEntityPassed(Entity entity, Vector passOrigin, Vector passForce) {
-            if (!(entity instanceof LivingEntity) || hitTargets.contains(entity)) {
-                return;
-            }
-
-            LivingEntity target = (LivingEntity) entity;
-            if (!Skill.damageCheck(player, target))
-                return;
-
-            hitTargets.add(target);
-
-            addSpellTarget(target, hero);
-            damageEntity(target, player, damage, EntityDamageEvent.DamageCause.MAGIC, false);
-
-            if (knockbackPower > 0.0) {
-                target.setVelocity(passForce.normalize().multiply(new Vector(this.knockbackPower, this.knockbackYPower, this.knockbackPower)));
-            }
-
-            if (!shouldPierce)
-                this.kill();
         }
     }
 }
