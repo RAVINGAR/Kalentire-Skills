@@ -67,8 +67,8 @@ public class SkillManaMissile extends PassiveSkill {
         config.set(BasicMissile.PROJECTILE_VELOCITY_NODE, 75.0);
         config.set(BasicMissile.PROJECTILE_DURATION_TICKS_NODE, 15);
         config.set(BasicMissile.PROJECTILE_GRAVITY_NODE, 0.0);
-        config.set(BasicDamageMissile.PROJECTILE_PIERCES_ON_HIT_NODE, false);
-        config.set(BasicDamageMissile.PROJECTILE_KNOCKS_BACK_ON_HIT_NODE, true);
+        config.set(BasicDamageMissile.PROJECTILE_PIERCES_ON_HIT_NODE, true);
+        config.set(BasicDamageMissile.PROJECTILE_KNOCKS_BACK_ON_HIT_NODE, false);
         config.set(SkillSetting.COOLDOWN.node(), 500);
         config.set(SkillSetting.APPLY_TEXT.node(), "");
         config.set(SkillSetting.UNAPPLY_TEXT.node(), "");
@@ -105,12 +105,13 @@ public class SkillManaMissile extends PassiveSkill {
                 return;
 
             Hero hero = ((Hero) event.getDamager());
-            if (!validateCanCast(hero, true))
-                return;
+            if (validateCanCast(hero, true)) {
+                fireProjectile(hero.getPlayer(), hero);
+            }
 
+            // Mana Missile users cannot use their weapon for melee.
             event.setDamage(0.0);
             event.setCancelled(true);
-            fireProjectile(hero.getPlayer(), hero);
         }
 
         private void fireProjectile(Player player, Hero hero) {
