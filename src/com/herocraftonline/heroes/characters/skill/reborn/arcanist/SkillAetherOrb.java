@@ -59,17 +59,19 @@ public class SkillAetherOrb extends ActiveSkill {
 	}
 
 	public ConfigurationSection getDefaultConfig() {
-		ConfigurationSection node = super.getDefaultConfig();
-		node.set(SkillSetting.RADIUS.node(), 5.0);
-		node.set("height", 4.0);
-		node.set(SkillSetting.PERIOD.node(), 500);
-		node.set(SkillSetting.DURATION.node(), 6000);
-		node.set(SkillSetting.DAMAGE_TICK.node(), 50d);
-		node.set(BasicMissile.PROJECTILE_VELOCITY_NODE, 20.0);
-        node.set(BasicMissile.PROJECTILE_SIZE_NODE, 0.2);
-		node.set("max-targets-per-pulse", 4);
-		node.set("visual-orb-radius", 1.0);
-		return node;
+		ConfigurationSection config = super.getDefaultConfig();
+		config.set(SkillSetting.RADIUS.node(), 5.0);
+		config.set("height", 4.0);
+		config.set(SkillSetting.PERIOD.node(), 500);
+		config.set(SkillSetting.DURATION.node(), 6000);
+		config.set(SkillSetting.DAMAGE_TICK.node(), 50d);
+		config.set(BasicMissile.PROJECTILE_VELOCITY_NODE, 20.0);
+        config.set(BasicMissile.PROJECTILE_SIZE_NODE, 0.2);
+        config.set(BasicMissile.PROJECTILE_GRAVITY_NODE, 12.25375);
+        config.set(BasicMissile.PROJECTILE_DURATION_TICKS_NODE, 999999);
+		config.set("max-targets-per-pulse", 4);
+		config.set("visual-orb-radius", 1.0);
+		return config;
 	}
 
 	public SkillResult use(final Hero hero, String[] args) {

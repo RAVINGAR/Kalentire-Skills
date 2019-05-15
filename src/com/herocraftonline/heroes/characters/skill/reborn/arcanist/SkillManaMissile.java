@@ -17,22 +17,17 @@ import de.slikey.effectlib.EffectManager;
 import de.slikey.effectlib.EffectType;
 import org.bukkit.*;
 import org.bukkit.configuration.ConfigurationSection;
-import org.bukkit.entity.Entity;
-import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Event;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
-import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.PlayerInventory;
-import org.bukkit.plugin.Plugin;
 import org.bukkit.util.Vector;
 
-import java.util.ArrayList;
 import java.util.List;
 
 public class SkillManaMissile extends PassiveSkill {
@@ -92,7 +87,10 @@ public class SkillManaMissile extends PassiveSkill {
                 return;
 
             Hero hero = plugin.getCharacterManager().getHero(player);
-            if (!validateCanCast(hero, true))
+            if (!isValidManaMissileAttempt(hero))
+                return;
+
+            if (!isAbleToCastRightNow(hero, true))
                 return;
 
             fireProjectile(player, hero);
@@ -105,7 +103,10 @@ public class SkillManaMissile extends PassiveSkill {
                 return;
 
             Hero hero = ((Hero) event.getDamager());
-            if (validateCanCast(hero, true)) {
+            if (!isValidManaMissileAttempt(hero))
+                return;
+
+            if (isAbleToCastRightNow(hero, true)) {
                 fireProjectile(hero.getPlayer(), hero);
             }
 
@@ -123,9 +124,22 @@ public class SkillManaMissile extends PassiveSkill {
             hero.addEffect(new CooldownEffect(skill, player, cooldown));
         }
 
-        private boolean validateCanCast(Hero hero, boolean applyCosts) {
+        private boolean isValidManaMissileAttempt(Hero hero) {
             if (!hero.canUseSkill(skill))
                 return false;
+
+            Player player = hero.getPlayer();
+            PlayerInventory playerInv = player.getInventory();
+            ItemStack mainHand = NMSHandler.getInterface().getItemInMainHand(playerInv);
+
+            List<String> allowedCatalysts = SkillConfigManager.getUseSetting(hero, skill, "catalysts", Util.hoes);
+            if (mainHand == null || !allowedCatalysts.contains(mainHand.getType().name()))
+                return false;
+            return true;
+        }
+
+        private boolean isAbleToCastRightNow(Hero hero, boolean applyCosts) {
+            Player player = hero.getPlayer();
 
             if (hero.hasEffect(cooldownEffectName)) {
                 double remainingTime = ((CooldownEffect) hero.getEffect(cooldownEffectName)).getRemainingTime() / 1000.0;
@@ -135,14 +149,6 @@ public class SkillManaMissile extends PassiveSkill {
                     return false;
                 }
             }
-
-            Player player = hero.getPlayer();
-            PlayerInventory playerInv = player.getInventory();
-            ItemStack mainHand = NMSHandler.getInterface().getItemInMainHand(playerInv);
-
-            List<String> allowedCatalysts = SkillConfigManager.getUseSetting(hero, skill, "catalysts", Util.hoes);
-            if (mainHand == null || !allowedCatalysts.contains(mainHand.getType().name()))
-                return false;
 
             double healthCost = SkillConfigManager.getUseSetting(hero, skill, SkillSetting.HEALTH_COST, 0.0, false);
             int stamCost = SkillConfigManager.getUseSetting(hero, skill, SkillSetting.STAMINA, 0, false);

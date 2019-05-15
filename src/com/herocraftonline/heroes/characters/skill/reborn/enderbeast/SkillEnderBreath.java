@@ -54,15 +54,10 @@ public class SkillEnderBreath extends SkillBaseGroundEffect {
         final long period = SkillConfigManager.getUseSetting(hero, this, SkillSetting.PERIOD, 200, false);
         final double damageTick = SkillConfigManager.getScaledUseSettingDouble(hero, this, SkillSetting.DAMAGE_TICK, false);
 
-        int warmup = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DELAY, 0, false);
-        int stamina = SkillConfigManager.getUseSetting(hero, this, SkillSetting.STAMINA, 0, false);
-        int mana = SkillConfigManager.getUseSetting(hero, this, SkillSetting.MANA, 0, false);
-        long cooldown = SkillConfigManager.getUseSetting(hero, this, SkillSetting.COOLDOWN, 0, false);
-
         return getDescription()
                 .replace("$1", Util.decFormat.format(damageTick))
-                .replace("$2", Util.decFormat.format((double) period / 1000))
-                .replace("$3", Util.decFormat.format((double) duration / 1000))
+                .replace("$2", Util.decFormat.format(period / 1000.0))
+                .replace("$3", Util.decFormat.format(duration / 1000.0))
                 .replace("$4", Util.decFormat.format(radius));
     }
 
@@ -76,6 +71,7 @@ public class SkillEnderBreath extends SkillBaseGroundEffect {
         config.set(BasicMissile.PROJECTILE_SIZE_NODE, 0.4);
         config.set(BasicMissile.PROJECTILE_VELOCITY_NODE, 15.0);
         config.set(BasicMissile.PROJECTILE_GRAVITY_NODE, 14.7045);
+        config.set(BasicMissile.PROJECTILE_DURATION_TICKS_NODE, 999999);
         return config;
     }
 
