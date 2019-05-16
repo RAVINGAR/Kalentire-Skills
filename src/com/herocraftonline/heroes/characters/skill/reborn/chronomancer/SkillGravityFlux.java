@@ -46,8 +46,8 @@ public class SkillGravityFlux extends TargettedLocationSkill {
 
     @Override
     public String getDescription(Hero hero) {
-        double radius = SkillConfigManager.getUseSetting(hero, this, SkillSetting.RADIUS, 5, false);
-        long duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, 5000, false);
+        double radius = SkillConfigManager.getScaledUseSettingDouble(hero, this, SkillSetting.RADIUS, false);
+        long duration = SkillConfigManager.getScaledUseSettingInt(hero, this, SkillSetting.DURATION, false);
 
         return getDescription()
                 .replace("$1", Util.decFormat.format(radius))
@@ -74,8 +74,8 @@ public class SkillGravityFlux extends TargettedLocationSkill {
 
         broadcastExecuteText(hero);
 
-        long duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, 5000, false);
-        double radius = SkillConfigManager.getUseSetting(hero, this, SkillSetting.RADIUS, 5.0, false);
+        long duration = SkillConfigManager.getScaledUseSettingInt(hero, this, SkillSetting.DURATION, false);
+        double radius = SkillConfigManager.getScaledUseSettingDouble(hero, this, SkillSetting.RADIUS, false);
         int amplifier = SkillConfigManager.getUseSetting(hero, this, "levitation-amplifier", 0, false);
         long soundPeriod = SkillConfigManager.getUseSetting(hero, this, "sound-period", 2000, false);
 
@@ -126,15 +126,19 @@ public class SkillGravityFlux extends TargettedLocationSkill {
         @Override
         public void applyToHero(Hero hero) {
             super.applyToHero(hero);
+            Player player = hero.getPlayer();
 
-            applyVisuals(hero.getPlayer());
+            player.setFallDistance(0);
+            applyVisuals(player);
         }
 
         @Override
         public void applyToMonster(Monster monster) {
             super.applyToMonster(monster);
 
-            applyVisuals(monster.getEntity());
+            LivingEntity monsterLE = monster.getEntity();
+            monsterLE.setFallDistance(0);
+            applyVisuals(monsterLE);
         }
 
         @Override

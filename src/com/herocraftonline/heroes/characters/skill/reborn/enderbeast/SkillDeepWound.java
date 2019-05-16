@@ -47,7 +47,7 @@ public class SkillDeepWound extends TargettedSkill {
     @Override
     public String getDescription(Hero hero) {
         double reductionPercent = 1.0 - SkillConfigManager.getUseSetting(hero, this, "movespeed-reduction-percent", 0.2, true);
-        long duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, 10000, false);
+        long duration = SkillConfigManager.getScaledUseSettingInt(hero, this, SkillSetting.DURATION, false);
         double period = SkillConfigManager.getUseSetting(hero, this, SkillSetting.PERIOD, 2000, false);
         double damage = SkillConfigManager.getUseSetting(hero, this, "tick-damage", 1, false);
 
@@ -101,7 +101,7 @@ public class SkillDeepWound extends TargettedSkill {
         addSpellTarget(target, hero);
         damageEntity(target, player, damage, DamageCause.ENTITY_ATTACK);
 
-        long duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, 10000, false);
+        long duration = SkillConfigManager.getScaledUseSettingInt(hero, this, SkillSetting.DURATION, false);
         long period = SkillConfigManager.getUseSetting(hero, this, SkillSetting.PERIOD, 2000, true);
         double tickDamage = SkillConfigManager.getUseSetting(hero, this, "tick-damage", 10, false);
         double moveSpeedReductionPercent = SkillConfigManager.getUseSetting(hero, this, "movespeed-reduction-percent", 0.2, true);

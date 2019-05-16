@@ -36,7 +36,7 @@ public class SkillOne extends ActiveSkill {
 
     @Override
     public String getDescription(Hero hero) {
-        int duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, 1, false);
+        int duration = SkillConfigManager.getScaledUseSettingInt(hero, this, SkillSetting.DURATION, false);
         return getDescription().replace("$1", duration / 1000 + "");
     }
 
@@ -51,7 +51,7 @@ public class SkillOne extends ActiveSkill {
     public SkillResult use(Hero hero, String[] args) {
         broadcastExecuteText(hero);
 
-        int duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, 15000, false);
+        int duration = SkillConfigManager.getScaledUseSettingInt(hero, this, SkillSetting.DURATION, false);
         int multiplier = SkillConfigManager.getUseSetting(hero, this, "speed-potion-amplifier", 2, false);
         if (multiplier > 20) {
             multiplier = 20;

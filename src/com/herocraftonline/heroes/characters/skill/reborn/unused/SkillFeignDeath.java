@@ -49,7 +49,7 @@
 //    }
 //
 //    public String getDescription(Hero hero) {
-//        int duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, 60000, false);
+//        int duration = SkillConfigManager.getScaledUseSettingInt(hero, this, SkillSetting.DURATION, false);
 //
 //        return getDescription()
 //                .replace("$1", Util.decFormat.format(duration / 1000.0));
@@ -73,7 +73,7 @@
 //    public SkillResult use(Hero hero, String[] args) {
 //        Player player = hero.getPlayer();
 //
-//        int duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, 60000, false);
+//        int duration = SkillConfigManager.getScaledUseSettingInt(hero, this, SkillSetting.DURATION, false);
 //
 //        // Feign Death
 //        hero.addEffect(new FeignDeathEffect(this, player, duration));

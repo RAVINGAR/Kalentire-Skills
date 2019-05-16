@@ -64,7 +64,7 @@ public class SkillInterruptingShot extends ActiveSkill {
 
     @Override
     public String getDescription(Hero hero) {
-        int duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, 6000, false);
+        int duration = SkillConfigManager.getScaledUseSettingInt(hero, this, SkillSetting.DURATION, false);
         int silDuration = SkillConfigManager.getUseSetting(hero, this, "silence-duration", 2000, false);
 
         return getDescription()
@@ -101,7 +101,7 @@ public class SkillInterruptingShot extends ActiveSkill {
         final Player player = hero.getPlayer();
 
         broadcastExecuteText(hero);
-        long duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, 6000, false);
+        long duration = SkillConfigManager.getScaledUseSettingInt(hero, this, SkillSetting.DURATION, false);
         hero.addEffect(new InterruptingShotBuff(this, player, duration));
 
         return SkillResult.NORMAL;

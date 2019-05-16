@@ -63,7 +63,7 @@ public class SkillDefensiveStance extends ActiveSkill {
 
     @Override
     public String getDescription(Hero hero) {
-        int duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, 8000, false);
+        int duration = SkillConfigManager.getScaledUseSettingInt(hero, this, SkillSetting.DURATION, false);
         double overallChance = getOverallHitChance(hero, this);
         return getDescription().replace("$1", (overallChance * 100) + "")
                 .replace("$2", duration / 1000 + "");
@@ -91,7 +91,7 @@ public class SkillDefensiveStance extends ActiveSkill {
         }
 
         broadcastExecuteText(hero);
-        int duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, 5000, false);
+        int duration = SkillConfigManager.getScaledUseSettingInt(hero, this, SkillSetting.DURATION, false);
         hero.addEffect(new DefensiveStanceEffect(this, player, duration));
 
         player.getWorld().playSound(player.getLocation(), Sound.BLOCK_ANVIL_LAND, 0.6F, 1.0F);
@@ -99,15 +99,13 @@ public class SkillDefensiveStance extends ActiveSkill {
     }
 
     private double getOverallHitChance(Hero hero, Skill skill) {
-        double chance = SkillConfigManager.getUseSetting(hero, skill, SkillSetting.CHANCE, 0.8, false);
-        double chancePerLevel = SkillConfigManager.getUseSetting(hero, skill, SkillSetting.CHANCE_PER_LEVEL, 0.02, false);
-        double overallChance = chance + chancePerLevel * hero.getHeroLevel();
-        if (overallChance > 1) {
-            overallChance = 1;
-        } else if (overallChance < 0) {
-            overallChance = 0;
+        double chance = SkillConfigManager.getScaledUseSettingDouble(hero, skill, SkillSetting.CHANCE, false);
+        if (chance > 1) {
+            chance = 1;
+        } else if (chance < 0) {
+            chance = 0;
         }
-        return overallChance;
+        return chance;
     }
 
     private boolean isWearingShield(Hero hero){

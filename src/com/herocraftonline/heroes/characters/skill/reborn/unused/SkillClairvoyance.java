@@ -2,7 +2,6 @@ package com.herocraftonline.heroes.characters.skill.reborn.unused;
 
 import com.herocraftonline.heroes.Heroes;
 import com.herocraftonline.heroes.api.SkillResult;
-import com.herocraftonline.heroes.attributes.AttributeType;
 import com.herocraftonline.heroes.characters.Hero;
 import com.herocraftonline.heroes.characters.skill.ActiveSkill;
 import com.herocraftonline.heroes.characters.skill.SkillConfigManager;
@@ -16,7 +15,6 @@ import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
-import org.bukkit.event.entity.EntityDamageEvent.DamageCause;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 
@@ -36,11 +34,9 @@ public class SkillClairvoyance extends ActiveSkill {
 
     @Override
     public String getDescription(Hero hero) {
-        double damage = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE, 60.0, false);
-        double damageIncrease = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE_INCREASE_PER_INTELLECT, 1.0, false);
-        damage += damageIncrease * hero.getAttributeValue(AttributeType.INTELLECT);
+        double damage = SkillConfigManager.getScaledUseSettingDouble(hero, this, SkillSetting.DAMAGE, false);
 
-        int radius = SkillConfigManager.getUseSetting(hero, this, SkillSetting.RADIUS, 30, false);
+        double radius = SkillConfigManager.getScaledUseSettingDouble(hero, this, SkillSetting.RADIUS, false);
 
         return getDescription().replace("$1", damage + "").replace("$2", radius + "");
     }
@@ -56,24 +52,22 @@ public class SkillClairvoyance extends ActiveSkill {
 
         return node;
     }
-    
-    public ArrayList<Location> circle(Location centerPoint, int particleAmount, double circleRadius)
-	{
-		World world = centerPoint.getWorld();
 
-		double increment = (2 * Math.PI) / particleAmount;
+    public ArrayList<Location> circle(Location centerPoint, int particleAmount, double circleRadius) {
+        World world = centerPoint.getWorld();
 
-		ArrayList<Location> locations = new ArrayList<Location>();
+        double increment = (2 * Math.PI) / particleAmount;
 
-		for (int i = 0; i < particleAmount; i++)
-		{
-			double angle = i * increment;
-			double x = centerPoint.getX() + (circleRadius * Math.cos(angle));
-			double z = centerPoint.getZ() + (circleRadius * Math.sin(angle));
-			locations.add(new Location(world, x, centerPoint.getY(), z));
-		}
-		return locations;
-	}
+        ArrayList<Location> locations = new ArrayList<Location>();
+
+        for (int i = 0; i < particleAmount; i++) {
+            double angle = i * increment;
+            double x = centerPoint.getX() + (circleRadius * Math.cos(angle));
+            double z = centerPoint.getZ() + (circleRadius * Math.sin(angle));
+            locations.add(new Location(world, x, centerPoint.getY(), z));
+        }
+        return locations;
+    }
 
     @Override
     public SkillResult use(Hero hero, String[] args) {
@@ -81,11 +75,8 @@ public class SkillClairvoyance extends ActiveSkill {
 
         broadcastExecuteText(hero);
 
-        double damage = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE, 60.0, false);
-        double damageIncrease = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE_INCREASE_PER_INTELLECT, 1.0, false);
-        damage += damageIncrease * hero.getAttributeValue(AttributeType.INTELLECT);
-
-        int radius = SkillConfigManager.getUseSetting(hero, this, SkillSetting.RADIUS, 5, false);
+        double damage = SkillConfigManager.getScaledUseSettingDouble(hero, this, SkillSetting.DAMAGE, false);
+        double radius = SkillConfigManager.getScaledUseSettingDouble(hero, this, SkillSetting.RADIUS, false);
 
         int maxTargets = SkillConfigManager.getUseSetting(hero, this, "max-targets", 0, false);
         int targetsHit = 0;
@@ -95,7 +86,7 @@ public class SkillClairvoyance extends ActiveSkill {
             if (maxTargets > 0 && targetsHit >= maxTargets) {
                 break;
             }
-            
+
             if (!(entity instanceof LivingEntity)) {
                 continue;
             }
@@ -106,20 +97,18 @@ public class SkillClairvoyance extends ActiveSkill {
 
             addSpellTarget(target, hero);
 //            damageEntity(target, player, damage, DamageCause.MAGIC);
-            PotionEffect glow = new PotionEffect(PotionEffectType.GLOWING, 1200,1);
+            PotionEffect glow = new PotionEffect(PotionEffectType.GLOWING, 1200, 1);
             ((LivingEntity) entity).addPotionEffect(glow);
             targetsHit++;
         }
-        
-        for (double r = 1; r < radius * 2; r++)
-		{
-			ArrayList<Location> particleLocations = circle(player.getLocation(), 45,  2);
-			for (int i = 0; i < particleLocations.size(); i++)
-			{
+
+        for (double r = 1; r < radius * 2; r++) {
+            ArrayList<Location> particleLocations = circle(player.getLocation(), 45, 2);
+            for (int i = 0; i < particleLocations.size(); i++) {
                 player.getWorld().spawnParticle(Particle.CLOUD, particleLocations.get(i), 1, 0, 0.1, 0, 0.1);
-			}
-		}
-        
+            }
+        }
+
         player.getWorld().playSound(player.getLocation(), Sound.ENTITY_GUARDIAN_AMBIENT, 1.0F, 1.2F);
 
         return SkillResult.NORMAL;

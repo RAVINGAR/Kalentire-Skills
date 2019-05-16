@@ -40,7 +40,7 @@ public class SkillSuperJump extends ActiveSkill {
 
     @Override
     public String getDescription(Hero hero) {
-        long duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION.node(), 5000, false);
+        long duration = SkillConfigManager.getScaledUseSettingInt(hero, this, SkillSetting.DURATION, false);
         return getDescription()
                 .replace("$1", Util.decFormat.format((double) duration / 1000));
     }
@@ -69,10 +69,7 @@ public class SkillSuperJump extends ActiveSkill {
     }
 
     private void superJump(Hero hero, Player player) {
-        int dexterity = hero.getAttributeValue(AttributeType.DEXTERITY);
-        double vPower = SkillConfigManager.getUseSetting(hero, this, "vertical-power", 0.5, false);
-        double vPowerIncrease = SkillConfigManager.getUseSetting(hero, this, "vertical-power-increase-per-dexterity", 0.0125, false);
-        vPower += dexterity * vPowerIncrease;
+        double vPower = SkillConfigManager.getScaledUseSettingDouble(hero, this, "vertical-power", false);
 
         if (vPower > 4.0)
             vPower = 4.0;
@@ -95,9 +92,7 @@ public class SkillSuperJump extends ActiveSkill {
         directionVector.normalize();
 
         velocity.add(directionVector);
-        double hPower = SkillConfigManager.getUseSetting(hero, this, "horizontal-power", 0.5, false);
-        double hPowerIncrease = SkillConfigManager.getUseSetting(hero, this, "horizontal-power-increase-per-dexterity", 0.0125, false);
-        hPower += dexterity * hPowerIncrease;
+        double hPower = SkillConfigManager.getScaledUseSettingDouble(hero, this, "horizontal-power", false);
 
         if (hPower > 8.0)
             hPower = 8.0;
@@ -126,7 +121,7 @@ public class SkillSuperJump extends ActiveSkill {
             applyJumpVelocity(player, velocity);
         }
 
-        int duration = (int) SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION.node(), 5000, false);
+        int duration = (int) SkillConfigManager.getScaledUseSettingInt(hero, this, SkillSetting.DURATION, false);
         hero.addEffect(new JumpEffect(this, player, duration));
 
         player.getWorld().playSound(player.getLocation(), Sound.ENTITY_GENERIC_EXPLODE, 0.5F, 1.0F);

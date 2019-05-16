@@ -42,7 +42,7 @@ public class SkillMortalWound extends TargettedSkill {
     @Override
     public String getDescription(Hero hero) {
         double heal = 1 - SkillConfigManager.getUseSetting(hero, this, "heal-multiplier", .5, true);
-        int duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, 10000, false);
+        int duration = SkillConfigManager.getScaledUseSettingInt(hero, this, SkillSetting.DURATION, false);
         double period = SkillConfigManager.getUseSetting(hero, this, SkillSetting.PERIOD, 2000, false);
         double damage = SkillConfigManager.getUseSetting(hero, this, "tick-damage", 1, false);
         return getDescription().replace("$1", heal * 100 + "").replace("$2", damage * duration / period + "").replace("$3", duration / 1000 + "");
@@ -84,7 +84,7 @@ public class SkillMortalWound extends TargettedSkill {
         addSpellTarget(target, hero);
         damageEntity(target, player, damage, DamageCause.ENTITY_ATTACK);
 
-        long duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, 12000, false);
+        long duration = SkillConfigManager.getScaledUseSettingInt(hero, this, SkillSetting.DURATION, false);
         long period = SkillConfigManager.getUseSetting(hero, this, SkillSetting.PERIOD, 3000, true);
         double tickDamage = SkillConfigManager.getUseSetting(hero, this, "tick-damage", 1, false);
         double healMultiplier = SkillConfigManager.getUseSetting(hero, this, "heal-multiplier", 0.5, true);

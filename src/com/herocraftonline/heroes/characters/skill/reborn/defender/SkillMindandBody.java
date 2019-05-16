@@ -70,7 +70,7 @@ public class SkillMindandBody extends TargettedSkill {
         }
 
         if (removed) {
-            int duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, 7000, false);
+            int duration = SkillConfigManager.getScaledUseSettingInt(hero, this, SkillSetting.DURATION, false);
             int multiplier = SkillConfigManager.getUseSetting(hero, this, "speed-multiplier", 2, false);
             if (duration > 0 && multiplier > 0) {
                 targetHero.addEffect(new SpeedEffect(this, getName(), player, duration, multiplier,

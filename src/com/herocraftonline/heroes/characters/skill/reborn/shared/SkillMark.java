@@ -4,6 +4,7 @@ import com.herocraftonline.heroes.Heroes;
 import com.herocraftonline.heroes.api.SkillResult;
 import com.herocraftonline.heroes.characters.Hero;
 import com.herocraftonline.heroes.characters.skill.ActiveSkill;
+import com.herocraftonline.heroes.characters.skill.SkillConfigManager;
 import com.herocraftonline.heroes.characters.skill.SkillSetting;
 import com.herocraftonline.heroes.characters.skill.SkillType;
 import com.herocraftonline.heroes.util.Util;
@@ -18,21 +19,20 @@ import org.bukkit.entity.Player;
 import java.util.logging.Level;
 
 public class SkillMark extends ActiveSkill {
+    public static String skillSettingsName = "Recall";
 
     private boolean towny = false;
     private WorldGuardPlugin wgp;
     private boolean worldguard = false;
     private boolean townships = false;
-    protected String skillSettingsName;
 
     protected SkillMark(Heroes plugin, String name) {
         super(plugin, name);
         setDescription("You mark a location for use with recall.");
         setUsage("/skill mark <info|reset>");
-        setArgumentRange(0, 1);
         setIdentifiers("skill mark");
+        setArgumentRange(0, 1);
         setTypes(SkillType.SILENCEABLE, SkillType.ABILITY_PROPERTY_MAGICAL);
-        skillSettingsName = "Recall";
 
         try {
             /*if (Bukkit.getServer().getPluginManager().getPlugin("Towny") != null) {
@@ -77,95 +77,100 @@ public class SkillMark extends ActiveSkill {
         Player player = hero.getPlayer();
         ConfigurationSection skillSettings = hero.getSkillSettings(skillSettingsName);
 
-        if (args.length > 0 && args[0].equalsIgnoreCase("reset")) {
-            clearStoredData(skillSettings);
-            player.sendMessage("Your recall location has been cleared.");
-            return SkillResult.SKIP_POST_USAGE;
-        } else if (args.length > 0) {
-            // Display the info about the current mark
-            World world = getValidWorld(skillSettings, player.getName());
-            if (world == null) {
+        if (args.length > 0) {
+            if (args[0].equalsIgnoreCase("reset")) {
+                clearStoredData(skillSettings);
+                player.sendMessage("Your recall location has been cleared.");
+                return SkillResult.SKIP_POST_USAGE;
+            } else if (args[0].equalsIgnoreCase("info")) {
+                // Display the info about the current mark
+                World world = getValidWorld(skillSettings, player.getName());
+                if (world == null) {
+                    return SkillResult.FAIL;
+                }
+                double[] xyzyp;
+                try {
+                    xyzyp = createLocationData(skillSettings);
+                } catch (IllegalArgumentException e) {
+                    player.sendMessage("Your recall location is improperly set!");
+                    return SkillResult.SKIP_POST_USAGE;
+                }
+                if (StringUtils.isNotEmpty(skillSettings.getString("server"))) {
+                    player.sendMessage("Your recall is currently marked on " + skillSettings.getString("server") + "," + world.getName() + " at: " + (int) xyzyp[0] + ", " + (int) xyzyp[1] + ", " + (int) xyzyp[2]);
+                } else {
+                    player.sendMessage("Your recall is currently marked on " + world.getName() + " at: " + (int) xyzyp[0] + ", " + (int) xyzyp[1] + ", " + (int) xyzyp[2]);
+                }
+                return SkillResult.SKIP_POST_USAGE;
+            } else {
+                player.sendMessage("Invalid skill argument!");
+            }
+        }
+
+        boolean ignoreBuildPermissions = SkillConfigManager.getUseSetting(hero, this, "ignore-build-permissions", false);
+
+        // Save a new mark
+        Location loc = player.getLocation();
+
+        // Validate Towny
+        if (towny && !ignoreBuildPermissions) {
+            // Check if the block in question is a Town Block, don't want Towny perms to interfere if we're not in a town... just in case.
+            /*TownBlock tBlock = TownyUniverse.getTownBlock(loc);
+            if(tBlock != null) {
+                // Make sure the Town Block actually belongs to a town. If there's no town, we don't care.
+                try {
+                    tBlock.getTown();
+
+                    // Need a Block to run towny build checks on. Naturally, the block they're standing on.
+                    Block block = loc.getBlock();
+                    // Since we know the block is within a town, check if the player can build there. This *should* be actual perms, not circumstances like War.
+                    boolean buildPerms = PlayerCacheUtil.getCachePermission(player, loc, BukkitTools.getTypeId(block), BukkitTools.getData(block), TownyPermission.ActionType.BUILD);
+
+                    // If the player can't build, no mark
+                    if (!buildPerms) {
+                        player.sendMessage("You cannot Mark in a Town you have no access to!");
+                        return SkillResult.FAIL;
+                    }
+                }
+                catch (NotRegisteredException e) {
+                    // Ignore: No town here
+                }
+            }*/
+        }
+
+        // Validate Townships
+        if (townships && !ignoreBuildPermissions) {
+            TownshipsUser user = UserManager.fromOfflinePlayer(player);
+            if (!user.canBuild(loc)) {
+                player.sendMessage("You cannot Mark in a Region you have no access to!");
                 return SkillResult.FAIL;
             }
-            double[] xyzyp;
-            try {
-                xyzyp = createLocationData(skillSettings);
-            } catch (IllegalArgumentException e) {
-                player.sendMessage("Your recall location is improperly set!");
-                return SkillResult.SKIP_POST_USAGE;
-            }
-            if (StringUtils.isNotEmpty(skillSettings.getString("server"))) {
-                player.sendMessage("Your recall is currently marked on " + skillSettings.getString("server") + "," + world.getName() + " at: " + (int) xyzyp[0] + ", " + (int) xyzyp[1] + ", " + (int) xyzyp[2]);
-            } else {
-                player.sendMessage("Your recall is currently marked on " + world.getName() + " at: " + (int) xyzyp[0] + ", " + (int) xyzyp[1] + ", " + (int) xyzyp[2]);
-            }
-            return SkillResult.SKIP_POST_USAGE;
-        } else {
-            boolean ignoreBuildPermissions = skillSettings.getBoolean("ignore-build-permissions");
-
-            // Save a new mark
-            Location loc = player.getLocation();
-
-            // Validate Towny
-            if (towny && !ignoreBuildPermissions) {
-                // Check if the block in question is a Town Block, don't want Towny perms to interfere if we're not in a town... just in case.
-                /*TownBlock tBlock = TownyUniverse.getTownBlock(loc);
-                if(tBlock != null) {
-                    // Make sure the Town Block actually belongs to a town. If there's no town, we don't care.
-                    try {
-                        tBlock.getTown();
-
-                        // Need a Block to run towny build checks on. Naturally, the block they're standing on.
-                        Block block = loc.getBlock();
-                        // Since we know the block is within a town, check if the player can build there. This *should* be actual perms, not circumstances like War.
-                        boolean buildPerms = PlayerCacheUtil.getCachePermission(player, loc, BukkitTools.getTypeId(block), BukkitTools.getData(block), TownyPermission.ActionType.BUILD);
-
-                        // If the player can't build, no mark
-                        if (!buildPerms) {
-                            player.sendMessage("You cannot Mark in a Town you have no access to!");
-                            return SkillResult.FAIL;
-                        }
-                    }
-                    catch (NotRegisteredException e) {
-                        // Ignore: No town here
-                    }
-                }*/
-            }
-
-            // Validate Townships
-            if (townships && !ignoreBuildPermissions) {
-                TownshipsUser user = UserManager.fromOfflinePlayer(player);
-                if (!user.canBuild(loc)) {
-                    player.sendMessage("You cannot Mark in a Region you have no access to!");
-                    return SkillResult.FAIL;
-                }
-            }
-
-            // Validate WorldGuard
-            if (worldguard && !ignoreBuildPermissions) {
-                if (!wgp.canBuild(player, loc)) {
-                    player.sendMessage("You cannot Mark in a Region you have no access to!");
-                    return SkillResult.FAIL;
-                }
-            }
-
-            if (plugin.getServerName() != null) {
-                hero.setSkillSetting(skillSettingsName, "server", plugin.getServerName());
-            }
-            hero.setSkillSetting(skillSettingsName, "world", loc.getWorld().getName());
-            hero.setSkillSetting(skillSettingsName, "x", loc.getX());
-            hero.setSkillSetting(skillSettingsName, "y", loc.getY());
-            hero.setSkillSetting(skillSettingsName, "z", loc.getZ());
-            hero.setSkillSetting(skillSettingsName, "yaw", (double) loc.getYaw());
-            hero.setSkillSetting(skillSettingsName, "pitch", (double) loc.getPitch());
-            player.sendMessage("You have marked a new location on " + loc.getWorld().getName() + " at: " + loc.getBlockX() + ", " + loc.getBlockY() + ", " + loc.getBlockZ());
-
-            //plugin.getCharacterManager().saveHero(hero, false); (remove this as its now being saved with skillsettings.
-            hero.getPlayer().getWorld().playSound(hero.getPlayer().getLocation(), Sound.ENTITY_WITHER_SPAWN, 0.5F, 1.0F);
-            //hero.getPlayer().getWorld().spigot().playEffect(player.getLocation(), Effect.COLOURED_DUST, 0, 0, 0.2F, 1.0F, 0.2F, 0.0F, 50, 12);
-            hero.getPlayer().getWorld().spawnParticle(Particle.REDSTONE, player.getLocation(), 50, 0.2, 1, 0.2, 0, Color.FUCHSIA);
-            return SkillResult.NORMAL;
         }
+
+        // Validate WorldGuard
+        if (worldguard && !ignoreBuildPermissions) {
+            if (!wgp.canBuild(player, loc)) {
+                player.sendMessage("You cannot Mark in a Region you have no access to!");
+                return SkillResult.FAIL;
+            }
+        }
+
+        if (plugin.getServerName() != null) {
+            hero.setSkillSetting(skillSettingsName, "server", plugin.getServerName());
+        }
+        hero.setSkillSetting(skillSettingsName, "world", loc.getWorld().getName());
+        hero.setSkillSetting(skillSettingsName, "x", loc.getX());
+        hero.setSkillSetting(skillSettingsName, "y", loc.getY());
+        hero.setSkillSetting(skillSettingsName, "z", loc.getZ());
+        hero.setSkillSetting(skillSettingsName, "yaw", (double) loc.getYaw());
+        hero.setSkillSetting(skillSettingsName, "pitch", (double) loc.getPitch());
+        player.sendMessage("You have marked a new location on " + loc.getWorld()
+                .getName() + " at: " + loc.getBlockX() + ", " + loc.getBlockY() + ", " + loc.getBlockZ());
+
+        //plugin.getCharacterManager().saveHero(hero, false); (remove this as its now being saved with skillsettings.
+        hero.getPlayer().getWorld().playSound(hero.getPlayer().getLocation(), Sound.ENTITY_WITHER_SPAWN, 0.5F, 1.0F);
+        //hero.getPlayer().getWorld().spigot().playEffect(player.getLocation(), Effect.COLOURED_DUST, 0, 0, 0.2F, 1.0F, 0.2F, 0.0F, 50, 12);
+        hero.getPlayer().getWorld().spawnParticle(Particle.REDSTONE, player.getLocation(), 50, 0.2, 1, 0.2, 0, Color.FUCHSIA);
+        return SkillResult.NORMAL;
     }
 
     @Override

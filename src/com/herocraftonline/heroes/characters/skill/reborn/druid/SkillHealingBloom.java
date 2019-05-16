@@ -32,10 +32,10 @@ public class SkillHealingBloom extends ActiveSkill {
     }
 
     public String getDescription(Hero hero) {
-        double radius = SkillConfigManager.getUseSetting(hero, this, SkillSetting.RADIUS, 15.0, false);
+        double radius = SkillConfigManager.getScaledUseSettingDouble(hero, this, SkillSetting.RADIUS, false);
 
         int period = SkillConfigManager.getUseSetting(hero, this, SkillSetting.PERIOD, 2000, false);
-        int duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION.node(), 20000, false);
+        int duration = SkillConfigManager.getScaledUseSettingInt(hero, this, SkillSetting.DURATION, false);
 
         double healing = SkillConfigManager.getUseSetting(hero, this, SkillSetting.HEALING_TICK, 17.0, false);
         healing = getScaledHealing(hero, healing);
@@ -62,9 +62,9 @@ public class SkillHealingBloom extends ActiveSkill {
     public SkillResult use(Hero hero, String[] args) {
         Player player = hero.getPlayer();
 
-        double radius = SkillConfigManager.getUseSetting(hero, this, SkillSetting.RADIUS, 15.0, false);
+        double radius = SkillConfigManager.getScaledUseSettingDouble(hero, this, SkillSetting.RADIUS, false);
         double radiusSquared = radius * radius;
-        int duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION.node(), 20000, false);
+        int duration = SkillConfigManager.getScaledUseSettingInt(hero, this, SkillSetting.DURATION, false);
         double healing = SkillConfigManager.getUseSetting(hero, this, SkillSetting.HEALING_TICK, 17.0, false);
         healing = getScaledHealing(hero, healing);
 

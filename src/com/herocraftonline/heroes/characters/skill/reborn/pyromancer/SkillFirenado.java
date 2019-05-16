@@ -52,9 +52,7 @@ public class SkillFirenado extends ActiveSkill {
     public String getDescription(Hero hero) {
         int tornadoDuration = SkillConfigManager.getUseSetting(hero, this, "tornado-duration", 8000, false);
 
-        double damage = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE, 90.0, false);
-        double damageIncrease = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE_INCREASE_PER_INTELLECT, 0.0, false);
-        damage += damageIncrease * hero.getAttributeValue(AttributeType.INTELLECT);
+        double damage = SkillConfigManager.getScaledUseSettingDouble(hero, this, SkillSetting.DAMAGE, false);
 
         int burnDuration = SkillConfigManager.getUseSetting(hero, this, "burn-duration", 3000, false);
         double burnMultipliaer = SkillConfigManager.getUseSetting(hero, this, "burn-damage-multiplier", 2.0, false);
@@ -134,7 +132,7 @@ public class SkillFirenado extends ActiveSkill {
             this.hero = hero;
             this.player = hero.getPlayer();
 
-            this.damage = SkillConfigManager.getUseSetting(hero, skill, SkillSetting.DAMAGE, 75.0, false);
+            this.damage = SkillConfigManager.getScaledUseSettingDouble(hero, skill, SkillSetting.DAMAGE, false);
             this.burnDuration = SkillConfigManager.getUseSetting(hero, skill, "burn-duration", 3000, false);
             this.burnMultipliaer = SkillConfigManager.getUseSetting(hero, skill, "burn-damage-multiplier", 2.0, false);
             this.hitUpwardsVelocity = SkillConfigManager.getUseSetting(hero, skill, "hit-upwards-velocity", 0.8, false);
@@ -152,7 +150,7 @@ public class SkillFirenado extends ActiveSkill {
             this.heatSeekForcePower = SkillConfigManager.getUseSetting(hero, skill, "heat-seek-force-power", 0.5, false);
             this.heatSeekingIntervalTicks = (int) (this.initialDurationTicks * 0.15);
 
-            double radius = SkillConfigManager.getUseSetting(hero, skill, SkillSetting.RADIUS, 4.0, false);
+            double radius = SkillConfigManager.getScaledUseSettingDouble(hero, skill, SkillSetting.RADIUS, false);
 
             setNoGravity();
             setEntityDetectRadius(radius);
@@ -263,16 +261,17 @@ public class SkillFirenado extends ActiveSkill {
 
         @Override
         protected boolean onCollideWithBlock(Block block, Vector point, BlockFace face) {
-            Location location = getLocation();
-
-            // Make it "bounce" and go the other way.
-            Vector direction = getDirection();
-            setLocation(location.clone().subtract(direction));
-            setDirectionAndSpeed(direction.multiply(-1).setY(0.5), this.defaultSpeed);
-            if (currentTarget != null) {
-                tempIgnoreTargets.add(currentTarget);
-                currentTarget = null;
-            }
+            // I could never make this work well enough to be used...
+//            Location location = getLocation();
+//
+//            // Make it "bounce" and go the other way.
+//            Vector direction = getDirection();
+//            setLocation(location.clone().subtract(direction));
+//            setDirectionAndSpeed(direction.multiply(-1).setY(0.5), this.defaultSpeed);
+//            if (currentTarget != null) {
+//                tempIgnoreTargets.add(currentTarget);
+//                currentTarget = null;
+//            }
             return false;
         }
 

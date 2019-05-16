@@ -41,7 +41,7 @@ public class SkillFeatheredShot extends ActiveSkill {
 
     @Override
     public String getDescription(Hero hero) {
-        int duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, 8000, false);
+        int duration = SkillConfigManager.getScaledUseSettingInt(hero, this, SkillSetting.DURATION, false);
         int levDuration = SkillConfigManager.getUseSetting(hero, this, "shot-duration", 1500, false);
 
         return getDescription()
@@ -77,7 +77,7 @@ public class SkillFeatheredShot extends ActiveSkill {
     public SkillResult use(Hero hero, String[] args) {
         broadcastExecuteText(hero);
 
-        int duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, 10000, false);
+        int duration = SkillConfigManager.getScaledUseSettingInt(hero, this, SkillSetting.DURATION, false);
         hero.addEffect(new FeatherArrowsEffect(this, hero.getPlayer(), duration));
 
         return SkillResult.NORMAL;

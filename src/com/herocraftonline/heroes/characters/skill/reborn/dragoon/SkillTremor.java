@@ -39,10 +39,8 @@ public class SkillTremor extends ActiveSkill {
 
     @Override
     public String getDescription(Hero hero) {
-        int radius = SkillConfigManager.getUseSetting(hero, this, SkillSetting.RADIUS, 5, false);
-        int damage = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE, 50, false);
-        double damageIncrease = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE_INCREASE_PER_STRENGTH, 0.0, false);
-        damage += (int) (damageIncrease * hero.getAttributeValue(AttributeType.STRENGTH));
+        double radius = SkillConfigManager.getScaledUseSettingDouble(hero, this, SkillSetting.RADIUS, false);
+        double damage = SkillConfigManager.getScaledUseSettingDouble(hero, this, SkillSetting.DAMAGE, false);
 
         return getDescription()
                 .replace("$1", Util.decFormat.format(radius))
@@ -66,14 +64,10 @@ public class SkillTremor extends ActiveSkill {
     public SkillResult use(Hero hero, String[] args) {
         Player player = hero.getPlayer();
 
-        int radius = SkillConfigManager.getUseSetting(hero, this, SkillSetting.RADIUS, 5, false);
-
-        double damage = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE, 50, false);
-        double damageIncrease = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE_INCREASE_PER_STRENGTH, 0.0, false);
-        damage += damageIncrease * hero.getAttributeValue(AttributeType.STRENGTH);
-
-        double hPower = SkillConfigManager.getUseSetting(hero, this, "horizontal-power", 2.8, false);
-        double vPower = SkillConfigManager.getUseSetting(hero, this, "vertical-power", 0.5, false);
+        double radius = SkillConfigManager.getScaledUseSettingDouble(hero, this, SkillSetting.RADIUS, false);
+        double damage = SkillConfigManager.getScaledUseSettingDouble(hero, this, SkillSetting.DAMAGE, false);
+        double hPower = SkillConfigManager.getScaledUseSettingDouble(hero, this, "horizontal-power", false);
+        double vPower = SkillConfigManager.getScaledUseSettingDouble(hero, this, "vertical-power", false);
 
         broadcastExecuteText(hero);
 

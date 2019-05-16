@@ -24,17 +24,15 @@ public class SkillRejuvenate extends TargettedSkill {
         setUsage("/skill rejuvenate <target>");
         setArgumentRange(0, 1);
         setIdentifiers("skill rejuvenate");
-        setTypes(SkillType.BUFFING, SkillType.HEALING, SkillType.SILENCEABLE, SkillType.NAME_TARGETTING_ENABLED);
+        setTypes(SkillType.ABILITY_PROPERTY_MAGICAL, SkillType.BUFFING, SkillType.HEALING, SkillType.SILENCEABLE, SkillType.NAME_TARGETTING_ENABLED);
     }
 
     public String getDescription(Hero hero) {
         int period = SkillConfigManager.getUseSetting(hero, this, SkillSetting.PERIOD, 2000, false);
-        int duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION.node(), 20000, false);
+        int duration = SkillConfigManager.getScaledUseSettingInt(hero, this, SkillSetting.DURATION, false);
 
         double healing = SkillConfigManager.getUseSetting(hero, this, SkillSetting.HEALING_TICK, 10, false);
         healing = getScaledHealing(hero, healing);
-        double healingIncrease = SkillConfigManager.getUseSetting(hero, this, SkillSetting.HEALING_INCREASE_PER_WISDOM, 0.25, false);
-        healing += (hero.getAttributeValue(AttributeType.WISDOM) * healingIncrease);
 
         String formattedHealing = Util.decFormat.format(healing * ((double) duration / (double) period));
         String formattedSelfHealing = Util.decFormat.format((healing * ((double) duration / (double) period)) * Heroes.properties.selfHeal);
@@ -81,11 +79,9 @@ public class SkillRejuvenate extends TargettedSkill {
 
         double healing = SkillConfigManager.getUseSetting(hero, this, SkillSetting.HEALING_TICK, 10, false);
         healing = getScaledHealing(hero, healing);
-        double healingIncrease = SkillConfigManager.getUseSetting(hero, this, SkillSetting.HEALING_INCREASE_PER_WISDOM, 0.25, false);
-        healing += (hero.getAttributeValue(AttributeType.WISDOM) * healingIncrease);
 
         int period = SkillConfigManager.getUseSetting(hero, this, SkillSetting.PERIOD, 2000, false);
-        int duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION.node(), 20000, false);
+        int duration = SkillConfigManager.getScaledUseSettingInt(hero, this, SkillSetting.DURATION, false);
 
         RejuvenateEffect rEffect = new RejuvenateEffect(this, player, period, duration, healing);
         targetHero.addEffect(rEffect);

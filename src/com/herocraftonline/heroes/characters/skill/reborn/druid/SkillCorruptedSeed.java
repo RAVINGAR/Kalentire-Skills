@@ -36,8 +36,8 @@ public class SkillCorruptedSeed extends TargettedSkill {
         setDescription("Plant a corrupted seed in yourself or an ally, recasting this ability will explode the seed silencing nearby enemies. " +
                 "While the user is holding a seed they will take periodic damage");
         setUsage("/skill corruptedseed");
-        setArgumentRange(0, 0);
         setIdentifiers("skill corruptedseed");
+        setArgumentRange(0, 0);
         setTypes(SkillType.ABILITY_PROPERTY_DARK, SkillType.SILENCEABLE, SkillType.BUFFING);
 
         setToggleableEffectName(toggleableEffectName);
@@ -71,7 +71,7 @@ public class SkillCorruptedSeed extends TargettedSkill {
         if (targetHero.equals(hero) || (targetHero.getParty() != null && targetHero.getParty().isPartyMember(hero))) {
             double healthDrainTick = SkillConfigManager.getUseSetting(hero, this, "health-drain=tick", 20.0D, false);
             int healthDrainPeriod = SkillConfigManager.getUseSetting(hero, this, "health-drain-period", 500, false);
-            long duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, 5000, false);
+            long duration = SkillConfigManager.getScaledUseSettingInt(hero, this, SkillSetting.DURATION, false);
             targetHero.addEffect(new CorruptedSeedEffect(this, player, healthDrainTick, healthDrainPeriod, duration));
 
             return SkillResult.NORMAL;
@@ -86,7 +86,7 @@ public class SkillCorruptedSeed extends TargettedSkill {
         int healthDrainPeriod = SkillConfigManager.getUseSetting(hero, this, "health-drain-period", 500, false);
         double perSecondMultiplier = 1000d / healthDrainPeriod;
         double healthPerSecond = healthDrainTick * perSecondMultiplier;
-        int radius = SkillConfigManager.getUseSetting(hero, this, SkillSetting.RADIUS, 3, false);
+        double radius = SkillConfigManager.getScaledUseSettingDouble(hero, this, SkillSetting.RADIUS, false);
         long silenceDuration = SkillConfigManager.getUseSetting(hero, this, "silence-duration", 3000, false);
 
         return getDescription()
@@ -127,7 +127,7 @@ public class SkillCorruptedSeed extends TargettedSkill {
         public void applyToHero(Hero hero) {
             super.applyToHero(hero);
             this.effectManager = new EffectManager(plugin);
-            this.radius = SkillConfigManager.getUseSetting(hero, skill, SkillSetting.RADIUS, 3, false);
+            this.radius = SkillConfigManager.getScaledUseSettingDouble(hero, skill, SkillSetting.RADIUS, false);
             this.silenceDuration = SkillConfigManager.getUseSetting(hero, skill, "silence-duration", 3000, false);
             applyBaseSeedVisuals(hero.getPlayer());
             applyFlameSeedVisuals(hero.getPlayer());

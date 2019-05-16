@@ -72,7 +72,7 @@ public class SkillMight extends ActiveSkill {
 
         broadcastExecuteText(hero);
 
-        int duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, 180000, false);
+        int duration = SkillConfigManager.getScaledUseSettingInt(hero, this, SkillSetting.DURATION, false);
         double damageBonus = SkillConfigManager.getUseSetting(hero, this, "damage-bonus", 1.20, false);
 
         MightEffect mEffect = new MightEffect(this, player, duration, damageBonus);
@@ -83,10 +83,9 @@ public class SkillMight extends ActiveSkill {
                 }
             }
             hero.addEffect(mEffect);
-        }
-        else {
-            int range = SkillConfigManager.getUseSetting(hero, this, SkillSetting.RADIUS, 10, false);
-            int rangeSquared = range * range;
+        } else {
+            double range = SkillConfigManager.getScaledUseSettingDouble(hero, this, SkillSetting.RADIUS, false);
+            double rangeSquared = range * range;
             Location loc = player.getLocation();
             for (Hero pHero : hero.getParty().getMembers()) {
                 Player pPlayer = pHero.getPlayer();

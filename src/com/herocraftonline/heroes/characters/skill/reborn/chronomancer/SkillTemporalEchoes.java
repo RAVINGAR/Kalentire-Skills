@@ -13,12 +13,9 @@ import com.herocraftonline.heroes.characters.skill.SkillType;
 import com.herocraftonline.heroes.util.Util;
 import me.libraryaddict.disguise.DisguiseAPI;
 import me.libraryaddict.disguise.disguisetypes.Disguise;
-import me.libraryaddict.disguise.disguisetypes.DisguiseType;
-import me.libraryaddict.disguise.disguisetypes.MobDisguise;
 import me.libraryaddict.disguise.disguisetypes.PlayerDisguise;
 import me.libraryaddict.disguise.disguisetypes.watchers.LivingWatcher;
 import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.LivingEntity;
@@ -132,28 +129,30 @@ public class SkillTemporalEchoes extends ActiveSkill {
             LivingEntity minion = monster.getEntity();
             minion.setMaxHealth(maxHp);
             minion.setHealth(maxHp);
-            minion.setCustomName(ChatColor.DARK_GREEN + applier.getName() + "'s Minion");
+            minion.setCustomName(applier.getName());
             minion.setCustomNameVisible(true);
             monster.setDamage(hitDmg);
 
             if (disguiseApiLoaded) {
                 try {
-                if (!DisguiseAPI.isDisguised(minion)) {
-                    DisguiseAPI.undisguiseToAll(minion);
-                }
+                    if (!DisguiseAPI.isDisguised(minion)) {
+                        DisguiseAPI.undisguiseToAll(minion);
+                    }
 
-                PlayerDisguise disguise = new PlayerDisguise(applier);
-                disguise.setKeepDisguiseOnPlayerDeath(true);
-                disguise.setEntity(minion);
-                disguise.setShowName(true);
-                disguise.setModifyBoundingBox(false);
-                disguise.setReplaceSounds(true);
-                LivingWatcher watcher = disguise.getWatcher();
-                PlayerInventory inventory = applier.getInventory();
-                watcher.setArmor(inventory.getArmorContents().clone());
-                watcher.setItemInMainHand(inventory.getItemInMainHand().clone());
-                watcher.setItemInOffHand(inventory.getItemInOffHand().clone());
-                disguise.startDisguise();
+                    PlayerDisguise disguise = new PlayerDisguise(applier);
+                    disguise.setKeepDisguiseOnPlayerDeath(true);
+                    disguise.setEntity(minion);
+                    disguise.setShowName(true);
+                    disguise.setModifyBoundingBox(false);
+                    disguise.setReplaceSounds(true);
+                    disguise.setDisplayedInTab(false);
+                    LivingWatcher watcher = disguise.getWatcher();
+
+                    PlayerInventory inventory = applier.getInventory();
+                    watcher.setArmor(inventory.getArmorContents().clone());
+                    watcher.setItemInMainHand(inventory.getItemInMainHand().clone());
+                    watcher.setItemInOffHand(inventory.getItemInOffHand().clone());
+                    disguise.startDisguise();
                 } catch (Exception ex) {
                     Heroes.log(Level.WARNING, "We got that LibsDisguises error again. Not an actual problem, but yeah.");
                 }

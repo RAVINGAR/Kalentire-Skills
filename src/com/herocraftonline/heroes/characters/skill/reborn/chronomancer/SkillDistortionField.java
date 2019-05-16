@@ -36,13 +36,14 @@ public class SkillDistortionField extends TargettedLocationSkill {
         setUsage("/skill distortionfield");
         setArgumentRange(0, 0);
         setIdentifiers("skill distortionfield");
-        setTypes(SkillType.MULTI_GRESSIVE, SkillType.MOVEMENT_INCREASING, SkillType.MOVEMENT_SLOWING, SkillType.AREA_OF_EFFECT);
+        setTypes(SkillType.ABILITY_PROPERTY_TEMPORAL, SkillType.MULTI_GRESSIVE, SkillType.MOVEMENT_INCREASING,
+                SkillType.MOVEMENT_SLOWING, SkillType.AREA_OF_EFFECT, SkillType.SILENCEABLE);
     }
 
     @Override
     public String getDescription(Hero hero) {
-        double radius = SkillConfigManager.getUseSetting(hero, this, SkillSetting.RADIUS, 16.0, false);
-        int duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, 10000, false);
+        double radius = SkillConfigManager.getScaledUseSettingDouble(hero, this, SkillSetting.RADIUS, false);
+        int duration = SkillConfigManager.getScaledUseSettingInt(hero, this, SkillSetting.DURATION, false);
 
         return getDescription()
                 .replace("$1", Util.decFormat.format(radius))
@@ -81,8 +82,8 @@ public class SkillDistortionField extends TargettedLocationSkill {
 
         broadcastExecuteText(hero);
 
-        double radius = SkillConfigManager.getUseSetting(hero, this, SkillSetting.RADIUS, 20.0, false);
-        long duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, 20, false);
+        double radius = SkillConfigManager.getScaledUseSettingDouble(hero, this, SkillSetting.RADIUS, false);
+        long duration = SkillConfigManager.getScaledUseSettingInt(hero, this, SkillSetting.DURATION, false);
         int pulsePeriod = SkillConfigManager.getUseSetting(hero, this, "pulse-period", 250, false);
         double percentIncrease = SkillConfigManager.getUseSetting(hero, this, "percent-speed-increase", 0.35, false);
         double projectileVMultiIncrease = SkillConfigManager.getUseSetting(hero, this, "projectile-velocity-multiplier-accelerate", 1.35, false);

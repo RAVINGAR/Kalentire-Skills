@@ -2,7 +2,6 @@ package com.herocraftonline.heroes.characters.skill.reborn.druid;
 
 import com.herocraftonline.heroes.Heroes;
 import com.herocraftonline.heroes.api.SkillResult;
-import com.herocraftonline.heroes.attributes.AttributeType;
 import com.herocraftonline.heroes.characters.Hero;
 import com.herocraftonline.heroes.characters.effects.EffectType;
 import com.herocraftonline.heroes.characters.effects.ExpirableEffect;
@@ -45,8 +44,8 @@ public class SkillRampartVine extends ActiveSkill {
         super(plugin, "RampartVine");
         setDescription("Create an a series of ramparting vines at your target location.");
         setUsage("/skill rampartvine");
-        setArgumentRange(0, 0);
         setIdentifiers("skill rampartvine");
+        setArgumentRange(0, 0);
         setTypes(SkillType.ABILITY_PROPERTY_EARTH, SkillType.SILENCEABLE, SkillType.BLOCK_CREATING);
 
         Bukkit.getServer().getPluginManager().registerEvents(new SkillBlockListener(), plugin);
@@ -81,11 +80,9 @@ public class SkillRampartVine extends ActiveSkill {
     public SkillResult use(Hero hero, String[] args) {
         Player player = hero.getPlayer();
 
-        int maxDist = SkillConfigManager.getUseSetting(hero, this, SkillSetting.MAX_DISTANCE, 12, false);
-        double maxDistIncrease = SkillConfigManager.getUseSetting(hero, this, SkillSetting.MAX_DISTANCE_INCREASE_PER_INTELLECT, 0.75, false);
-        maxDist += (int) (hero.getAttributeValue(AttributeType.INTELLECT) * maxDistIncrease);
+        int maxDist = SkillConfigManager.getScaledUseSettingInt(hero, this, SkillSetting.MAX_DISTANCE, false);
 
-        List<Block> lastBlocks = player.getLastTwoTargetBlocks((Set<Material>)null, maxDist);
+        List<Block> lastBlocks = player.getLastTwoTargetBlocks((Set<Material>) null, maxDist);
 
         if (lastBlocks.size() < 2)
             return SkillResult.INVALID_TARGET;
@@ -116,7 +113,7 @@ public class SkillRampartVine extends ActiveSkill {
         }
 
         int maxGrowthDistance = SkillConfigManager.getUseSetting(hero, this, "max-growth-distance", 30, false);
-        int duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, 5000, false);
+        int duration = SkillConfigManager.getScaledUseSettingInt(hero, this, SkillSetting.DURATION, false);
 
         BlockFace placementFace = lastBlocks.get(0).getFace(lastBlocks.get(1));
         RampartVineEffect oEffect = new RampartVineEffect(this, player, duration, placementBlock, placementFace, maxGrowthDistance);
@@ -152,7 +149,7 @@ public class SkillRampartVine extends ActiveSkill {
         private List<Location> locations = new ArrayList<>();
 
         public RampartVineEffect(Skill skill, Player applier, long duration, Block targetBlock, BlockFace targetFace, int maxGrowth) {
-            super(skill, "RampartedVine", applier, duration);
+            super(skill, "RampartedVines", applier, duration, applyText, expireText);
 
             types.add(EffectType.BENEFICIAL);
             types.add(EffectType.EARTH);
@@ -164,22 +161,12 @@ public class SkillRampartVine extends ActiveSkill {
 
         public void applyToHero(Hero hero) {
             super.applyToHero(hero);
-
-            Player player = hero.getPlayer();
-
             growVines();
-
-            broadcast(player.getLocation(), "    " + applyText, player.getName());
         }
 
         public void removeFromHero(Hero hero) {
             super.removeFromHero(hero);
-
-            Player player = hero.getPlayer();
-
             revertBlocks();
-
-            broadcast(player.getLocation(), "    " + expireText, player.getName());
         }
 
         private void growVines() {
@@ -198,14 +185,11 @@ public class SkillRampartVine extends ActiveSkill {
                         byte data = 0;
                         if (targetFace == BlockFace.WEST) {
                             data |= VINE_WEST;
-                        }
-                        else if (targetFace == BlockFace.NORTH) {
+                        } else if (targetFace == BlockFace.NORTH) {
                             data |= VINE_NORTH;
-                        }
-                        else if (targetFace == BlockFace.SOUTH) {
+                        } else if (targetFace == BlockFace.SOUTH) {
                             data |= VINE_SOUTH;
-                        }
-                        else if (targetFace == BlockFace.EAST) {
+                        } else if (targetFace == BlockFace.EAST) {
                             data |= VINE_EAST;
                         }
 

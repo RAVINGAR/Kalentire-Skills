@@ -10,6 +10,7 @@ import com.herocraftonline.heroes.characters.skill.ActiveSkill;
 import com.herocraftonline.heroes.characters.skill.Skill;
 import com.herocraftonline.heroes.characters.skill.SkillConfigManager;
 import com.herocraftonline.heroes.characters.skill.SkillType;
+import com.herocraftonline.heroes.chat.ChatComponents;
 import com.herocraftonline.heroes.util.Util;
 import me.libraryaddict.disguise.DisguiseAPI;
 import me.libraryaddict.disguise.disguisetypes.Disguise;
@@ -36,7 +37,7 @@ public class SkillSkeletonKnight extends ActiveSkill {
     public SkillSkeletonKnight(Heroes plugin) {
         super(plugin, "SkeletonKnight");
         setDescription("Conjures a Skeleton Knight to obey your commands. " +
-                "The minion has $1 HP deals $2 damage per hit, and lasts for up to $3 seconds. $9");
+                "The minion has $1 HP, deals $2 damage per hit, and lasts for up to $3 seconds. $9");
         setUsage("/skill skeletonknight");
         setIdentifiers("skill skeletonknight");
         setArgumentRange(0, 0);
@@ -77,6 +78,7 @@ public class SkillSkeletonKnight extends ActiveSkill {
 
     public ConfigurationSection getDefaultConfig() {
         ConfigurationSection config = super.getDefaultConfig();
+        config.set("maximum-allowed-minions", 3);
         config.set("minion-attack-damage", 25.0);
         config.set("minion-attack-damage-per-level", 0.4);
         config.set("minion-max-hp", 400.0);
@@ -89,6 +91,18 @@ public class SkillSkeletonKnight extends ActiveSkill {
 
     public SkillResult use(Hero hero, String[] args) {
         Player player = hero.getPlayer();
+
+        int maxMinions = SkillConfigManager.getUseSetting(hero, this, "maximum-allowed-minions", 3, false);
+        int minionCount = 0;
+        for (Monster summon : hero.getSummons()) {
+            if (summon.hasEffect(minionEffectName)) {
+                minionCount++;
+            }
+            if (minionCount >= maxMinions) {
+                player.sendMessage("    " + ChatComponents.GENERIC_SKILL + "You already have the maximum number of minions of this type!");
+                return SkillResult.FAIL;
+            }
+        }
 
         broadcastExecuteText(hero);
 

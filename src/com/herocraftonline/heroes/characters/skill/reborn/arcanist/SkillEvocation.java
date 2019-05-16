@@ -156,7 +156,7 @@ public class SkillEvocation extends ActiveSkill {
             this.perSecondModifier = (1000.0 / getPeriod());
             this.hPower = SkillConfigManager.getUseSetting(hero, skill, "horizontal-power", 0.75, false);
             this.vPower = SkillConfigManager.getUseSetting(hero, skill, "vertical-power", 0.3, false);
-            this.radius = SkillConfigManager.getUseSetting(hero, skill, SkillSetting.RADIUS, 3.0, false);
+            this.radius = SkillConfigManager.getScaledUseSettingDouble(hero, skill, SkillSetting.RADIUS, false);
 
             applyVisuals(hero.getPlayer());
         }

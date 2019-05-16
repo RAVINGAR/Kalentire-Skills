@@ -42,10 +42,22 @@ public class SkillOvergrowth extends TargettedLocationSkill {
                 "Anyone that is near the overgrowth when it grows will be transported on top of it. " +
                 "The overgrowth lasts for a maximum of $3 seconds, and anyone that remains on top of it when it ends will be granted safety from fall damage.");
         setUsage("/skill overgrowth");
-        setArgumentRange(0, 0);
         setIdentifiers("skill overgrowth");
-        setToggleableEffectName("Overgrowth");
+        setArgumentRange(0, 0);
         setTypes(SkillType.ABILITY_PROPERTY_EARTH, SkillType.SILENCEABLE, SkillType.BLOCK_CREATING);
+
+        setToggleableEffectName("Overgrowth");
+    }
+
+    public String getDescription(Hero hero) {
+        double radius = SkillConfigManager.getScaledUseSettingDouble(hero, this, SkillSetting.RADIUS, false);
+        long duration = SkillConfigManager.getScaledUseSettingInt(hero, this, SkillSetting.DURATION, false);
+        int height = SkillConfigManager.getUseSetting(hero, this, "height", 16, false);
+
+        return getDescription()
+                .replace("$1", radius + "")
+                .replace("$2", height + "")
+                .replace("$3", Util.decFormat.format((double) duration / 1000));
     }
 
     public ConfigurationSection getDefaultConfig() {
@@ -60,22 +72,11 @@ public class SkillOvergrowth extends TargettedLocationSkill {
         return config;
     }
 
-    public String getDescription(Hero hero) {
-        double radius = SkillConfigManager.getUseSetting(hero, this, SkillSetting.RADIUS, 4, false);
-        long duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, 7500, false);
-        int height = SkillConfigManager.getUseSetting(hero, this, "height", 16, false);
-
-        return getDescription()
-                .replace("$1", radius + "")
-                .replace("$2", height + "")
-                .replace("$3", Util.decFormat.format((double) duration / 1000));
-    }
-
     public SkillResult use(Hero hero, Location targetLocation, String[] args) {
         Player player = hero.getPlayer();
 
-        double radius = SkillConfigManager.getUseSetting(hero, this, SkillSetting.RADIUS, 4, false);
-        long duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, 7500, false);
+        double radius = SkillConfigManager.getScaledUseSettingDouble(hero, this, SkillSetting.RADIUS, false);
+        long duration = SkillConfigManager.getScaledUseSettingInt(hero, this, SkillSetting.DURATION, false);
         int height = SkillConfigManager.getUseSetting(hero, this, "height", 18, false);
         int heightWithoutBaseBlock = height - 1;
 

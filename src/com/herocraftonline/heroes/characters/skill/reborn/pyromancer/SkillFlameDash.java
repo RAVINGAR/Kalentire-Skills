@@ -34,7 +34,7 @@ public class SkillFlameDash extends ActiveSkill {
 
     @Override
     public String getDescription(Hero hero) {
-        int distance = SkillConfigManager.getUseSetting(hero, this, SkillSetting.MAX_DISTANCE, 6, false);
+        int distance = SkillConfigManager.getScaledUseSettingInt(hero, this, SkillSetting.MAX_DISTANCE, false);
         return getDescription().replace("$1", distance + "");
     }
 
@@ -73,7 +73,7 @@ public class SkillFlameDash extends ActiveSkill {
         float pitch = currentPlayerLoc.getPitch();
         float yaw = currentPlayerLoc.getYaw();
 
-        int maxDistance = SkillConfigManager.getUseSetting(hero, this, SkillSetting.MAX_DISTANCE, 7, false);
+        int maxDistance = SkillConfigManager.getScaledUseSettingInt(hero, this, SkillSetting.MAX_DISTANCE, false);
         if (maxDistance < 2)
             maxDistance = 2;
 

@@ -55,9 +55,8 @@ public class SkillTheWither extends ActiveSkill {
 
     @Override
     public String getDescription(Hero hero) {
-        int drainPeriod = SkillConfigManager.getUseSetting(hero, this, "mana-drain-period", 1000, false);
-        double manaDrain = SkillConfigManager.getUseSetting(hero, this, "mana-drain-per-tick", 0.075, false);
-
+        int drainPeriod = SkillConfigManager.getUseSettingInt(hero, this, "mana-drain-period", false);
+        int manaDrain = SkillConfigManager.getUseSettingInt(hero, this, "mana-drain-per-tick", false);
         int witherAmplifier = SkillConfigManager.getUseSetting(hero, this, "on-hit-wither-amplifier", 3, false);
         int witherDuration = SkillConfigManager.getUseSetting(hero, this, "on-hit-wither-duration", 2000, false);
         double healingReduction = SkillConfigManager.getUseSetting(hero, this, "on-hit-healing-reduction-per-stack", 0.075, false);
@@ -105,8 +104,8 @@ public class SkillTheWither extends ActiveSkill {
 
         broadcastExecuteText(hero);
 
-        long period = SkillConfigManager.getUseSetting(hero, this, "mana-drain-period", 1000, false);
-        int manaDrain = SkillConfigManager.getUseSetting(hero, this, "mana-drain-per-tick", 500, false);
+        long period = SkillConfigManager.getUseSettingInt(hero, this, "mana-drain-period", false);
+        int manaDrain = SkillConfigManager.getUseSettingInt(hero, this, "mana-drain-per-tick", false);
 
         hero.addEffect(new WitherformEffect(this, player, period, manaDrain));
 

@@ -19,12 +19,10 @@ import org.bukkit.*;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
 import org.bukkit.configuration.ConfigurationSection;
-import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.entity.EntityDamageEvent.DamageCause;
 import org.bukkit.event.player.PlayerTeleportEvent;
-import org.bukkit.plugin.Plugin;
 import org.bukkit.util.BlockIterator;
 import org.bukkit.util.Vector;
 
@@ -51,42 +49,36 @@ public class SkillEnderBreath extends SkillBaseGroundEffect {
     }
 
     public String getDescription(Hero hero) {
-        final double radius = SkillConfigManager.getUseSetting(hero, this, SkillSetting.RADIUS, 4.0, false);
-        long duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, 6000, false);
+        final double radius = SkillConfigManager.getScaledUseSettingDouble(hero, this, SkillSetting.RADIUS, false);
+        long duration = SkillConfigManager.getScaledUseSettingInt(hero, this, SkillSetting.DURATION, false);
         final long period = SkillConfigManager.getUseSetting(hero, this, SkillSetting.PERIOD, 200, false);
-        final double damageTick = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE_TICK, 50d, false);
-
-        int warmup = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DELAY, 0, false);
-        int stamina = SkillConfigManager.getUseSetting(hero, this, SkillSetting.STAMINA, 0, false);
-        int mana = SkillConfigManager.getUseSetting(hero, this, SkillSetting.MANA, 0, false);
-        long cooldown = SkillConfigManager.getUseSetting(hero, this, SkillSetting.COOLDOWN, 0, false);
+        final double damageTick = SkillConfigManager.getScaledUseSettingDouble(hero, this, SkillSetting.DAMAGE_TICK, false);
 
         return getDescription()
                 .replace("$1", Util.decFormat.format(damageTick))
-                .replace("$2", Util.decFormat.format((double) period / 1000))
-                .replace("$3", Util.decFormat.format((double) duration / 1000))
+                .replace("$2", Util.decFormat.format(period / 1000.0))
+                .replace("$3", Util.decFormat.format(duration / 1000.0))
                 .replace("$4", Util.decFormat.format(radius));
     }
 
     public ConfigurationSection getDefaultConfig() {
-        ConfigurationSection node = super.getDefaultConfig();
-        node.set(SkillSetting.RADIUS.node(), 4);
-        node.set(HEIGHT_NODE, 2.0);
-        node.set(SkillSetting.DURATION.node(), 5000);
-        node.set(SkillSetting.PERIOD.node(), 250);
-        node.set(SkillSetting.DAMAGE_TICK.node(), 15.0);
-        node.set("projectile-velocity", 15.0);
-        node.set("projectile-gravity", 14.7045);
-        return node;
+        ConfigurationSection config = super.getDefaultConfig();
+        config.set(SkillSetting.RADIUS.node(), 4.0);
+        config.set(HEIGHT_NODE, 2.0);
+        config.set(SkillSetting.DURATION.node(), 5000);
+        config.set(SkillSetting.PERIOD.node(), 250);
+        config.set(SkillSetting.DAMAGE_TICK.node(), 15.0);
+        config.set(BasicMissile.PROJECTILE_SIZE_NODE, 0.4);
+        config.set(BasicMissile.PROJECTILE_VELOCITY_NODE, 15.0);
+        config.set(BasicMissile.PROJECTILE_GRAVITY_NODE, 14.7045);
+        config.set(BasicMissile.PROJECTILE_DURATION_TICKS_NODE, 999999);
+        return config;
     }
 
     public SkillResult use(final Hero hero, String[] args) {
         final Player player = hero.getPlayer();
 
-        double projVelocity = SkillConfigManager.getUseSetting(hero, this, "projectile-velocity", 15.0, false);
-        double projGravity = SkillConfigManager.getUseSetting(hero, this, "projectile-gravity", 14.7045, false);
-        EnderBreathMissile missile = new EnderBreathMissile(plugin, this, hero, 0.4, projVelocity);
-        missile.setGravity(projGravity);
+        EnderBreathMissile missile = new EnderBreathMissile(plugin, this, hero);
         missile.fireMissile();
 
         broadcastExecuteText(hero);
@@ -96,8 +88,8 @@ public class SkillEnderBreath extends SkillBaseGroundEffect {
 
     private class EnderBreathMissile extends BasicMissile {
 
-        public EnderBreathMissile(Plugin plugin, Skill skill, Hero hero, double projectileSize, double projVelocity) {
-            super(plugin, skill, hero, projectileSize, Particle.DRAGON_BREATH, projVelocity);
+        public EnderBreathMissile(Heroes plugin, Skill skill, Hero hero) {
+            super(plugin, skill, hero, Particle.DRAGON_BREATH);
         }
 
         @Override
@@ -106,16 +98,16 @@ public class SkillEnderBreath extends SkillBaseGroundEffect {
         }
 
         @Override
-        protected void onEntityHit(Entity entity, Vector hitOrigin, Vector hitForce) {
-            explodeIntoGroundEffect(entity.getLocation());
+        protected void onValidTargetFound(LivingEntity target, Vector hitOrigin, Vector hitForce) {
+            explodeIntoGroundEffect(target.getLocation());
         }
 
         private void explodeIntoGroundEffect(Location location) {
-            final double radius = SkillConfigManager.getUseSetting(hero, skill, SkillSetting.RADIUS, 4.0, false);
+            final double radius = SkillConfigManager.getScaledUseSettingDouble(hero, skill, SkillSetting.RADIUS, false);
             double height = SkillConfigManager.getUseSetting(hero, skill, HEIGHT_NODE, 2.0, false);
             long duration = SkillConfigManager.getUseSetting(hero, skill, SkillSetting.DURATION, 6000, false);
             final long period = SkillConfigManager.getUseSetting(hero, skill, SkillSetting.PERIOD, 200, false);
-            final double damageTick = SkillConfigManager.getUseSetting(hero, skill, SkillSetting.DAMAGE_TICK, 50d, false);
+            final double damageTick = SkillConfigManager.getScaledUseSettingDouble(hero, skill, SkillSetting.DAMAGE_TICK, false);
 
             double teleportRadius = radius * 0.75;
             List<Location> locationsInCircle = GeometryUtil.getPerfectCircle(location, (int) teleportRadius, 1, false, false, 1);
@@ -126,7 +118,6 @@ public class SkillEnderBreath extends SkillBaseGroundEffect {
     }
 
     private class EnderFlameAoEGroundActions implements GroundEffectActionsWithVisuals {
-
         private final double damageTick;
         private final double radius;
         private final double height;
@@ -192,7 +183,7 @@ public class SkillEnderBreath extends SkillBaseGroundEffect {
             newLocation.setPitch(targetStartLoc.getPitch());
             newLocation.setYaw(targetStartLoc.getYaw());
             target.teleport(newLocation, PlayerTeleportEvent.TeleportCause.PLUGIN);
-            
+
             targetWorld.playEffect(newLocation, org.bukkit.Effect.ENDER_SIGNAL, 3);
             targetWorld.playSound(newLocation, Sound.ENTITY_ENDERMEN_TELEPORT, 0.6F, 1.0F);
         }

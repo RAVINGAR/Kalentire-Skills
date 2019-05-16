@@ -32,7 +32,8 @@ public class SkillGrapple extends ActiveSkill {
     public SkillGrapple(Heroes plugin) {
         super(plugin, "Grapple");
         setDescription("After aiming at the hook you wish to use as leverage, you use your tremendous strength to jump and grapple your way down the chains." +
-                "Enemies are haulted slightly by this motion, whereas allies assist in pulling you further.");
+                "Enemies are haulted slightly by this motion, whereas allies assist in pulling you further. " +
+                "You must be aiming at a hooked target or hooked location in order to use this ability.");
         setUsage("/skill grapple");
         setArgumentRange(0, 0);
         setIdentifiers("skill grapple");
@@ -60,7 +61,7 @@ public class SkillGrapple extends ActiveSkill {
         Player player = hero.getPlayer();
         World world = player.getWorld();
 
-        double maxDistance = SkillConfigManager.getUseSetting(hero, this, SkillSetting.MAX_DISTANCE, 25.0, false);
+        double maxDistance = SkillConfigManager.getScaledUseSettingDouble(hero, this, SkillSetting.MAX_DISTANCE, false);
         Location eyeLocation = player.getEyeLocation();
         Vector normal = eyeLocation.getDirection();
         Vector start = eyeLocation.toVector();

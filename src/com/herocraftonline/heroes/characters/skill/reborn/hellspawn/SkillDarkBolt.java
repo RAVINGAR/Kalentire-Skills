@@ -8,6 +8,7 @@ import com.herocraftonline.heroes.characters.Hero;
 import com.herocraftonline.heroes.characters.effects.EffectType;
 import com.herocraftonline.heroes.characters.effects.common.HealthRegainReductionEffect;
 import com.herocraftonline.heroes.characters.skill.*;
+import com.herocraftonline.heroes.characters.skill.tools.BasicMissile;
 import com.herocraftonline.heroes.chat.ChatComponents;
 import com.herocraftonline.heroes.util.Util;
 import org.bukkit.Bukkit;
@@ -63,14 +64,9 @@ public class SkillDarkBolt extends ActiveSkill {
 
     @Override
     public String getDescription(Hero hero) {
-        double radius = SkillConfigManager.getUseSetting(hero, this, SkillSetting.RADIUS, 4.0, false);
-
-        double damage = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE, 80.0, false);
-        double damageIncrease = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE_INCREASE_PER_INTELLECT, 1.25, false);
-        damage += damageIncrease * hero.getAttributeValue(AttributeType.INTELLECT);
-
-        int duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, 17500, false);
-
+        double radius = SkillConfigManager.getScaledUseSettingDouble(hero, this, SkillSetting.RADIUS, false);
+        double damage = SkillConfigManager.getScaledUseSettingDouble(hero, this, SkillSetting.DAMAGE, false);
+        int duration = SkillConfigManager.getScaledUseSettingInt(hero, this, SkillSetting.DURATION, false);
         double healingReductionPercent = SkillConfigManager.getUseSetting(hero, this, "healing-reduction-percent", 0.15, false);
 
         String formattedDamage = Util.decFormat.format(damage);
@@ -182,12 +178,10 @@ public class SkillDarkBolt extends ActiveSkill {
         Player player = (Player) darkBolt.getShooter();
         Hero hero = plugin.getCharacterManager().getHero(player);
 
-        double radius = SkillConfigManager.getUseSetting(hero, this, SkillSetting.RADIUS, 3, false);
-        double damage = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE, 80.0, false);
-        double damageIncrease = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE_INCREASE_PER_INTELLECT, 0.0, false);
-        damage += damageIncrease * hero.getAttributeValue(AttributeType.INTELLECT);
+        double radius = SkillConfigManager.getScaledUseSettingDouble(hero, this, SkillSetting.RADIUS, false);
+        double damage = SkillConfigManager.getScaledUseSettingDouble(hero, this, SkillSetting.DAMAGE, false);
 
-        int duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, 17500, false);
+        int duration = SkillConfigManager.getScaledUseSettingInt(hero, this, SkillSetting.DURATION, false);
         int witherLevel = SkillConfigManager.getUseSetting(hero, this, "wither-level", 1, false);
         double healingReductionPercent = SkillConfigManager.getUseSetting(hero, this, "healing-reduction-percent", 0.15, false);
 

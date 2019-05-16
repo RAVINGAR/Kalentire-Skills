@@ -47,13 +47,11 @@ public class SkillBarrier extends ActiveSkill {
 
     @Override
     public String getDescription(Hero hero) {
-        int duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, 3000, false);
+        int duration = SkillConfigManager.getScaledUseSettingInt(hero, this, SkillSetting.DURATION, false);
 
         int disarmDuration = SkillConfigManager.getUseSetting(hero, this, "disarm-duration", 3000, false);
 
-        double damageMultiplier = SkillConfigManager.getUseSetting(hero, this, "damage-multiplier", 0.4, false);
-        double damageMultiplierIncrease = SkillConfigManager.getUseSetting(hero, this, "damage-multiplier-increase-per-intellect", 0.00875, false);
-        damageMultiplier += hero.getAttributeValue(AttributeType.INTELLECT) * damageMultiplierIncrease;
+        double damageMultiplier = SkillConfigManager.getScaledUseSettingDouble(hero, this, "damage-multiplier", false);
 
         String formattedDuration = Util.decFormat.format(duration / 1000.0);
         String formattedDisarmDuration = Util.decFormat.format(disarmDuration / 1000.0);
@@ -106,9 +104,7 @@ public class SkillBarrier extends ActiveSkill {
 
         broadcastExecuteText(hero);
 
-        int duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, 3000, false);
-        int durationIncrease = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION_INCREASE_PER_INTELLECT, 75, false);
-        duration += hero.getAttributeValue(AttributeType.INTELLECT) * durationIncrease;
+        int duration = SkillConfigManager.getScaledUseSettingInt(hero, this, SkillSetting.DURATION, false);
 
         int disarmDuration = SkillConfigManager.getUseSetting(hero, this, "disarm-duration", 3000, false);
         int slowAmplifier = SkillConfigManager.getUseSetting(hero, this, "slow-amplifier", 3, false);
@@ -176,7 +172,6 @@ public class SkillBarrier extends ActiveSkill {
 
                     double damageMultiplier = SkillConfigManager.getUseSetting(defenderHero, skill, "damage-multiplier", 0.4, false);
                     double damageMultiplierIncrease = SkillConfigManager.getUseSetting(defenderHero, skill, "damage-multiplier-increase-per-intellect", 0.00875, false);
-                    damageMultiplier += defenderHero.getAttributeValue(AttributeType.INTELLECT) * damageMultiplierIncrease;
 
                     Material item = NMSHandler.getInterface().getItemInMainHand(defenderPlayer.getInventory()).getType();
                     double damage = plugin.getDamageManager().getHighestItemDamage(defenderHero, item) * damageMultiplier;

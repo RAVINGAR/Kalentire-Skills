@@ -99,7 +99,7 @@ public class SkillHellgate extends ActiveSkill {
         }
 
         if (hero.hasParty()) {
-            int rangeSquared = (int) Math.pow(SkillConfigManager.getUseSetting(hero, this, SkillSetting.RADIUS, 10, false), 2);
+            int rangeSquared = (int) Math.pow(SkillConfigManager.getScaledUseSettingDouble(hero, this, SkillSetting.DAMAGE, false), 2);
             for (Hero targetHero : hero.getParty().getMembers()) {
                 Player target = targetHero.getPlayer();
                 if (target.equals(player)) {

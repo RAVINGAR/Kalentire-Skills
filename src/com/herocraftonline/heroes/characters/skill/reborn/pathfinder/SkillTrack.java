@@ -31,7 +31,7 @@ public class SkillTrack extends ActiveSkill {
     @Override
     public String getDescription(Hero hero) {
         int randomness = SkillConfigManager.getUseSetting(hero, this, "randomness", 50, true);
-        int duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, 30000, false);
+        int duration = SkillConfigManager.getScaledUseSettingInt(hero, this, SkillSetting.DURATION, false);
 
         String formattedDuration = Util.decFormat.format(duration / 1000.0);
 

@@ -36,7 +36,7 @@ public class SkillSeizeFlame extends TargettedSkill {
 
     @Override
     public String getDescription(Hero hero) {
-        int duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, 2000, false);
+        int duration = SkillConfigManager.getScaledUseSettingInt(hero, this, SkillSetting.DURATION, false);
 
         return getDescription()
                 .replace("$1", Util.decFormat.format(duration / 1000.0));
@@ -84,7 +84,7 @@ public class SkillSeizeFlame extends TargettedSkill {
             }
         }
 
-        int duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, 2000, false);
+        int duration = SkillConfigManager.getScaledUseSettingInt(hero, this, SkillSetting.DURATION, false);
         targetCT.addEffect(new SeizedFlameEffect(this, player, duration));
 
         player.getWorld().playSound(player.getLocation(), Sound.BLOCK_FIRE_AMBIENT, 0.4F, 1.0F);

@@ -28,12 +28,12 @@ public class SkillTimeLink extends TargettedSkill {
                 "The link has a maximum range of $2");
         setUsage("/skill timelink");
         setIdentifiers("skill timelink");
-        setTypes(SkillType.MULTI_GRESSIVE, SkillType.NO_SELF_TARGETTING);
+        setTypes(SkillType.ABILITY_PROPERTY_TEMPORAL, SkillType.MULTI_GRESSIVE, SkillType.NO_SELF_TARGETTING, SkillType.SILENCEABLE);
     }
 
     @Override
     public String getDescription(Hero hero) {
-        long duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, 12000, false);
+        long duration = SkillConfigManager.getScaledUseSettingInt(hero, this, SkillSetting.DURATION, false);
         double breakDistance = SkillConfigManager.getUseSetting(hero, this, "break-distance", 16.0, false);
 
         return getDescription()
@@ -75,7 +75,7 @@ public class SkillTimeLink extends TargettedSkill {
 
         broadcastExecuteText(hero, target);
 
-        long duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, 10000, false);
+        long duration = SkillConfigManager.getScaledUseSettingInt(hero, this, SkillSetting.DURATION, false);
         double breakDistance = SkillConfigManager.getUseSetting(hero, this, "break-distance", 16.0, false);
 
         CharacterTemplate targetCT = plugin.getCharacterManager().getCharacter(target);

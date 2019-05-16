@@ -53,11 +53,9 @@ public class SkillDragonSmash extends ActiveSkill implements Listener {
 
     @Override
     public String getDescription(Hero hero) {
-        double radius = SkillConfigManager.getUseSetting(hero, this, SkillSetting.RADIUS, 5.0, false);
+        double radius = SkillConfigManager.getScaledUseSettingDouble(hero, this, SkillSetting.RADIUS, false);
 
-        double damage = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE, 100.0, false);
-        double strDamage = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE_INCREASE_PER_STRENGTH, 0.0, false);
-        damage += strDamage * hero.getAttributeValue(AttributeType.STRENGTH);
+        double damage = SkillConfigManager.getScaledUseSettingDouble(hero, this, SkillSetting.DAMAGE, false);
 
         final double damagePerBlockHeight = SkillConfigManager.getUseSetting(hero, this, "damage-per-block-height", 10.0, false);
         final double maxDamageGain = SkillConfigManager.getUseSetting(hero, this, "maximum-total-damage-increase-for-block", 80.0, false);
@@ -165,12 +163,12 @@ public class SkillDragonSmash extends ActiveSkill implements Listener {
         final Location loc = player.getLocation().getBlock().getLocation().clone(); // We want the block loc, not the actual player loc.
         final SkillDragonSmash skill = this;
 
-        final double baseDamage = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE, 80.0, false);
+        final double baseDamage = SkillConfigManager.getScaledUseSettingDouble(hero, this, SkillSetting.DAMAGE, false);
         final double damagePerBlockHeight = SkillConfigManager.getUseSetting(hero, this, "damage-per-block-height", 10.0, false);
         final double maxDamageGain = SkillConfigManager.getUseSetting(hero, this, "maximum-total-damage-increase-for-block", 80.0, false);
         final double hPower = SkillConfigManager.getUseSetting(hero, this, "target-horizontal-knockback", 0.5, false);
         final double vPower = SkillConfigManager.getUseSetting(hero, this, "target-vertical-knockback", 0.5, false);
-        final double radius = SkillConfigManager.getUseSetting(hero, this, SkillSetting.RADIUS, 5.0, false);
+        final double radius = SkillConfigManager.getScaledUseSettingDouble(hero, this, SkillSetting.RADIUS, false);
 
         Location playerLoc = player.getLocation();
         int yDistance = (int) (topYValue - loc.getY());

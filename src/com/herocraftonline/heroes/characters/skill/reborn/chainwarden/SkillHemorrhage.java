@@ -25,7 +25,8 @@ public class SkillHemorrhage extends TargettedSkill {
 
     public SkillHemorrhage(Heroes plugin) {
         super(plugin, "Hemorrhage");
-        this.setDescription("After aiming at a hooked target, you violently wrench your hook out of them, dealing $1 physical damage and interrupting their casting.");
+        this.setDescription("You violently wrench a single hook out of a target, dealing $1 physical damage and interrupting their casting. " +
+                "You must first hook a target in order to use this ability on them.");
         this.setUsage("/skill hemorrhage");
         this.setIdentifiers("skill hemorrhage");
         this.setArgumentRange(0, 1);
@@ -34,9 +35,7 @@ public class SkillHemorrhage extends TargettedSkill {
 
     @Override
     public String getDescription(Hero hero) {
-        double damage = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE, 60.0, false);
-        double damageIncrease = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE_INCREASE_PER_STRENGTH, 0.0, false);
-        damage += damageIncrease * hero.getAttributeValue(AttributeType.STRENGTH);
+        double damage = SkillConfigManager.getScaledUseSettingDouble(hero, this, SkillSetting.DAMAGE, false);
 
         return getDescription()
                 .replace("$1", Util.decFormat.format(damage));
@@ -69,9 +68,7 @@ public class SkillHemorrhage extends TargettedSkill {
         if (shouldBroadcast)
             broadcastExecuteText(hero, target);
 
-        double damage = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE, 80, false);
-        double damageIncrease = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE_INCREASE_PER_STRENGTH, 0.0, false);
-        damage += damageIncrease * hero.getAttributeValue(AttributeType.STRENGTH);
+        double damage = SkillConfigManager.getScaledUseSettingDouble(hero, this, SkillSetting.DAMAGE, false);
 
 
         // do damage

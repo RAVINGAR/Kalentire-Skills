@@ -8,6 +8,7 @@ import com.herocraftonline.heroes.characters.effects.ExpirableEffect;
 import com.herocraftonline.heroes.characters.skill.*;
 import com.herocraftonline.heroes.chat.ChatComponents;
 import com.herocraftonline.heroes.util.GeometryUtil;
+import com.herocraftonline.heroes.util.Util;
 import de.slikey.effectlib.EffectManager;
 import de.slikey.effectlib.effect.LoveEffect;
 import de.slikey.effectlib.util.DynamicLocation;
@@ -26,22 +27,22 @@ public class SkillYggdrasilsTouch extends ActiveSkill {
     public SkillYggdrasilsTouch(Heroes plugin) {
         super(plugin, "YggdrasilsTouch");
         setDescription("You mark all nearby Allies with Yggdrasil's touch. After a short period Yggdrasil's touch explodes and heals you and all nearby allies");
+        setNotes("/bind ytouch", "/skill ytouch");
         setUsage("/skill yggdrasilstouch");
         setIdentifiers("skill yggdrasilstouch", "skill ytouch");
-        setNotes("/bind ytouch", "/skill ytouch");
         setArgumentRange(0, 0);
         setTypes(SkillType.HEALING, SkillType.AREA_OF_EFFECT, SkillType.SILENCEABLE);
     }
 
     @Override
     public String getDescription(Hero hero) {
-        double healing = SkillConfigManager.getUseSetting(hero, this, SkillSetting.HEALING, 60, false);
-        double radius = SkillConfigManager.getUseSetting(hero, this, SkillSetting.RADIUS, 5.0, false);
-        int duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, 5000, false);
+        double healing = SkillConfigManager.getScaledUseSettingDouble(hero, this, SkillSetting.HEALING, false);
+        double radius = SkillConfigManager.getScaledUseSettingDouble(hero, this, SkillSetting.RADIUS, false);
+        int duration = SkillConfigManager.getScaledUseSettingInt(hero, this, SkillSetting.DURATION, false);
 
         return getDescription()
-                .replace("$1", healing + "")
-                .replace("$2", radius + "");
+                .replace("$1", Util.decFormat.format(healing))
+                .replace("$2", Util.decFormat.format(radius));
     }
 
     @Override
@@ -59,10 +60,10 @@ public class SkillYggdrasilsTouch extends ActiveSkill {
 
         broadcastExecuteText(hero);
 
-        final double radius = SkillConfigManager.getUseSetting(hero, this, SkillSetting.RADIUS, 5, false);
+        final double radius = SkillConfigManager.getScaledUseSettingDouble(hero, this, SkillSetting.RADIUS, false);
         final double radiusSquared = radius * radius;
-        double healing = SkillConfigManager.getUseSetting(hero, this, SkillSetting.HEALING, 60.0, false);
-        int duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, 5000, false);
+        double healing = SkillConfigManager.getScaledUseSettingDouble(hero, this, SkillSetting.HEALING, false);
+        int duration = SkillConfigManager.getScaledUseSettingInt(hero, this, SkillSetting.DURATION, false);
 
         final Location heroLoc = player.getLocation();
         if (hero.getParty() == null) {

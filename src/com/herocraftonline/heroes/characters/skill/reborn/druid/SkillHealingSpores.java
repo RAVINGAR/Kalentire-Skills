@@ -7,6 +7,8 @@ import com.herocraftonline.heroes.characters.Hero;
 import com.herocraftonline.heroes.characters.effects.EffectType;
 import com.herocraftonline.heroes.characters.effects.ExpirableEffect;
 import com.herocraftonline.heroes.characters.skill.*;
+import com.herocraftonline.heroes.characters.skill.tools.BasicHealMissile;
+import com.herocraftonline.heroes.characters.skill.tools.BasicMissile;
 import com.herocraftonline.heroes.characters.skill.tools.Missile;
 import com.herocraftonline.heroes.util.GeometryUtil;
 import com.herocraftonline.heroes.util.Pair;
@@ -15,10 +17,10 @@ import de.slikey.effectlib.EffectManager;
 import de.slikey.effectlib.effect.SphereEffect;
 import de.slikey.effectlib.util.DynamicLocation;
 import org.bukkit.Bukkit;
+import org.bukkit.Color;
 import org.bukkit.Location;
 import org.bukkit.Particle;
 import org.bukkit.configuration.ConfigurationSection;
-import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -30,11 +32,11 @@ import org.bukkit.util.Vector;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Queue;
 import java.util.logging.Level;
 
 public class SkillHealingSpores extends ActiveSkill {
     private static String sporeEffectName = "FloatingHealingSpores";
+    private static Color FEL_GREEN = Color.fromRGB(19, 255, 41);
 
     public SkillHealingSpores(Heroes plugin) {
         super(plugin, "HealingSpores");
@@ -52,8 +54,8 @@ public class SkillHealingSpores extends ActiveSkill {
     @Override
     public String getDescription(Hero hero) {
         int numProjectiles = SkillConfigManager.getUseSetting(hero, this, "num-projectiles", 4, false);
-        long duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, 15000, false);
-        double heal = SkillConfigManager.getUseSetting(hero, this, "projectile-heal", 25.0, false);
+        long duration = SkillConfigManager.getScaledUseSettingInt(hero, this, SkillSetting.DURATION, false);
+        double heal = SkillConfigManager.getUseSetting(hero, this, SkillSetting.HEALING, 25.0, false);
 
         return getDescription()
                 .replace("$1", numProjectiles + "")
@@ -66,10 +68,10 @@ public class SkillHealingSpores extends ActiveSkill {
     public ConfigurationSection getDefaultConfig() {
         ConfigurationSection config = super.getDefaultConfig();
         config.set(SkillSetting.DURATION.node(), 15000);
-        config.set("projectile-heal", 25.0);
-        config.set("projectile-velocity", 65.0);
-        config.set("projectile-max-ticks-lived", 30);
-        config.set("projectile-radius", 0.25);
+        config.set(SkillSetting.HEALING.node(), 25.0);
+        config.set(BasicMissile.PROJECTILE_VELOCITY_NODE, 65.0);
+        config.set(BasicMissile.PROJECTILE_DURATION_TICKS_NODE, 30);
+        config.set(BasicMissile.PROJECTILE_SIZE_NODE, 0.25);
         config.set("projectile-launch-delay-ticks", 15);
         config.set("num-projectiles", 5);
         return config;
@@ -80,7 +82,7 @@ public class SkillHealingSpores extends ActiveSkill {
         Player player = hero.getPlayer();
 
         broadcastExecuteText(hero);
-        int duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, 15000, false);
+        int duration = SkillConfigManager.getScaledUseSettingInt(hero, this, SkillSetting.DURATION, false);
 
         hero.addEffect(new HealingSporesEffect(this, player, duration));
         return SkillResult.NORMAL;
@@ -102,13 +104,9 @@ public class SkillHealingSpores extends ActiveSkill {
             Hero hero = plugin.getCharacterManager().getHero(player);
             if (!hero.hasEffect(sporeEffectName))
                 return;
-//
-            if (hero.hasEffect(sporeEffectName)) {
-                HealingSporesEffect effect = (HealingSporesEffect) hero.getEffect(sporeEffectName);
-                effect.launchSpore(hero);
 
-            }
-
+            HealingSporesEffect effect = (HealingSporesEffect) hero.getEffect(sporeEffectName);
+            effect.launchSpore(hero);
         }
     }
 
@@ -117,7 +115,7 @@ public class SkillHealingSpores extends ActiveSkill {
         private int maxProjectiles;
         private double projectileRadius;
         private List<Pair<EffectManager, SphereEffect>> missileVisuals = new ArrayList<Pair<EffectManager, SphereEffect>>();
-        
+
         HealingSporesEffect(Skill skill, Player applier, long duration) {
             super(skill, sporeEffectName, applier, duration);
 
@@ -129,8 +127,8 @@ public class SkillHealingSpores extends ActiveSkill {
             super.applyToHero(hero);
 
             this.maxProjectiles = SkillConfigManager.getUseSetting(hero, skill, "num-projectiles", 4, false);
-            this.projectileRadius = SkillConfigManager.getUseSetting(hero, skill, "projectile-radius", 0.15, false);
-            int projDurationTicks = SkillConfigManager.getUseSetting(hero, skill, "projectile-max-ticks-lived", 30, false);
+            this.projectileRadius = SkillConfigManager.getUseSetting(hero, skill, BasicMissile.PROJECTILE_SIZE_NODE, 0.15, false);
+            int projDurationTicks = SkillConfigManager.getUseSetting(hero, skill, BasicMissile.PROJECTILE_DURATION_TICKS_NODE, 30, false);
 
             List<Location> missileLocations = GeometryUtil.circle(applier.getLocation().clone().add(new Vector(0, 0.8, 0)), maxProjectiles, 1.5);
             if (missileLocations.size() < maxProjectiles) {
@@ -147,8 +145,9 @@ public class SkillHealingSpores extends ActiveSkill {
                 missileVisual.setDynamicOrigin(dynamicLoc);
                 missileVisual.iterations = (int) (getDuration() / 50) + projDurationTicks;
                 missileVisual.radius = this.projectileRadius;
-                missileVisual.particle = Particle.VILLAGER_HAPPY;
-                missileVisual.particles = 15;
+                missileVisual.particle = Particle.REDSTONE;
+                missileVisual.color = FEL_GREEN;
+                missileVisual.particles = 10;
                 missileVisual.radiusIncrease = 0;
                 effectManager.start(missileVisual);
 
@@ -169,20 +168,21 @@ public class SkillHealingSpores extends ActiveSkill {
         public void launchSpore(Hero hero) {
             final Player player = hero.getPlayer();
 
+            if (missileVisuals.isEmpty())
+                return;
+
             Pair<EffectManager, SphereEffect> pair = missileVisuals.get(firedProjectiles);
             SphereEffect missileVisual = pair.getRight();
             Location eyeLocation = hero.getPlayer().getEyeLocation();
             Vector eyeOffset = eyeLocation.getDirection().add(new Vector(0, -1, 0));
             missileVisual.setLocation(eyeLocation.clone().add(eyeOffset));
-            HealingSpore spore = new HealingSpore(hero, skill, projectileRadius, pair.getLeft(), missileVisual);
+            HealingSpore spore = new HealingSpore(plugin, hero, skill, pair.getLeft(), missileVisual);
             spore.fireMissile();
 
             firedProjectiles++;
-            if (firedProjectiles == maxProjectiles) {
-               removeFromHero(hero);
+            if (firedProjectiles >= maxProjectiles) {
+                removeFromHero(hero);
             }
-
-
         }
     }
 
@@ -190,68 +190,29 @@ public class SkillHealingSpores extends ActiveSkill {
         void onMissileDeath(Missile missile);
     }
 
-    private class HealingSpore extends Missile {
+    private class HealingSpore extends BasicHealMissile {
+        HealingSpore(Heroes plugin, Hero hero, Skill skill, EffectManager effectManager, SphereEffect visualEffect) {
+            super(plugin, skill, hero);
 
-        private final EffectManager effectManager;
-        private final SphereEffect visualEffect;
-        private final Hero hero;
-        private final Player player;
-        private final Skill skill;
-
-        private final int durationTicks;
-        private final double projectileHeal;
-
-        private double defaultSpeed;
-
-        HealingSpore(Hero hero, Skill skill, double radius, EffectManager effectManager, SphereEffect visualEffect) {
-            this.hero = hero;
-            this.skill = skill;
-            this.player = hero.getPlayer();
-            this.effectManager = effectManager;
-            this.visualEffect = visualEffect;
-
-            double projectileSpeed = SkillConfigManager.getUseSetting(hero, skill, "projectile-velocity", 20.0, false);
-            this.projectileHeal = SkillConfigManager.getUseSetting(hero, skill, "projectile-heal", 25.0, false);
-            this.durationTicks = SkillConfigManager.getUseSetting(hero, skill, "projectile-max-duration", 2000, false) / 50;
-
-            setNoGravity();
-            setEntityDetectRadius(radius);
-            setRemainingLife(this.durationTicks);
-
-            Vector playerDirection = player.getEyeLocation().getDirection().normalize();
-            Location missileLoc = visualEffect.getLocation().clone().setDirection(playerDirection);
-            visualEffect.setLocation(missileLoc);
-
-            this.setLocationAndSpeed(missileLoc, projectileSpeed);
+            replaceEffects(effectManager, visualEffect);
+            Location newMissileLoc = visualEffect.getLocation().clone().setDirection(player.getEyeLocation().getDirection());
+            visualEffect.setLocation(newMissileLoc);
         }
 
-        private void updateVisualLocation() {
+        @Override
+        protected void onStart() {
+            // Override the onStart because we don't want it to reset our already running effect manager.
             this.visualEffect.setLocation(getLocation());
         }
 
-        protected void onStart() {
-            this.defaultSpeed = getVelocity().length();
-            updateVisualLocation();
-        }
-
+        @Override
         protected void onTick() {
-            updateVisualLocation();
+            this.visualEffect.setLocation(getLocation());
         }
 
-        protected void onFinalTick() {
-            effectManager.dispose();
-        }
-
-        protected boolean onCollideWithEntity(Entity entity) {
-            return entity instanceof LivingEntity && !entity.equals(player) && hero.isAlliedTo((LivingEntity) entity);
-        }
-
-        protected void onEntityHit(Entity entity, Vector hitOrigin, Vector hitForce) {
-            LivingEntity target = (LivingEntity) entity;
-            Hero targetHero = plugin.getCharacterManager().getHero((Player) target);
-
+        protected void onValidTargetFound(LivingEntity target, Vector origin, Vector force) {
             CharacterTemplate targetCT = plugin.getCharacterManager().getCharacter(target);
-            targetHero.tryHeal(hero, skill, projectileHeal);
+            targetCT.tryHeal(hero, skill, healing);
         }
     }
 }

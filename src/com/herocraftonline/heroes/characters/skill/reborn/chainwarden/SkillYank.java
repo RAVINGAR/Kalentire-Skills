@@ -29,8 +29,9 @@ public class SkillYank extends TargettedSkill {
 
     public SkillYank(Heroes plugin) {
         super(plugin, "Yank");
-        setDescription("After aiming at a hooked target, you yank on their chains, removing the hook and pulling them towards you, dealing $1 damage. " +
-                "Chained allies are more willing to allow this to happen, and so they do not take damage and are pulled harder.");
+        setDescription("You yank on the chains of a hooked target, removing the hook and pulling them towards you, dealing $1 damage. " +
+                "Chained allies are more willing to allow this to happen, and so they do not take damage and are pulled harder. " +
+                "You must first hook a target in order to use this ability on them.");
         setUsage("/skill yank");
         setIdentifiers("skill yank");
         setArgumentRange(0, 0);
@@ -38,9 +39,7 @@ public class SkillYank extends TargettedSkill {
     }
 
     public String getDescription(Hero hero) {
-        double damage = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE, 50, false);
-        double damageIncrease = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE_INCREASE_PER_STRENGTH, 0.0, false);
-        damage += damageIncrease * hero.getAttributeValue(AttributeType.STRENGTH);
+        double damage = SkillConfigManager.getScaledUseSettingDouble(hero, this, SkillSetting.DAMAGE, false);
 
         return getDescription()
                 .replace("$1", Util.decFormat.format(damage));
@@ -80,27 +79,10 @@ public class SkillYank extends TargettedSkill {
 
         boolean shouldWeaken = shouldWeaken(target.getLocation());
 
-//        Location playerLoc = player.getLocation();
-//        Location targetLoc = target.getLocation();
-//
-//        double vPower = SkillConfigManager.getUseSetting(hero, this, "vertical-power", 0.4, false);
-//        double hPower = SkillConfigManager.getUseSetting(hero, this, "horizontal-power", 0.5, false);
-//        double hPowerIncrease = SkillConfigManager.getUseSetting(hero, this, "horizontal-power-increase-per-strength", 0.0125, false);
-//        hPower += hPowerIncrease * hero.getAttributeValue(AttributeType.STRENGTH);
-//
-//        Vector direction = playerLoc.toVector().subtract(targetLoc.toVector()).normalize();
-//        if (shouldWeaken) {
-//            direction.multiply(0.75);
-//        }
-
         if (hero.isAlliedTo(target)) {
-//            pushTargetUpwards(hero, target, vPower, true);
             double allyMultipler = SkillConfigManager.getUseSetting(hero, this, "ally-multiplier", 1.5, false);
-//            pullTarget(hero, target, vPower, hPower * allyMultipler, direction);
             pull(hero, player, target, allyMultipler);
         } else {
-//            pushTargetUpwards(hero, target, vPower, false);
-//            pullTarget(hero, target, vPower, hPower, direction);
             pull(hero, player, target, 1.0);
             damageEnemy(hero, target, player);
         }
@@ -115,9 +97,7 @@ public class SkillYank extends TargettedSkill {
     }
 
     private void damageEnemy(Hero hero, LivingEntity target, Player player) {
-        double damage = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE, 50.0, false);
-        double damageIncrease = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE_INCREASE_PER_STRENGTH, 0.0, false);
-        damage += damageIncrease * hero.getAttributeValue(AttributeType.STRENGTH);
+        double damage = SkillConfigManager.getScaledUseSettingDouble(hero, this, SkillSetting.DAMAGE, false);
 
         if (damage > 0) {
             addSpellTarget(target, hero);

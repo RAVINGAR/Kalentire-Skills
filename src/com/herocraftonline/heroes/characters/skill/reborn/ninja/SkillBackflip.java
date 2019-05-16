@@ -86,11 +86,8 @@ public class SkillBackflip extends ActiveSkill {
                 break;
         }
 
-        int dexterity = hero.getAttributeValue(AttributeType.DEXTERITY);
 
         double vPower = SkillConfigManager.getUseSetting(hero, this, "vertical-power", 0.5, false);
-        double vPowerIncrease = SkillConfigManager.getUseSetting(hero, this, "vertical-power-increase-per-dexterity", 0.0, false);
-        vPower += dexterity * vPowerIncrease;
 
         if (vPower > 2.0)
             vPower = 2.0;
@@ -107,8 +104,6 @@ public class SkillBackflip extends ActiveSkill {
 
         velocity.add(directionVector);
         double hPower = SkillConfigManager.getUseSetting(hero, this, "horizontal-power", 0.5, false);
-        double hPowerIncrease = SkillConfigManager.getUseSetting(hero, this, "horizontal-power-increase-per-dexterity", 0.0, false);
-        hPower += dexterity * hPowerIncrease;
 
         if (weakenVelocity)
             hPower *= 0.75;
@@ -132,7 +127,7 @@ public class SkillBackflip extends ActiveSkill {
                 SkillShurikens shurikenSkill = (SkillShurikens) plugin.getSkillManager().getSkill("Shurikens");
 
                 if (shurikenSkill != null)
-                    shurikenSkill.shurikenToss(player);
+                    shurikenSkill.tryShurikenToss(hero, false);
             }
         }
 

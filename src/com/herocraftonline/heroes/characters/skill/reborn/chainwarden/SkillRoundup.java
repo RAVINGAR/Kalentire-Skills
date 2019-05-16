@@ -33,7 +33,7 @@ public class SkillRoundup extends ActiveSkill {
     @Override
     public ConfigurationSection getDefaultConfig() {
         ConfigurationSection config = super.getDefaultConfig();
-        config.set(SkillSetting.RADIUS.node(), 30);
+        config.set(SkillSetting.RADIUS.node(), 30.0);
         return config;
     }
 
@@ -50,7 +50,7 @@ public class SkillRoundup extends ActiveSkill {
         }
 
         int hitCount = 0;
-        double radius = SkillConfigManager.getUseSetting(hero, this, SkillSetting.RADIUS, 30.0, false);
+        double radius = SkillConfigManager.getScaledUseSettingDouble(hero, this, SkillSetting.RADIUS, false);
         for (Entity entity : player.getNearbyEntities(radius, radius / 2.0, radius)) {
             if (!(entity instanceof LivingEntity))
                 continue;

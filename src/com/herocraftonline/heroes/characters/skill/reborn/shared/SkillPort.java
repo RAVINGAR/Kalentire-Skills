@@ -14,6 +14,7 @@ import com.herocraftonline.heroes.characters.skill.ActiveSkill;
 import com.herocraftonline.heroes.characters.skill.SkillConfigManager;
 import com.herocraftonline.heroes.characters.skill.SkillSetting;
 import com.herocraftonline.heroes.characters.skill.SkillType;
+import com.herocraftonline.heroes.util.Util;
 import org.apache.commons.lang.StringUtils;
 import org.bukkit.*;
 import org.bukkit.configuration.ConfigurationSection;
@@ -48,9 +49,10 @@ public class SkillPort extends ActiveSkill implements Listener, PluginMessageLis
 
     @Override
     public String getDescription(Hero hero) {
-        int radius = SkillConfigManager.getUseSetting(hero, this, SkillSetting.RADIUS, 10, false);
+        double radius = SkillConfigManager.getScaledUseSettingDouble(hero, this, SkillSetting.RADIUS, false);
 
-        return getDescription().replace("$1", radius + "");
+        return getDescription()
+                .replace("$1", Util.decFormat.format(radius));
     }
 
     @Override
@@ -219,8 +221,8 @@ public class SkillPort extends ActiveSkill implements Listener, PluginMessageLis
     }
 
     private Collection<Hero> getPortMembers(Hero hero, Location portLocation) {
-        int radius = SkillConfigManager.getUseSetting(hero, this, SkillSetting.RADIUS, 10, false);
-        int radiusSquared = radius * radius;
+        double radius = SkillConfigManager.getScaledUseSettingDouble(hero, this, SkillSetting.RADIUS, false);
+        double radiusSquared = radius * radius;
         Location playerLocation = hero.getPlayer().getLocation();
         List<Hero> members = new ArrayList<>();
 

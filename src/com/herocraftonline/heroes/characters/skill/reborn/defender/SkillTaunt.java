@@ -47,8 +47,8 @@ public class SkillTaunt extends TargettedSkill {
     @Override
     public String getDescription(Hero hero) {
 
-        double maxDistance = SkillConfigManager.getUseSetting(hero, this, SkillSetting.MAX_DISTANCE, 5.0, false);
-        int duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, 180000, false);
+        double maxDistance = SkillConfigManager.getScaledUseSettingDouble(hero, this, SkillSetting.MAX_DISTANCE, false);
+        int duration = SkillConfigManager.getScaledUseSettingInt(hero, this, SkillSetting.DURATION, false);
         double damageReduction = SkillConfigManager.getUseSetting(hero, this, "damage-reduction", 0.85, false);
 
         String formattedDuration = Util.decFormat.format(duration / 1000.0);
@@ -98,7 +98,7 @@ public class SkillTaunt extends TargettedSkill {
             return SkillResult.INVALID_TARGET_NO_MSG;
         }
 
-        int duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, 180000, false);
+        int duration = SkillConfigManager.getScaledUseSettingInt(hero, this, SkillSetting.DURATION, false);
         int period = SkillConfigManager.getUseSetting(hero, this, "taunt-message-speed", 1000, false);
         double damageModifier = SkillConfigManager.getUseSetting(hero, this, "damage-reduction", 0.85, false);
 

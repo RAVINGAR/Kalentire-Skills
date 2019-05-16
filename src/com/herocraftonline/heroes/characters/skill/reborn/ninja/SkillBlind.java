@@ -33,9 +33,7 @@ public class SkillBlind extends TargettedSkill {
     }
 
     public String getDescription(Hero hero) {
-        int duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION.node(), 4000, false);
-        int durationIncrease = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION_INCREASE_PER_CHARISMA, 0, false);
-        duration += hero.getAttributeValue(AttributeType.CHARISMA) * durationIncrease;
+        int duration = SkillConfigManager.getScaledUseSettingInt(hero, this, SkillSetting.DURATION, false);
 
         String formattedDuration = Util.decFormat.format(duration / 1000.0);
 
@@ -55,8 +53,8 @@ public class SkillBlind extends TargettedSkill {
     public void init() {
         super.init();
 
-        applyText = SkillConfigManager.getRaw(this, SkillSetting.APPLY_TEXT.node(), ChatComponents.GENERIC_SKILL + "%target% has been blinded!").replace("%target%", "$1");
-        expireText = SkillConfigManager.getRaw(this, SkillSetting.EXPIRE_TEXT.node(), ChatComponents.GENERIC_SKILL + "%target% can see again!").replace("%target%", "$1");
+        applyText = SkillConfigManager.getRaw(this, SkillSetting.APPLY_TEXT, ChatComponents.GENERIC_SKILL + "%target% has been blinded!").replace("%target%", "$1");
+        expireText = SkillConfigManager.getRaw(this, SkillSetting.EXPIRE_TEXT, ChatComponents.GENERIC_SKILL + "%target% can see again!").replace("%target%", "$1");
     }
 
     public SkillResult use(Hero hero, LivingEntity target, String[] args) {
@@ -67,9 +65,7 @@ public class SkillBlind extends TargettedSkill {
             return SkillResult.INVALID_TARGET_NO_MSG;
         }
 
-        int duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION.node(), 4000, false);
-        int durationIncrease = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION_INCREASE_PER_CHARISMA, 0, false);
-        duration += hero.getAttributeValue(AttributeType.CHARISMA) * durationIncrease;
+        int duration = SkillConfigManager.getScaledUseSettingInt(hero, this, SkillSetting.DURATION, false);
 
         BlindEffect effect = new BlindEffect(this, player, duration, applyText, expireText);
 

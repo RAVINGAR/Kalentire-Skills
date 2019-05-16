@@ -39,7 +39,7 @@ public class SkillRisingLance extends ActiveSkill {
 
     @Override
     public String getDescription(Hero hero) {
-        long damage = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE.node(), 50, false);
+        double damage = SkillConfigManager.getScaledUseSettingDouble(hero, this, SkillSetting.DAMAGE, false);
         return getDescription()
                 .replace("$1", Util.decFormat.format(damage));
     }
@@ -61,17 +61,14 @@ public class SkillRisingLance extends ActiveSkill {
 
         broadcastExecuteText(hero);
 
-        int dexterity = hero.getAttributeValue(AttributeType.DEXTERITY);
         double vPower = SkillConfigManager.getUseSetting(hero, this, "vertical-power", 0.5, false);
-        double dexIncrease = SkillConfigManager.getUseSetting(hero, this, "vertical-power-increase-per-dexterity", 0.0, false);
-        vPower += dexterity * dexIncrease;
 
         if (vPower > 4.0)
             vPower = 4.0;
 
         final Vector velocity = player.getVelocity().setY(vPower);
 
-        double maxDistance = SkillConfigManager.getUseSetting(hero, this, SkillSetting.MAX_DISTANCE, 25.0, false);
+        double maxDistance = SkillConfigManager.getScaledUseSettingDouble(hero, this, SkillSetting.MAX_DISTANCE, false);
         LivingEntity target = checkForTarget(hero, player, maxDistance);
         if (target == null) {
             for (Entity entity : player.getNearbyEntities(maxDistance, maxDistance, maxDistance)) {
@@ -89,7 +86,7 @@ public class SkillRisingLance extends ActiveSkill {
 
         launch(hero, player, velocity);
         if (target != null) {
-            double damage = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE, 35, false);
+            double damage = SkillConfigManager.getScaledUseSettingDouble(hero, this, SkillSetting.DAMAGE, false);
             addSpellTarget(target, hero);
             damageEntity(target, player, damage, EntityDamageEvent.DamageCause.ENTITY_ATTACK, false);
             launch(hero, target, velocity);

@@ -20,14 +20,14 @@ public class SkillQuantizedTime extends PassiveSkill{
     public SkillQuantizedTime(Heroes plugin) {
         super(plugin, "QuantizedTime");
         setDescription("You regain $1 health, $3 mana and $4 stamina every $2 seconds.");
-        setEffectTypes(EffectType.BENEFICIAL, EffectType.HEALING);
+        setEffectTypes(EffectType.TEMPORAL, EffectType.BENEFICIAL, EffectType.HEALING);
     }
 
     @Override
     public String getDescription(Hero hero) {
         // i have no idea why i can't put periodConfig here
         long period = SkillConfigManager.getUseSetting(hero, this, SkillSetting.PERIOD, 10000, false);
-        double healing = SkillConfigManager.getUseSetting(hero, this, SkillSetting.HEALING, healingConfig, false);
+        double healing = SkillConfigManager.getScaledUseSettingDouble(hero, this, SkillSetting.HEALING, false);
         int manaRestore = SkillConfigManager.getUseSetting(hero, this, "mana-restore", 10, false);
         int staminaRestore = SkillConfigManager.getUseSetting(hero, this, "stamina-restore", 1, false);
 

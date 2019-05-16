@@ -43,7 +43,7 @@ public class SkillManaShield extends ActiveSkill {
 
     @Override
     public String getDescription(Hero hero) {
-        int duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, 5000, false);
+        int duration = SkillConfigManager.getScaledUseSettingInt(hero, this, SkillSetting.DURATION, false);
         double mitigationPercent = SkillConfigManager.getUseSetting(hero, this, "damage-mitigation-percent", 0.35, false);
         double absorbCostRatio = SkillConfigManager.getUseSetting(hero, this, "absorb-cost-percent", 1.5, false);
 
@@ -78,7 +78,7 @@ public class SkillManaShield extends ActiveSkill {
 
         broadcastExecuteText(hero);
 
-        int duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, 20000, false);
+        int duration = SkillConfigManager.getScaledUseSettingInt(hero, this, SkillSetting.DURATION, false);
         hero.addEffect(new ManaShieldEffect(this, hero.getPlayer(), duration));
 
         //player.getWorld().playSound(player.getLocation(), Sound.ENTITY_ITEM_BREAK , 0.8F, 1.0F);

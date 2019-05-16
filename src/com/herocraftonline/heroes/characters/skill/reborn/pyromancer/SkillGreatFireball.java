@@ -7,6 +7,7 @@ import com.herocraftonline.heroes.characters.CharacterTemplate;
 import com.herocraftonline.heroes.characters.Hero;
 import com.herocraftonline.heroes.characters.effects.common.BurningEffect;
 import com.herocraftonline.heroes.characters.skill.*;
+import com.herocraftonline.heroes.characters.skill.tools.BasicDamageMissile;
 import com.herocraftonline.heroes.characters.skill.tools.BasicMissile;
 import com.herocraftonline.heroes.util.GeometryUtil;
 import com.herocraftonline.heroes.util.Util;
@@ -47,9 +48,7 @@ public class SkillGreatFireball extends ActiveSkill {
 
     @Override
     public String getDescription(Hero hero) {
-        double damage = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE, 80.0, false);
-        double damageIncrease = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE_INCREASE_PER_INTELLECT, 0.0, false);
-        damage += damageIncrease * hero.getAttributeValue(AttributeType.INTELLECT);
+        double damage = SkillConfigManager.getScaledUseSettingDouble(hero, this, SkillSetting.DAMAGE, false);
 
         int burnDuration = SkillConfigManager.getUseSetting(hero, this, "burn-duration", 2000, false);
         double burnMultipliaer = SkillConfigManager.getUseSetting(hero, this, "burn-damage-multiplier", 2.0, false);
@@ -75,10 +74,10 @@ public class SkillGreatFireball extends ActiveSkill {
         config.set("burn-duration", 3000);
         config.set("burn-damage-multiplier", 2.0);
         config.set("fire-tick-ground-radius", 2.5);
-        config.set("projectile-size", 0.65);
-        config.set("projectile-velocity", 35.0);
-        config.set("projectile-gravity", 22.05675);
-        config.set("projectile-max-ticks-lived", 30);
+        config.set(BasicMissile.PROJECTILE_SIZE_NODE, 0.65);
+        config.set(BasicMissile.PROJECTILE_VELOCITY_NODE, 35.0);
+        config.set(BasicMissile.PROJECTILE_GRAVITY_NODE, 22.05675);
+        config.set(BasicMissile.PROJECTILE_DURATION_TICKS_NODE, 30);
         return config;
     }
 
@@ -88,37 +87,28 @@ public class SkillGreatFireball extends ActiveSkill {
 
         broadcastExecuteText(hero);
 
-        double projSize = SkillConfigManager.getUseSetting(hero, this, "projectile-size", 0.5, false);
-        double projVelocity = SkillConfigManager.getUseSetting(hero, this, "projectile-velocity", 20, false);
-        GreatFireballMissile missile = new GreatFireballMissile(plugin, this, hero, projSize, projVelocity);
+        GreatFireballMissile missile = new GreatFireballMissile(plugin, this, hero);
         missile.fireMissile();
 
         return SkillResult.NORMAL;
     }
 
-    class GreatFireballMissile extends BasicMissile {
+    class GreatFireballMissile extends BasicDamageMissile {
         private final int burnDuration;
         private final double burnMultipliaer;
         private double explosionDamage;
         private double explosionRadius;
         private final double fireTickGroundRadius;
 
-        GreatFireballMissile(Plugin plugin, Skill skill, Hero hero, double projectileSize, double projVelocity) {
-            super(plugin, skill, hero, projectileSize, projVelocity);
+        GreatFireballMissile(Heroes plugin, Skill skill, Hero hero) {
+            super(plugin, skill, hero);
 
-            setRemainingLife(SkillConfigManager.getUseSetting(hero, skill, "projectile-max-ticks-lived", 20, false));
-            setGravity(SkillConfigManager.getUseSetting(hero, skill, "projectile-gravity", 5.0, false));
-
-            double damage = SkillConfigManager.getUseSetting(hero, skill, SkillSetting.DAMAGE, 90.0, false);
-            double damageIncrease = SkillConfigManager.getUseSetting(hero, skill, SkillSetting.DAMAGE_INCREASE_PER_INTELLECT, 0.0, false);
-            damage += damageIncrease * hero.getAttributeValue(AttributeType.INTELLECT);
-            this.damage = damage;
             this.burnDuration = SkillConfigManager.getUseSetting(hero, skill, "burn-duration", 3000, false);
             this.burnMultipliaer = SkillConfigManager.getUseSetting(hero, skill, "burn-damage-multiplier", 2.0, false);
             this.explosionDamage = SkillConfigManager.getUseSetting(hero, skill, "explosion-damage", 25.0, false);
             this.explosionRadius = SkillConfigManager.getUseSetting(hero, skill, "explosion-radius", 4.0, false);
             this.fireTickGroundRadius = SkillConfigManager.getUseSetting(hero, skill, "fire-tick-ground-radius", 2.5, false);
-            this.visualEffect = new GreatFireballVisualEffect(this.effectManager, projectileSize, 0);
+            this.visualEffect = new GreatFireballVisualEffect(this.effectManager, getEntityDetectRadius(), 0);
         }
 
         @Override
@@ -154,7 +144,7 @@ public class SkillGreatFireball extends ActiveSkill {
                 return;
 
             addSpellTarget(target, hero);
-            damageEntity(target, player, this.damage, EntityDamageEvent.DamageCause.MAGIC);
+            damageEntity(target, player, this.damage, EntityDamageEvent.DamageCause.MAGIC, knockBackOnHit);
 
             CharacterTemplate targetCT = plugin.getCharacterManager().getCharacter(target);
             targetCT.addEffect(new BurningEffect(this.skill, player, burnDuration, burnMultipliaer));

@@ -85,10 +85,10 @@ public class SkillAlchemy extends PassiveSkill {
                 if (!chunk.isLoaded())
                     chunk.load();
 
-                if (!block.breakNaturally())
-                    Heroes.log(Level.INFO, "FAILED TO BREAK HOPPER");
-                else
-                    Heroes.log(Level.INFO, "Succeeded at breaking hopper");
+//                if (!block.breakNaturally())
+//                    Heroes.log(Level.INFO, "FAILED TO BREAK HOPPER");
+//                else
+//                    Heroes.log(Level.INFO, "Succeeded at breaking hopper");
 
                 event.setCancelled(true);
             } else if (event.getDestination().getHolder() instanceof HopperMinecart) {

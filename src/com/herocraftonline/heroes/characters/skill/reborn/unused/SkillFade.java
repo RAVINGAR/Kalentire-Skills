@@ -76,7 +76,7 @@ public class SkillFade extends ActiveSkill {
             return SkillResult.FAIL;
         }
 
-        long duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, 30000, false);
+        long duration = SkillConfigManager.getScaledUseSettingInt(hero, this, SkillSetting.DURATION, false);
 
         player.getWorld().playEffect(loc, org.bukkit.Effect.EXTINGUISH, 0, 10);
         hero.addEffect(new InvisibleEffect(this, player, duration, applyText, expireText));
