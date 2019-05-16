@@ -42,7 +42,7 @@ public class SkillIntervene extends TargettedSkill {
 
     @Override
     public String getDescription(Hero hero) {
-        int duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, 8000, false);
+        int duration = SkillConfigManager.getScaledUseSettingInt(hero, this, SkillSetting.DURATION, false);
         double damageSplitPercent = SkillConfigManager.getUseSetting(hero, this, "damage-split-percent", 0.50, false);
 
         int distanceRequired = SkillConfigManager.getUseSetting(hero, this, "distance-required-for-intervene", 5, false);
@@ -90,7 +90,7 @@ public class SkillIntervene extends TargettedSkill {
 
         broadcastExecuteText(hero, target);
 
-        int duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, 8000, false);
+        int duration = SkillConfigManager.getScaledUseSettingInt(hero, this, SkillSetting.DURATION, false);
         double damageSplitPercent = SkillConfigManager.getUseSetting(hero, this, "damage-split-percent", 0.50, false);
         int distanceRequired = SkillConfigManager.getUseSetting(hero, this, "distance-required-for-intervene", 5, false);
 
