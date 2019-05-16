@@ -66,7 +66,7 @@ public class SkillConstrict extends TargettedSkill {
 
     @Override
     public String getDescription(Hero hero) {
-        int duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, 15000, false);;
+        int duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, 15000, false);
         return getDescription().replace("$1", duration / 1000 + "");
     }
 }
