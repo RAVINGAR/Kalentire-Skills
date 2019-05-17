@@ -94,8 +94,8 @@ public class SkillBackstab extends ActiveSkill implements Passive {
 
         List<String> weapons = SkillConfigManager.getUseSetting(hero, this, "weapons", Util.swords);
 
-        double backstabDamageModifier = SkillConfigManager.getScaledUseSettingDouble(hero, this, "backstab-bonus", false);
-        double ambushDamageModifier = SkillConfigManager.getScaledUseSettingDouble(hero, this, "ambush-bonus", false);
+        double backstabDamageModifier = 1 +SkillConfigManager.getScaledUseSettingDouble(hero, this, "backstab-bonus", false);
+        double ambushDamageModifier = 1 + SkillConfigManager.getScaledUseSettingDouble(hero, this, "ambush-bonus", false);
 
         double backstabDamage = 0;
         double ambushDamage = 0;
