@@ -1,10 +1,9 @@
 package com.herocraftonline.heroes.characters.skill.reborn.professions;
 
-import org.bukkit.ChatColor;
-
 import com.herocraftonline.heroes.Heroes;
 import com.herocraftonline.heroes.characters.skill.SkillType;
 import com.herocraftonline.heroes.characters.skill.skills.SkillBaseRunestone;
+import org.bukkit.ChatColor;
 
 public class SkillMajorRunestone extends SkillBaseRunestone {
 

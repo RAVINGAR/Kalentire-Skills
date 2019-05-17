@@ -61,7 +61,7 @@ public class SkillImbueRunestone extends ActiveSkill {
 
         // Ensure the string is no longer than the specified maximum number of characters
         int maxTextLength = SkillConfigManager.getUseSetting(hero, this, "max-message-length", 40, false);
-        if (textString.length() > (maxTextLength + 2))		// Add 2 more characters to the check for color encoding
+        if (textString.length() > (maxTextLength + 2))        // Add 2 more characters to the check for color encoding
         {
             player.sendMessage("You cannot imbue a message or note that is longer than " + maxTextLength + " characters.");
             return SkillResult.FAIL;
@@ -98,8 +98,7 @@ public class SkillImbueRunestone extends ActiveSkill {
                 if (loreData.size() == 4) {
                     // Runestone already has an imbued message. Change it.
                     loreData.set(3, textString);
-                }
-                else {
+                } else {
                     // Runestone does not have any imbued message yet. Lets Add the new one.
                     loreData.add(textString);
                 }
@@ -111,7 +110,7 @@ public class SkillImbueRunestone extends ActiveSkill {
                 // Seperate 1 block from their current stack (if they have one)
                 int actualAmount = heldItem.getAmount();
                 if (actualAmount > 1) {
-                    heldItem.setAmount(1);		// Remove the excess blocks.
+                    heldItem.setAmount(1);        // Remove the excess blocks.
                 }
 
                 // Set the new metaData to the item
@@ -138,13 +137,11 @@ public class SkillImbueRunestone extends ActiveSkill {
                 }
 
                 return SkillResult.NORMAL;
-            }
-            else {
+            } else {
                 player.sendMessage("You must be holding a Runestone Block to use this skill.");
                 return SkillResult.FAIL;
             }
-        }
-        else {
+        } else {
             player.sendMessage("You must be holding a Runestone Block to use this skill.");
             return SkillResult.FAIL;
         }

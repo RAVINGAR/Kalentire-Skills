@@ -1,14 +1,4 @@
-package com.herocraftonline.heroes.characters.skill.reborn.professions;
-
-//oldsrc=http://pastie.org/private/hwkllkpsglhwd27qfhpqfg
-import java.util.ArrayList;
-import java.util.List;
-
-import org.bukkit.ChatColor;
-import org.bukkit.Location;
-import org.bukkit.World;
-import org.bukkit.configuration.ConfigurationSection;
-import org.bukkit.entity.Player;
+package com.herocraftonline.heroes.characters.skill.reborn.shared;
 
 import com.herocraftonline.heroes.Heroes;
 import com.herocraftonline.heroes.api.SkillResult;
@@ -17,6 +7,14 @@ import com.herocraftonline.heroes.characters.skill.ActiveSkill;
 import com.herocraftonline.heroes.characters.skill.SkillConfigManager;
 import com.herocraftonline.heroes.characters.skill.SkillType;
 import com.herocraftonline.heroes.util.CompatSound;
+import org.bukkit.ChatColor;
+import org.bukkit.Location;
+import org.bukkit.World;
+import org.bukkit.configuration.ConfigurationSection;
+import org.bukkit.entity.Player;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class SkillWarp extends ActiveSkill {
 
@@ -24,8 +22,8 @@ public class SkillWarp extends ActiveSkill {
         super(plugin, "Warp");
         setDescription("Teleports you to a safe location in your current world.");
         setUsage("/skill warp");
-        setArgumentRange(0, 0);
         setIdentifiers("skill warp");
+        setArgumentRange(0, 0);
         setTypes(SkillType.TELEPORTING, SkillType.SILENCEABLE);
     }
 
@@ -34,12 +32,10 @@ public class SkillWarp extends ActiveSkill {
     }
 
     public ConfigurationSection getDefaultConfig() {
-        ConfigurationSection node = super.getDefaultConfig();
-
-        node.set("default-destination", "world");
-        node.set("description", "a set location");
-
-        return node;
+        ConfigurationSection config = super.getDefaultConfig();
+        config.set("default-destination", "world");
+        config.set("description", "a set location");
+        return config;
     }
 
     public SkillResult use(Hero hero, String[] args) {
@@ -56,8 +52,7 @@ public class SkillWarp extends ActiveSkill {
                     destination = new Location(world, Double.parseDouble(destArgs[0]), Double.parseDouble(destArgs[1]), Double.parseDouble(destArgs[2]));
                     break;
                 }
-            }
-            else {
+            } else {
                 destination = null;
             }
         }
@@ -65,6 +60,7 @@ public class SkillWarp extends ActiveSkill {
             String[] dArgs = SkillConfigManager.getUseSetting(hero, this, "destinations." + defaultDestinationString, "0,64,0").split(",");
             destination = new Location(plugin.getServer().getWorld(defaultDestinationString), Double.parseDouble(dArgs[0]), Double.parseDouble(dArgs[1]), Double.parseDouble(dArgs[2]));
         }
+
         try {
             broadcastExecuteText(hero);
 
@@ -74,8 +70,7 @@ public class SkillWarp extends ActiveSkill {
 
             destination.getWorld().playSound(destination, CompatSound.ENTITY_WITHER_DEATH.value(), 0.5F, 1.0F);
 
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             player.sendMessage(ChatColor.GRAY + "SkillWarp has an invalid config.");
             return SkillResult.INVALID_TARGET_NO_MSG;
         }

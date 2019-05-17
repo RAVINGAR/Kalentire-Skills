@@ -91,24 +91,22 @@ public class SkillExcavate extends ActiveSkill {
     public class ExcavateEffect extends ExpirableEffect {
 
         public ExcavateEffect(Skill skill, Player applier, long duration, int amplifier) {
-            super(skill, "Excavate", applier, duration);
+            super(skill, "Excavate", applier, duration, applyText, expireText);
             this.types.add(EffectType.DISPELLABLE);
             this.types.add(EffectType.BENEFICIAL);
-            addPotionEffect(new PotionEffect(PotionEffectType.FAST_DIGGING, (int) (duration / 1000) * 20, amplifier), false);
+            addPotionEffect(new PotionEffect(PotionEffectType.FAST_DIGGING, (int) (duration / 1000) * 20, amplifier));
         }
 
         @Override
         public void applyToHero(Hero hero) {
             super.applyToHero(hero);
             Player player = hero.getPlayer();
-            broadcast(player.getLocation(), "    " + applyText, player.getName());
         }
 
         @Override
         public void removeFromHero(Hero hero) {
             super.removeFromHero(hero);
             Player player = hero.getPlayer();
-            broadcast(player.getLocation(), "    " + expireText, player.getName());
         }
     }
 

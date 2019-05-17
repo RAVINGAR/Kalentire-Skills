@@ -103,6 +103,10 @@ public class SkillEnchant extends PassiveSkill {
             int level = hero.getHeroLevel(enchanter);
 
             Map<Enchantment, Integer> enchants = event.getEnchantsToAdd();
+            for (Enchantment enchant : enchants.keySet()) {
+                event.getEnchanter().sendMessage("Trying to give you: " + enchant.getName());
+            }
+
             Iterator<Entry<Enchantment, Integer>> iter = enchants.entrySet().iterator();
             int xpCost = 0;
             while (iter.hasNext()) {

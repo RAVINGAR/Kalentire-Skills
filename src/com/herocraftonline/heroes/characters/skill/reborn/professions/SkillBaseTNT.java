@@ -13,13 +13,9 @@ import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
 import org.bukkit.entity.TNTPrimed;
 import org.bukkit.event.EventHandler;
-import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.metadata.FixedMetadataValue;
-import org.bukkit.metadata.MetadataValue;
-import java.util.List;
-import java.util.logging.Level;
 
 public class SkillBaseTNT extends ActiveSkill {
 
@@ -27,8 +23,8 @@ public class SkillBaseTNT extends ActiveSkill {
         super(plugin, "PlaceTNT");
         setDescription("Spawns $1 primed TNT that does not harm entities but can break blocks.");
         setUsage("/skill placetnt");
-        setArgumentRange(0, 0);
         setIdentifiers("skill placetnt");
+        setArgumentRange(0, 0);
         setTypes(SkillType.BLOCK_REMOVING);
 
         Bukkit.getServer().getPluginManager().registerEvents(new SkillTNTListener(), plugin);
@@ -36,7 +32,6 @@ public class SkillBaseTNT extends ActiveSkill {
 
     @Override
     public String getDescription(Hero hero) {
-
         int tntCount = SkillConfigManager.getUseSetting(hero, this, "tnt-count", 1, false);
 
         return getDescription().replace("$1", tntCount + "");
@@ -45,14 +40,12 @@ public class SkillBaseTNT extends ActiveSkill {
 
     @Override
     public ConfigurationSection getDefaultConfig() {
-        ConfigurationSection node = super.getDefaultConfig();
-
-        node.set("tnt-count", 1);
-        node.set("harmless-to-entities", true);
-        node.set("throw", false);
-        node.set("velocity-multiplier", 1.5);
-
-        return node;
+        ConfigurationSection config = super.getDefaultConfig();
+        config.set("tnt-count", 1);
+        config.set("harmless-to-entities", true);
+        config.set("throw", false);
+        config.set("velocity-multiplier", 1.5);
+        return config;
     }
 
     @Override
@@ -67,12 +60,12 @@ public class SkillBaseTNT extends ActiveSkill {
         boolean throwTNT = SkillConfigManager.getUseSetting(hero, this, "throw", false);
         double mult = SkillConfigManager.getUseSetting(hero, this, "velocity-multiplier", 1.5, false);
 
-        for(int i = 0; i < tntCount; i++) {
+        for (int i = 0; i < tntCount; i++) {
             TNTPrimed tnt = world.spawn(loc, TNTPrimed.class);
-            if(throwTNT) {
+            if (throwTNT) {
                 tnt.setVelocity(loc.getDirection().multiply(mult));
             }
-            if(harmless) {
+            if (harmless) {
                 tnt.setMetadata("HarmlessToEntities", new FixedMetadataValue(plugin, true));
             }
         }
@@ -84,11 +77,11 @@ public class SkillBaseTNT extends ActiveSkill {
 
         @EventHandler/*(priority = EventPriority.HIGHEST)*/
         public void onEntityDamageByEntityEvent(EntityDamageByEntityEvent event) {
-            if(!event.isCancelled()) {
-                if(event.getDamager() instanceof TNTPrimed) {
+            if (!event.isCancelled()) {
+                if (event.getDamager() instanceof TNTPrimed) {
                     TNTPrimed tnt = (TNTPrimed) event.getDamager();
 
-                    if(!tnt.hasMetadata("HarmlessToEntities")) {
+                    if (!tnt.hasMetadata("HarmlessToEntities")) {
                         return;
                     }
 

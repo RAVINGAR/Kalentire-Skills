@@ -38,19 +38,15 @@ public class SkillCustomPotion extends PassiveSkill implements Listener {
 
     @Override
     public ConfigurationSection getDefaultConfig() {
-        ConfigurationSection node = super.getDefaultConfig();
-
-        node.set(SkillSetting.APPLY_TEXT.node(), "");
-        node.set(SkillSetting.UNAPPLY_TEXT.node(), "");
-        node.set(SkillSetting.LEVEL.node(), 1);
-
-        node.set("HEAL.percent-heal", true);
-        node.set("HEAL.heal-amount", .175);
-
-        node.set("REGENERATION.percent-heal", false);
-        node.set("REGENERATION.heal-amount", 4.0);
-
-        return node;
+        ConfigurationSection config = super.getDefaultConfig();
+        config.set(SkillSetting.APPLY_TEXT.node(), "");
+        config.set(SkillSetting.UNAPPLY_TEXT.node(), "");
+        config.set(SkillSetting.LEVEL.node(), 1);
+        config.set("HEAL.percent-heal", true);
+        config.set("HEAL.heal-amount", .175);
+        config.set("REGENERATION.percent-heal", false);
+        config.set("REGENERATION.heal-amount", 4.0);
+        return config;
     }
 
     public boolean applyPotionEffect(LivingEntity entity, PotionEffect effect, double intensity, boolean lingering) {
@@ -62,12 +58,12 @@ public class SkillCustomPotion extends PassiveSkill implements Listener {
 
         String potionType = effect.getType().getName();
 
-        if(isHero && hero.isInCombat() && SkillConfigManager.getRaw(this, potionType + "." + SkillSetting.NO_COMBAT_USE.node(), false)) {
-            hero.getPlayer().sendMessage("You may not use " + potionType  + " Potions in combat!");
+        if (isHero && hero.isInCombat() && SkillConfigManager.getRaw(this, potionType + "." + SkillSetting.NO_COMBAT_USE.node(), false)) {
+            hero.getPlayer().sendMessage("You may not use " + potionType + " Potions in combat!");
             return true; // Self explanatory
         }
 
-        switch(effect.getType().getName()) {
+        switch (effect.getType().getName()) {
             case "SPEED":
                 isCustomPotion = applySpeedEffect(entity, isHero, effect, intensity, lingering);
                 break;
@@ -83,29 +79,29 @@ public class SkillCustomPotion extends PassiveSkill implements Listener {
     }
 
     private boolean applySpeedEffect(LivingEntity entity, boolean isHero, PotionEffect effect, double intensity, boolean lingering) {
-        if(!isHero)
+        if (!isHero)
             return false; // Monsters aren't our concern with speed, so the normal effect is sufficient with them.
 
         Hero hero = plugin.getCharacterManager().getHero((Player) entity);
-        if(!SkillConfigManager.getRaw(this, "SPEED." + SkillSetting.NO_COMBAT_USE.node(), false))
+        if (!SkillConfigManager.getRaw(this, "SPEED." + SkillSetting.NO_COMBAT_USE.node(), false))
             return false; // As SpeedEffect just ends up with a potion effect anyway, if we aren't checking combat we don't care.
 
         int amplifier = effect.getAmplifier();
         int duration = SkillPotion.getPotionDuration(effect.getDuration(), intensity, true);
-        if(lingering)
+        if (lingering)
             duration *= SkillConfigManager.getUseSetting(hero, plugin.getSkillManager().getSkill("Potion"), "lingering-multiplier.duration", 0.25, true);
 
         if (hero.hasEffect("SpeedPotionEffect")) {
 
             Effect oldEffect = hero.getEffect("SpeedPotionEffect");
-            if(!(oldEffect instanceof SpeedPotionEffect))
+            if (!(oldEffect instanceof SpeedPotionEffect))
                 return true;
 
             SpeedPotionEffect oldSpeedEffect = (SpeedPotionEffect) oldEffect;
             long oldDuration = oldSpeedEffect.getRemainingTime();
             int oldAmplifier = oldSpeedEffect.getAmplifier();
 
-            if(oldAmplifier > amplifier || (oldAmplifier == amplifier && oldDuration > duration))
+            if (oldAmplifier > amplifier || (oldAmplifier == amplifier && oldDuration > duration))
                 return true; // Stronger effect, or same strength with longer duration, cannot be overridden
             // At this point we either have stronger new effect or longer new duration, which can continue
         }
@@ -128,9 +124,9 @@ public class SkillCustomPotion extends PassiveSkill implements Listener {
         if (isHero) {
             Hero hero = plugin.getCharacterManager().getHero((Player) entity);
 
-            percentHeal = SkillConfigManager.getRaw( this, "HEAL.percent-heal", true);
+            percentHeal = SkillConfigManager.getRaw(this, "HEAL.percent-heal", true);
             healAmount = getRaw(this, "HEAL.heal-amount", .175);
-            if(lingering)
+            if (lingering)
                 healAmount *= SkillConfigManager.getUseSetting(hero, plugin.getSkillManager().getSkill("Potion"), "lingering-multiplier.instant", 0.5, true);
 
             HeroRegainHealthEvent hrhEvent = new HeroRegainHealthEvent(hero, calculateHealing(entity, percentHeal, healAmount, effect.getAmplifier(), intensity), this);
@@ -145,7 +141,7 @@ public class SkillCustomPotion extends PassiveSkill implements Listener {
         else {
             percentHeal = SkillConfigManager.getRaw(this, "HEAL.percent-heal", true);
             healAmount = getRaw(this, "HEAL.heal-amount", .175);
-            if(lingering)
+            if (lingering)
                 healAmount *= getRaw(plugin.getSkillManager().getSkill("Potion"), "lingering-multiplier.instant", 0.5);
 
             // Heroes doesn't seem to use this event for Monsters, but it feels wrong to not include it.
@@ -181,7 +177,7 @@ public class SkillCustomPotion extends PassiveSkill implements Listener {
             percentHeal = SkillConfigManager.getRaw(this, "REGENERATION.percent-heal", false);
             healAmount = getRaw(this, "REGENERATION.heal-amount", 4.0);
 
-            if(lingering)
+            if (lingering)
                 healAmount *= SkillConfigManager.getUseSetting(hero, plugin.getSkillManager().getSkill("Potion"), "lingering-multiplier.instant", 0.5, true);
         }
         // If it's not a Hero, it's a Monster, but for the sake of consistency we'll heal it too.
@@ -190,7 +186,7 @@ public class SkillCustomPotion extends PassiveSkill implements Listener {
             percentHeal = SkillConfigManager.getRaw(this, "REGENERATION.percent-heal", false);
             healAmount = getRaw(this, "REGENERATION.heal-amount", 4.0);
 
-            if(lingering)
+            if (lingering)
                 healAmount *= getRaw(plugin.getSkillManager().getSkill("Potion"), "lingering-multiplier.instant", 0.5);
 
         }
@@ -234,7 +230,7 @@ public class SkillCustomPotion extends PassiveSkill implements Listener {
             // super.tickHero(hero);
             HeroRegainHealthEvent event = new HeroRegainHealthEvent(hero, super.getTickHealth(), skill);
             plugin.getServer().getPluginManager().callEvent(event);
-            if(!event.isCancelled())
+            if (!event.isCancelled())
                 hero.heal(event.getDelta());
 
             Player player = hero.getPlayer();
@@ -276,8 +272,7 @@ public class SkillCustomPotion extends PassiveSkill implements Listener {
                         SpeedPotionEffect.super.removeFromHero(hero);
                     }
                 }, 2L);
-            }
-            else {
+            } else {
                 super.removeFromHero(hero);
             }
         }
@@ -285,7 +280,7 @@ public class SkillCustomPotion extends PassiveSkill implements Listener {
 
     // Get heal amount, either a % of health or straight amount, multiply by amplifier and multiply again by intensity
     private double calculateHealing(LivingEntity entity, boolean percentHeal, double healAmount, int amplifier, double intensity) {
-        return (percentHeal ? healAmount * entity.getMaxHealth() : healAmount) * (amplifier + 1) * intensity + 0.5 ;
+        return (percentHeal ? healAmount * entity.getMaxHealth() : healAmount) * (amplifier + 1) * intensity + 0.5;
     }
 
     // Convenience method to get raw doubles, as getRaw only allows String and Boolean
@@ -302,10 +297,8 @@ public class SkillCustomPotion extends PassiveSkill implements Listener {
 
         try {
             return Double.parseDouble(num);
-        }
-        catch (NumberFormatException ex) {
+        } catch (NumberFormatException ex) {
             return def;
         }
     }
-
 }

@@ -351,8 +351,8 @@ public class SkillRecall extends ActiveSkill implements Listener {
             broadcastExecuteText(hero);
 
             player.getWorld().playSound(player.getLocation(), Sound.ENTITY_WITHER_SPAWN, 0.5F, 1.0F);
-            //hero.getPlayer().getWorld().spigot().playEffect(player.getLocation(), Effect.COLOURED_DUST, 0, 0, 0.2F, 1.0F, 0.2F, 0.0F, 50, 12);
-            hero.getPlayer().getWorld().spawnParticle(Particle.REDSTONE, player.getLocation(), 50, 0.2, 1, 0.2, 0, Color.ORANGE);
+            hero.getPlayer().getWorld().spigot().playEffect(player.getLocation(), Effect.COLOURED_DUST, 0, 0, 0.2F, 1.0F, 0.2F, 0.0F, 50, 12);
+//            hero.getPlayer().getWorld().spawnParticle(Particle.REDSTONE, player.getLocation(), 50, 0.2, 1, 0.2, 0, Color.ORANGE);
         }
 
         // Removed for now until I have time to properly test it.
@@ -368,8 +368,8 @@ public class SkillRecall extends ActiveSkill implements Listener {
         player.teleport(teleLoc);
 
         teleLoc.getWorld().playSound(teleLoc, Sound.ENTITY_WITHER_SPAWN, 0.5F, 1.0F);
-        //teleportLocation.getWorld().spigot().playEffect(teleportLocation, Effect.COLOURED_DUST, 0, 0, 0.2F, 1.0F, 0.2F, 0.0F, 50, 12);
-        hero.getPlayer().getWorld().spawnParticle(Particle.REDSTONE, player.getLocation(), 50, 0.2, 1, 0.2, 0, Color.ORANGE);
+        teleLoc.getWorld().spigot().playEffect(teleLoc, Effect.COLOURED_DUST, 0, 0, 0.2F, 1.0F, 0.2F, 0.0F, 50, 12);
+//        hero.getPlayer().getWorld().spawnParticle(Particle.REDSTONE, player.getLocation(), 50, 0.2, 1, 0.2, 0, Color.ORANGE);
 
         return SkillResult.NORMAL;
     }

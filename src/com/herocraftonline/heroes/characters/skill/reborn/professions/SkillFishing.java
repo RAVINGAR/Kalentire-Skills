@@ -40,15 +40,13 @@ public class SkillFishing extends PassiveSkill {
 
     @Override
     public ConfigurationSection getDefaultConfig() {
-        ConfigurationSection node = super.getDefaultConfig();
-
-        node.set(SkillSetting.APPLY_TEXT.node(), "");
-        node.set(SkillSetting.UNAPPLY_TEXT.node(), "");
-        node.set("chance-per-level", .001);
-        node.set("leather-level", 5);
-        node.set("enable-leather", false);
-
-        return node;
+        ConfigurationSection config = super.getDefaultConfig();
+        config.set(SkillSetting.APPLY_TEXT.node(), "");
+        config.set(SkillSetting.UNAPPLY_TEXT.node(), "");
+        config.set("chance-per-level", .001);
+        config.set("leather-level", 5);
+        config.set("enable-leather", false);
+        return config;
     }
 
     public class SkillPlayerListener implements Listener {
@@ -59,72 +57,73 @@ public class SkillFishing extends PassiveSkill {
             this.skill = skill;
         }
 
-        @EventHandler(priority = EventPriority.MONITOR)
+        @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
         public void onPlayerFish(PlayerFishEvent event){
-            if (event.isCancelled() || event.getState() != State.CAUGHT_FISH || !(event.getCaught() instanceof Item)) {
+            if (event.getState() != State.CAUGHT_FISH || !(event.getCaught() instanceof Item))
                 return;
-            }
-            Item getCaught = (Item) event.getCaught();
+
             double chance = Util.nextRand();
             Hero hero = plugin.getCharacterManager().getHero(event.getPlayer());
             Player player = hero.getPlayer();
-            if (chance < SkillConfigManager.getUseSetting(hero, skill, SkillSetting.CHANCE_PER_LEVEL, .001, false) * hero.getHeroLevel(skill)) { //if the chance
+            if (!(chance < SkillConfigManager.getUseSetting(hero, skill, SkillSetting.CHANCE_PER_LEVEL, .001, false) * hero.getHeroLevel(skill))) {
+                return;
+            }
 
-                int leatherlvl = SkillConfigManager.getUseSetting(hero, skill, "leather-level", 5, true);
-                if (hero.getHeroLevel() >= leatherlvl && SkillConfigManager.getUseSetting(hero, skill, "enable-leather", false)){ //if fishing leather is enabled and have the level
-                    //if (getCaught != null){ //If not null
-                    //If not null
-                    switch(Util.nextInt(8)){
-                    case 0:
-                        getCaught.setItemStack(new ItemStack(Material.LEATHER_BOOTS, 1));
-                        player.sendMessage("You found leather boots!");
-                        getCaught.getItemStack().setDurability((short) (Math.random() * 40));
-                        break;
-                    case 1:
-                        getCaught.setItemStack(new ItemStack(Material.LEATHER_LEGGINGS, 1));
-                        player.sendMessage("You found leather leggings!");
-                        getCaught.getItemStack().setDurability((short) (Math.random() * 46));
-                        break;
-                    case 2:
-                        getCaught.setItemStack(new ItemStack(Material.LEATHER_HELMET, 1));
-                        player.sendMessage("You found a leather helmet!");
-                        getCaught.getItemStack().setDurability((short) (Math.random() * 34));
-                        break;
-                    case 3:
-                        getCaught.setItemStack(new ItemStack(Material.LEATHER_CHESTPLATE, 1));
-                        player.sendMessage("You found a leather chestplate!");
-                        getCaught.getItemStack().setDurability((short) (Math.random() * 49));
-                        break;
-                    case 4:
-                        getCaught.setItemStack(new ItemStack(Material.GOLDEN_APPLE, 1));
-                        player.sendMessage("You found a golden apple, woo!");
-                        break;
-                    case 5:
-                        getCaught.setItemStack(new ItemStack(Material.APPLE, 1));
-                        player.sendMessage("You found an apple!");
-                        break;
-                    case 6:
-                        getCaught.setItemStack(new ItemStack(Material.RAW_FISH, 2));
-                        player.sendMessage("You found 2 Fish!");
-                        break;
-                    case 7:
-                        getCaught.setItemStack(new ItemStack(Material.RAW_FISH, 1));
-                        player.sendMessage("You found 1 Fish!");
-                        break;
-                    }
-                } else {
-                    switch(Util.nextInt(2)){
-                    case 0: 
-                        getCaught.setItemStack(new ItemStack(Material.RAW_FISH, 2));
-                        player.sendMessage("You found 2 Fishes!");
-                        break;
-                    case 1: 
-                        getCaught.setItemStack(new ItemStack(Material.RAW_FISH, 1));
-                        player.sendMessage("You found 1 Fish!");
-                        break;
-                    }
-                }   
-            }           
+            Item getCaught = (Item) event.getCaught();
+            int leatherlvl = SkillConfigManager.getUseSetting(hero, skill, "leather-level", 5, true);
+            if (hero.getHeroLevel() >= leatherlvl && SkillConfigManager.getUseSetting(hero, skill, "enable-leather", false)){ //if fishing leather is enabled and have the level
+                //if (getCaught != null){ //If not null
+                //If not null
+                switch(Util.nextInt(8)){
+                case 0:
+                    getCaught.setItemStack(new ItemStack(Material.LEATHER_BOOTS, 1));
+                    player.sendMessage("You found leather boots!");
+                    getCaught.getItemStack().setDurability((short) (Math.random() * 40));
+                    break;
+                case 1:
+                    getCaught.setItemStack(new ItemStack(Material.LEATHER_LEGGINGS, 1));
+                    player.sendMessage("You found leather leggings!");
+                    getCaught.getItemStack().setDurability((short) (Math.random() * 46));
+                    break;
+                case 2:
+                    getCaught.setItemStack(new ItemStack(Material.LEATHER_HELMET, 1));
+                    player.sendMessage("You found a leather helmet!");
+                    getCaught.getItemStack().setDurability((short) (Math.random() * 34));
+                    break;
+                case 3:
+                    getCaught.setItemStack(new ItemStack(Material.LEATHER_CHESTPLATE, 1));
+                    player.sendMessage("You found a leather chestplate!");
+                    getCaught.getItemStack().setDurability((short) (Math.random() * 49));
+                    break;
+                case 4:
+                    getCaught.setItemStack(new ItemStack(Material.GOLDEN_APPLE, 1));
+                    player.sendMessage("You found a golden apple, woo!");
+                    break;
+                case 5:
+                    getCaught.setItemStack(new ItemStack(Material.APPLE, 1));
+                    player.sendMessage("You found an apple!");
+                    break;
+                case 6:
+                    getCaught.setItemStack(new ItemStack(Material.RAW_FISH, 2));
+                    player.sendMessage("You found 2 Fish!");
+                    break;
+                case 7:
+                    getCaught.setItemStack(new ItemStack(Material.RAW_FISH, 1));
+                    player.sendMessage("You found 1 Fish!");
+                    break;
+                }
+            } else {
+                switch(Util.nextInt(2)){
+                case 0:
+                    getCaught.setItemStack(new ItemStack(Material.RAW_FISH, 2));
+                    player.sendMessage("You found 2 Fishes!");
+                    break;
+                case 1:
+                    getCaught.setItemStack(new ItemStack(Material.RAW_FISH, 1));
+                    player.sendMessage("You found 1 Fish!");
+                    break;
+                }
+            }
         }
     }
 }
