@@ -74,16 +74,17 @@ public class SkillDefenceInNumbers extends PassiveSkill {
         double outgoingMultiplier = SkillConfigManager.getUseSetting(hero, this,
                 "outgoing-multiplier", 1.0, false);
 
-        String description = getDescription().replace("$1", incomingMultiplierPerAlly * 100 + "");
+        String description = getDescription().replace("$1", Util.decFormat.format(incomingMultiplierPerAlly * 100) + "");
         description = description.replace("$2",
-                incomingMultiplierBase != 1 ? (" with " + (incomingMultiplierBase * 100) + "% base incoming damage") : "");
+                incomingMultiplierBase != 1 ? (" with " + Util.decFormat.format(incomingMultiplierBase * 100) + "% base incoming damage") : "");
         description = description.replace("$3",
-                incomingMultiplierImprovementWhenBuffed != 0 ? (" and " + (incomingMultiplierImprovementWhenBuffed * 100) + "% when buffed") : "");
+                incomingMultiplierImprovementWhenBuffed != 0 ? (" and "
+                        + Util.decFormat.format(incomingMultiplierImprovementWhenBuffed * 100) + "% when buffed") : "");
         description = description.replace("$4",
                 requiredAllyNumber > 0 ? (" Requires " + requiredAllyNumber + " allies.") : "");
         description = description.replace("$5",
-                outgoingMultiplier != 1 ? (" As a result outgoing damage is " + (incomingMultiplierBase * 100) + "%.") : "");
-        description = description.replace("$6", radius + "");
+                outgoingMultiplier != 1 ? (" As a result outgoing damage is " + Util.decFormat.format(incomingMultiplierBase * 100) + "%.") : "");
+        description = description.replace("$6", Util.decFormat.format(radius) + "");
         description = description.replace("$7", Util.decFormat.format(period / 1000));
 
         return description;

@@ -65,8 +65,8 @@ public class SkillDefensiveStance extends ActiveSkill {
     public String getDescription(Hero hero) {
         int duration = SkillConfigManager.getScaledUseSettingInt(hero, this, SkillSetting.DURATION, false);
         double overallChance = getOverallHitChance(hero, this);
-        return getDescription().replace("$1", (overallChance * 100) + "")
-                .replace("$2", duration / 1000 + "");
+        return getDescription().replace("$1", Util.decFormat.format(overallChance * 100) + "")
+                .replace("$2", Util.decFormat.format(duration / 1000) + "");
     }
 
     @Override
