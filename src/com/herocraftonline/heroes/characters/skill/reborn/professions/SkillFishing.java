@@ -66,7 +66,7 @@ public class SkillFishing extends PassiveSkill {
             this.skill = skill;
         }
 
-        @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
+        @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
         public void onPlayerFish(PlayerFishEvent event){
             if (event.getState() != State.CAUGHT_FISH || !(event.getCaught() instanceof Item))
                 return;
