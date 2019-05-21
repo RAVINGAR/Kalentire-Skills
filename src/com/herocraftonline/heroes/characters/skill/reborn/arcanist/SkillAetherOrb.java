@@ -85,7 +85,6 @@ public class SkillAetherOrb extends ActiveSkill {
 	}
 
 	private class AetherOrbMissile extends BasicMissile {
-
 		public AetherOrbMissile(Heroes plugin, Skill skill, Hero hero) {
 			super(plugin, skill, hero, Particle.SPELL_WITCH);
 		}
@@ -95,7 +94,17 @@ public class SkillAetherOrb extends ActiveSkill {
             return false;
         }
 
-		@Override
+        @Override
+        protected void onEntityPassed(Entity entity, Vector passOrigin, Vector passForce) {
+            return;
+        }
+
+        @Override
+        protected void onEntityHit(Entity entity, Vector hitOrigin, Vector hitForce) {
+            return;
+        }
+
+        @Override
 		protected void onBlockHit(Block block, Vector hitPoint, BlockFace hitFace, Vector hitForce) {
 			explodeIntoGroundEffect(block.getRelative(hitFace).getLocation());
 		}

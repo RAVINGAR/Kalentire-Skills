@@ -1,4 +1,4 @@
-package com.herocraftonline.heroes.characters.skill.reborn.ninja;
+package com.herocraftonline.heroes.characters.skill.reborn.unused;
 
 import com.herocraftonline.heroes.Heroes;
 import com.herocraftonline.heroes.api.SkillResult;
@@ -43,7 +43,6 @@ public class SkillKick extends TargettedSkill {
     public ConfigurationSection getDefaultConfig() {
         ConfigurationSection config = super.getDefaultConfig();
         config.set(SkillSetting.MAX_DISTANCE.node(), 3.5);
-//        config.set(SkillSetting.ON_INTERRUPT_FORCE_COOLDOWN.node(), 2500);
         config.set(SkillSetting.DAMAGE.node(), 40.0);
         config.set(SkillSetting.DAMAGE_INCREASE_PER_STRENGTH.node(), 0.0);
         config.set(SkillSetting.DURATION.node(), 2000);

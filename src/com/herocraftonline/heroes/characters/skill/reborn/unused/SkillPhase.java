@@ -89,7 +89,7 @@ public class SkillPhase extends ActiveSkill {
             Player player = hero.getPlayer();
             Location playerLoc = player.getLocation();
             playerLoc.getWorld().playEffect(playerLoc, Effect.ENDER_SIGNAL, 3);
-            playerLoc.getWorld().playSound(playerLoc, Sound.ENTITY_ENDERMAN_TELEPORT, 0.8F, 1.0F);
+            playerLoc.getWorld().playSound(playerLoc, Sound.ENTITY_ENDERMEN_TELEPORT, 0.8F, 1.0F);
 
             PhasedEffect phasedEffect = new PhasedEffect(skill, player, phaseDuration);
             hero.addEffect(phasedEffect);
