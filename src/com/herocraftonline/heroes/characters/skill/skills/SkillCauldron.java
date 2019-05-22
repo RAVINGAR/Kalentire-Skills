@@ -1,4 +1,4 @@
-package com.herocraftonline.heroes.characters.skill.skills;
+package com.herocraftonline.heroes.characters.skill.reborn.professions;
 /*
  * TODO: (Updated by Andrew2060 1/17/2012)
  * - Handling for shift-click results: before commenting on whether this is doable or not I would require more knowledge as to why this was blocked in the first place
@@ -196,7 +196,7 @@ public class SkillCauldron extends PassiveSkill {
 			}
 			Hero hero = plugin.getCharacterManager().getHero(event.getPlayer());
 
-			if(event.getClickedBlock().getType() == Material.CRAFTING_TABLE){
+			if(event.getClickedBlock().getType() == Material.WORKBENCH){
 				if(!player.contains(event.getPlayer())){
 					player.add(event.getPlayer());
 					usingCauldronbench.add(player.size()-1, false);

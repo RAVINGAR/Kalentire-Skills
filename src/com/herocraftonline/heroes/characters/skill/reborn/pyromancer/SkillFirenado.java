@@ -2,7 +2,6 @@ package com.herocraftonline.heroes.characters.skill.reborn.pyromancer;
 
 import com.herocraftonline.heroes.Heroes;
 import com.herocraftonline.heroes.api.SkillResult;
-import com.herocraftonline.heroes.attributes.AttributeType;
 import com.herocraftonline.heroes.characters.CharacterTemplate;
 import com.herocraftonline.heroes.characters.Hero;
 import com.herocraftonline.heroes.characters.effects.common.BurningEffect;
@@ -78,6 +77,7 @@ public class SkillFirenado extends ActiveSkill {
         config.set("tornado-max-heat-seeking-distance", 25);
         config.set("heat-seek-force-power", 0.2);
         config.set("tornado-visual-y-offset", 0.0);
+        config.set(SkillSetting.RADIUS.node(), 4.0);
         return config;
     }
 
@@ -169,7 +169,7 @@ public class SkillFirenado extends ActiveSkill {
             vEffect.cloudColor = FIRE_ORANGE;
             vEffect.cloudSize = 0.25F;
             vEffect.tornadoHeight = (float) radius;
-            vEffect.maxTornadoRadius = (float) radius * 0.5F;
+            vEffect.maxTornadoRadius = (float) radius;
             vEffect.asynchronous = true;
         }
 
