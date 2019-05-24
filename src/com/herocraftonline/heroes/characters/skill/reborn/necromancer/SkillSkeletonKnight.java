@@ -2,14 +2,12 @@ package com.herocraftonline.heroes.characters.skill.reborn.necromancer;
 
 import com.herocraftonline.heroes.Heroes;
 import com.herocraftonline.heroes.api.SkillResult;
+import com.herocraftonline.heroes.characters.CharacterTemplate;
 import com.herocraftonline.heroes.characters.Hero;
 import com.herocraftonline.heroes.characters.Monster;
 import com.herocraftonline.heroes.characters.effects.EffectType;
 import com.herocraftonline.heroes.characters.effects.common.SummonEffect;
-import com.herocraftonline.heroes.characters.skill.ActiveSkill;
-import com.herocraftonline.heroes.characters.skill.Skill;
-import com.herocraftonline.heroes.characters.skill.SkillConfigManager;
-import com.herocraftonline.heroes.characters.skill.SkillType;
+import com.herocraftonline.heroes.characters.skill.*;
 import com.herocraftonline.heroes.chat.ChatComponents;
 import com.herocraftonline.heroes.util.Util;
 import me.libraryaddict.disguise.DisguiseAPI;
@@ -20,11 +18,14 @@ import me.libraryaddict.disguise.disguisetypes.watchers.LivingWatcher;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
+import org.bukkit.Particle;
 import org.bukkit.configuration.ConfigurationSection;
-import org.bukkit.entity.EntityType;
-import org.bukkit.entity.LivingEntity;
-import org.bukkit.entity.Player;
-import org.bukkit.entity.Wolf;
+import org.bukkit.entity.*;
+import org.bukkit.event.EventHandler;
+import org.bukkit.event.EventPriority;
+import org.bukkit.event.Listener;
+import org.bukkit.event.entity.EntityDamageByEntityEvent;
+import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
@@ -46,6 +47,7 @@ public class SkillSkeletonKnight extends ActiveSkill {
         if (Bukkit.getServer().getPluginManager().getPlugin("LibsDisguises") != null) {
             disguiseApiLoaded = true;
         }
+        Bukkit.getServer().getPluginManager().registerEvents(new SkillListener(this), plugin);
     }
 
     public String getDescription(Hero hero) {
@@ -86,6 +88,7 @@ public class SkillSkeletonKnight extends ActiveSkill {
         config.set("minion-duration", 60000);
         config.set("minion-speed-amplifier", -1);
         config.set("launch-velocity", 2.0);
+        config.set(SkillSetting.RADIUS.node(), 3);
         return config;
     }
 
@@ -123,6 +126,37 @@ public class SkillSkeletonKnight extends ActiveSkill {
         return SkillResult.NORMAL;
     }
 
+    private class SkillListener implements Listener {
+        private final Skill skill;
+
+        SkillListener(Skill skill) {
+            this.skill = skill;
+        }
+
+        @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
+        public void onEntityDamage(EntityDamageByEntityEvent event) {
+            if (event.getDamage() <= 0 || !(event.getDamager() instanceof Wolf) || !(event.getEntity() instanceof LivingEntity))
+                return;
+
+            CharacterTemplate attackerCT = plugin.getCharacterManager().getCharacter((LivingEntity) event.getDamager());
+            if (!attackerCT.hasEffect(minionEffectName))
+                return;
+
+            Hero summoner = ((SkeletonKnightEffect) attackerCT.getEffect(minionEffectName)).getSummoner();
+
+            LivingEntity target = (LivingEntity) event.getEntity();
+            int radius = SkillConfigManager.getUseSetting(summoner, skill, SkillSetting.RADIUS, 3, false);
+            double hitDmg = SkillConfigManager.getUseSetting(summoner, skill, "minion-attack-damage", 25.0, false);
+            hitDmg += SkillConfigManager.getUseSetting(summoner, skill, "minion-attack-damage-per-level", 0.4, false) * summoner.getHeroLevel(skill);
+
+
+            for (Entity entity : target.getNearbyEntities(radius, radius, radius)) {
+                if (!(entity instanceof Player)) {
+                    damageEntity((LivingEntity) entity, summoner.getPlayer(), hitDmg, EntityDamageEvent.DamageCause.ENTITY_ATTACK);
+                }
+            }
+        }
+    }
     public class SkeletonKnightEffect extends SummonEffect {
         public SkeletonKnightEffect(Skill skill, Hero summoner, long duration) {
             super(skill, minionEffectName, duration, summoner, null);
