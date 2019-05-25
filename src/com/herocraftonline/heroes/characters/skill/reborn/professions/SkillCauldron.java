@@ -22,17 +22,17 @@ package com.herocraftonline.heroes.characters.skill.reborn.professions;
  * -Fixed material data to actually be used, instead of sending an invalid byte to the server that at the very best does nothing
  * -Fixed some inefficient use of variable assignments where configuration instances were triggered inside a for loop repeatedly
  */
+
+//For reference (up to date 25th May 2019), Creating custom recipes in Bukkit: https://www.spigotmc.org/wiki/recipe-example/
+
 import java.io.File;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.logging.Level;
 
-import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
-import org.bukkit.Location;
-import org.bukkit.Material;
-import org.bukkit.Server;
+import org.bukkit.*;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
 import org.bukkit.configuration.ConfigurationSection;
@@ -52,6 +52,7 @@ import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.Recipe;
 import org.bukkit.inventory.ShapedRecipe;
+import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.material.Cauldron;
 
 import com.herocraftonline.heroes.Heroes;
@@ -114,10 +115,47 @@ public class SkillCauldron extends PassiveSkill {
 		}
 
 		for(int recipeNumber =0; recipeNumber<getCauldronConfig().getInt("CauldronRecipes.size"); recipeNumber++){
-            int resultTypeId = config.getInt("CauldronRecipes." + recipeNumber + ".results.Type", 0);
+            String resultTypeString = config.getString("CauldronRecipes." + recipeNumber + ".results.type", "");
+            Material resultType = Material.getMaterial(resultTypeString);
+            if (resultTypeString.equals("") || resultType == null){
+                Heroes.log(Level.WARNING, (recipeNumber + 1) + "th recipe failed to load due to a invalid result material: "
+                        + resultTypeString + ". Note material ids are no longer supported use strings e.g. IRON_INGOT.");
+                continue;
+            }
+
             int resultAmount = config.getInt("CauldronRecipes." + recipeNumber + ".results.result-amount", 1);
             int resultMaterialData = config.getInt("CauldronRecipes." + recipeNumber + ".results.materialData");
-            ShapedRecipe shapedRecipe = new ShapedRecipe(new ItemStack(resultTypeId, resultAmount,(short) resultMaterialData));
+            ItemStack item = new ItemStack(resultType, resultAmount, (short) resultMaterialData);
+
+            String resultName = config.getString("CauldronRecipes." + recipeNumber + ".results.result-name", "");
+            String key;
+            if (resultName.equals("")){
+                key = "heroes_cauldron_recipe" + recipeNumber;
+            } else {
+                key = "heroes_cauldron_recipe_" + resultName;
+                ItemMeta meta = item.getItemMeta();
+                meta.setDisplayName(resultName);
+            }
+
+            // Check if recipe key already exists
+            // (Probably overkill since we're defining a unique prefix as is..., but I guess its possible a recipe may have the same result name)
+            // Commented out for now as its not likely to be useful currently, though probably isn't slow at all
+//            for (Recipe recipe : server.getRecipesFor(item)){
+//                if (recipe instanceof ShapedRecipe){
+//                    ShapedRecipe shapedRecipe = (ShapedRecipe) recipe;
+//                    if (shapedRecipe.getKey().getKey().equals(key)){
+//                        char lastChar = key.charAt(key.length()-1);
+//                        if (Character.isDigit(lastChar)) {
+//                            // increment key 'number'
+//                            key = key.substring(0,key.length()-1) + (Character.getNumericValue(lastChar) + 1);
+//                        } else {
+//                            key = key + "0";
+//                        }
+//                    }
+//                }
+//            }
+
+            ShapedRecipe shapedRecipe = new ShapedRecipe(new NamespacedKey(plugin, key), item);
             //TODO: validate recipe
 			//Build a recipe from the ground up because Bukkit does not allow for replacement with Material.AIR
 			String top = "ABC";			//3 Spaces->3 slots
@@ -126,25 +164,25 @@ public class SkillCauldron extends PassiveSkill {
 
 			//Determine what is top
 			for(int j=0; j<3; j++){
-				int id = getCauldronRecipeIngredientTypeId(config, recipeNumber, j);
-				//If ID is 0, replace with space
-				if(id == 0) {
+                Material type = getCauldronRecipeIngredientType(config, recipeNumber, j);
+                //If type is null, replace with space
+                if(type != null) {
 					top = top.replace(convertInttoChar(j), ' ') ;
 				}
 			}
 
 			//Determine what is mid
 			for(int j=3; j<6; j++){
-				int id = getCauldronRecipeIngredientTypeId(config, recipeNumber, j);
-				if(id == 0) {
+                Material type = getCauldronRecipeIngredientType(config, recipeNumber, j);
+                if(type != null) {
 					mid = mid.replace(convertInttoChar(j), ' ') ;
 				}
 			}
 
 			//Determine what is bot
 			for(int j=6; j<9; j++){
-				int id = getCauldronRecipeIngredientTypeId(config, recipeNumber, j);
-				if(id == 0) {
+                Material type = getCauldronRecipeIngredientType(config, recipeNumber, j);
+				if(type != null) {
 					bot = bot.replace(convertInttoChar(j), ' ') ;
 				}
 			}
@@ -153,9 +191,9 @@ public class SkillCauldron extends PassiveSkill {
 			shapedRecipe.shape(top,mid,bot);
 			for(int j=0; j<9; j++) {
 				//Error handling if configuration requirements not met
-                int ingredientTypeId = getCauldronRecipeIngredientTypeId(config, recipeNumber, j);
-                if(ingredientTypeId != 0) {
-                    shapedRecipe.setIngredient(convertInttoChar(j), Material.getMaterial(ingredientTypeId));
+                Material ingredientType = getCauldronRecipeIngredientType(config, recipeNumber, j);
+                if(ingredientType != null) {
+                    shapedRecipe.setIngredient(convertInttoChar(j), ingredientType);
 				}
 			}
 			server.addRecipe(shapedRecipe);
@@ -167,8 +205,9 @@ public class SkillCauldron extends PassiveSkill {
 
 	}
 
-    private int getCauldronRecipeIngredientTypeId(FileConfiguration config, int recipeNumber, int ingredientPosition) {
-        return config.getInt("CauldronRecipes." + recipeNumber + ".ingredients.Materials." + ingredientPosition + ".TypeId", 0);
+    private Material getCauldronRecipeIngredientType(FileConfiguration config, int recipeNumber, int ingredientPosition) {
+        String type = config.getString("CauldronRecipes." + recipeNumber + ".ingredients.Materials." + ingredientPosition + ".Type", "");
+        return Material.getMaterial(type);
     }
 
     public char convertInttoChar(int i) {
@@ -300,7 +339,7 @@ public class SkillCauldron extends PassiveSkill {
 
 						ItemStack item = event.getCurrentItem();
 						for (int j=0; j<ShapedCauldronRecipes.size(); j++){
-							if (item.getTypeId() == ShapedCauldronRecipes.get(j).getResult().getTypeId() && event.isShiftClick()){
+							if (item.getType().equals(ShapedCauldronRecipes.get(j).getResult().getType()) && event.isShiftClick()){
 								cauldronUserPlayers.get(i).sendMessage(ChatColor.RED+"You can't ShiftClick cauldron recipes at this time!");
 								event.setCancelled(true);
 								break;
