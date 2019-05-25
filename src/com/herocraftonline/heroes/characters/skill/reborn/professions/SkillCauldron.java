@@ -39,7 +39,6 @@ import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
-import org.bukkit.event.Event;
 import org.bukkit.event.Event.Result;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
@@ -114,9 +113,12 @@ public class SkillCauldron extends PassiveSkill {
 			this.CauldronRecipesLevel.clear();
 		}
 
-		for(int i =0; i<getCauldronConfig().getInt("CauldronRecipes.size"); i++){
-			ShapedRecipe shapedRecipe = new ShapedRecipe(new ItemStack(config.getInt("CauldronRecipes."+i+".results.TypeId")
-                    ,config.getInt("CauldronRecipes."+i+".results.result-amount"),(short)config.getInt("CauldronRecipes."+i+".results.materialData")));
+		for(int recipeNumber =0; recipeNumber<getCauldronConfig().getInt("CauldronRecipes.size"); recipeNumber++){
+            int resultTypeId = config.getInt("CauldronRecipes." + recipeNumber + ".results.Type", 0);
+            int resultAmount = config.getInt("CauldronRecipes." + recipeNumber + ".results.result-amount", 1);
+            int resultMaterialData = config.getInt("CauldronRecipes." + recipeNumber + ".results.materialData");
+            ShapedRecipe shapedRecipe = new ShapedRecipe(new ItemStack(resultTypeId, resultAmount,(short) resultMaterialData));
+            //TODO: validate recipe
 			//Build a recipe from the ground up because Bukkit does not allow for replacement with Material.AIR
 			String top = "ABC";			//3 Spaces->3 slots
 			String mid = "DEF";
@@ -124,7 +126,7 @@ public class SkillCauldron extends PassiveSkill {
 
 			//Determine what is top
 			for(int j=0; j<3; j++){
-				int id = config.getInt("CauldronRecipes."+i+".ingredients.Materials."+j+".TypeId");
+				int id = getCauldronRecipeIngredientTypeId(config, recipeNumber, j);
 				//If ID is 0, replace with space
 				if(id == 0) {
 					top = top.replace(convertInttoChar(j), ' ') ;
@@ -133,7 +135,7 @@ public class SkillCauldron extends PassiveSkill {
 
 			//Determine what is mid
 			for(int j=3; j<6; j++){
-				int id = config.getInt("CauldronRecipes."+i+".ingredients.Materials."+j+".TypeId");
+				int id = getCauldronRecipeIngredientTypeId(config, recipeNumber, j);
 				if(id == 0) {
 					mid = mid.replace(convertInttoChar(j), ' ') ;
 				}
@@ -141,7 +143,7 @@ public class SkillCauldron extends PassiveSkill {
 
 			//Determine what is bot
 			for(int j=6; j<9; j++){
-				int id = config.getInt("CauldronRecipes."+i+".ingredients.Materials."+j+".TypeId");
+				int id = getCauldronRecipeIngredientTypeId(config, recipeNumber, j);
 				if(id == 0) {
 					bot = bot.replace(convertInttoChar(j), ' ') ;
 				}
@@ -151,19 +153,25 @@ public class SkillCauldron extends PassiveSkill {
 			shapedRecipe.shape(top,mid,bot);
 			for(int j=0; j<9; j++) {
 				//Error handling if configuration requirements not met
-				if(!(config.getInt("CauldronRecipes."+i+".ingredients.Materials."+j+".TypeId",0) == 0)) {
-					shapedRecipe.setIngredient(convertInttoChar(j), Material.getMaterial(config.getInt("CauldronRecipes."+i+".ingredients.Materials."+j+".TypeId")));
+                int ingredientTypeId = getCauldronRecipeIngredientTypeId(config, recipeNumber, j);
+                if(ingredientTypeId != 0) {
+                    shapedRecipe.setIngredient(convertInttoChar(j), Material.getMaterial(ingredientTypeId));
 				}
 			}
 			server.addRecipe(shapedRecipe);
 			this.ShapedCauldronRecipes.add(shapedRecipe);
 
-			CauldronRecipesLevel.add(config.getInt("CauldronRecipes."+i+".results.Level"));
+			CauldronRecipesLevel.add(config.getInt("CauldronRecipes."+recipeNumber+".results.Level"));
 
 		}
 
 	}
-	public char convertInttoChar(int i) {
+
+    private int getCauldronRecipeIngredientTypeId(FileConfiguration config, int recipeNumber, int ingredientPosition) {
+        return config.getInt("CauldronRecipes." + recipeNumber + ".ingredients.Materials." + ingredientPosition + ".TypeId", 0);
+    }
+
+    public char convertInttoChar(int i) {
 		switch(i) {
 		case 0: return 'A';
 		case 1: return 'B';
@@ -184,7 +192,7 @@ public class SkillCauldron extends PassiveSkill {
 	public class SkillListener implements Listener {
 
 		private final Skill skill;
-		private final ArrayList<Player> player = new ArrayList<Player>();
+		private final ArrayList<Player> cauldronUserPlayers = new ArrayList<Player>();
 		private final ArrayList<Boolean> usingCauldronbench = new ArrayList<Boolean>();
 		private final ArrayList<Boolean> bCanMake = new ArrayList<Boolean>();
 
@@ -192,7 +200,7 @@ public class SkillCauldron extends PassiveSkill {
 			this.skill = skill;
 		}
 
-		//Is player clicking cauldron or workbench? Can they use a cauldron? Adds player(s) to iterators, and assign booleans.
+		//Is cauldronUserPlayers clicking cauldron or workbench? Can they use a cauldron? Adds cauldronUserPlayers(s) to iterators, and assign booleans.
 		@EventHandler(priority = EventPriority.LOW)
 		public void onPlayerInteract(PlayerInteractEvent event) {
 			if (event.getClickedBlock() == null || event.getAction() != Action.RIGHT_CLICK_BLOCK) {
@@ -201,10 +209,10 @@ public class SkillCauldron extends PassiveSkill {
 			Hero hero = plugin.getCharacterManager().getHero(event.getPlayer());
 
 			if(event.getClickedBlock().getType() == Material.WORKBENCH){
-				if(!player.contains(event.getPlayer())){
-					player.add(event.getPlayer());
-					usingCauldronbench.add(player.size()-1, false);
-					bCanMake.add(player.size()-1, false);
+				if(!cauldronUserPlayers.contains(event.getPlayer())){
+					cauldronUserPlayers.add(event.getPlayer());
+					usingCauldronbench.add(cauldronUserPlayers.size()-1, false);
+					bCanMake.add(cauldronUserPlayers.size()-1, false);
 				}
 			}
 
@@ -214,14 +222,14 @@ public class SkillCauldron extends PassiveSkill {
 			}
 
 			if(hero.canUseSkill(skill) && event.getClickedBlock().getType() == Material.CAULDRON && !event.isBlockInHand()){
-				if(!player.contains(event.getPlayer())){
+				if(!cauldronUserPlayers.contains(event.getPlayer())){
 					Location loc = new Location(event.getPlayer().getWorld(),event.getClickedBlock().getLocation().getBlockX(),event.getClickedBlock().getLocation().getBlockY() - 1,event.getClickedBlock().getLocation().getBlockZ());
 					Block fireblock = event.getClickedBlock().getLocation().getBlock().getRelative(BlockFace.DOWN);
 					Cauldron cauldron = (org.bukkit.material.Cauldron) event.getClickedBlock().getState().getData();
 					if(cauldron.isFull() && fireblock.getType() == Material.FIRE) {
-						player.add(event.getPlayer());
-						usingCauldronbench.add(player.size() - 1, true);
-						bCanMake.add(player.size() - 1, false);
+						cauldronUserPlayers.add(event.getPlayer());
+						usingCauldronbench.add(cauldronUserPlayers.size() - 1, true);
+						bCanMake.add(cauldronUserPlayers.size() - 1, false);
 						openCauldron(event.getPlayer());
 					}
 
@@ -229,18 +237,18 @@ public class SkillCauldron extends PassiveSkill {
 			}
 		}
 
-		//Grabs items in crafting view. Is the player using a workbench or cauldronbench? Is the recipe suitable to be made in work area? Is Player high enough level to make recipe?
+		//Grabs items in crafting view. Is the cauldronUserPlayers using a workbench or cauldronbench? Is the recipe suitable to be made in work area? Is Player high enough level to make recipe?
 		@EventHandler
 		public void openCauldronevent(PrepareItemCraftEvent event){
 			if(event.getInventory().getType() != InventoryType.WORKBENCH) {
 				return;
 			}
 
-			for(int i = 0; i < player.size(); i++){
+			for(int i = 0; i < cauldronUserPlayers.size(); i++){
 				for(int v = 0; v < event.getViewers().size(); v++){
-					if (event.getViewers().get(v) == player.get(i)){
+					if (event.getViewers().get(v) == cauldronUserPlayers.get(i)){
 
-						Hero hero = plugin.getCharacterManager().getHero(player.get(i));
+						Hero hero = plugin.getCharacterManager().getHero(cauldronUserPlayers.get(i));
 						int sLevel = hero.getLevel(hero.getSecondClass());
 						Recipe recipe = event.getRecipe();
 						if(!usingCauldronbench.get(i)) {
@@ -270,7 +278,7 @@ public class SkillCauldron extends PassiveSkill {
 							}
 						}
 					}	
-					if (!bCanMake.get(i) && event.getViewers().get(v) == player.get(i)){
+					if (!bCanMake.get(i) && event.getViewers().get(v) == cauldronUserPlayers.get(i)){
 						event.getInventory().setResult(new ItemStack(Material.AIR));
 						break;
 					}
@@ -282,18 +290,18 @@ public class SkillCauldron extends PassiveSkill {
 		//Possible fix in thread: http://forums.bukkit.org/threads/cant-get-amount-of-shift-click-craft-item.79090/
 		@EventHandler
 		public void onCraftItemEvent(CraftItemEvent event) {
-			if (!player.contains(event.getWhoClicked())){
+			if (!cauldronUserPlayers.contains(event.getWhoClicked())){
 				return;
 			}
 
-			for(int i=0; i<player.size(); i++){	
-				if (player.get(i) == event.getWhoClicked()){
+			for(int i = 0; i< cauldronUserPlayers.size(); i++){
+				if (cauldronUserPlayers.get(i) == event.getWhoClicked()){
 					if (usingCauldronbench.get(i)) {
 
 						ItemStack item = event.getCurrentItem();
 						for (int j=0; j<ShapedCauldronRecipes.size(); j++){
 							if (item.getTypeId() == ShapedCauldronRecipes.get(j).getResult().getTypeId() && event.isShiftClick()){
-								player.get(i).sendMessage(ChatColor.RED+"You can't ShiftClick cauldron recipes at this time!");
+								cauldronUserPlayers.get(i).sendMessage(ChatColor.RED+"You can't ShiftClick cauldron recipes at this time!");
 								event.setCancelled(true);
 								break;
 							}
@@ -303,18 +311,18 @@ public class SkillCauldron extends PassiveSkill {
 			}
 		}
 
-		//Flush iterators onInventoryCloseEvent if iterator contains player.
+		//Flush iterators onInventoryCloseEvent if iterator contains cauldronUserPlayers.
 		@EventHandler
 		public void onInventoryCloseEvent(InventoryCloseEvent event){
-			if(!player.contains(event.getPlayer())){
+			if(!cauldronUserPlayers.contains(event.getPlayer())){
 				return;
 			}
 
-			for(int i = 0; i < player.size(); i++){
-				if (player.get(i) == event.getPlayer()){
+			for(int i = 0; i < cauldronUserPlayers.size(); i++){
+				if (cauldronUserPlayers.get(i) == event.getPlayer()){
 					usingCauldronbench.set(i, false);
 					bCanMake.set(i, false);
-					player.remove(i);
+					cauldronUserPlayers.remove(i);
 					usingCauldronbench.remove(i);
 					bCanMake.remove(i);
 				}
@@ -331,8 +339,8 @@ public class SkillCauldron extends PassiveSkill {
 	/**
 	 * Determines if a recipe is equivalent to a given shaped recipe
 	 * 
-	 * @param ShapedRecipe shapedRecipe
-	 * @param Recipe recipe
+	 * @param shapedRecipe
+	 * @param recipe
 	 * @return boolean
 	 **/
 	public boolean compareRecipes(ShapedRecipe shapedRecipe, Recipe recipe) {
@@ -342,7 +350,7 @@ public class SkillCauldron extends PassiveSkill {
 		}
 		ShapedRecipe comparedRecipe = (ShapedRecipe)recipe;
 		//If results don't match, then obviously its not the same 
-		if(comparedRecipe.getResult().getTypeId() != shapedRecipe.getResult().getTypeId()) {
+		if(comparedRecipe.getResult().getType() != shapedRecipe.getResult().getType()) {
 			return false;
 		}
 		/*
