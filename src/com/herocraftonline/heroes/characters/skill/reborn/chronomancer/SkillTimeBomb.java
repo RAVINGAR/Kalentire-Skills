@@ -26,7 +26,6 @@ import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
-import org.bukkit.plugin.Plugin;
 import org.bukkit.util.Vector;
 
 import java.util.Collection;
@@ -83,12 +82,16 @@ public class SkillTimeBomb extends ActiveSkill {
     @Override
     public ConfigurationSection getDefaultConfig() {
         ConfigurationSection config = super.getDefaultConfig();
-        config.set(SkillSetting.DAMAGE.node(), 45.0);
         config.set(SkillSetting.DURATION.node(), 5000);
         config.set("mana-percent-increase", 1.25);
         config.set("stamina-percent-increase", 1.25);
         config.set("mana-percent-decrease", 0.75);
         config.set("stamina-percent-decrease", 0.75);
+        config.set(BasicMissile.PROJECTILE_SIZE_NODE, 0.65);
+        config.set(BasicMissile.PROJECTILE_PIERCES_ON_HIT_NODE, false);
+        config.set(BasicMissile.PROJECTILE_VELOCITY_NODE, 35.0);
+        config.set(BasicMissile.PROJECTILE_GRAVITY_NODE, 22.05675);
+        config.set(BasicMissile.PROJECTILE_DURATION_TICKS_NODE, 30);
         return config;
     }
 
@@ -119,7 +122,7 @@ public class SkillTimeBomb extends ActiveSkill {
             super(plugin, skill, hero);
 
             this.explosionRadius = SkillConfigManager.getUseSetting(hero, skill, "explosion-radius", 4.0, false);
-            this.visualEffect = new TimeBombVisualEffect(this.effectManager, getEntityDetectRadius(), 0);
+            this.visualEffect = new TimeBombVisualEffect(this.effectManager, getEntityDetectRadius());
         }
 
         @Override
@@ -129,8 +132,12 @@ public class SkillTimeBomb extends ActiveSkill {
             }
 
             if (this.getTicksLived() % 4 == 0) {
-                getWorld().playSound(getLocation(), Sound.ENTITY_GHAST_SHOOT, 0.5F, 0.5F);
+                getWorld().playSound(getLocation(), Sound.ENTITY_ILLUSION_ILLAGER_CAST_SPELL, 0.5F, 0.5F);
             }
+        }
+
+        protected boolean isInvalidTarget(Entity entity) {
+            return !(entity instanceof LivingEntity) || entity.equals(player) || hitTargets.contains(entity);
         }
 
         @Override
@@ -161,8 +168,9 @@ public class SkillTimeBomb extends ActiveSkill {
                 SkillTimeShift timeShiftSkill = (SkillTimeShift) plugin.getSkillManager().getSkill(SkillTimeShift.skillName);
                 CharacterTemplate targetCt = plugin.getCharacterManager().getCharacter(target);
                 if (hero.isAlliedTo(target)) {
-                    if (hero.getPlayer() != target)
+                    if (hero.getPlayer() != target) {
                         timeShiftSkill.use(hero, target, new String[]{"NoBroadcast"});
+                    }
                     targetCt.addEffect(new ManaIncreaseEffect(skill, player, (long) duration, manaPercentIncrease));
                     targetCt.addEffect(new StaminaIncreaseEffect(skill, player, (long) duration, staminaPercentIncrease));
                 } else {
@@ -178,7 +186,6 @@ public class SkillTimeBomb extends ActiveSkill {
     }
 
     class ManaIncreaseEffect extends ManaRegenPercentIncreaseEffect {
-
         ManaIncreaseEffect(Skill skill, Player applier, long duration, double delta) {
             super(skill, applier, duration, delta, applyText, expireText);
             types.add(EffectType.TEMPORAL);
@@ -266,21 +273,26 @@ public class SkillTimeBomb extends ActiveSkill {
         private int secondaryParticleCount;
         private double secondaryRadiusDecrease;
 
+        TimeBombVisualEffect(EffectManager effectManager, double radius) {
+            this(effectManager, radius, 0);
+        }
+
         TimeBombVisualEffect(EffectManager effectManager, double radius, double decreasePerTick) {
             super(effectManager);
 
             this.period = 1;
             this.iterations = 500;
+            this.type = de.slikey.effectlib.EffectType.REPEATING;
 
             this.primaryParticle = Particle.REDSTONE;
-            this.primaryColor = Color.GRAY;
+            this.primaryColor = Color.YELLOW;
             this.primaryRadius = radius;
             this.primaryRadiusDecrease = decreasePerTick / this.period;
             this.primaryYOffset = 0.0D;
             this.primaryParticleCount = 10;
 
             this.secondaryParticle = Particle.SPELL_MOB;
-            this.secondaryColor = Color.GRAY;
+            this.secondaryColor = Color.TEAL;
             this.secondaryRadius = secondaryRadiusMultiplier(radius);
             this.secondaryRadiusDecrease = secondaryRadiusMultiplier(decreasePerTick) / this.period;
             this.secondaryYOffset = 0.0D;
@@ -293,8 +305,6 @@ public class SkillTimeBomb extends ActiveSkill {
             if (primaryRadius > 0)
                 displaySphere(this.primaryRadius, this.primaryYOffset, this.primaryParticle, this.primaryColor, this.primaryParticleCount);
 
-            displayCenter();
-
             if (secondaryRadiusDecrease != 0.0D)
                 this.secondaryRadius -= secondaryRadiusDecrease;
             if (secondaryRadius > 0)
@@ -303,14 +313,6 @@ public class SkillTimeBomb extends ActiveSkill {
 
         private double secondaryRadiusMultiplier(double radiusValue) {
             return radiusValue * 1.2;
-        }
-
-        private void displayCenter() {
-            Location location = this.getLocation();
-            Vector vector = new Vector(0.0D, primaryYOffset, 0.0D);
-            location.add(vector);
-            this.display(Particle.SPIT, location);
-            location.subtract(vector);
         }
 
         private void displaySphere(double radiusToUse, double yOffset, Particle particle, Color color, int particleCount) {

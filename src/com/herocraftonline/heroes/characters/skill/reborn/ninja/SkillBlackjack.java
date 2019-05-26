@@ -65,8 +65,8 @@ public class SkillBlackjack extends TargettedSkill {
         config.set(SkillSetting.MAX_DISTANCE.node(), 4.5);
         config.set(SkillSetting.DAMAGE.node(), 30.0);
         config.set("stealthy-damage", 60.0);
-        config.set(SkillSetting.DAMAGE_INCREASE_PER_STRENGTH.node(), 1.0);
-        config.set(SkillSetting.DURATION_INCREASE_PER_CHARISMA.node(), 15.0);
+        config.set(SkillSetting.DAMAGE_INCREASE_PER_STRENGTH.node(), 0.0);
+        config.set(SkillSetting.DURATION_INCREASE_PER_CHARISMA.node(), 0.0);
         config.set("stealthy-duration", 1500);
         config.set("stun-duration", 1250);
         return config;

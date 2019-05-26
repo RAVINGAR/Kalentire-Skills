@@ -83,17 +83,21 @@ public class SkillCombust extends TargettedSkill {
             target.setFireTicks(0);
         }
 
+        double totalDamage = damage + addedDamage;
+        String message = "    " + ChatComponents.GENERIC_SKILL + ChatColor.GOLD + "Combust Damage: " + Util.decFormat.format(totalDamage);
+
         if (addedDamage > 0) {
             double maximumBurningDamage = SkillConfigManager.getUseSetting(hero, this, "maximum-burning-damage", 100.0, false);
             if (addedDamage > maximumBurningDamage) {
                 addedDamage = maximumBurningDamage;
             }
-            hero.getPlayer().sendMessage("    " + ChatComponents.GENERIC_SKILL + ChatColor.GOLD + "Combust Burning Damage: " + addedDamage);
+            message+= " (" + addedDamage + " from Burning)";
         }
-        damage+= addedDamage;
+
+        hero.getPlayer().sendMessage(message);
 
         addSpellTarget(target, hero);
-        damageEntity(target, hero.getPlayer(), damage, EntityDamageEvent.DamageCause.MAGIC);
+        damageEntity(target, hero.getPlayer(), totalDamage, EntityDamageEvent.DamageCause.MAGIC);
 
         FireworkEffect firework = FireworkEffect.builder()
                 .flicker(false)

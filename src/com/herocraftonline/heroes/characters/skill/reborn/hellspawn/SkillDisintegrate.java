@@ -75,17 +75,21 @@ public class SkillDisintegrate extends TargettedSkill {
             targetCT.removeEffect(effect);
         }
 
+        double totalDamage = damage + addedDamage;
+        String message = "    " + ChatComponents.GENERIC_SKILL + ChatColor.DARK_PURPLE + "Disintegrate Damage: " + Util.decFormat.format(totalDamage);
+
         if (addedDamage > 0) {
             double maximumAddedDamage = SkillConfigManager.getUseSetting(hero, this, "maximum-consume-damage", 100.0, false);
             if (addedDamage > maximumAddedDamage) {
                 addedDamage = maximumAddedDamage;
             }
-            hero.getPlayer().sendMessage("    " + ChatComponents.GENERIC_SKILL + ChatColor.DARK_PURPLE + "Disintegrate Consume Damage: " + addedDamage);
+            message+= " (" + addedDamage + " from Withering Effects)";
         }
 
-        damage += addedDamage;
+        hero.getPlayer().sendMessage(message);
+
         addSpellTarget(target, hero);
-        damageEntity(target, hero.getPlayer(), damage, EntityDamageEvent.DamageCause.MAGIC);
+        damageEntity(target, hero.getPlayer(), totalDamage, EntityDamageEvent.DamageCause.MAGIC);
 
         FireworkEffect firework = FireworkEffect.builder()
                 .flicker(false)

@@ -1,8 +1,7 @@
-package com.herocraftonline.heroes.characters.skill.reborn.dragoon;
+package com.herocraftonline.heroes.characters.skill.reborn.shared;
 
 import com.google.common.collect.Lists;
 import com.herocraftonline.heroes.Heroes;
-import com.herocraftonline.heroes.attributes.AttributeType;
 import com.herocraftonline.heroes.characters.Hero;
 import com.herocraftonline.heroes.characters.effects.EffectType;
 import com.herocraftonline.heroes.characters.skill.PassiveSkill;
@@ -21,9 +20,8 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.entity.EntityDamageEvent.DamageCause;
 
-import java.util.logging.Level;
-
 public class SkillTumble extends PassiveSkill {
+    private static final int BASE_FALL_DISTANCE = 3;
 
     public SkillTumble(Heroes plugin) {
         super(plugin, "Tumble");
@@ -37,15 +35,20 @@ public class SkillTumble extends PassiveSkill {
     public String getDescription(Hero hero) {
         String description = "";
 
-        double distance = SkillConfigManager.getScaledUseSettingInt(hero, this, "distance", false);
-        if (distance == 3)
+        int distance = BASE_FALL_DISTANCE + SkillConfigManager.getScaledUseSettingInt(hero, this, "extra-distance", false);
+
+        if (distance == BASE_FALL_DISTANCE) {
             description = "You aren't very good at breaking your fall, and will take full fall damage when falling down a block height greater than 3.";
-        else if (distance > 0 && distance < 3)
-            description = "You are terrible at bracing yourself, and will take " + Util.decFormat.format(3 - distance) + " additional blocks of fall damage when falling down a block height greater than 3!";
-        else if (distance < 0)
-            description = "You are extremely terrible at bracing yourself, and will take an additional " + Util.decFormat.format(3 + (distance * -1)) + " blocks of fall damage when falling down a block height greater than 3!";
-        else
+        } else if (distance > 0 && distance < BASE_FALL_DISTANCE) {
+            description = "You are terrible at bracing yourself, and will take " + Util.decFormat.format(BASE_FALL_DISTANCE - distance) +
+                    " additional blocks of fall damage when falling down a block height greater than 3!";
+        } else if (distance < 0) {
+            description = "You are extremely terrible at bracing yourself, and will take an additional " +
+                    Util.decFormat.format(BASE_FALL_DISTANCE + (distance * -1)) +
+                    " blocks of fall damage when falling down a block height greater than 3!";
+        } else {
             description = "You are adept at bracing yourself, and will only take fall damage when falling down a block height greater than " + Util.decFormat.format(distance) + "!";
+        }
 
         return getDescription()
                 .replace("$1", description);
@@ -54,9 +57,9 @@ public class SkillTumble extends PassiveSkill {
     @Override
     public ConfigurationSection getDefaultConfig() {
         ConfigurationSection config = super.getDefaultConfig();
-        config.set("base-distance", 0);
-        config.set("distance-increase-per-level", 0.16);
-        config.set("distance-increase-per-dexterity-level", 0.16);
+        config.set("extra-distance", 0);
+        config.set("extra-distance-per-level", 0.16);
+        config.set("extra-distance-per-dexterity-level", 0.16);
         config.set("ncp-exemption-duration", 0);
         return config;
     }
@@ -69,20 +72,22 @@ public class SkillTumble extends PassiveSkill {
             this.skill = skill;
         }
 
-        @EventHandler(priority = EventPriority.LOWEST)
+        // Do not change priority. We need LOWEST so that we apply damage changes before Heroes scales it to "hero" numbers.
+        @EventHandler(priority = EventPriority.LOWEST, ignoreCancelled = true)
         public void onEntityDamage(final EntityDamageEvent event) {
             if (!(event.getEntity() instanceof Player) || event.getCause() != DamageCause.FALL) {
                 return;
             }
 
             Hero hero = plugin.getCharacterManager().getHero((Player) event.getEntity());
-            if (!hero.hasEffect("Tumble") || hero.hasEffectType(EffectType.SAFEFALL)) {
+            if (!hero.hasEffect(skill.getName()) || hero.hasEffectType(EffectType.SAFEFALL)) {
                 return;
             }
 
-            double distance = SkillConfigManager.getScaledUseSettingInt(hero, skill, "distance", false);
+            int damageReduction = SkillConfigManager.getScaledUseSettingInt(hero, skill, "extra-distance", false);
+
             double fallDistance = event.getDamage();
-            fallDistance -= distance;
+            fallDistance -= damageReduction;
 
             final double fallDamage = fallDistance;
 

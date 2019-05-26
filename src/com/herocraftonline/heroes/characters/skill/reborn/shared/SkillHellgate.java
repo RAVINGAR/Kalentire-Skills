@@ -47,7 +47,6 @@ public class SkillHellgate extends ActiveSkill {
 
         String defaultWorld = SkillConfigManager.getUseSetting(hero, this, "default-return", "world");
         String hellWorld = SkillConfigManager.getUseSetting(hero, this, "hell-world", "world_nether");
-        //World world = null;
         World world;
         Location teleportLocation = null;
         Location castLocation = player.getLocation().clone();
@@ -99,7 +98,7 @@ public class SkillHellgate extends ActiveSkill {
         }
 
         if (hero.hasParty()) {
-            int rangeSquared = (int) Math.pow(SkillConfigManager.getScaledUseSettingDouble(hero, this, SkillSetting.DAMAGE, false), 2);
+            double rangeSquared = Math.pow(SkillConfigManager.getScaledUseSettingDouble(hero, this, SkillSetting.DURATION, false), 2);
             for (Hero targetHero : hero.getParty().getMembers()) {
                 Player target = targetHero.getPlayer();
                 if (target.equals(player)) {

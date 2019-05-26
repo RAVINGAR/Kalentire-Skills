@@ -112,11 +112,17 @@ public class SkillTimeDifferential extends TargettedSkill {
         if (target.getHealth() < 0 || target.isDead())
             return;
 
-        // TODO: Better sound.
         if (targetCT.tryHeal(hero, skill, finalHealing)) {
-            world.playSound(loc, Sound.BLOCK_NOTE_HARP, 1.0f, 1.0F);
+            world.playSound(loc, Sound.BLOCK_NOTE_BASEDRUM, 1.0f, 1.0F);
+            world.playSound(loc, Sound.BLOCK_NOTE_PLING, 1.0f, 1.0F);
         }
-        player.sendMessage("    " + ChatComponents.GENERIC_SKILL + ChatColor.DARK_AQUA + "You remove " + finalCount + " temporal effects from " + target.getName());
+
+        String message = "    " + ChatComponents.GENERIC_SKILL + ChatColor.AQUA + "Differential Healing: " + Util.decFormat.format(finalHealing);
+        double bonus = finalHealing - baseHealing;
+        if (bonus > 0.0) {
+            message+= " (" + Util.decFormat.format(bonus) + " from " + finalCount + " Temporal Effects)";
+        }
+        player.sendMessage(message);
 
         em.start(visualEffect);
         em.disposeOnTermination();
@@ -180,7 +186,13 @@ public class SkillTimeDifferential extends TargettedSkill {
         plugin.getDamageManager().addSpellTarget(target, hero, skill);
         damageEntity(target, player, finalDamage, DamageCause.MAGIC, false);
         world.playSound(loc, Sound.BLOCK_GLASS_BREAK, 1.0f, 1.0F);
-        player.sendMessage("    " + ChatComponents.GENERIC_SKILL + ChatColor.DARK_AQUA + "You remove " + finalCount + " temporal effects from " + target.getName());
+
+        String message = "    " + ChatComponents.GENERIC_SKILL + ChatColor.YELLOW + "Differential Damage: " + Util.decFormat.format(finalDamage);
+        double bonus = finalDamage - baseDamage;
+        if (bonus > 0.0) {
+            message+= " (" + Util.decFormat.format(bonus) + " from " + finalCount + " Temporal Effects)";
+        }
+        player.sendMessage(message);
 
         em.start(visualEffect);
         em.disposeOnTermination();
