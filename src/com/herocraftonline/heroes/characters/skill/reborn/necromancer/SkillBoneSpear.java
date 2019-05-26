@@ -13,7 +13,6 @@ import org.bukkit.Location;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
 import org.bukkit.configuration.ConfigurationSection;
-import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.util.Vector;
 
@@ -53,8 +52,8 @@ public class SkillBoneSpear extends ActiveSkill {
 
         return getDescription()
                 .replace("$1", pierceText)
-                .replace("$2", Util.decFormat.format(damage)
-                        .replace("$3", knockbackText));
+                .replace("$2", Util.decFormat.format(damage))
+                .replace("$3", knockbackText);
     }
 
     public ConfigurationSection getDefaultConfig() {

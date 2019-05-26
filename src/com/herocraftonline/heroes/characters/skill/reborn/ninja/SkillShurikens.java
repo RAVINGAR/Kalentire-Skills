@@ -44,7 +44,7 @@ public class SkillShurikens extends PassiveSkill {
 
     public SkillShurikens(Heroes plugin) {
         super(plugin, "Shurikens");
-        setDescription("Right click with a $4 in hand to throw $1 $2 damage and can be thrown every $3 second(s). " +
+        setDescription("Right click with a ($4) in hand to throw $1 $2 damage and can be thrown every $3 second(s). " +
                 "Offhanding works too!");
         setArgumentRange(0, 0);
         setTypes(SkillType.AGGRESSIVE, SkillType.DAMAGING, SkillType.ABILITY_PROPERTY_PROJECTILE, SkillType.UNBINDABLE);
@@ -63,13 +63,14 @@ public class SkillShurikens extends PassiveSkill {
             numShurikenText = "a Shuriken! Shuriken deal";
 
         double damage = SkillConfigManager.getScaledUseSettingDouble(hero, this, SkillSetting.DAMAGE, false);
-
         int cooldown = SkillConfigManager.getUseSetting(hero, this, SkillSetting.COOLDOWN, 1000, false);
+        List<String> weapons = SkillConfigManager.getUseSetting(hero, this, "toss-weapons", defaultWeapons);
 
         return getDescription()
                 .replace("$1", numShurikenText)
                 .replace("$2", Util.decFormat.format(damage))
-                .replace("$3", Util.decFormat.format(cooldown / 1000.0));
+                .replace("$3", Util.decFormat.format(cooldown / 1000.0))
+                .replace("$4", String.join(", ", weapons));
     }
 
     public ConfigurationSection getDefaultConfig() {

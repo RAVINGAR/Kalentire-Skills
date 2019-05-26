@@ -66,6 +66,7 @@ public class SkillAetherOrb extends ActiveSkill {
 		config.set(SkillSetting.DURATION.node(), 6000);
 		config.set(SkillSetting.DAMAGE_TICK.node(), 50d);
 		config.set(BasicMissile.PROJECTILE_VELOCITY_NODE, 20.0);
+        config.set(BasicMissile.PROJECTILE_PIERCES_ON_HIT_NODE, true);
         config.set(BasicMissile.PROJECTILE_SIZE_NODE, 0.2);
         config.set(BasicMissile.PROJECTILE_GRAVITY_NODE, 12.25375);
         config.set(BasicMissile.PROJECTILE_DURATION_TICKS_NODE, 999999);
@@ -90,26 +91,16 @@ public class SkillAetherOrb extends ActiveSkill {
 		}
 
         @Override
-        protected boolean onCollideWithEntity(Entity entity) {
-            return false;
-        }
-
-        @Override
-        protected void onEntityPassed(Entity entity, Vector passOrigin, Vector passForce) {
-            return;
-        }
-
-        @Override
-        protected void onEntityHit(Entity entity, Vector hitOrigin, Vector hitForce) {
-            return;
-        }
-
-        @Override
 		protected void onBlockHit(Block block, Vector hitPoint, BlockFace hitFace, Vector hitForce) {
 			explodeIntoGroundEffect(block.getRelative(hitFace).getLocation());
 		}
 
-		private void explodeIntoGroundEffect(Location location) {
+        @Override
+        protected void onValidTargetFound(LivingEntity target, Vector origin, Vector passForce) {
+            explodeIntoGroundEffect(target.getLocation());
+        }
+
+        private void explodeIntoGroundEffect(Location location) {
             long period = SkillConfigManager.getUseSetting(hero, skill, SkillSetting.PERIOD, 500, false);
             long duration = SkillConfigManager.getUseSetting(hero, skill, SkillSetting.DURATION, 6000, false);
 

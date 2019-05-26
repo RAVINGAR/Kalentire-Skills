@@ -62,8 +62,8 @@ public class SkillGust extends ActiveSkill {
 
         return getDescription()
                 .replace("$1", pierceText)
-                .replace("$2", Util.decFormat.format(damage)
-                .replace("$3", knockbackText));
+                .replace("$2", Util.decFormat.format(damage))
+                .replace("$3", knockbackText);
     }
 
     public ConfigurationSection getDefaultConfig() {

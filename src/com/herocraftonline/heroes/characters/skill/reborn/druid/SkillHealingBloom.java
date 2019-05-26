@@ -40,23 +40,23 @@ public class SkillHealingBloom extends ActiveSkill {
         double healing = SkillConfigManager.getUseSetting(hero, this, SkillSetting.HEALING_TICK, 17.0, false);
         healing = getScaledHealing(hero, healing);
 
-        String formattedHealing = Util.decFormat.format(healing * ((double) duration / (double) period));
-        String formattedSelfHealing = Util.decFormat.format((healing * ((double) duration / (double) period)) * Heroes.properties.selfHeal);
-        String formattedDuration = Util.decFormat.format(duration / 1000.0);
+        double tickMultiplier = (double) duration / (double) period;
 
-        return getDescription().replace("$1", radius + "").replace("$2", formattedHealing).replace("$3", formattedDuration).replace("$4", formattedSelfHealing);
+        return getDescription()
+                .replace("$1", Util.decFormat.format(radius))
+                .replace("$2", Util.decFormat.format(healing * tickMultiplier))
+                .replace("$3", Util.decFormat.format(duration / 1000.0))
+                .replace("$4", Util.decFormat.format(healing * Heroes.properties.selfHeal * tickMultiplier));
     }
 
     public ConfigurationSection getDefaultConfig() {
-        ConfigurationSection node = super.getDefaultConfig();
-
-        node.set(SkillSetting.DURATION.node(), 20000);
-        node.set(SkillSetting.RADIUS.node(), 15);
-        node.set(SkillSetting.PERIOD.node(), 2000);
-        node.set(SkillSetting.HEALING_TICK.node(), 11);
-        node.set(SkillSetting.HEALING_INCREASE_PER_WISDOM.node(), 0.275);
-
-        return node;
+        ConfigurationSection config = super.getDefaultConfig();
+        config.set(SkillSetting.DURATION.node(), 20000);
+        config.set(SkillSetting.RADIUS.node(), 15);
+        config.set(SkillSetting.PERIOD.node(), 2000);
+        config.set(SkillSetting.HEALING_TICK.node(), 11);
+        config.set(SkillSetting.HEALING_INCREASE_PER_WISDOM.node(), 0.0);
+        return config;
     }
 
     public SkillResult use(Hero hero, String[] args) {

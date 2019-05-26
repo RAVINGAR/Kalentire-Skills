@@ -3,6 +3,7 @@ package com.herocraftonline.heroes.characters.skill.reborn.ninja;
 import com.herocraftonline.heroes.Heroes;
 import com.herocraftonline.heroes.api.SkillResult;
 import com.herocraftonline.heroes.characters.Hero;
+import com.herocraftonline.heroes.characters.effects.EffectType;
 import com.herocraftonline.heroes.characters.effects.common.InvisibleEffect;
 import com.herocraftonline.heroes.characters.skill.*;
 import com.herocraftonline.heroes.chat.ChatComponents;
@@ -12,6 +13,8 @@ import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
+import org.bukkit.potion.PotionEffect;
+import org.bukkit.potion.PotionEffectType;
 
 import java.util.HashMap;
 import java.util.Iterator;
@@ -28,7 +31,7 @@ public class SkillFade extends ActiveSkill {
 
     public SkillFade(Heroes plugin) {
         super(plugin, "Fade");
-        setDescription("You fade into the shadows, hiding you from view. Any unstealthy movements will cause you to reappear.");
+        setDescription("You fade into the shadows, hiding you from view. Any unstealthy movements will cause you to reappear. $1");
         setNotes("Note: Taking damage, moving, or causing damage removes the effect");
         setUsage("/skill fade");
         setIdentifiers("skill fade");
@@ -41,7 +44,16 @@ public class SkillFade extends ActiveSkill {
 
     @Override
     public String getDescription(Hero hero) {
-        return getDescription();
+        double requiredLightLevel = SkillConfigManager.getUseSetting(hero, this, "max-light-level", 8, false);
+        String lightLevelText = "";
+        if (requiredLightLevel < 0) {
+            lightLevelText = "You can use this ability even in broad daylight!";
+        } else {
+            lightLevelText = "Requires it to be somewhat dark to use.";
+        }
+
+        return getDescription()
+                .replace("$1", lightLevelText);
     }
 
     @Override
@@ -82,14 +94,23 @@ public class SkillFade extends ActiveSkill {
         long duration = SkillConfigManager.getScaledUseSettingInt(hero, this, SkillSetting.DURATION, false);
 
         player.getWorld().playEffect(loc, org.bukkit.Effect.EXTINGUISH, 0, 10);
-        hero.addEffect(new InvisibleEffect(this, effectName, player, duration, applyText, expireText));
+        hero.addEffect(new FadeEffect(this, player, duration));
 
         moveChecker.addHero(hero);
         return SkillResult.NORMAL;
     }
 
-    public class FadeMoveChecker implements Runnable {
+    private class FadeEffect extends InvisibleEffect {
+        FadeEffect(Skill skill, Player applier, long duration) {
+            super(skill, effectName, applier, duration, applyText, expireText);
 
+            types.add(EffectType.NIGHT_VISION);
+
+            addPotionEffect(new PotionEffect(PotionEffectType.NIGHT_VISION, (int) duration / 50, 0));
+        }
+    }
+
+    public class FadeMoveChecker implements Runnable {
         private Map<Hero, Location> oldLocations = new HashMap<>();
         private Skill skill;
 

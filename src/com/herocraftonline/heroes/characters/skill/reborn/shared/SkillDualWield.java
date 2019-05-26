@@ -31,8 +31,8 @@ public class SkillDualWield extends PassiveSkill {
 
     public SkillDualWield(Heroes plugin) {
         super(plugin, "DualWield");
-        setDescription("You are able to wield two weapons! After every $1 attacks with your mainhand weapon, "
-                + "you will follow up with an additional attack with your offhand weapon, dealing $2% of its normal damage");
+        setDescription("You are able to wield two weapons! After every $1 attack(s) with your main-hand weapon, " +
+                "you will follow up with an additional attack with your offhand weapon, dealing $2% of its normal damage.");
         setTypes(SkillType.ABILITY_PROPERTY_PHYSICAL, SkillType.DAMAGING);
 
         Bukkit.getServer().getPluginManager().registerEvents(new SkillHeroListener(this), plugin);

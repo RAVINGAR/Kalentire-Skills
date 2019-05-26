@@ -102,7 +102,7 @@ public class SkillTremor extends ActiveSkill {
 
             // Damage the target
             addSpellTarget(target, hero);
-            damageEntity(target, player, damage, DamageCause.MAGIC, false);
+            damageEntity(target, player, damage, DamageCause.ENTITY_ATTACK, false);
 
             // Do our knockback
             Location playerLoc = player.getLocation();

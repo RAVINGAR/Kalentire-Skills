@@ -67,7 +67,7 @@ public class SkillConvocation extends ActiveSkill {
             summon.setTargetIfAble(null, false);
             summon.getEntity().teleport(playerLoc);
             summon.addEffect(new SpeedEffect(this, "ConvocationSpeed", player, duration, speedAmplifier));
-//            summon.addEffect(new PeriodicHealEffect(this, "ConvocationHealing", player, duration, speedAmplifier));   // TODO: Add this
+//            summon.addEffect(new PeriodicHealEffect(this, "ConvocationHealing", player, duration, speedAmplifier));   // TODO: Add this?
         }
 
 //        player.getWorld().playEffect(player.getLocation(), Effect.ENDEREYE_LAUNCH, 3);

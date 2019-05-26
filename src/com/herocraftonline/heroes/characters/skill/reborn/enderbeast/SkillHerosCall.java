@@ -36,7 +36,7 @@ public class SkillHerosCall extends ActiveSkill {
 
     public SkillHerosCall(Heroes plugin) {
         super(plugin, "HerosCall");
-        setDescription("You taunt all nearby" + ChatColor.ITALIC + "'Heroes'" + ChatColor.RESET + " in a $1 block radius around you. " +
+        setDescription("You taunt all nearby enemies in a $1 block radius around you. " +
                 "The effect lasts for $2 second(s). " +
                 "Not very effective if you are in your human form.");
         setArgumentRange(0, 0);

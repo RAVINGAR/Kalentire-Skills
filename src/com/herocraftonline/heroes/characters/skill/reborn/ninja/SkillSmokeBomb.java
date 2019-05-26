@@ -107,7 +107,7 @@ public class SkillSmokeBomb extends ActiveSkill {
 
     public class SmokeEffect extends InvisibleEffect {
         SmokeEffect(Skill skill, Player applier, long duration) {
-            super(skill, applier, duration, null, null);
+            super(skill, "Smoked", applier, duration, null, null);
         }
 
         @Override

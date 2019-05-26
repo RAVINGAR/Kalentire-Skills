@@ -75,6 +75,7 @@ public class SkillGreatFireball extends ActiveSkill {
         config.set("burn-damage-multiplier", 2.0);
         config.set("fire-tick-ground-radius", 2.5);
         config.set(BasicMissile.PROJECTILE_SIZE_NODE, 0.65);
+        config.set(BasicMissile.PROJECTILE_PIERCES_ON_HIT_NODE, false);
         config.set(BasicMissile.PROJECTILE_VELOCITY_NODE, 35.0);
         config.set(BasicMissile.PROJECTILE_GRAVITY_NODE, 22.05675);
         config.set(BasicMissile.PROJECTILE_DURATION_TICKS_NODE, 30);
@@ -108,7 +109,7 @@ public class SkillGreatFireball extends ActiveSkill {
             this.explosionDamage = SkillConfigManager.getUseSetting(hero, skill, "explosion-damage", 25.0, false);
             this.explosionRadius = SkillConfigManager.getUseSetting(hero, skill, "explosion-radius", 4.0, false);
             this.fireTickGroundRadius = SkillConfigManager.getUseSetting(hero, skill, "fire-tick-ground-radius", 2.5, false);
-            this.visualEffect = new GreatFireballVisualEffect(this.effectManager, getEntityDetectRadius(), 0);
+            this.visualEffect = new GreatFireballVisualEffect(this.effectManager, getEntityDetectRadius());
         }
 
         @Override
@@ -122,24 +123,15 @@ public class SkillGreatFireball extends ActiveSkill {
             }
         }
 
-        protected void onFinalTick() {
-            effectManager.dispose();
-        }
-
-        protected boolean onCollideWithEntity(Entity entity) {
-            return entity instanceof LivingEntity && !hero.isAlliedTo((LivingEntity) entity);
-        }
-
         @Override
         protected void onBlockHit(Block block, Vector hitPoint, BlockFace hitFace, Vector hitForce) {
             performExplosion();
         }
 
         @Override
-        protected void onEntityHit(Entity entity, Vector hitOrigin, Vector hitForce) {
+        protected void onValidTargetFound(LivingEntity target, Vector origin, Vector force) {
             performExplosion();
 
-            LivingEntity target = (LivingEntity) entity;
             if (!damageCheck(player, target))
                 return;
 
@@ -186,6 +178,10 @@ public class SkillGreatFireball extends ActiveSkill {
         private double secondaryYOffset;
         private int secondaryParticleCount;
         private double secondaryRadiusDecrease;
+
+        GreatFireballVisualEffect(EffectManager effectManager, double radius) {
+            this(effectManager, radius, 0);
+        }
 
         GreatFireballVisualEffect(EffectManager effectManager, double radius, double decreasePerTick) {
             super(effectManager);

@@ -4,6 +4,7 @@ import com.herocraftonline.heroes.Heroes;
 import com.herocraftonline.heroes.api.SkillResult;
 import com.herocraftonline.heroes.characters.CharacterTemplate;
 import com.herocraftonline.heroes.characters.Hero;
+import com.herocraftonline.heroes.characters.effects.EffectType;
 import com.herocraftonline.heroes.characters.effects.common.BurningEffect;
 import com.herocraftonline.heroes.characters.skill.*;
 import com.herocraftonline.heroes.characters.skill.tools.Missile;
@@ -164,12 +165,11 @@ public class SkillFirenado extends ActiveSkill {
             vEffect.showTornado = true;
             vEffect.tornadoColor = FIRE_RED;
             vEffect.tornadoParticle = Particle.SPELL_MOB;
-            vEffect.distance = 0.375D * 3.0;
             vEffect.cloudParticle = Particle.CLOUD;
             vEffect.cloudColor = FIRE_ORANGE;
             vEffect.cloudSize = 0.25F;
             vEffect.tornadoHeight = (float) radius;
-            vEffect.maxTornadoRadius = (float) radius;
+            vEffect.maxTornadoRadius = (float) radius * 0.5f;
             vEffect.asynchronous = true;
         }
 
@@ -231,23 +231,25 @@ public class SkillFirenado extends ActiveSkill {
             for (Entity ent : nearbyEnts) {
                 if (!(ent instanceof LivingEntity))
                     continue;
-                LivingEntity lEnt = (LivingEntity) ent;
-                if (hitTargets.contains(lEnt))
-                    continue;
-                if (tempIgnoreTargets.contains(lEnt))
-                    continue;
-                if (hero.isAlliedTo(lEnt)) {
-                    hitTargets.add(lEnt);   // Fake a hit so we don't try this guy again.
-                    continue;
-                }
-                if (!damageCheck(player, lEnt)) {
-                    tempIgnoreTargets.add(lEnt);
+
+                LivingEntity nearbyLE = (LivingEntity) ent;
+                if (hitTargets.contains(nearbyLE) || tempIgnoreTargets.contains(nearbyLE) || hero.isAlliedTo(nearbyLE)) {
+                    hitTargets.add(nearbyLE);   // Fake a hit so we don't try this guy again.
                     continue;
                 }
 
-                double distSquared = getLocation().distanceSquared(lEnt.getLocation());
+                CharacterTemplate nearbyCT = plugin.getCharacterManager().getCharacter(nearbyLE);
+                if (nearbyCT.hasEffectType(EffectType.INVIS))
+                    continue;
+
+                if (!damageCheck(player, nearbyLE)) {
+                    tempIgnoreTargets.add(nearbyLE);
+                    continue;
+                }
+
+                double distSquared = getLocation().distanceSquared(nearbyLE.getLocation());
                 if (distSquared <= closestEntDistanceSquared) {
-                    closestEntity = lEnt;
+                    closestEntity = nearbyLE;
                     closestEntDistanceSquared = distSquared;
                 }
             }

@@ -78,18 +78,16 @@ public class SkillBlackjack extends TargettedSkill {
 
         broadcastExecuteText(hero, target);
 
-
         double damage = SkillConfigManager.getScaledUseSettingDouble(hero, this, SkillSetting.DAMAGE, false);
         double stealthyDamage = SkillConfigManager.getScaledUseSettingDouble(hero, this, "stealthy-damage", false);
         long duration = SkillConfigManager.getScaledUseSettingInt(hero, this, "stun-duration", false);
         long stealthyDuration = SkillConfigManager.getScaledUseSettingInt(hero, this, "stealthy-duration", false);
 
         boolean isStealthy = false;
-        for (Effect effect : hero.getEffects()) {
-            if (effect.isType(EffectType.INVIS) || effect.isType(EffectType.SNEAK)) {
-                isStealthy = true;
-                break;
-            }
+
+        double direction = target.getLocation().getDirection().dot(player.getLocation().getDirection());
+        if (hero.hasEffectType(EffectType.INVIS) || direction > 0.0D) {
+            isStealthy = true;
         }
 
         CharacterTemplate targetCT = plugin.getCharacterManager().getCharacter(target);

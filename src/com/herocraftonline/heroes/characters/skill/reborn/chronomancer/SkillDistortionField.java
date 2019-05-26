@@ -31,8 +31,8 @@ public class SkillDistortionField extends TargettedLocationSkill {
 
     public SkillDistortionField(Heroes plugin) {
         super(plugin, "DistortionField");
-        setDescription("You tap into the web of time and distort time within a $1 block radius."
-                + "Any ally will be accelerated and any enemy will be decelerated. The field lasts $2 second(s).");
+        setDescription("You tap into the web of time and distort time within a $1 block radius. " +
+                "Any ally will be accelerated and any enemy will be decelerated. The field lasts $2 second(s).");
         setUsage("/skill distortionfield");
         setArgumentRange(0, 0);
         setIdentifiers("skill distortionfield");

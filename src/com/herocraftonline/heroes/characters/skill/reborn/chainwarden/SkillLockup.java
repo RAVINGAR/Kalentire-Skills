@@ -24,7 +24,7 @@ public class SkillLockup extends ActiveSkill {
     public SkillLockup(Heroes plugin) {
         super(plugin, "Lockup");
         setDescription("You launch a hook for every chain in your chain belt to all targets within $1 blocks, instantly latching onto them and dealing $2 physical damage. " +
-                "Due to the hasty nature of deploying your entire arsenal, these chains are not attached as firmly as normal, and only last for $3 seconds. " +
+                "Due to the hasty nature of deploying your entire arsenal, these chains are not attached as firmly as normal, and only last for $3 second(s). " +
                 "You will also lose your grip on them more easily. Enemies will be hit first, followed by allies if you have any remaining chains left. " +
                 "Allies will not be dealt damage.");
         setUsage("/skill lockup");

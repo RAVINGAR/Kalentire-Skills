@@ -38,7 +38,7 @@ public class SkillManaMissile extends PassiveSkill {
     public SkillManaMissile(Heroes plugin) {
         super(plugin, "ManaMissile");
         setDescription("When you attack when your wand, you also conjure a missile of pure mana that fires towards your enemies. " +
-                "The missile deals $1 damage on hit.");
+                "The missile deals $1 damage on hit. You are no longer able to attack players with your staff's melee hit ");
         setUsage("/skill manamissile");
         setIdentifiers("skill manamissile");
         setArgumentRange(0, 0);

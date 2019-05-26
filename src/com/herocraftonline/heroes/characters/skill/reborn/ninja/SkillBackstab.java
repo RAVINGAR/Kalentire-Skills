@@ -3,7 +3,6 @@ package com.herocraftonline.heroes.characters.skill.reborn.ninja;
 import com.herocraftonline.heroes.Heroes;
 import com.herocraftonline.heroes.api.SkillResult;
 import com.herocraftonline.heroes.api.events.WeaponDamageEvent;
-import com.herocraftonline.heroes.attributes.AttributeType;
 import com.herocraftonline.heroes.characters.CustomNameManager;
 import com.herocraftonline.heroes.characters.Hero;
 import com.herocraftonline.heroes.characters.effects.EffectType;
@@ -74,10 +73,10 @@ public class SkillBackstab extends ActiveSkill implements Passive {
         config.set("weapons", Util.swords);
         config.set("backstab-chance", -1.0);
         config.set("backstab-bonus", 0.05);
-        config.set("backstab-bonus-increase-per-dexterity", 0.04125);
+        config.set("backstab-bonus-increase-per-dexterity", 0.0);
         config.set("ambush-chance", -1.0);
         config.set("ambush-bonus", 0.10);
-        config.set("ambush-bonus-increase-per-dexterity", 0.06375);
+        config.set("ambush-bonus-increase-per-dexterity", 0.0);
         config.set("allow-vanilla-sneaking", true);
         return config;
     }
@@ -94,7 +93,7 @@ public class SkillBackstab extends ActiveSkill implements Passive {
 
         List<String> weapons = SkillConfigManager.getUseSetting(hero, this, "weapons", Util.swords);
 
-        double backstabDamageModifier = 1 +SkillConfigManager.getScaledUseSettingDouble(hero, this, "backstab-bonus", false);
+        double backstabDamageModifier = 1 + SkillConfigManager.getScaledUseSettingDouble(hero, this, "backstab-bonus", false);
         double ambushDamageModifier = 1 + SkillConfigManager.getScaledUseSettingDouble(hero, this, "ambush-bonus", false);
 
         double backstabDamage = 0;
@@ -169,7 +168,6 @@ public class SkillBackstab extends ActiveSkill implements Passive {
 
             Entity target = event.getEntity();
             double direction = target.getLocation().getDirection().dot(player.getLocation().getDirection());
-            //player.sendMessage("Backstab Math Testing - Direction: " + direction);    Less than 0, facing front. Use for HerosCall?
             if (direction <= 0.0D)
                 return;
 
@@ -181,11 +179,11 @@ public class SkillBackstab extends ActiveSkill implements Passive {
             if (hero.hasEffectType(EffectType.SNEAK) || hero.hasEffectType(EffectType.INVIS) || hero.hasEffectType(EffectType.INVISIBILITY) || (allowVanillaSneaking && player.isSneaking())) {
                 chance = SkillConfigManager.getUseSetting(hero, skill, "ambush-chance", -1.0, false);
 
-                damageModifier = SkillConfigManager.getScaledUseSettingDouble(hero, skill, "ambush-bonus", false);
+                damageModifier = 1 + SkillConfigManager.getScaledUseSettingDouble(hero, skill, "ambush-bonus", false);
             } else {
                 chance = SkillConfigManager.getUseSetting(hero, skill, "backstab-chance", -1.0, false);
 
-                damageModifier = SkillConfigManager.getScaledUseSettingDouble(hero, skill, "backstab-bonus", false);
+                damageModifier = 1 + SkillConfigManager.getScaledUseSettingDouble(hero, skill, "backstab-bonus", false);
             }
 
             boolean backStab = false;

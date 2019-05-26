@@ -29,7 +29,7 @@ public class SkillLungingBite extends ActiveSkill {
 
     public SkillLungingBite(Heroes plugin) {
         super(plugin, "LungingBite");
-        setDescription("You lunge forward with transformed jaws, biting any targets in your path and dealing $1 damage. " +
+        setDescription("You lunge forward with transformed jaws, biting any targets in your path and dealing $1 damage to each target you pass. " +
                 "You are healed by $2 for each target you kill with this ability. " +
                 "While transformed, you are healed for $1 instead and any targets caught in your jaws will be held for $3 second(s).");
         setUsage("/skill lungingbite");

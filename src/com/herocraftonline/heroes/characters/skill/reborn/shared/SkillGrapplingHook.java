@@ -53,11 +53,14 @@ public class SkillGrapplingHook extends ActiveSkill {
 
     public SkillGrapplingHook(Heroes plugin) {
         super(plugin, "GrapplingHook");
-        setDescription("Apply a grappling hook to $1 of your arrows. Once attached, your $2 fired within the next $3 seconds will grapple you to the targeted location! Hitting a target with the grappling hook will pull them to you instead however.");
+        setDescription("Apply a grappling hook to $1 of your arrow(s). " +
+                "Once attached, your $2 fired within the next $3 seconds will grapple you to the targeted location! " +
+                "Hitting a target with the grappling hook will pull them to you instead however.");
         setUsage("/skill grapplinghook");
-        setArgumentRange(0, 0);
         setIdentifiers("skill grapplinghook");
+        setArgumentRange(0, 0);
         setTypes(SkillType.ABILITY_PROPERTY_PROJECTILE, SkillType.VELOCITY_INCREASING, SkillType.FORCE);
+
         Bukkit.getServer().getPluginManager().registerEvents(new SkillEntityListener(this), plugin);
     }
 

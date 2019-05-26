@@ -19,16 +19,15 @@ public class SkillDarkAxe extends TargettedSkill {
 
     public SkillDarkAxe(Heroes plugin) {
         super(plugin, "DarkAxe");
-        setDescription("You infuse your axe with dark magic and cleave your target, dealing $1 damage, interrupting their abilities, and slowing them for $2 second(s).");
+        setDescription("You infuse your axe with dark magic and hack at your target, dealing $1 damage, interrupting their abilities, and slowing them for $2 second(s).");
         setUsage("/skill darkaxe");
-        setArgumentRange(0, 0);
         setIdentifiers("skill darkaxe");
+        setArgumentRange(0, 0);
         setTypes(SkillType.ABILITY_PROPERTY_DARK, SkillType.DAMAGING, SkillType.AGGRESSIVE, SkillType.BLINDING, SkillType.INTERRUPTING);
     }
 
     public String getDescription(Hero hero) {
         double damage = SkillConfigManager.getScaledUseSettingDouble(hero, this, SkillSetting.DAMAGE, false);
-
         int duration = SkillConfigManager.getScaledUseSettingInt(hero, this, SkillSetting.DURATION, false);
 
         return getDescription()
