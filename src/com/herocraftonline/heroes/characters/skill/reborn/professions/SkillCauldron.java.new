@@ -1,0 +1,459 @@
+package com.herocraftonline.heroes.characters.skill.reborn.professions;
+/*
+ * TODO: (Updated by Andrew2060 1/17/2012)
+ * - Handling for shift-click results: before commenting on whether this is doable or not I would require more knowledge as to why this was blocked in the first place
+ * - Automatic configuration generation with defaults: not done yet, basically just make sure all the fields (i.e. items 0-8) exist for each recipe just to be safe although the error handling code should already be able to handle this
+ * - Test material-data handling: this is mainly because I was using a weird texture pack where it is not easy to test data values (all the wool colors are the same, don't ask).
+ * - Reimplement shapeless recipes (will require further investigation)
+ * 
+ * Aside from that everything should work, I'm not completely sure about the performance as the code used for recipe generation is fairly tedious (~0.1 sec/call according to profiler)
+ * however I tried to limit the amount of times the most tedious portion of the code gets called (alkarin's portion): it should only trigger for
+ * recipes/item precraft events where the results are the same as a result inside the config.
+ * 
+ * At worst, you'd experience an ~3 second lag if everyone on a 100 person server crafted an item using cauldron at once (tested using a bot heh)
+ * unfortunately with the clunky way bukkit handles recipes (why one would use a multidimensional array when a single list of itemstacks would be sufficient is beyond me, however, that's just the way it is) there's not much way around the lag, as essentially
+ * alkarin's method is one of the ONLY ways to efficiently determine recipe equality when spaces inside recipes are factored into the picture. 
+ */
+
+/*
+ * Bugs fixed in this version:
+ * -Vanilla recipes that share a result with a cauldron recipe not working
+ * -Usage of a deprecated ItemStack constructor method
+ * -Fixed material data to actually be used, instead of sending an invalid byte to the server that at the very best does nothing
+ * -Fixed some inefficient use of variable assignments where configuration instances were triggered inside a for loop repeatedly
+ */
+
+//For reference (up to date 25th May 2019), Creating custom recipes in Bukkit: https://www.spigotmc.org/wiki/recipe-example/
+
+import java.io.File;
+import java.util.ArrayList;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
+import java.util.logging.Level;
+
+import org.bukkit.*;
+import org.bukkit.block.Block;
+import org.bukkit.block.BlockFace;
+import org.bukkit.configuration.ConfigurationSection;
+import org.bukkit.configuration.file.FileConfiguration;
+import org.bukkit.configuration.file.YamlConfiguration;
+import org.bukkit.entity.Player;
+import org.bukkit.event.Event.Result;
+import org.bukkit.event.EventHandler;
+import org.bukkit.event.EventPriority;
+import org.bukkit.event.Listener;
+import org.bukkit.event.block.Action;
+import org.bukkit.event.inventory.CraftItemEvent;
+import org.bukkit.event.inventory.InventoryCloseEvent;
+import org.bukkit.event.inventory.InventoryType;
+import org.bukkit.event.inventory.PrepareItemCraftEvent;
+import org.bukkit.event.player.PlayerInteractEvent;
+import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.Recipe;
+import org.bukkit.inventory.ShapedRecipe;
+import org.bukkit.inventory.meta.ItemMeta;
+import org.bukkit.material.Cauldron;
+
+import com.herocraftonline.heroes.Heroes;
+import com.herocraftonline.heroes.characters.Hero;
+import com.herocraftonline.heroes.characters.effects.EffectType;
+import com.herocraftonline.heroes.characters.skill.PassiveSkill;
+import com.herocraftonline.heroes.characters.skill.Skill;
+import com.herocraftonline.heroes.characters.skill.SkillSetting;
+import com.herocraftonline.heroes.characters.skill.SkillType;
+
+public class SkillCauldron extends PassiveSkill {
+
+	public ArrayList<ShapedRecipe> ShapedCauldronRecipes = new ArrayList<ShapedRecipe>();
+	public ArrayList<Integer> CauldronRecipesLevel = new ArrayList<Integer>();
+	private File CauldronConfigFile;
+	private FileConfiguration CauldronConfig;
+
+	public SkillCauldron(Heroes plugin) {
+		super(plugin, "Cauldron");
+		setDescription("You are able to use cauldrons to make cauldron recipes! Visit hc.to/cauldron for more info");
+		setArgumentRange(0, 0);
+        setTypes(SkillType.ITEM_CREATION, SkillType.ITEM_MODIFYING);
+		setEffectTypes(EffectType.BENEFICIAL);
+		loadCauldronRecipes();
+		Bukkit.getServer().getPluginManager().registerEvents(new SkillListener(this, plugin), plugin);
+	}
+
+	@Override
+	public ConfigurationSection getDefaultConfig() {
+        ConfigurationSection node = super.getDefaultConfig();
+
+        node.set(SkillSetting.APPLY_TEXT.node(), "");
+        node.set(SkillSetting.UNAPPLY_TEXT.node(), "");
+        node.set(SkillSetting.LEVEL.node(), 1);
+
+        return node;
+	}
+
+	public void loadCauldronConfig() {
+		if (CauldronConfigFile == null) {
+			CauldronConfigFile = new File(plugin.getDataFolder(), "CauldronConfig.yml");
+		}
+
+		CauldronConfig = YamlConfiguration.loadConfiguration(CauldronConfigFile);
+	}
+
+	public FileConfiguration getCauldronConfig() {
+		if (CauldronConfig == null) {
+			this.loadCauldronConfig();
+		}
+		return CauldronConfig;
+	}
+
+	public void loadCauldronRecipes() {
+		Server server = plugin.getServer();
+		FileConfiguration config = getCauldronConfig();
+		if (ShapedCauldronRecipes.size() > 0){
+			this.ShapedCauldronRecipes.clear();
+			this.CauldronRecipesLevel.clear();
+		}
+
+		for(int recipeNumber =0; recipeNumber<getCauldronConfig().getInt("CauldronRecipes.size"); recipeNumber++){
+            String resultTypeString = config.getString("CauldronRecipes." + recipeNumber + ".results.type", "");
+            Material resultType = Material.getMaterial(resultTypeString);
+            if (resultTypeString.equals("") || resultType == null){
+                Heroes.log(Level.WARNING, (recipeNumber + 1) + "th recipe failed to load due to a invalid result material: "
+                        + resultTypeString + ". Note material ids are no longer supported use strings e.g. IRON_INGOT.");
+                continue;
+            }
+
+            int resultAmount = config.getInt("CauldronRecipes." + recipeNumber + ".results.result-amount", 1);
+            int resultMaterialData = config.getInt("CauldronRecipes." + recipeNumber + ".results.materialData");
+            ItemStack item = new ItemStack(resultType, resultAmount, (short) resultMaterialData);
+
+            String resultName = config.getString("CauldronRecipes." + recipeNumber + ".results.result-name", "");
+            String key;
+            if (resultName.equals("")){
+                key = "heroes_cauldron_recipe" + recipeNumber;
+            } else {
+                key = "heroes_cauldron_recipe_" + resultName;
+                ItemMeta meta = item.getItemMeta();
+                meta.setDisplayName(resultName);
+            }
+
+            // Check if recipe key already exists
+            // (Probably overkill since we're defining a unique prefix as is..., but I guess its possible a recipe may have the same result name)
+            // Commented out for now as its not likely to be useful currently, though probably isn't slow at all
+//            for (Recipe recipe : server.getRecipesFor(item)){
+//                if (recipe instanceof ShapedRecipe){
+//                    ShapedRecipe shapedRecipe = (ShapedRecipe) recipe;
+//                    if (shapedRecipe.getKey().getKey().equals(key)){
+//                        char lastChar = key.charAt(key.length()-1);
+//                        if (Character.isDigit(lastChar)) {
+//                            // increment key 'number'
+//                            key = key.substring(0,key.length()-1) + (Character.getNumericValue(lastChar) + 1);
+//                        } else {
+//                            key = key + "0";
+//                        }
+//                    }
+//                }
+//            }
+
+            ShapedRecipe shapedRecipe = new ShapedRecipe(new NamespacedKey(plugin, key), item);
+            //TODO: validate recipe
+			//Build a recipe from the ground up because Bukkit does not allow for replacement with Material.AIR
+			String top = "ABC";			//3 Spaces->3 slots
+			String mid = "DEF";
+			String bot = "GHI";
+
+			//Determine what is top
+			for(int j=0; j<3; j++){
+                Material type = getCauldronRecipeIngredientType(config, recipeNumber, j);
+                //If type is null, replace with space
+                if(type != null) {
+					top = top.replace(convertInttoChar(j), ' ') ;
+				}
+			}
+
+			//Determine what is mid
+			for(int j=3; j<6; j++){
+                Material type = getCauldronRecipeIngredientType(config, recipeNumber, j);
+                if(type != null) {
+					mid = mid.replace(convertInttoChar(j), ' ') ;
+				}
+			}
+
+			//Determine what is bot
+			for(int j=6; j<9; j++){
+                Material type = getCauldronRecipeIngredientType(config, recipeNumber, j);
+				if(type != null) {
+					bot = bot.replace(convertInttoChar(j), ' ') ;
+				}
+			}
+
+			//Set our shaped recipe to have this shape.
+			shapedRecipe.shape(top,mid,bot);
+			for(int j=0; j<9; j++) {
+				//Error handling if configuration requirements not met
+                Material ingredientType = getCauldronRecipeIngredientType(config, recipeNumber, j);
+                if(ingredientType != null) {
+                    shapedRecipe.setIngredient(convertInttoChar(j), ingredientType);
+				}
+			}
+			server.addRecipe(shapedRecipe);
+			this.ShapedCauldronRecipes.add(shapedRecipe);
+
+			CauldronRecipesLevel.add(config.getInt("CauldronRecipes."+recipeNumber+".results.Level"));
+
+		}
+
+	}
+
+    private Material getCauldronRecipeIngredientType(FileConfiguration config, int recipeNumber, int ingredientPosition) {
+        String type = config.getString("CauldronRecipes." + recipeNumber + ".ingredients.Materials." + ingredientPosition + ".Type", "");
+        return Material.getMaterial(type);
+    }
+
+    public char convertInttoChar(int i) {
+		switch(i) {
+		case 0: return 'A';
+		case 1: return 'B';
+		case 2: return 'C';
+		case 3: return 'D';
+		case 4: return 'E';
+		case 5: return 'F';
+		case 6: return 'G';
+		case 7: return 'H';
+		case 8: return 'I';
+		default: return 'J';
+		}
+	}
+	public static void openCauldron(Player player) {
+		player.openWorkbench(null, true);
+	}
+
+	public class SkillListener implements Listener {
+
+		private final Skill skill;
+		private final ArrayList<Player> cauldronUserPlayers = new ArrayList<Player>();
+		private final ArrayList<Boolean> usingCauldronbench = new ArrayList<Boolean>();
+		private final ArrayList<Boolean> bCanMake = new ArrayList<Boolean>();
+
+		public SkillListener(Skill skill, Heroes plugin) {
+			this.skill = skill;
+		}
+
+		//Is cauldronUserPlayers clicking cauldron or workbench? Can they use a cauldron? Adds cauldronUserPlayers(s) to iterators, and assign booleans.
+		@EventHandler(priority = EventPriority.LOW)
+		public void onPlayerInteract(PlayerInteractEvent event) {
+			if (event.getClickedBlock() == null || event.getAction() != Action.RIGHT_CLICK_BLOCK) {
+				return;
+			}
+			Hero hero = plugin.getCharacterManager().getHero(event.getPlayer());
+
+			if(event.getClickedBlock().getType() == Material.WORKBENCH){
+				if(!cauldronUserPlayers.contains(event.getPlayer())){
+					cauldronUserPlayers.add(event.getPlayer());
+					usingCauldronbench.add(cauldronUserPlayers.size()-1, false);
+					bCanMake.add(cauldronUserPlayers.size()-1, false);
+				}
+			}
+
+			if (!hero.canUseSkill(skill) && event.getClickedBlock().getType() == Material.CAULDRON) {
+				event.setCancelled(true);
+				event.setUseInteractedBlock(Result.DENY);
+			}
+
+			if(hero.canUseSkill(skill) && event.getClickedBlock().getType() == Material.CAULDRON && !event.isBlockInHand()){
+				if(!cauldronUserPlayers.contains(event.getPlayer())){
+					Location loc = new Location(event.getPlayer().getWorld(),event.getClickedBlock().getLocation().getBlockX(),event.getClickedBlock().getLocation().getBlockY() - 1,event.getClickedBlock().getLocation().getBlockZ());
+					Block fireblock = event.getClickedBlock().getLocation().getBlock().getRelative(BlockFace.DOWN);
+					Cauldron cauldron = (org.bukkit.material.Cauldron) event.getClickedBlock().getState().getData();
+					if(cauldron.isFull() && fireblock.getType() == Material.FIRE) {
+						cauldronUserPlayers.add(event.getPlayer());
+						usingCauldronbench.add(cauldronUserPlayers.size() - 1, true);
+						bCanMake.add(cauldronUserPlayers.size() - 1, false);
+						openCauldron(event.getPlayer());
+					}
+
+				}
+			}
+		}
+
+		//Grabs items in crafting view. Is the cauldronUserPlayers using a workbench or cauldronbench? Is the recipe suitable to be made in work area? Is Player high enough level to make recipe?
+		@EventHandler
+		public void openCauldronevent(PrepareItemCraftEvent event){
+			if(event.getInventory().getType() != InventoryType.WORKBENCH) {
+				return;
+			}
+
+			for(int i = 0; i < cauldronUserPlayers.size(); i++){
+				for(int v = 0; v < event.getViewers().size(); v++){
+					if (event.getViewers().get(v) == cauldronUserPlayers.get(i)){
+
+						Hero hero = plugin.getCharacterManager().getHero(cauldronUserPlayers.get(i));
+						int sLevel = hero.getLevel(hero.getSecondClass());
+						Recipe recipe = event.getRecipe();
+						if(!usingCauldronbench.get(i)) {
+                            for (ShapedRecipe shapedRecipe : ShapedCauldronRecipes) {
+                                //Moved recipe comparison to a seperate function using alkarin's method
+                                //Considering how complex it is
+                                if (!compareRecipes(shapedRecipe, recipe)) {
+                                    bCanMake.set(i, true);
+
+                                } else {
+                                    bCanMake.set(i, false);
+                                    break;
+                                }
+                            }
+						}
+
+						if(usingCauldronbench.get(i)) {
+							for (int j=0; j<ShapedCauldronRecipes.size(); j++){
+								ShapedRecipe shapedRecipe = ShapedCauldronRecipes.get(j);
+
+								if (compareRecipes(shapedRecipe, recipe) && CauldronRecipesLevel.get(j) <= sLevel){
+									bCanMake.set(i, true);
+									break;										
+								}else{
+									bCanMake.set(i, false);
+								}
+							}
+						}
+					}	
+					if (!bCanMake.get(i) && event.getViewers().get(v) == cauldronUserPlayers.get(i)){
+						event.getInventory().setResult(new ItemStack(Material.AIR));
+						break;
+					}
+				}
+			}
+		}
+
+		//Deny ShiftClick at the moment till proper coding of result collection can occur. Alchemist must click per result. (Prevents bugs till fixed)
+		//Possible fix in thread: http://forums.bukkit.org/threads/cant-get-amount-of-shift-click-craft-item.79090/
+		@EventHandler
+		public void onCraftItemEvent(CraftItemEvent event) {
+			if (!cauldronUserPlayers.contains(event.getWhoClicked())){
+				return;
+			}
+
+			for(int i = 0; i< cauldronUserPlayers.size(); i++){
+				if (cauldronUserPlayers.get(i) == event.getWhoClicked()){
+					if (usingCauldronbench.get(i)) {
+
+						ItemStack item = event.getCurrentItem();
+						for (int j=0; j<ShapedCauldronRecipes.size(); j++){
+							if (item.getType().equals(ShapedCauldronRecipes.get(j).getResult().getType()) && event.isShiftClick()){
+								cauldronUserPlayers.get(i).sendMessage(ChatColor.RED+"You can't ShiftClick cauldron recipes at this time!");
+								event.setCancelled(true);
+								break;
+							}
+						}
+					}
+				}
+			}
+		}
+
+		//Flush iterators onInventoryCloseEvent if iterator contains cauldronUserPlayers.
+		@EventHandler
+		public void onInventoryCloseEvent(InventoryCloseEvent event){
+			if(!cauldronUserPlayers.contains(event.getPlayer())){
+				return;
+			}
+
+			for(int i = 0; i < cauldronUserPlayers.size(); i++){
+				if (cauldronUserPlayers.get(i) == event.getPlayer()){
+					usingCauldronbench.set(i, false);
+					bCanMake.set(i, false);
+					cauldronUserPlayers.remove(i);
+					usingCauldronbench.remove(i);
+					bCanMake.remove(i);
+				}
+			}
+		}
+
+	}
+
+	@Override
+	public String getDescription(Hero hero) {
+		return getDescription();
+	}
+
+	/**
+	 * Determines if a recipe is equivalent to a given shaped recipe
+	 * 
+	 * @param shapedRecipe
+	 * @param recipe
+	 * @return boolean
+	 **/
+	public boolean compareRecipes(ShapedRecipe shapedRecipe, Recipe recipe) {
+		//If the recipe in question isn't even a shaped recipe it won't match
+		if(!(recipe instanceof ShapedRecipe)) {
+			return false;
+		}
+		ShapedRecipe comparedRecipe = (ShapedRecipe)recipe;
+		//If results don't match, then obviously its not the same 
+		if(comparedRecipe.getResult().getType() != shapedRecipe.getResult().getType()) {
+			return false;
+		}
+		/*
+		 * The following code shamelessly stolen/VERY slightly (pushing it) adapted (barely at all honestly)
+		 * from alkarin (with permission obviously who do you think I am)
+		 */
+		ShapedRecipe rs[] = {shapedRecipe, comparedRecipe};
+		int nncount[] = new int[2]; //Number of non-null itemstacks inside these two recipes (i.e. slots that contain items)
+		List<LinkedList<ItemStack>> items = new ArrayList<LinkedList<ItemStack>>();
+		for (int k=0;k<rs.length;k++){
+			LinkedList<ItemStack> is = new LinkedList<ItemStack>();
+			items.add(is);
+			String[] shape = rs[k].getShape();
+			Map<Character, ItemStack> ingMap = rs[k].getIngredientMap();
+			boolean firstItemFound = false;
+			/// Add all items to the list, Starting from the first non null/air item
+			for (int i = 0;i < shape.length;i++){
+				for (int j=0;j < shape[i].length();j++){
+					if (shape[i] == null){
+						continue;
+					}
+					ItemStack item = ingMap.get(shape[i].charAt(j));
+					if (item != null){
+						nncount[k]++;
+						firstItemFound = true;
+						if (item.getType() == Material.AIR)
+							item = null;
+
+					}
+					if (firstItemFound){
+						is.add(item);
+					}
+				}
+			}
+		}
+		/// different recipes b/c they have different number of non null itemstacks
+		if (nncount[0]!= nncount[1]){
+			return false;
+		}
+
+		/// Remove nulls / air from the end of the lists
+		for (int i=0;i<items.size();i++){
+			LinkedList<ItemStack> is = items.get(i);
+			for (int j=is.size()-1;j>=0;j--){
+				if (is.get(j) == null)
+					is.remove(j);
+			}
+		}
+		/// Now that we have 2 similar lists, check them
+		/// we can start with the easy.. are they the same size
+		if (items.get(0).size() != items.get(1).size()){
+			return false;
+		}
+		ItemStack i1,i2;
+		for (int i=0;i< items.get(0).size();i++){
+			i1 = items.get(0).get(i); i2 = items.get(1).get(i);
+			if (i1 == null && i2 == null){ /// thats the same
+				continue;
+			} else if (i1 == null || i2== null){
+				return false;
+			} else if (!i1.equals(i2)){
+				return false;
+			}
+		}
+		return true;
+	}
+}
