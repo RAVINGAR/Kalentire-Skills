@@ -1,4 +1,4 @@
-package com.herocraftonline.heroes.characters.skill.reborn.professions;
+package com.herocraftonline.heroes.characters.skill.skills;
 /*
  * TODO: (Updated by Andrew2060 1/17/2012)
  * - Handling for shift-click results: before commenting on whether this is doable or not I would require more knowledge as to why this was blocked in the first place

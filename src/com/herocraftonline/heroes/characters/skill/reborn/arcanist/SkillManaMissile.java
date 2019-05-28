@@ -37,8 +37,8 @@ public class SkillManaMissile extends PassiveSkill {
 
     public SkillManaMissile(Heroes plugin) {
         super(plugin, "ManaMissile");
-        setDescription("When you attack when your wand, you also conjure a missile of pure mana that fires towards your enemies. " +
-                "The missile deals $1 damage on hit. You are no longer able to attack players with your staff's melee hit ");
+        setDescription("When you attack when your $1, you also conjure a missile of pure mana that fires towards your enemies. " +
+                "The missile deals $2held weapon's damage on hit.$3");
         setUsage("/skill manamissile");
         setIdentifiers("skill manamissile");
         setArgumentRange(0, 0);
@@ -48,16 +48,31 @@ public class SkillManaMissile extends PassiveSkill {
     }
 
     public String getDescription(Hero hero) {
-        final double damage = SkillConfigManager.getScaledUseSettingDouble(hero, this, SkillSetting.DAMAGE, false);
+        String weaponText = SkillConfigManager.getUseSetting(hero, this, "weapon-type-text", "staff");
+        boolean isMeleeDisabled = SkillConfigManager.getUseSetting(hero, this, "disable-melee-attack", false);
+
+        double damageMultiplier = SkillConfigManager.getUseSetting(hero, this, "damage-multiplier", 1.0, false);
+        String damageMutliplierText = "your ";
+        if (damageMultiplier != 1.0) {
+            damageMutliplierText = Util.decFormat.format(damageMultiplier * 100) + "% of your ";
+        }
+
+        String disableText = "";
+        if (isMeleeDisabled)
+            disableText = " Mana Missile users are very physically weak, and cannot do damage with their $1's.";
 
         return getDescription()
-                .replace("$1", Util.decFormat.format(damage));
+                .replace("$1", weaponText)
+                .replace("$2", damageMutliplierText)
+                .replace("$3", disableText);
     }
 
     public ConfigurationSection getDefaultConfig() {
         ConfigurationSection config = super.getDefaultConfig();
-        config.set(SkillSetting.DAMAGE.node(), 40.0);
         config.set("catalysts", Util.hoes);
+        config.set("weapon-type-text", "staff");
+        config.set("disable-melee-attack", false);
+        config.set("damage-multiplier", 1.0);
         config.set(BasicMissile.PROJECTILE_SIZE_NODE, 0.3);
         config.set(BasicMissile.PROJECTILE_VELOCITY_NODE, 75.0);
         config.set(BasicMissile.PROJECTILE_DURATION_TICKS_NODE, 15);
@@ -77,23 +92,35 @@ public class SkillManaMissile extends PassiveSkill {
             this.skill = skill;
         }
 
-        @EventHandler(priority = EventPriority.MONITOR)
+        @EventHandler(priority = EventPriority.MONITOR) // Don't ignore cancelled. Normal left clicks are cancelled by default.
         public void onLeftClick(PlayerInteractEvent event) {
             if (event.getAction() != Action.LEFT_CLICK_AIR && event.getAction() != Action.LEFT_CLICK_BLOCK)
                 return;
 
             Player player = event.getPlayer();
-            if (player == null || player.isDead() || player.getHealth() < 0)
+            if (player == null || player.isDead() || player.getHealth() < 0 || player.getGameMode() == GameMode.SPECTATOR || player.getGameMode() == GameMode.CREATIVE)
                 return;
 
             Hero hero = plugin.getCharacterManager().getHero(player);
-            if (!isValidManaMissileAttempt(hero))
+            if (!hero.canUseSkill(skill))
                 return;
 
+            PlayerInventory playerInv = player.getInventory();
+            ItemStack mainHand = NMSHandler.getInterface().getItemInMainHand(playerInv);
+
+            if (!isValidCatalyst(hero, mainHand))
+                return;
             if (!isAbleToCastRightNow(hero, true))
                 return;
 
-            fireProjectile(player, hero);
+            Double damage = plugin.getDamageManager().getHighestItemDamage(hero, mainHand.getType());
+            if (damage == null) {
+                player.sendMessage("    " + ChatComponents.GENERIC_SKILL + "You don't deal any damage with that weapon!");
+                return;
+            }
+
+            damage *= SkillConfigManager.getUseSetting(hero, skill, "damage-multiplier", 1.0, false);
+            fireProjectile(player, hero, damage);
             event.setUseItemInHand(Event.Result.DENY);
         }
 
@@ -103,20 +130,38 @@ public class SkillManaMissile extends PassiveSkill {
                 return;
 
             Hero hero = ((Hero) event.getDamager());
-            if (!isValidManaMissileAttempt(hero))
+            Player player = hero.getPlayer();
+
+            if (player.getGameMode() == GameMode.SPECTATOR || player.getGameMode() == GameMode.CREATIVE)
+                return;
+            if (!hero.canUseSkill(skill))
+                return;
+
+            PlayerInventory playerInv = player.getInventory();
+            ItemStack mainHand = NMSHandler.getInterface().getItemInMainHand(playerInv);
+            if (!isValidCatalyst(hero, mainHand))
                 return;
 
             if (isAbleToCastRightNow(hero, true)) {
-                fireProjectile(hero.getPlayer(), hero);
+                Double damage = plugin.getDamageManager().getHighestItemDamage(hero, mainHand.getType());
+                if (damage == null) {
+                    player.sendMessage("    " + ChatComponents.GENERIC_SKILL + "You don't deal any damage with that weapon!");
+                } else {
+                    damage *= SkillConfigManager.getUseSetting(hero, skill, "damage-multiplier", 1.0, false);
+                    fireProjectile(hero.getPlayer(), hero, damage);
+                }
             }
 
-            // Mana Missile users cannot use their weapon for melee.
+            boolean meleeDamageDisabled = SkillConfigManager.getUseSetting(hero, skill, "disable-melee-attack", false);
+            if (!meleeDamageDisabled)
+                return;
+
             event.setDamage(0.0);
             event.setCancelled(true);
         }
 
-        private void fireProjectile(Player player, Hero hero) {
-            ManaProjectile missile = new ManaProjectile(plugin, skill, hero);
+        private void fireProjectile(Player player, Hero hero, double damage) {
+            ManaProjectile missile = new ManaProjectile(plugin, skill, hero, damage);
             missile.fireMissile();
             player.getWorld().playSound(player.getLocation(), Sound.ENTITY_VEX_HURT, 2F, 1F);
 
@@ -124,14 +169,7 @@ public class SkillManaMissile extends PassiveSkill {
             hero.addEffect(new CooldownEffect(skill, player, cooldown));
         }
 
-        private boolean isValidManaMissileAttempt(Hero hero) {
-            if (!hero.canUseSkill(skill))
-                return false;
-
-            Player player = hero.getPlayer();
-            PlayerInventory playerInv = player.getInventory();
-            ItemStack mainHand = NMSHandler.getInterface().getItemInMainHand(playerInv);
-
+        private boolean isValidCatalyst(Hero hero, ItemStack mainHand) {
             List<String> allowedCatalysts = SkillConfigManager.getUseSetting(hero, skill, "catalysts", Util.hoes);
             if (mainHand == null || !allowedCatalysts.contains(mainHand.getType().name()))
                 return false;
@@ -217,9 +255,10 @@ public class SkillManaMissile extends PassiveSkill {
     }
 
     private class ManaProjectile extends BasicDamageMissile {
-        ManaProjectile(Heroes plugin, Skill skill, Hero hero) {
+        ManaProjectile(Heroes plugin, Skill skill, Hero hero, double damage) {
             super(plugin, skill, hero);
 
+            this.damage = damage;
             this.visualEffect = new ManaMissileVisualEffect(this.effectManager);
         }
 

@@ -44,8 +44,6 @@ public class SkillEnderBreath extends SkillBaseGroundEffect {
         setIdentifiers("skill enderbreath");
         setArgumentRange(0, 0);
         setTypes(SkillType.DAMAGING, SkillType.ABILITY_PROPERTY_ENDER, SkillType.ABILITY_PROPERTY_DARK, SkillType.SILENCEABLE, SkillType.AGGRESSIVE, SkillType.AREA_OF_EFFECT);
-
-        setToggleableEffectName(this.getName());
     }
 
     public String getDescription(Hero hero) {
@@ -69,6 +67,7 @@ public class SkillEnderBreath extends SkillBaseGroundEffect {
         config.set(SkillSetting.PERIOD.node(), 250);
         config.set(SkillSetting.DAMAGE_TICK.node(), 15.0);
         config.set(BasicMissile.PROJECTILE_SIZE_NODE, 0.4);
+        config.set(BasicMissile.PROJECTILE_PIERCES_ON_HIT_NODE, false);
         config.set(BasicMissile.PROJECTILE_VELOCITY_NODE, 15.0);
         config.set(BasicMissile.PROJECTILE_GRAVITY_NODE, 14.7045);
         config.set(BasicMissile.PROJECTILE_DURATION_TICKS_NODE, 999999);
@@ -77,6 +76,9 @@ public class SkillEnderBreath extends SkillBaseGroundEffect {
 
     public SkillResult use(final Hero hero, String[] args) {
         final Player player = hero.getPlayer();
+
+        if (isAreaGroundEffectApplied(hero))
+            removeCastingEffect(hero);
 
         EnderBreathMissile missile = new EnderBreathMissile(plugin, this, hero);
         missile.fireMissile();
@@ -94,7 +96,8 @@ public class SkillEnderBreath extends SkillBaseGroundEffect {
 
         @Override
         protected void onBlockHit(Block block, Vector hitPoint, BlockFace hitFace, Vector hitForce) {
-            explodeIntoGroundEffect(block.getRelative(hitFace).getLocation());
+            if (!isAreaGroundEffectApplied(hero))
+                explodeIntoGroundEffect(block.getRelative(hitFace).getLocation());
         }
 
         @Override

@@ -51,8 +51,6 @@ public class SkillSmokeBomb extends ActiveSkill {
         config.set(SkillSetting.APPLY_TEXT.node(), ChatComponents.GENERIC_SKILL + "Someone vanished in a cloud of smoke!");
         config.set(SkillSetting.EXPIRE_TEXT.node(), ChatComponents.GENERIC_SKILL + "%hero% has reappeared!");
         config.set("speed-amplifier-on-effect-break", 2);
-        config.set(SkillSetting.REAGENT.node(), 289);
-        config.set(SkillSetting.REAGENT_COST.node(), 1);
         return config;
     }
 

@@ -7,6 +7,7 @@ import com.herocraftonline.heroes.characters.skill.SkillConfigManager;
 import com.herocraftonline.heroes.characters.skill.SkillSetting;
 import com.herocraftonline.heroes.characters.skill.SkillType;
 import com.herocraftonline.heroes.characters.skill.TargettedSkill;
+import com.herocraftonline.heroes.chat.ChatComponents;
 import com.herocraftonline.heroes.nms.NMSHandler;
 import com.herocraftonline.heroes.util.Util;
 import org.bukkit.Material;
@@ -53,13 +54,13 @@ public class SkillPiercingStrike extends TargettedSkill {
 
         Material item = NMSHandler.getInterface().getItemInMainHand(player.getInventory()).getType();
         if (!SkillConfigManager.getUseSetting(hero, this, "weapons", Util.shovels).contains(item.name())) {
-            player.sendMessage("You can't piercing strike with that weapon!");
+            player.sendMessage("    " + ChatComponents.GENERIC_SKILL + "You can't piercing strike with that weapon!");
             return SkillResult.FAIL;
         }
 
         Double damage = plugin.getDamageManager().getHighestItemDamage(hero, item);
         if (damage == null) {
-            player.sendMessage("You don't deal any damage with that weapon!");
+            player.sendMessage("    " + ChatComponents.GENERIC_SKILL + "You don't deal any damage with that weapon!");
             return SkillResult.FAIL;
         }
 
