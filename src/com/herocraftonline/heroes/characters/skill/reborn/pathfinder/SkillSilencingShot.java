@@ -25,7 +25,7 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 
 public class SkillSilencingShot extends ActiveSkill {
-    private static String buffEffectName;
+    private static String buffEffectName = "SilencingShotActive";
 
     private Map<Arrow, Long> shots = new LinkedHashMap<Arrow, Long>(100) {
         private static final long serialVersionUID = 4329526013158603250L;
@@ -99,10 +99,9 @@ public class SkillSilencingShot extends ActiveSkill {
             this.skill = skill;
         }
 
-
-        @EventHandler(priority = EventPriority.MONITOR)
+        @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
         public void onEntityShootBow(EntityShootBowEvent event) {
-            if (event.isCancelled() || !(event.getEntity() instanceof Player) || !(event.getProjectile() instanceof Arrow)) {
+            if (!(event.getEntity() instanceof Player) || !(event.getProjectile() instanceof Arrow)) {
                 return;
             }
 
@@ -112,7 +111,6 @@ public class SkillSilencingShot extends ActiveSkill {
                 hero.removeEffect(hero.getEffect(buffEffectName));
             }
         }
-
 
         @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
         public void onEntityDamage(EntityDamageByEntityEvent event) {

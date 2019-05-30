@@ -39,8 +39,6 @@ public class SkillAetherOrb extends ActiveSkill {
 		setIdentifiers("skill aetherorb");
 		setArgumentRange(0, 0);
 		setTypes(SkillType.AREA_OF_EFFECT, SkillType.DAMAGING, SkillType.SILENCEABLE, SkillType.ABILITY_PROPERTY_MAGICAL);
-
-		setToggleableEffectName(this.getName());
 	}
 
 	public String getDescription(Hero hero) {

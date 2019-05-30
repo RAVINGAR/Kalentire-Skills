@@ -37,12 +37,11 @@ public class SkillManaMissile extends PassiveSkill {
 
     public SkillManaMissile(Heroes plugin) {
         super(plugin, "ManaMissile");
-        setDescription("When you attack when your $1, you also conjure a missile of pure mana that fires towards your enemies. " +
-                "The missile deals $2held weapon's damage on hit.$3");
+        setDescription("When you attack with your $1 you fire a missile of mana toward your foe. Missiles deal held weapon damage upon impact.");
         setUsage("/skill manamissile");
         setIdentifiers("skill manamissile");
         setArgumentRange(0, 0);
-        setTypes(SkillType.DAMAGING, SkillType.SILENCEABLE, SkillType.ABILITY_PROPERTY_MAGICAL);
+        setTypes(SkillType.ABILITY_PROPERTY_MAGICAL, SkillType.DAMAGING, SkillType.AGGRESSIVE);
 
         Bukkit.getServer().getPluginManager().registerEvents(new SkillHeroListener(this), plugin);
     }
@@ -59,7 +58,7 @@ public class SkillManaMissile extends PassiveSkill {
 
         String disableText = "";
         if (isMeleeDisabled)
-            disableText = " Mana Missile users are very physically weak, and cannot do damage with their $1's.";
+            disableText = " Mana Missile users are very physically weak, and cannot do damage with their " + weaponText + "s.";
 
         return getDescription()
                 .replace("$1", weaponText)

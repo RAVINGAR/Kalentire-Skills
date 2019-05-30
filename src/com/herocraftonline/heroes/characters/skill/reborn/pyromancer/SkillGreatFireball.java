@@ -6,6 +6,7 @@ import com.herocraftonline.heroes.attributes.AttributeType;
 import com.herocraftonline.heroes.characters.CharacterTemplate;
 import com.herocraftonline.heroes.characters.Hero;
 import com.herocraftonline.heroes.characters.effects.common.BurningEffect;
+import com.herocraftonline.heroes.characters.effects.common.CombustEffect;
 import com.herocraftonline.heroes.characters.skill.*;
 import com.herocraftonline.heroes.characters.skill.tools.BasicDamageMissile;
 import com.herocraftonline.heroes.characters.skill.tools.BasicMissile;
@@ -160,6 +161,9 @@ public class SkillGreatFireball extends ActiveSkill {
 
                 addSpellTarget(target, hero);
                 damageEntity(target, player, this.explosionDamage, EntityDamageEvent.DamageCause.MAGIC);
+
+                CharacterTemplate targetCT = plugin.getCharacterManager().getCharacter(target);
+                targetCT.addEffect(new CombustEffect(skill, player));
             }
         }
     }

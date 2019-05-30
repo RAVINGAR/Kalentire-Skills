@@ -72,6 +72,7 @@ public class SkillHealingSpores extends ActiveSkill {
         config.set(BasicMissile.PROJECTILE_VELOCITY_NODE, 65.0);
         config.set(BasicMissile.PROJECTILE_DURATION_TICKS_NODE, 30);
         config.set(BasicMissile.PROJECTILE_SIZE_NODE, 0.25);
+        config.set("projectile-visual-radius", 0.4);
         config.set("projectile-launch-delay-ticks", 15);
         config.set("num-projectiles", 5);
         return config;
@@ -128,6 +129,7 @@ public class SkillHealingSpores extends ActiveSkill {
 
             this.maxProjectiles = SkillConfigManager.getUseSetting(hero, skill, "num-projectiles", 4, false);
             this.projectileRadius = SkillConfigManager.getUseSetting(hero, skill, BasicMissile.PROJECTILE_SIZE_NODE, 0.15, false);
+            double visualRadius = SkillConfigManager.getUseSetting(hero, skill, "projectile-visual-radius", 0.4, false);
             int projDurationTicks = SkillConfigManager.getUseSetting(hero, skill, BasicMissile.PROJECTILE_DURATION_TICKS_NODE, 30, false);
 
             List<Location> missileLocations = GeometryUtil.circle(applier.getLocation().clone().add(new Vector(0, 0.8, 0)), maxProjectiles, 1.5);
@@ -144,7 +146,7 @@ public class SkillHealingSpores extends ActiveSkill {
                 dynamicLoc.addOffset(missileLocation.toVector().subtract(applier.getLocation().toVector()));
                 missileVisual.setDynamicOrigin(dynamicLoc);
                 missileVisual.iterations = (int) (getDuration() / 50) + projDurationTicks;
-                missileVisual.radius = this.projectileRadius;
+                missileVisual.radius = visualRadius;
                 missileVisual.particle = Particle.REDSTONE;
                 missileVisual.color = FEL_GREEN;
                 missileVisual.particles = 10;

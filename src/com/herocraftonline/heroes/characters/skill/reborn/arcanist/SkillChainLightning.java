@@ -108,7 +108,7 @@ public class SkillChainLightning extends TargettedSkill {
         public void applyToHero(Hero hero) {
             super.applyToHero(hero);
 
-            double baseDamage = SkillConfigManager.getScaledUseSettingDouble(hero, skill, SkillSetting.DAMAGE, false);
+            this.damage = SkillConfigManager.getScaledUseSettingDouble(hero, skill, SkillSetting.DAMAGE, false);
 
             this.maxTargets = SkillConfigManager.getUseSetting(hero, skill, "max-targets", 5, false);
             this.maxChainDistance = SkillConfigManager.getUseSetting(hero, skill, "max-chain-distance", 5, false);
