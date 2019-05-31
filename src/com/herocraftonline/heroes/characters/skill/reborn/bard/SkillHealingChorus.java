@@ -29,7 +29,9 @@ public class SkillHealingChorus extends ActiveSkill {
 
     public SkillHealingChorus(Heroes plugin) {
         super(plugin, "HealingChorus");
-        setDescription("You sing a chorus of healing, affecting party members within $1 blocks. The chorus heals them for $2 health over $3 second(s). You are only healed for $4 health from this effect.");
+        setDescription("You sing a chorus of healing, affecting party members within $1 blocks. " +
+                "The chorus heals them for $2 health over $3 second(s). " +
+                "You are only healed for $4 health from this effect.");
         setUsage("/skill healingchorus");
         setIdentifiers("skill healingchorus");
         setTypes(SkillType.AREA_OF_EFFECT, SkillType.BUFFING, SkillType.HEALING, SkillType.ABILITY_PROPERTY_SONG);

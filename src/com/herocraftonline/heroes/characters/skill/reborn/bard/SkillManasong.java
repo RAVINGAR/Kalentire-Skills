@@ -1,15 +1,5 @@
 package com.herocraftonline.heroes.characters.skill.reborn.bard;
 
-import org.bukkit.Effect;
-import org.bukkit.Location;
-//import org.bukkit.Particle; 1.13
-import org.bukkit.Sound;
-import org.bukkit.Sound;
-import org.bukkit.configuration.ConfigurationSection;
-import org.bukkit.entity.Player;
-import org.bukkit.Sound;
-import org.bukkit.scheduler.BukkitRunnable;
-
 import com.herocraftonline.heroes.Heroes;
 import com.herocraftonline.heroes.api.SkillResult;
 import com.herocraftonline.heroes.api.events.HeroRegainManaEvent;
@@ -21,13 +11,17 @@ import com.herocraftonline.heroes.characters.effects.PeriodicExpirableEffect;
 import com.herocraftonline.heroes.characters.effects.common.SoundEffect;
 import com.herocraftonline.heroes.characters.effects.common.SoundEffect.Note;
 import com.herocraftonline.heroes.characters.effects.common.SoundEffect.Song;
-import com.herocraftonline.heroes.characters.skill.ActiveSkill;
-import com.herocraftonline.heroes.characters.skill.Skill;
-import com.herocraftonline.heroes.characters.skill.SkillConfigManager;
-import com.herocraftonline.heroes.characters.skill.SkillSetting;
-import com.herocraftonline.heroes.characters.skill.SkillType;
+import com.herocraftonline.heroes.characters.skill.*;
 import com.herocraftonline.heroes.chat.ChatComponents;
 import com.herocraftonline.heroes.util.Util;
+import org.bukkit.Effect;
+import org.bukkit.Location;
+import org.bukkit.Sound;
+import org.bukkit.configuration.ConfigurationSection;
+import org.bukkit.entity.Player;
+import org.bukkit.scheduler.BukkitRunnable;
+
+//import org.bukkit.Particle; 1.13
 
 public class SkillManasong extends ActiveSkill {
 
@@ -45,8 +39,8 @@ public class SkillManasong extends ActiveSkill {
         setTypes(SkillType.MANA_INCREASING, SkillType.BUFFING, SkillType.AREA_OF_EFFECT, SkillType.ABILITY_PROPERTY_SONG);
 
         skillSong = new Song(
-                new Note(Sound.BLOCK_NOTE_BLOCK_HARP, 0.8F, 1.0F, 0),
-                new Note(Sound.BLOCK_NOTE_BLOCK_BASS, 0.8F, 1.0F, 1)
+                new Note(Sound.BLOCK_NOTE_HARP, 0.8F, 1.0F, 0),
+                new Note(Sound.BLOCK_NOTE_BASS, 0.8F, 1.0F, 1)
         );
     }
 
@@ -140,23 +134,18 @@ public class SkillManasong extends ActiveSkill {
             Player player = hero.getPlayer();
             final Player p = player;
 
-            if (player == this.getApplier())
-            {
+            if (player == this.getApplier()) {
                 new BukkitRunnable() {
 
                     private double time = 0;
 
                     @Override
-                    public void run()
-                    {
+                    public void run() {
                         Location location = p.getLocation();
-                        if (time < 0.8)
-                        {
+                        if (time < 0.8) {
                             p.getWorld().spigot().playEffect(location, Effect.NOTE, 0, 0, 6.3F, 1.0F, 6.3F, 0.0F, 1, 16);
                             //p.getWorld().spawnParticle(Particle.NOTE, location, 1, 6.3, 1, 6.3, 1); 1.13
-                        }
-                        else
-                        {
+                        } else {
                             cancel();
                         }
                         time += 0.01;
@@ -206,8 +195,7 @@ public class SkillManasong extends ActiveSkill {
                         }
                     }
                 }
-            }
-            else {
+            } else {
                 if (hero.getMana() < hero.getMaxMana()) {
                     HeroRegainManaEvent hrmEvent = new HeroRegainManaEvent(hero, manaRestore, skill);
                     plugin.getServer().getPluginManager().callEvent(hrmEvent);

@@ -24,6 +24,7 @@ import org.bukkit.event.Listener;
 import org.bukkit.potion.PotionEffectType;
 
 import java.util.ArrayList;
+import java.util.List;
 //import java.util.List;
 
 //import com.herocraftonline.heroes.characters.skill.animations.AreaOfEffectAnimation;
@@ -48,18 +49,18 @@ public class SkillAccelerando extends ActiveSkill {
         Bukkit.getServer().getPluginManager().registerEvents(new SkillEntityListener(), plugin);
 
         skillSong = new Song(
-                new Note(Sound.BLOCK_NOTE_BLOCK_BASEDRUM, 0.9F, 0.2F, 0),
-                new Note(Sound.BLOCK_NOTE_BLOCK_BASS, 0.9F, 0.5F, 1),
-                new Note(Sound.BLOCK_NOTE_BLOCK_BASEDRUM, 0.9F, 0.9F, 2),
-                new Note(Sound.BLOCK_NOTE_BLOCK_BASS, 0.9F, 0.2F, 3),
-                new Note(Sound.BLOCK_NOTE_BLOCK_BASEDRUM, 0.9F, 0.5F, 4),
-                new Note(Sound.BLOCK_NOTE_BLOCK_BASEDRUM, 0.9F, 0.9F, 5),
-                new Note(Sound.BLOCK_NOTE_BLOCK_BASS, 0.9F, 0.2F, 6),
-                new Note(Sound.BLOCK_NOTE_BLOCK_BASEDRUM, 0.9F, 0.5F, 7),
-                new Note(Sound.BLOCK_NOTE_BLOCK_BASEDRUM, 0.9F, 0.9F, 8),
-                new Note(Sound.BLOCK_NOTE_BLOCK_BASS, 0.9F, 0.2F, 9),
-                new Note(Sound.BLOCK_NOTE_BLOCK_BASEDRUM, 0.9F, 0.5F, 10),
-                new Note(Sound.BLOCK_NOTE_BLOCK_BASS, 0.9F, 0.9F, 11)
+                new Note(Sound.BLOCK_NOTE_BASEDRUM, 0.9F, 0.2F, 0),
+                new Note(Sound.BLOCK_NOTE_BASS, 0.9F, 0.5F, 1),
+                new Note(Sound.BLOCK_NOTE_BASEDRUM, 0.9F, 0.9F, 2),
+                new Note(Sound.BLOCK_NOTE_BASS, 0.9F, 0.2F, 3),
+                new Note(Sound.BLOCK_NOTE_BASEDRUM, 0.9F, 0.5F, 4),
+                new Note(Sound.BLOCK_NOTE_BASEDRUM, 0.9F, 0.9F, 5),
+                new Note(Sound.BLOCK_NOTE_BASS, 0.9F, 0.2F, 6),
+                new Note(Sound.BLOCK_NOTE_BASEDRUM, 0.9F, 0.5F, 7),
+                new Note(Sound.BLOCK_NOTE_BASEDRUM, 0.9F, 0.9F, 8),
+                new Note(Sound.BLOCK_NOTE_BASS, 0.9F, 0.2F, 9),
+                new Note(Sound.BLOCK_NOTE_BASEDRUM, 0.9F, 0.5F, 10),
+                new Note(Sound.BLOCK_NOTE_BASS, 0.9F, 0.9F, 11)
         );
     }
 

@@ -1,21 +1,5 @@
 package com.herocraftonline.heroes.characters.skill.reborn.bard;
 
-import org.bukkit.Bukkit;
-import org.bukkit.configuration.ConfigurationSection;
-import org.bukkit.entity.Arrow;
-import org.bukkit.entity.Entity;
-import org.bukkit.entity.LivingEntity;
-import org.bukkit.entity.Player;
-import org.bukkit.Sound;
-import org.bukkit.entity.Projectile;
-import org.bukkit.event.EventHandler;
-import org.bukkit.event.EventPriority;
-import org.bukkit.event.Listener;
-import org.bukkit.event.entity.EntityDamageByEntityEvent;
-import org.bukkit.event.entity.EntityDamageEvent;
-import org.bukkit.event.entity.EntityDamageEvent.DamageCause;
-import org.bukkit.inventory.ItemStack;
-
 import com.herocraftonline.heroes.Heroes;
 import com.herocraftonline.heroes.api.SkillResult;
 import com.herocraftonline.heroes.attributes.AttributeType;
@@ -23,26 +7,34 @@ import com.herocraftonline.heroes.characters.Hero;
 import com.herocraftonline.heroes.characters.effects.Effect;
 import com.herocraftonline.heroes.characters.effects.EffectType;
 import com.herocraftonline.heroes.characters.effects.ExpirableEffect;
-import com.herocraftonline.heroes.characters.skill.ActiveSkill;
-import com.herocraftonline.heroes.characters.skill.Skill;
-import com.herocraftonline.heroes.characters.skill.SkillConfigManager;
-import com.herocraftonline.heroes.characters.skill.SkillSetting;
-import com.herocraftonline.heroes.characters.skill.SkillType;
+import com.herocraftonline.heroes.characters.skill.*;
 import com.herocraftonline.heroes.chat.ChatComponents;
 import com.herocraftonline.heroes.nms.NMSHandler;
 import com.herocraftonline.heroes.util.Util;
+import org.bukkit.Bukkit;
+import org.bukkit.configuration.ConfigurationSection;
+import org.bukkit.entity.*;
+import org.bukkit.event.EventHandler;
+import org.bukkit.event.EventPriority;
+import org.bukkit.event.Listener;
+import org.bukkit.event.entity.EntityDamageByEntityEvent;
+import org.bukkit.event.entity.EntityDamageEvent.DamageCause;
+import org.bukkit.inventory.ItemStack;
 
 public class SkillAccentedStrikes extends ActiveSkill {
+
+    private String effectName = "Envenom";
 
     private String applyText;
     private String expireText;
 
     public SkillAccentedStrikes(Heroes plugin) {
         super(plugin, "AccentedStrikes");
-        setDescription("Apply the musical idea of accents to your strikes for $1 second(s). While active, your attacks are much stronger, dealing an extra $2 damage to the target.");
+        setDescription("Apply the musical idea of accents to your strikes for $1 second(s). " +
+                "While active, your attacks are much stronger, dealing an extra $2 damage to the target.");
         setUsage("/skill accentedstrikes");
-        setArgumentRange(0, 0);
         setIdentifiers("skill accentedstrikes");
+        setArgumentRange(0, 0);
         setTypes(SkillType.ABILITY_PROPERTY_MAGICAL, SkillType.ABILITY_PROPERTY_POISON, SkillType.AGGRESSIVE, SkillType.DAMAGING, SkillType.BUFFING);
 
         Bukkit.getServer().getPluginManager().registerEvents(new SkillDamageListener(this), plugin);
@@ -65,16 +57,14 @@ public class SkillAccentedStrikes extends ActiveSkill {
 
     @Override
     public ConfigurationSection getDefaultConfig() {
-        ConfigurationSection node = super.getDefaultConfig();
-
-        node.set("weapons", Util.swords);
-        node.set(SkillSetting.DURATION.node(), 10000);
-        node.set(SkillSetting.DAMAGE.node(), 5);
-        node.set(SkillSetting.DAMAGE_INCREASE_PER_INTELLECT.node(), (double) 2);
-        node.set(SkillSetting.APPLY_TEXT.node(), ChatComponents.GENERIC_SKILL + "%hero% has begun accenting his strikes.");
-        node.set(SkillSetting.EXPIRE_TEXT.node(), ChatComponents.GENERIC_SKILL + "%hero% no longer has accented strikes.");
-
-        return node;
+        ConfigurationSection config = super.getDefaultConfig();
+        config.set("weapons", Util.swords);
+        config.set(SkillSetting.DURATION.node(), 10000);
+        config.set(SkillSetting.DAMAGE.node(), 5);
+        config.set(SkillSetting.DAMAGE_INCREASE_PER_INTELLECT.node(), (double) 2);
+        config.set(SkillSetting.APPLY_TEXT.node(), ChatComponents.GENERIC_SKILL + "%hero% has begun accenting his strikes.");
+        config.set(SkillSetting.EXPIRE_TEXT.node(), ChatComponents.GENERIC_SKILL + "%hero% no longer has accented strikes.");
+        return config;
     }
 
     public void init() {
@@ -88,7 +78,7 @@ public class SkillAccentedStrikes extends ActiveSkill {
     public SkillResult use(Hero hero, String[] args) {
 
         int duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, 10000, false);
-        hero.addEffect(new EnvenomEffect(this, hero.getPlayer(), duration));
+        hero.addEffect(new AccentedStrikesEffect(this, hero.getPlayer(), duration));
 
         broadcastExecuteText(hero);
 
@@ -103,53 +93,49 @@ public class SkillAccentedStrikes extends ActiveSkill {
         }
 
         @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
-        public void onEntityDamage(EntityDamageEvent event) {
-            if ((!(event instanceof EntityDamageByEntityEvent)) || (!(event.getEntity() instanceof LivingEntity))) {
+        public void onEntityDamage(EntityDamageByEntityEvent event) {
+            if ((!(event.getEntity() instanceof LivingEntity))) {
                 return;
             }
-
-            EntityDamageByEntityEvent subEvent = (EntityDamageByEntityEvent) event;
 
             // Check for both arrow shots and left click attacks. Determine player based on which we're dealing with
             boolean arrow = false;
             Player player;
-            Entity damagingEntity = ((EntityDamageByEntityEvent) event).getDamager();
+            Entity damagingEntity = event.getDamager();
             if (damagingEntity instanceof Arrow) {
                 if (!(((Projectile) damagingEntity).getShooter() instanceof Player))
                     return;
 
                 player = (Player) ((Projectile) damagingEntity).getShooter();
                 arrow = true;
-            }
-            else {
+            } else {
                 if (event.getCause() != DamageCause.ENTITY_ATTACK)
                     return;
 
                 LivingEntity target = (LivingEntity) event.getEntity();
                 if (!(plugin.getDamageManager().isSpellTarget(target))) {
-                    if (!(subEvent.getDamager() instanceof Player))
+                    if (!(event.getDamager() instanceof Player))
                         return;
 
-                    player = (Player) subEvent.getDamager();
-                }
-                else
+                    player = (Player) event.getDamager();
+                } else
                     return;
             }
 
             Hero hero = plugin.getCharacterManager().getHero(player);
-            if (!hero.hasEffect("Envenom"))
+            if (!hero.hasEffect(effectName))
                 return;
 
             LivingEntity target = (LivingEntity) event.getEntity();
 
             ItemStack item = NMSHandler.getInterface().getItemInMainHand(player.getInventory());
             if (!SkillConfigManager.getUseSetting(hero, skill, "weapons", Util.swords).contains(item.getType().name())) {
-                if (arrow)
+                if (arrow) {
                     dealEnvenomDamage(hero, target);
-            }
-            else
+                }
+            } else {
                 dealEnvenomDamage(hero, target);
-
+            }
         }
 
         private void dealEnvenomDamage(final Hero hero, final LivingEntity target) {
@@ -158,9 +144,7 @@ public class SkillAccentedStrikes extends ActiveSkill {
                     if (!(damageCheck(hero.getPlayer(), target)))
                         return;
 
-                    double damage = SkillConfigManager.getUseSetting(hero, skill, SkillSetting.DAMAGE, 5, false);
-                    double damageIncrease = SkillConfigManager.getUseSetting(hero, skill, SkillSetting.DAMAGE_INCREASE_PER_INTELLECT, 2.0, false);
-                    damage += damageIncrease * hero.getAttributeValue(AttributeType.INTELLECT);
+                    double damage = SkillConfigManager.getScaledUseSettingDouble(hero, skill, SkillSetting.DAMAGE, false);
 
                     // Damage the target
                     addSpellTarget(target, hero);
@@ -170,10 +154,10 @@ public class SkillAccentedStrikes extends ActiveSkill {
         }
     }
 
-    public class EnvenomEffect extends ExpirableEffect {
+    public class AccentedStrikesEffect extends ExpirableEffect {
 
-        public EnvenomEffect(Skill skill, Player applier, long duration) {
-            super(skill, "Envenom", applier, duration, applyText, expireText);
+        public AccentedStrikesEffect(Skill skill, Player applier, long duration) {
+            super(skill, effectName, applier, duration, applyText, expireText);
 
             types.add(EffectType.IMBUE);
             types.add(EffectType.BENEFICIAL);
