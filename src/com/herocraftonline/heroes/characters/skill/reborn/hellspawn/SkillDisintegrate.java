@@ -75,14 +75,15 @@ public class SkillDisintegrate extends TargettedSkill {
             targetCT.removeEffect(effect);
         }
 
+        double maximumAddedDamage = SkillConfigManager.getUseSetting(hero, this, "maximum-consume-damage", 100.0, false);
+        if (addedDamage > maximumAddedDamage) {
+            addedDamage = maximumAddedDamage;
+        }
+
         double totalDamage = damage + addedDamage;
         String message = "    " + ChatComponents.GENERIC_SKILL + ChatColor.DARK_PURPLE + "Disintegrate Damage: " + Util.decFormat.format(totalDamage);
 
         if (addedDamage > 0) {
-            double maximumAddedDamage = SkillConfigManager.getUseSetting(hero, this, "maximum-consume-damage", 100.0, false);
-            if (addedDamage > maximumAddedDamage) {
-                addedDamage = maximumAddedDamage;
-            }
             message+= " (" + addedDamage + " from Withering Effects)";
         }
 

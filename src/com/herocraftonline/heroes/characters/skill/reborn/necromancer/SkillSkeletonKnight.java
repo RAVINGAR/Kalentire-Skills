@@ -145,7 +145,7 @@ public class SkillSkeletonKnight extends ActiveSkill {
                 CharacterTemplate defenderCT = plugin.getCharacterManager().getCharacter((LivingEntity) event.getEntity());
                 if (defenderCT.hasEffect(minionEffectName)) {
                     SkeletonKnightEffect effect = (SkeletonKnightEffect) defenderCT.getEffect(minionEffectName);
-                    event.setDamage(event.getDamage() * effect.getPveDamageMitigation());
+                    event.setDamage(event.getDamage() * (1.0 - effect.getPveDamageMitigation()));
                 }
             }
 

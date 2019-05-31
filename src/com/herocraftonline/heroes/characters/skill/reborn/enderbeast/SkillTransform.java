@@ -37,7 +37,7 @@ public class SkillTransform extends ActiveSkill {
     public SkillTransform(Heroes plugin) {
         super(plugin, "Transform");
         setDescription("Take on your true form, granting new powers to all of your other abilities. "
-                + "Your lose $1 health per second while in this state.");
+                + "You lose $1 health per second while in this state.");
         setUsage("/skill transform");
         setIdentifiers("skill transform");
         setArgumentRange(0, 0);

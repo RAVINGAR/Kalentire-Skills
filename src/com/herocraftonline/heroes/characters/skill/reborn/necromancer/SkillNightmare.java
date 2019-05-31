@@ -18,6 +18,7 @@ import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
+import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 
@@ -29,7 +30,8 @@ public class SkillNightmare extends ActiveSkill {
 
     public SkillNightmare(Heroes plugin) {
         super(plugin, "Nightmare");
-        setDescription("Summon a nightmare around your current location, encasing all enemies within $1 blocks into darkness and slowing them for $2 seconds.");
+        setDescription("Summon a nightmare around your current location plunging all enemies within $1 blocks of you into a nightmare, " +
+                "dealing $2 damage, blinding, and slowing them for $3 seconds.");
         setUsage("/skill nightmare");
         setIdentifiers("skill nightmare");
         setArgumentRange(0, 0);
@@ -40,17 +42,19 @@ public class SkillNightmare extends ActiveSkill {
     @Override
     public String getDescription(Hero hero) {
         double radius = SkillConfigManager.getScaledUseSettingDouble(hero, this, SkillSetting.RADIUS, false);
-
+        double damage = SkillConfigManager.getScaledUseSettingDouble(hero, this, SkillSetting.DAMAGE, false);
         int duration = SkillConfigManager.getScaledUseSettingInt(hero, this, SkillSetting.DURATION, false);
 
         return getDescription()
                 .replace("$1", Util.decFormat.format(radius))
-                .replace("$2", Util.decFormat.format(duration / 1000.0));
+                .replace("$2", Util.decFormat.format(damage))
+                .replace("$3", Util.decFormat.format(duration / 1000.0));
     }
 
     @Override
     public ConfigurationSection getDefaultConfig() {
         ConfigurationSection config = super.getDefaultConfig();
+        config.set(SkillSetting.DAMAGE.node(), 45);
         config.set(SkillSetting.ON_INTERRUPT_FORCE_COOLDOWN.node(), 2000);
         config.set(SkillSetting.RADIUS.node(), 8.0);
         config.set(SkillSetting.DURATION.node(), 4000);
@@ -81,25 +85,25 @@ public class SkillNightmare extends ActiveSkill {
     public SkillResult use(Hero hero, String[] args) {
         Player player = hero.getPlayer();
 
+        double damage = SkillConfigManager.getScaledUseSettingDouble(hero, this, SkillSetting.DAMAGE, false);
         double radius = SkillConfigManager.getScaledUseSettingDouble(hero, this, SkillSetting.RADIUS, false);
-
         int duration = SkillConfigManager.getScaledUseSettingInt(hero, this, SkillSetting.DURATION, false);
-
         long interruptForceCooldown = SkillConfigManager.getUseSetting(hero, this, SkillSetting.ON_INTERRUPT_FORCE_COOLDOWN, 2000, false);
 
         broadcastExecuteText(hero);
-
-        NightmareEffect dEffect = new NightmareEffect(this, player, duration);
 
         for (Entity entity : player.getNearbyEntities(radius, radius, radius)) {
             if (!(entity instanceof LivingEntity) || !damageCheck(player, (LivingEntity) entity))
                 continue;
 
             CharacterTemplate character = plugin.getCharacterManager().getCharacter((LivingEntity) entity);
-            character.addEffect(dEffect);
+            character.addEffect(new NightmareEffect(this, player, duration));
             if (character instanceof Hero) {
                 ((Hero) character).interruptDelayedSkill(interruptForceCooldown);
             }
+
+            addSpellTarget(entity, hero);
+            damageEntity(character.getEntity(), player, damage, EntityDamageEvent.DamageCause.MAGIC);
         }
 
         for (double r = 1.0; r < radius * 2.0; r++) {
