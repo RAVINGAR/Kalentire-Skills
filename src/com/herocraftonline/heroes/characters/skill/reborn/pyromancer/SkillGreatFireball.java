@@ -101,6 +101,7 @@ public class SkillGreatFireball extends ActiveSkill {
         private double explosionDamage;
         private double explosionRadius;
         private final double fireTickGroundRadius;
+        private boolean explodedAlready = false;
 
         GreatFireballMissile(Heroes plugin, Skill skill, Hero hero) {
             super(plugin, skill, hero);
@@ -144,6 +145,11 @@ public class SkillGreatFireball extends ActiveSkill {
         }
 
         private void performExplosion() {
+            if (explodedAlready)
+                return;
+
+            explodedAlready = true;
+
             for (Location loc : GeometryUtil.getPerfectCircle(getLocation(), (int) this.fireTickGroundRadius, (int) this.fireTickGroundRadius, false, true, 0)) {
                 plugin.getFireBlockManager().setBlockOnFireIfAble(loc.getBlock(), 0.7);
             }

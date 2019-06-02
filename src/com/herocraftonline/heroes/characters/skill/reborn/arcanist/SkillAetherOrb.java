@@ -28,9 +28,11 @@ import org.bukkit.util.Vector;
 public class SkillAetherOrb extends ActiveSkill {
 
 	private static Color blueViolet = Color.fromRGB(138,43,226);
-	private NMSHandler nmsHandler = NMSHandler.getInterface();
+    private static String effectName = "ActiveAetherOrb";
 
-	public SkillAetherOrb(Heroes plugin) {
+    private NMSHandler nmsHandler = NMSHandler.getInterface();
+
+    public SkillAetherOrb(Heroes plugin) {
 		super(plugin, "AetherOrb");
 		setDescription("Call upon the forces of the aether and launch it forward in front of you. "
                 + "Upon landing, an orb of Aether is formed at the location, dealing $1 damage every $2 second(s) for up to $3 second(s). "
@@ -76,6 +78,10 @@ public class SkillAetherOrb extends ActiveSkill {
 	public SkillResult use(final Hero hero, String[] args) {
 		final Player player = hero.getPlayer();
 
+		if (hero.hasEffect(effectName)) {
+            hero.removeEffect(hero.getEffect(effectName));
+        }
+
 		broadcastExecuteText(hero);
 		AetherOrbMissile missile = new AetherOrbMissile(plugin, this, hero);
 		missile.fireMissile();
@@ -99,6 +105,9 @@ public class SkillAetherOrb extends ActiveSkill {
         }
 
         private void explodeIntoGroundEffect(Location location) {
+		    if (hero.hasEffect(effectName))
+                return;
+
             long period = SkillConfigManager.getUseSetting(hero, skill, SkillSetting.PERIOD, 500, false);
             long duration = SkillConfigManager.getUseSetting(hero, skill, SkillSetting.DURATION, 6000, false);
 
@@ -117,7 +126,7 @@ public class SkillAetherOrb extends ActiveSkill {
         private double radius;
 
         AetherOrbEffect(Skill skill, Player player, Hero hero, long period, long duration, Location location) {
-		    super(skill, "ActiveAetherOrb", player, period, duration, null, null);
+		    super(skill, effectName, player, period, duration, null, null);
 
             this.height = SkillConfigManager.getUseSetting(hero, skill, "height", 4.0, false);
 		    this.orbLocation = location.add(new Vector(0, height / 2.0, 0));
