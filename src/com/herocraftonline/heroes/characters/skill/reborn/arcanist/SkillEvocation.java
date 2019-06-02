@@ -55,6 +55,7 @@ public class SkillEvocation extends ActiveSkill {
     public ConfigurationSection getDefaultConfig() {
         ConfigurationSection config = super.getDefaultConfig();
         config.set("regen-multiplier", 4.0);
+        config.set(SkillSetting.RADIUS.node(), 3.0);
         config.set(SkillSetting.PERIOD.node(), 1000);
         config.set(SkillSetting.DELAY.node(), 4000);
         config.set("horizontal-power", 0.75);
