@@ -34,6 +34,7 @@ import org.bukkit.potion.PotionEffectType;
 public class SkillSkeletonKnight extends ActiveSkill {
 
     private final String minionEffectName = "SkeletonKnight";
+    private final MythicMobs mythicMobs;
 
     public SkillSkeletonKnight(Heroes plugin) {
         super(plugin, "SkeletonKnight");
@@ -44,6 +45,12 @@ public class SkillSkeletonKnight extends ActiveSkill {
         setIdentifiers("skill skeletonknight");
         setArgumentRange(0, 0);
         setTypes(SkillType.SUMMONING, SkillType.ABILITY_PROPERTY_DARK, SkillType.SILENCEABLE);
+
+        if (Bukkit.getServer().getPluginManager().getPlugin("MythicMobs") != null) {
+            this.mythicMobs = MythicMobs.inst();
+        } else {
+            this.mythicMobs = null;
+        }
 
         Bukkit.getServer().getPluginManager().registerEvents(new SkillListener(this), plugin);
     }
@@ -107,13 +114,18 @@ public class SkillSkeletonKnight extends ActiveSkill {
             }
         }
 
+        if (mythicMobs == null) {
+            player.sendMessage("This skill does not work without mythic mobs. Contact a server admin to get this resolved!");
+            return SkillResult.FAIL;
+        }
+
         broadcastExecuteText(hero);
 
         double launchVelocity = SkillConfigManager.getUseSetting(hero, this, "launch-velocity", 2.0, false);
         long duration = SkillConfigManager.getUseSetting(hero, this, "minion-duration", 45000, false);
 
         String mythicMobMinionName = SkillConfigManager.getUseSetting(hero, this, "mythic-mobs-mob-override-name", "SkeletonKnight");
-        ActiveMob mob = MythicMobs.inst().getMobManager().spawnMob(mythicMobMinionName, player.getEyeLocation());
+        ActiveMob mob = mythicMobs.getMobManager().spawnMob(mythicMobMinionName, player.getEyeLocation());
         mob.setOwner(player.getUniqueId());
 
         final Monster monster = plugin.getCharacterManager().getMonster(mob.getLivingEntity());
@@ -145,7 +157,7 @@ public class SkillSkeletonKnight extends ActiveSkill {
                 CharacterTemplate defenderCT = plugin.getCharacterManager().getCharacter((LivingEntity) event.getEntity());
                 if (defenderCT.hasEffect(minionEffectName)) {
                     SkeletonKnightEffect effect = (SkeletonKnightEffect) defenderCT.getEffect(minionEffectName);
-                    event.setDamage(event.getDamage() * effect.getPveDamageMitigation());
+                    event.setDamage(event.getDamage() * (1.0 - effect.getPveDamageMitigation()));
                 }
             }
 

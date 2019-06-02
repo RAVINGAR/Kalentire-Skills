@@ -164,7 +164,7 @@ public class SkillMagicWard extends ActiveSkill {
 
         @EventHandler
         public void onSkillDamage(SkillDamageEvent event) {
-            if (!(event.getEntity() instanceof Player) || !event.getSkill().isType(SkillType.ABILITY_PROPERTY_MAGICAL))
+            if (event.getDamage() == 0 || !(event.getEntity() instanceof Player) || !event.getSkill().isType(SkillType.ABILITY_PROPERTY_MAGICAL))
                 return;
 
             Hero defenderHero = plugin.getCharacterManager().getHero((Player) event.getEntity());

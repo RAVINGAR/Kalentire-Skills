@@ -271,6 +271,11 @@ public class SkillHook extends ActiveSkill {
         }
 
         @Override
+        protected boolean isInvalidTarget(Entity entity) {
+            return !(entity instanceof LivingEntity) || entity.equals(this.player) || this.hitTargets.contains(entity);
+        }
+
+        @Override
         protected void onValidTargetFound(LivingEntity target, Vector origin, Vector force) {
 //            player.getWorld().playSound(player.getLocation(), Sound.ITEM_TRIDENT_HIT, 0.5F, 0.5F);
 
