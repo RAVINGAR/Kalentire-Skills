@@ -27,7 +27,7 @@ public class SkillConvocation extends ActiveSkill {
     public SkillConvocation(Heroes plugin) {
         super(plugin, "Convocation");
         setDescription("You summon all of your minions and clear their current targets. " +
-                "Upon being summoned, you will buff each of them with Speed $1 for $2 seconds.");
+                "Upon being summoned, you will buff each of them with Speed $1 for $2 seconds and heal them for $3 hp.");
         setUsage("/skill convocation");
         setIdentifiers("skill convocation");
         setArgumentRange(0, 0);
@@ -44,10 +44,12 @@ public class SkillConvocation extends ActiveSkill {
     public String getDescription(Hero hero) {
         long duration = SkillConfigManager.getUseSetting(hero, this, "speed-duration", 3000, false);
         int speedAmplifier = SkillConfigManager.getUseSetting(hero, this, "speed-amplifier", 3, false);
+        double heal = SkillConfigManager.getUseSetting(hero, this, "minion-healing", 25.0, false);
 
         return getDescription()
                 .replace("$1", (speedAmplifier + 1) + "")
-                .replace("$2", Util.decFormat.format(duration / 1000.0));
+                .replace("$2", Util.decFormat.format(duration / 1000.0))
+                .replace("$3", Util.decFormat.format(heal));
     }
 
     @Override
@@ -55,6 +57,7 @@ public class SkillConvocation extends ActiveSkill {
         ConfigurationSection config = super.getDefaultConfig();
         config.set("speed-duration", 3000);
         config.set("speed-amplifier", 3);
+        config.set("minion-healing", 25.0);
         return config;
     }
 
@@ -72,6 +75,7 @@ public class SkillConvocation extends ActiveSkill {
         broadcastExecuteText(hero);
 
         long duration = SkillConfigManager.getUseSetting(hero, this, "speed-duration", 3000, false);
+        double heal = SkillConfigManager.getUseSetting(hero, this, "minion-healing", 25.0, false);
         int speedAmplifier = SkillConfigManager.getUseSetting(hero, this, "speed-amplifier", 3, false);
 
         for (Monster summon : hero.getSummons()) {
@@ -84,6 +88,7 @@ public class SkillConvocation extends ActiveSkill {
             }
 
             summon.addEffect(new SpeedEffect(this, "ConvocationSpeed", player, duration, speedAmplifier));
+            summon.tryHeal(hero, this, heal);
 
             world.playSound(summon.getEntity().getLocation(), Sound.ENTITY_WITHER_HURT, 0.5F, 2.0F);
 

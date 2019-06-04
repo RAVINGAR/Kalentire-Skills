@@ -2,6 +2,7 @@ package com.herocraftonline.heroes.characters.skill.reborn.necromancer;
 
 import com.herocraftonline.heroes.Heroes;
 import com.herocraftonline.heroes.api.SkillResult;
+import com.herocraftonline.heroes.api.events.HeroRegainHealthEvent;
 import com.herocraftonline.heroes.characters.Hero;
 import com.herocraftonline.heroes.characters.Monster;
 import com.herocraftonline.heroes.characters.skill.ActiveSkill;
@@ -33,7 +34,7 @@ public class SkillSacrifice extends ActiveSkill {
 
     @Override
     public String getDescription(Hero hero) {
-        int manaGainPer = SkillConfigManager.getUseSetting(hero, this, "mana-gain-per", 100, false);
+        double manaGainPer = SkillConfigManager.getUseSetting(hero, this, "mana-gain-per", 100.0, false);
         double healthGainPer = SkillConfigManager.getUseSetting(hero, this, "health-gain-per", 25.0, false);
 
         return getDescription()
@@ -44,7 +45,7 @@ public class SkillSacrifice extends ActiveSkill {
     @Override
     public ConfigurationSection getDefaultConfig() {
         ConfigurationSection config = super.getDefaultConfig();
-        config.set("mana-gain-per", 100);
+        config.set("mana-gain-per", 100.0);
         config.set("health-gain-per", 25.0);
         return config;
     }
@@ -62,10 +63,10 @@ public class SkillSacrifice extends ActiveSkill {
 
         broadcastExecuteText(hero);
 
-        int manaGainPer = SkillConfigManager.getUseSetting(hero, this, "mana-gain-per", 100, false);
+        double manaGainPer = SkillConfigManager.getUseSetting(hero, this, "mana-gain-per", 100.0, false);
         double healthGainPer = SkillConfigManager.getUseSetting(hero, this, "health-gain-per", 25.0, false);
 
-        int manaToRestore = 0;
+        double manaToRestore = 0;
         double healthToRestore = 0.0;
 
         for (Monster summon : hero.getSummons()) {
@@ -85,6 +86,9 @@ public class SkillSacrifice extends ActiveSkill {
         }
 
         hero.clearSummons();
+
+        hero.tryHeal(null, this, healthToRestore);
+        hero.tryRestoreMana(hero, this, (int) manaToRestore);
 
         return SkillResult.NORMAL;
     }

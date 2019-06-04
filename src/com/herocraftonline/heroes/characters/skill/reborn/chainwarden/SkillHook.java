@@ -12,6 +12,7 @@ import com.herocraftonline.heroes.characters.effects.PeriodicExpirableEffect;
 import com.herocraftonline.heroes.characters.skill.*;
 import com.herocraftonline.heroes.characters.skill.tools.BasicDamageMissile;
 import com.herocraftonline.heroes.characters.skill.tools.BasicMissile;
+import com.herocraftonline.heroes.characters.skill.tools.MISSILE_TARGET_TYPE;
 import com.herocraftonline.heroes.chat.ChatComponents;
 import com.herocraftonline.heroes.util.Util;
 import de.slikey.effectlib.EffectManager;
@@ -246,6 +247,8 @@ public class SkillHook extends ActiveSkill {
 
         HookProjectile(Heroes plugin, Skill skill, Hero hero) {
             super(plugin, skill, hero);
+
+            this.targetType = MISSILE_TARGET_TYPE.NEUTRAL;
             this.damageCause = DamageCause.ENTITY_ATTACK;
 
             this.hookLeashDistance = SkillConfigManager.getUseSetting(hero, skill, "hook-leash-distance", 20.0, false);
@@ -268,11 +271,6 @@ public class SkillHook extends ActiveSkill {
             Location hookedLoc = block.getLocation().add(0.5, 0.5, 0.5);
             HookedLocationEffect hookedEffect = new HookedLocationEffect(skill, player, hookedLoc, (long) (hookedDuration * 0.5), hookLeashDistance);
             hero.addEffect(hookedEffect);
-        }
-
-        @Override
-        protected boolean isInvalidTarget(Entity entity) {
-            return !(entity instanceof LivingEntity) || entity.equals(this.player) || this.hitTargets.contains(entity);
         }
 
         @Override
@@ -393,8 +391,9 @@ public class SkillHook extends ActiveSkill {
                 ownerEffect.removeLocationHook(this);
             }
 
-            if (this.effectManager != null)
+            if (this.effectManager != null) {
                 this.effectManager.dispose();
+            }
         }
 
         @Override
