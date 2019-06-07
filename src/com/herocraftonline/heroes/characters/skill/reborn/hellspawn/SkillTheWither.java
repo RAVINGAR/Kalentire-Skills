@@ -2,13 +2,11 @@ package com.herocraftonline.heroes.characters.skill.reborn.hellspawn;
 
 import com.herocraftonline.heroes.Heroes;
 import com.herocraftonline.heroes.api.SkillResult;
-import com.herocraftonline.heroes.api.events.WeaponDamageEvent;
 import com.herocraftonline.heroes.characters.CharacterTemplate;
 import com.herocraftonline.heroes.characters.Hero;
 import com.herocraftonline.heroes.characters.Monster;
 import com.herocraftonline.heroes.characters.effects.*;
 import com.herocraftonline.heroes.characters.effects.common.interfaces.HealthRegainReduction;
-import com.herocraftonline.heroes.characters.effects.common.interfaces.ManaRegenDecrease;
 import com.herocraftonline.heroes.characters.equipment.EquipMethod;
 import com.herocraftonline.heroes.characters.equipment.EquipmentChangedEvent;
 import com.herocraftonline.heroes.characters.equipment.EquipmentType;
@@ -26,16 +24,19 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
+import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.PlayerInventory;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 
+import java.util.Optional;
 import java.util.logging.Level;
 
 public class SkillTheWither extends ActiveSkill {
 
+    private final String helmItemName = "Wither Form";
     private String toggleableEffectName = "WitherForm";
     private String applyText;
     private String expireText;
@@ -167,7 +168,7 @@ public class SkillTheWither extends ActiveSkill {
 
             ItemStack transformedHead = new ItemStack(Material.SKULL_ITEM, 1, (short) 1);
             ItemMeta itemMeta = transformedHead.getItemMeta();
-            itemMeta.setDisplayName("Wither Form");
+            itemMeta.setDisplayName(helmItemName);
             itemMeta.setUnbreakable(true);
             transformedHead.setItemMeta(itemMeta);
 
@@ -269,13 +270,34 @@ public class SkillTheWither extends ActiveSkill {
                     || event.getOldArmorPiece() == null
                     || event.getOldArmorPiece().getType() != Material.SKULL_ITEM
                     || event.getOldArmorPiece().getData() == null
-                    || event.getOldArmorPiece().getData().getData() != (byte) 1) {
+                    || event.getOldArmorPiece().getData().getData() != (byte) 1
+                    || !event.getOldArmorPiece().getItemMeta().getDisplayName().equals(helmItemName)) {
                 return;
             }
 
             final Hero hero = plugin.getCharacterManager().getHero(event.getPlayer());
             if (hero.hasEffect(toggleableEffectName))
                 event.setCancelled(true);
+        }
+
+        @EventHandler(priority = EventPriority.LOWEST)
+        public void onPlayerDeath(PlayerDeathEvent event) {
+            if (event.getDrops() == null || event.getDrops().isEmpty())
+                return;
+
+            Hero hero = plugin.getCharacterManager().getHero(event.getEntity());
+            if (!hero.hasEffect(toggleableEffectName))
+                return;
+
+            Optional<ItemStack> helmItem = event.getDrops().stream().filter(x -> x.getType() == Material.SKULL_ITEM &&
+                        x.getData() != null &&
+                        x.getData().getData() == (byte) 1 &&
+                        !x.getItemMeta().getDisplayName().equals(helmItemName))
+                    .findFirst();
+            if (!helmItem.isPresent())
+                return;
+
+            event.getDrops().remove(helmItem.get());
         }
     }
 }

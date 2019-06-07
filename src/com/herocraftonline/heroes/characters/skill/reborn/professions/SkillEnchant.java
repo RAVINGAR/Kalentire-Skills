@@ -6,6 +6,7 @@ import com.herocraftonline.heroes.characters.classes.HeroClass;
 import com.herocraftonline.heroes.characters.classes.HeroClass.ExperienceType;
 import com.herocraftonline.heroes.characters.effects.EffectType;
 import com.herocraftonline.heroes.characters.skill.*;
+import com.herocraftonline.heroes.chat.ChatComponents;
 import org.bukkit.Bukkit;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.enchantments.Enchantment;
@@ -103,9 +104,9 @@ public class SkillEnchant extends PassiveSkill {
             int level = hero.getHeroLevel(enchanter);
 
             Map<Enchantment, Integer> enchants = event.getEnchantsToAdd();
-            for (Enchantment enchant : enchants.keySet()) {
-                event.getEnchanter().sendMessage("Trying to give you: " + enchant.getName());
-            }
+//            for (Enchantment enchant : enchants.keySet()) {
+//                event.getEnchanter().sendMessage("Trying to give you: " + enchant.getName());
+//            }
 
             Iterator<Entry<Enchantment, Integer>> iter = enchants.entrySet().iterator();
             int xpCost = 0;
@@ -129,6 +130,7 @@ public class SkillEnchant extends PassiveSkill {
             }
             if (event.getEnchantsToAdd().isEmpty()) {
                 event.setCancelled(true);
+                event.getEnchanter().sendMessage("You are not able to use this enchant!");
                 return;
             }
             event.setExpLevelCost(0);

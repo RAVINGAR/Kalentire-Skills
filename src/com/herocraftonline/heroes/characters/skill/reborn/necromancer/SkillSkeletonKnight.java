@@ -12,22 +12,17 @@ import com.herocraftonline.heroes.chat.ChatComponents;
 import com.herocraftonline.heroes.util.Util;
 import io.lumine.xikage.mythicmobs.MythicMobs;
 import io.lumine.xikage.mythicmobs.mobs.ActiveMob;
-import me.libraryaddict.disguise.DisguiseAPI;
-import me.libraryaddict.disguise.disguisetypes.Disguise;
-import me.libraryaddict.disguise.disguisetypes.DisguiseType;
-import me.libraryaddict.disguise.disguisetypes.MobDisguise;
-import me.libraryaddict.disguise.disguisetypes.watchers.LivingWatcher;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
-import org.bukkit.Material;
 import org.bukkit.configuration.ConfigurationSection;
-import org.bukkit.entity.*;
+import org.bukkit.entity.Entity;
+import org.bukkit.entity.LivingEntity;
+import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityDamageEvent;
-import org.bukkit.inventory.ItemStack;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 
@@ -147,13 +142,11 @@ public class SkillSkeletonKnight extends ActiveSkill {
 
         @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
         public void onEntityDamage(EntityDamageByEntityEvent event) {
-            if (event.getDamage() <= 0 || event.getEntity() instanceof Player)
-                return;
-            if (!(event.getDamager() instanceof LivingEntity) || !(event.getEntity() instanceof LivingEntity))
+            if (event.getDamage() <= 0 || !(event.getDamager() instanceof LivingEntity) || !(event.getEntity() instanceof LivingEntity))
                 return;
 
             // Handle Mob vs Summon damage mitigation
-            if (!(event.getDamager() instanceof Player)) {
+            if (!(event.getDamager() instanceof Player) && !(event.getEntity() instanceof Player)) {
                 CharacterTemplate defenderCT = plugin.getCharacterManager().getCharacter((LivingEntity) event.getEntity());
                 if (defenderCT.hasEffect(minionEffectName)) {
                     SkeletonKnightEffect effect = (SkeletonKnightEffect) defenderCT.getEffect(minionEffectName);
@@ -161,28 +154,27 @@ public class SkillSkeletonKnight extends ActiveSkill {
                 }
             }
 
-            // Handle Summon vs Mob cleave attack
-            CharacterTemplate attackerCT = plugin.getCharacterManager().getCharacter((LivingEntity) event.getDamager());
-            if (attackerCT.hasEffect(minionEffectName)) {
-                handleMinionCleave(event, (Monster) attackerCT);
+            // Handle Summon cleave attack
+            if (!(event.getDamager() instanceof Player)) {
+                CharacterTemplate attackerCT = plugin.getCharacterManager().getCharacter((LivingEntity) event.getDamager());
+                if (attackerCT.hasEffect(minionEffectName)) {
+                    handleMinionCleave(event, (Monster) attackerCT);
+                }
             }
         }
 
-        public void handleMinionCleave(EntityDamageByEntityEvent event, Monster attackerCT) {
-            Hero summoner = attackerCT.getSummoner();
+        public void handleMinionCleave(EntityDamageByEntityEvent event, Monster summon) {
+            Hero summoner = summon.getSummoner();
             LivingEntity target = (LivingEntity) event.getEntity();
-            double radius = SkillConfigManager.getScaledUseSettingDouble(summoner, skill, SkillSetting.RADIUS, 3.0, false);
+            double radius = SkillConfigManager.getUseSetting(summoner, skill, SkillSetting.RADIUS, 3.0, false);
 
             for (Entity entity : target.getNearbyEntities(radius, radius, radius)) {
                 if (!(entity instanceof LivingEntity) || entity.equals(event.getEntity()))
                     continue;
 
                 LivingEntity aoeTarget = (LivingEntity) entity;
-                if (aoeTarget instanceof Player)    // Only AoE mobs
-                    continue;
-
                 addSpellTarget(aoeTarget, summoner);
-                damageEntity((LivingEntity) entity, summoner.getPlayer(), event.getDamage(), EntityDamageEvent.DamageCause.ENTITY_ATTACK);
+                damageEntity(aoeTarget, summon.getEntity(), event.getDamage(), EntityDamageEvent.DamageCause.ENTITY_ATTACK, false);
             }
         }
     }
