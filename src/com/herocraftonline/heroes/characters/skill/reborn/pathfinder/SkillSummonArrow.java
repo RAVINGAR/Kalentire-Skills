@@ -36,7 +36,7 @@ public class SkillSummonArrow extends ActiveSkill {
         final Player player = hero.getPlayer();
         final World world = player.getWorld();
         final ItemStack dropItem = new ItemStack(Material.ARROW, SkillConfigManager.getUseSetting(hero, this, "amount", 2, false));
-        world.dropItem(player.getLocation(), dropItem);
+        player.getInventory().addItem(dropItem);
         this.broadcastExecuteText(hero);
         return SkillResult.NORMAL;
     }
