@@ -39,7 +39,6 @@ public class SkillForcePush extends TargettedSkill {
     @Override
     public String getDescription(Hero hero) {
         double damage = SkillConfigManager.getScaledUseSettingDouble(hero, this, SkillSetting.DAMAGE, false);
-
         double healing = SkillConfigManager.getScaledUseSettingDouble(hero, this, SkillSetting.HEALING, false);
 
         return getDescription()
@@ -53,8 +52,8 @@ public class SkillForcePush extends TargettedSkill {
         config.set(SkillSetting.MAX_DISTANCE.node(), 10.0);
         config.set(SkillSetting.DAMAGE.node(), 50.0);
         config.set(SkillSetting.DAMAGE_INCREASE_PER_INTELLECT.node(), 0.0);
-        config.set(SkillSetting.DURATION.node(), 2000);
-        config.set("slow-amplifier", 1);
+        config.set(SkillSetting.DURATION.node(), 0);
+        config.set("slow-amplifier", -1);
         config.set("horizontal-power", 1.5);
         config.set("horizontal-power-increase-per-intellect", 0.0375);
         config.set("vertical-power", 0.25);
@@ -141,11 +140,13 @@ public class SkillForcePush extends TargettedSkill {
             int duration = SkillConfigManager.getScaledUseSettingInt(hero, this, SkillSetting.DURATION, false);
             int slowAmplifier = SkillConfigManager.getUseSetting(hero, this, "slow-amplifier", 1, false);
 
-            SlowEffect slowEffect = new SlowEffect(this, player, duration, slowAmplifier, null, null);
-            slowEffect.types.add(EffectType.DISPELLABLE);
+            if (slowAmplifier > -1 && duration > 0) {
+                SlowEffect slowEffect = new SlowEffect(this, player, duration, slowAmplifier, null, null);
+                slowEffect.types.add(EffectType.DISPELLABLE);
 
-            CharacterTemplate targetCT = plugin.getCharacterManager().getCharacter(target);
-            targetCT.addEffect(slowEffect);
+                CharacterTemplate targetCT = plugin.getCharacterManager().getCharacter(target);
+                targetCT.addEffect(slowEffect);
+            }
         }
 
         player.getWorld().playSound(target.getLocation(), Sound.ENTITY_GENERIC_BURN, 0.5f, 2.0f);

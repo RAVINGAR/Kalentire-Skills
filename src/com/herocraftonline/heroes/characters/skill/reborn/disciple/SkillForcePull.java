@@ -6,6 +6,8 @@ import com.herocraftonline.heroes.api.SkillResult;
 import com.herocraftonline.heroes.attributes.AttributeType;
 import com.herocraftonline.heroes.characters.CharacterTemplate;
 import com.herocraftonline.heroes.characters.Hero;
+import com.herocraftonline.heroes.characters.effects.EffectType;
+import com.herocraftonline.heroes.characters.effects.common.SlowEffect;
 import com.herocraftonline.heroes.characters.skill.SkillConfigManager;
 import com.herocraftonline.heroes.characters.skill.SkillSetting;
 import com.herocraftonline.heroes.characters.skill.SkillType;
@@ -55,6 +57,8 @@ public class SkillForcePull extends TargettedSkill {
         config.set(SkillSetting.DAMAGE_INCREASE_PER_INTELLECT.node(), 0.0);
         config.set(SkillSetting.HEALING.node(), 50.0);
         config.set(SkillSetting.HEALING_INCREASE_PER_INTELLECT.node(), 0.0);
+        config.set(SkillSetting.DURATION.node(), 2000);
+        config.set("slow-amplifier", 1);
         config.set("horizontal-power", 0.3);
         config.set("horizontal-power-increase-per-intellect", 0.0125);
         config.set("vertical-power", 0.4);
@@ -135,6 +139,17 @@ public class SkillForcePull extends TargettedSkill {
             if (damage > 0) {
                 addSpellTarget(target, hero);
                 damageEntity(target, player, damage, DamageCause.MAGIC, false);
+            }
+
+            int duration = SkillConfigManager.getScaledUseSettingInt(hero, this, SkillSetting.DURATION, false);
+            int slowAmplifier = SkillConfigManager.getUseSetting(hero, this, "slow-amplifier", 1, false);
+
+            if (slowAmplifier > -1 && duration > 0) {
+                SlowEffect slowEffect = new SlowEffect(this, player, duration, slowAmplifier, null, null);
+                slowEffect.types.add(EffectType.DISPELLABLE);
+
+                CharacterTemplate targetCT = plugin.getCharacterManager().getCharacter(target);
+                targetCT.addEffect(slowEffect);
             }
         }
 
