@@ -64,7 +64,7 @@ public class SkillFlyingKick extends TargettedSkill {
 
         broadcastExecuteText(hero, target);
 
-        player.getWorld().playSound(player.getLocation(), Sound.ENTITY_PLAYER_HURT, 18.0F, 0.4F);
+        player.getWorld().playSound(player.getLocation(), Sound.ENTITY_PLAYER_HURT, 1.0F, 0.5F);
 
         double vPower = SkillConfigManager.getScaledUseSettingDouble(hero, this, "vertical-power", false);
         final Vector pushUpVector = new Vector(0, vPower, 0);

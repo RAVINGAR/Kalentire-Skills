@@ -8,6 +8,7 @@ import com.herocraftonline.heroes.characters.Hero;
 import com.herocraftonline.heroes.characters.Monster;
 import com.herocraftonline.heroes.characters.effects.*;
 import com.herocraftonline.heroes.characters.effects.common.interfaces.HealthRegainReduction;
+import com.herocraftonline.heroes.characters.effects.common.interfaces.ManaRegenDecrease;
 import com.herocraftonline.heroes.characters.equipment.EquipMethod;
 import com.herocraftonline.heroes.characters.equipment.EquipmentChangedEvent;
 import com.herocraftonline.heroes.characters.equipment.EquipmentType;
@@ -24,6 +25,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
+import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.PlayerInventory;
 import org.bukkit.inventory.meta.ItemMeta;
@@ -241,15 +243,15 @@ public class SkillTheWither extends ActiveSkill {
         }
 
         @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
-        public void onWeaponDamageEvent(WeaponDamageEvent event) {
-            if (!(event.getDamager() instanceof Hero) || !(event.getEntity() instanceof LivingEntity))
+        public void onWeaponDamageEvent(EntityDamageByEntityEvent event) {
+            if (!(event.getDamager() instanceof Player) || !(event.getEntity() instanceof LivingEntity))
                 return;
 
-            Hero hero = (Hero) event.getDamager();
+            Player player = (Player) event.getDamager();
+            Hero hero = plugin.getCharacterManager().getHero(player);
             if (!hero.hasEffect(toggleableEffectName))
                 return;
 
-            Player player = hero.getPlayer();
             int duration = SkillConfigManager.getUseSetting(hero, skill, "on-hit-wither-duration", 2000, false);
             double healingReduction = SkillConfigManager.getUseSetting(hero, skill, "on-hit-healing-reduction-per-stack", 0.075, false);
             int witherAmplifier = SkillConfigManager.getUseSetting(hero, skill, "on-hit-wither-amplifier", 3, false);
