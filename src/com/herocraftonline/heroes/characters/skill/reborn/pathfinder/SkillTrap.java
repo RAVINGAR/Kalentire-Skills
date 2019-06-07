@@ -81,7 +81,7 @@ public class SkillTrap extends SkillBaseGroundEffect {
             public void groundEffectTickAction(Hero hero, AreaGroundEffectEffect effect) {
                 EffectManager em = new EffectManager(plugin);
                 Effect e = new Effect(em) {
-                    int particlesPerRadius = 3;
+                    int particlesPerRadius = 1;
                     Particle particle = Particle.SMOKE_LARGE;
 
                     @Override

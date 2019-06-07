@@ -31,7 +31,7 @@ public class SkillNightmare extends ActiveSkill {
     public SkillNightmare(Heroes plugin) {
         super(plugin, "Nightmare");
         setDescription("Summon a nightmare around your current location plunging all enemies within $1 blocks of you into a nightmare, " +
-                "dealing $2 damage, blinding, and slowing them for $3 seconds.");
+                "dealing $2 damage and blinding them for $3 seconds.");
         setUsage("/skill nightmare");
         setIdentifiers("skill nightmare");
         setArgumentRange(0, 0);

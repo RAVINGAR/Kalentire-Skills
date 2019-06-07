@@ -21,15 +21,18 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
+import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.PlayerInventory;
 import org.bukkit.inventory.meta.ItemMeta;
 
+import java.util.Optional;
 import java.util.logging.Level;
 
 public class SkillTransform extends ActiveSkill {
 
+    private final String helmItemName = "Transformed";
     private String toggleableEffectName = "EnderBeastTransformed";
     private String applyText;
     private String expireText;
@@ -135,7 +138,7 @@ public class SkillTransform extends ActiveSkill {
 
             ItemStack transformedHead = new ItemStack(Material.SKULL_ITEM, 1, (short) 5);
             ItemMeta itemmeta = transformedHead.getItemMeta();
-            itemmeta.setDisplayName("Transformed");
+            itemmeta.setDisplayName(helmItemName);
             itemmeta.setUnbreakable(true);
             transformedHead.setItemMeta(itemmeta);
 
@@ -198,6 +201,31 @@ public class SkillTransform extends ActiveSkill {
             final Hero hero = plugin.getCharacterManager().getHero(event.getPlayer());
             if (hero.hasEffect(toggleableEffectName))
                 event.setCancelled(true);
+        }
+
+        @EventHandler(priority = EventPriority.LOWEST)
+        public void onPlayerDeath(PlayerDeathEvent event) {
+            if (event.getDrops() == null || event.getDrops().isEmpty())
+                return;
+
+            Hero hero = plugin.getCharacterManager().getHero(event.getEntity());
+            if (!hero.hasEffect(toggleableEffectName)) {
+                event.getEntity().sendMessage("You don't have the transform buff.");
+            }
+
+            Optional<ItemStack> helmItem = event.getDrops().stream().filter(x ->
+                    x.getType() == Material.SKULL_ITEM &&
+                    x.getData() != null &&
+                    x.getData().getData() == (byte) 5 &&
+                    !x.getItemMeta().getDisplayName().equals(helmItemName))
+                    .findFirst();
+
+            if (!helmItem.isPresent()) {
+                event.getEntity().sendMessage("You don't have the ender dragon skull.");
+                return;
+            }
+
+            event.getDrops().remove(helmItem.get());
         }
     }
 }
