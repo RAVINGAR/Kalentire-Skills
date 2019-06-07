@@ -24,8 +24,8 @@ public class SkillSacrifice extends ActiveSkill {
 
     public SkillSacrifice(Heroes plugin) {
         super(plugin, "Sacrifice");
-        setDescription("You summon all of your minions and clear their current targets. " +
-                "Upon being summoned, you will buff each of them with Speed $1 for $2 seconds.");
+        setDescription("You sacrifice all of your currently summoned minions to recover your strength. " +
+                "You will restore $1 health and $2 mana per each minion sacrificed.");
         setUsage("/skill sacrifice");
         setIdentifiers("skill sacrifice");
         setArgumentRange(0, 0);
@@ -34,8 +34,8 @@ public class SkillSacrifice extends ActiveSkill {
 
     @Override
     public String getDescription(Hero hero) {
-        double manaGainPer = SkillConfigManager.getUseSetting(hero, this, "mana-gain-per", 100.0, false);
         double healthGainPer = SkillConfigManager.getUseSetting(hero, this, "health-gain-per", 25.0, false);
+        double manaGainPer = SkillConfigManager.getUseSetting(hero, this, "mana-gain-per", 100.0, false);
 
         return getDescription()
                 .replace("$1", Util.decFormat.format(healthGainPer))
@@ -80,7 +80,7 @@ public class SkillSacrifice extends ActiveSkill {
                 for (Location particleLocation : particleLocations) {
                     player.getWorld().spigot().playEffect(particleLocation, Effect.WITCH_MAGIC, 0, 0, 0, 0.1F, 0, 0.0F, 1, 16);
                     player.getWorld().spigot().playEffect(particleLocation, Effect.COLOURED_DUST, 0, 0, 0, 0.1F, 0, 0.0F, 1, 16);
-//                player.getWorld().spawnParticle(Particle.BLAZE_SHOOT, particleLocation, 1, 0, 0.1, 0, 0, null, true);
+//                player.getWorld().spawnParticle(Particle.WITCH_MAGIC, particleLocation, 1, 0, 0.1, 0, 0, null, true);
                 }
             }
         }
@@ -89,6 +89,8 @@ public class SkillSacrifice extends ActiveSkill {
 
         hero.tryHeal(null, this, healthToRestore);
         hero.tryRestoreMana(hero, this, (int) manaToRestore);
+        if (hero.isVerboseMana())
+            player.sendMessage(ChatComponents.Bars.mana(newMana, hero.getMaxMana(), true));
 
         return SkillResult.NORMAL;
     }

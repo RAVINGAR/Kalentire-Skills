@@ -28,15 +28,17 @@ public class SkillUnholyRitual extends ActiveSkill {
     private static Color DARK_GRAY = Color.fromRGB(105, 105, 105);
 
     private static String effectName = "UnholyRitualing";
-    private static String minionEffectName = "UnholyRitual-Minion";
+    private static String minionRitualEffectName = "UnholyRitual-Minion";
 
     private String applyText;
     private String expireText;
 
     public SkillUnholyRitual(Heroes plugin) {
         super(plugin, "UnholyRitual");
-        setDescription("Channeling: Imbue your summoned minion(s) with power, granting them increased movement speeed and a $1% damage increase. " +
-                "This ability costs you greatly however, and will drain $2 mana and $3 stamina every $4 seconds.");
+        setDescription("Channeling: Imbue your summoned minion(s) with power, " + 
+                "granting them increased movement speeed, a $1% damage increase, and $2% damage mitigation. " +
+                "This ability costs you greatly however, and will drain $3 mana and $4 stamina every $5 seconds. " +
+                "Maximum channel time is $6 seconds.");
         setUsage("/skill unholyritual");
         setIdentifiers("skill unholyritual");
         setArgumentRange(0, 0);
@@ -50,13 +52,18 @@ public class SkillUnholyRitual extends ActiveSkill {
         int duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DELAY, 4000, false);
         int period = SkillConfigManager.getUseSetting(hero, this, SkillSetting.PERIOD, 1000, false);
 
-        double minionDamageAmplifier = SkillConfigManager.getUseSetting(hero, this, "minion-damage-percent-increase", 0.25, false);
+        double minionDamageBoost = SkillConfigManager.getUseSetting(hero, this, "minion-damage-percent-increase", 0.75, false);
+        double minionDamageMitigation = SkillConfigManager.getUseSetting(hero, skill, "minion-damage-mitigation-percent", 0.6, false);
         int manaDrain = SkillConfigManager.getUseSetting(hero, this, "mana-drain-per-tick", 30, false);
         int staminaDrain = SkillConfigManager.getUseSetting(hero, this, "stamina-drain-per-tick", 25, false);
 
         return getDescription()
-                .replace("$1", Util.decFormat.format(minionDamageAmplifier * 100))
-                .replace("$2", Util.decFormat.format(duration / 1000.0));
+                .replace("$1", Util.decFormat.format(minionDamageBoost * 100))
+                .replace("$2", Util.decFormat.format(minionDamageMitigation * 100))
+                .replace("$3", manaDrain + "")
+                .replace("$4", staminaDrain + "")
+                .replace("$5", Util.decFormat.format(period / 1000.0));
+                .replace("$6", Util.decFormat.format(duration / 1000.0));
     }
 
     @Override
@@ -67,7 +74,8 @@ public class SkillUnholyRitual extends ActiveSkill {
         config.set("mana-drain-per-tick", 30);
         config.set("stamina-drain-per-tick", 25);
         config.set("minion-speed-amplifier", 2);
-        config.set("minion-damage-percent-increase", 0.25);
+        config.set("minion-damage-percent-increase", 0.75);
+        config.set("minion-damage-mitigation-percent", 0.6);
         config.set(SkillSetting.INTERRUPT_TEXT.node(), "");
         config.set(SkillSetting.APPLY_TEXT.node(), ChatComponents.GENERIC_SKILL + "%hero% is empowering their minion(s)!");
         config.set(SkillSetting.EXPIRE_TEXT.node(), ChatComponents.GENERIC_SKILL + "%hero% is no longer empowering their minion(s).");
@@ -91,6 +99,10 @@ public class SkillUnholyRitual extends ActiveSkill {
     public void onWarmup(Hero hero) {
         super.onWarmup(hero);
         Player player = hero.getPlayer();
+        if (hero.getSummons().isEmpty()) {
+            player.sendMessage("    " + ChatComponents.GENERIC_SKILL + "You don't have any active summons to empower!");
+            return;
+        }
 
         hero.addEffect(new ChannelingEffect(this, player));
     }
@@ -149,19 +161,28 @@ public class SkillUnholyRitual extends ActiveSkill {
             this.skill = skill;
         }
 
-        @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
+        @EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
         public void onEntityDamage(EntityDamageByEntityEvent event) {
-            if (event.getDamage() <= 0 || !(event.getDamager() instanceof LivingEntity) || event.getDamager() instanceof Player)
+            if (event.getDamage() <= 0 || !(event.getDamager() instanceof LivingEntity) || !(event.getEntity() instanceof LivingEntity))
                 return;
 
-            Monster attackerMonster = plugin.getCharacterManager().getMonster((LivingEntity) event.getDamager());
-            if (!attackerMonster.isSummonedMob())
-                return;
-            if (!attackerMonster.hasEffect(minionEffectName))
-                return;
+            // Handle summon outgoing damage boost
+            if (!(event.getDamager() instanceof Player)) {
+                Monster attackerCT = plugin.getCharacterManager().getMonster((LivingEntity) event.getDamager());
+                if (attackerCT.hasEffect(minionRitualEffectName)) {
+                    RitualMinionEffect effect = (RitualMinionEffect) attackerMonster.getEffect(minionRitualEffectName);
+                    event.setDamage(event.getDamage() * (1 + effect.getPercentDamageIncrease()));
+                }
+            }
 
-            RitualMinionEffect effect = (RitualMinionEffect) attackerMonster.getEffect(minionEffectName);
-            event.setDamage(event.getDamage() * (1 + effect.getPercentDamageIncrease()));
+            // Handle summon incoming damage mitigation
+            if (!(event.getEntity() instanceof Player)) {
+                CharacterTemplate defenderCT = plugin.getCharacterManager().getCharacter((LivingEntity) event.getEntity());
+                if (defenderCT.hasEffect(minionRitualEffectName)) {
+                    RitualMinionEffect effect = (RitualMinionEffect) defenderCT.getEffect(minionRitualEffectName);
+                    event.setDamage(event.getDamage() * (1.0 - effect.getPercentDamageMitigation()));
+                }
+            }
         }
     }
 
@@ -172,7 +193,8 @@ public class SkillUnholyRitual extends ActiveSkill {
         private double regenMultiplier;
         private double perSecondModifier;
         private int minionSpeedAmplifier;
-        private double minionDamageAmplifier;
+        private double minionDamageBoost;
+        private double minionDamageMitigation;
         private int manaDrain;
         private int staminaDrain;
 
@@ -189,7 +211,8 @@ public class SkillUnholyRitual extends ActiveSkill {
             Player player = hero.getPlayer();
 
             this.minionSpeedAmplifier = SkillConfigManager.getUseSetting(hero, skill, "minion-speed-amplifier", 2, false);
-            this.minionDamageAmplifier = SkillConfigManager.getUseSetting(hero, skill, "minion-damage-percent-increase", 0.25, false);
+            this.minionDamageBoost = SkillConfigManager.getUseSetting(hero, skill, "minion-damage-percent-increase", 0.75, false);
+            this.minionDamageMitigation = = SkillConfigManager.getUseSetting(hero, skill, "minion-damage-mitigation-percent", 0.6, false);
             this.manaDrain = SkillConfigManager.getUseSetting(hero, skill, "mana-drain-per-tick", 30, false);
             this.staminaDrain = SkillConfigManager.getUseSetting(hero, skill, "stamina-drain-per-tick", 25, false);
 
@@ -199,7 +222,8 @@ public class SkillUnholyRitual extends ActiveSkill {
         @Override
         public void tickHero(Hero hero) {
             for (Monster summon : hero.getSummons()) {
-                summon.addEffect(new RitualMinionEffect(skill, applier, (long) (getPeriod() * 1.5), minionSpeedAmplifier, minionDamageAmplifier));
+                summon.addEffect(new RitualMinionEffect(skill, applier, (long) (getPeriod() * 1.5),
+                    minionSpeedAmplifier, minionDamageBoost, minionDamageMitigation));
             }
 
             int newMana = hero.getMana() - this.manaDrain;
@@ -262,13 +286,15 @@ public class SkillUnholyRitual extends ActiveSkill {
 
     class RitualMinionEffect extends ExpirableEffect {
         private final double percentDamageIncrease;
+        private final double percentDamageMitigation;
 
-        RitualMinionEffect(Skill skill, Player applier, long duration, int speedAmplifier, double percentDamageIncrease) {
-            super(skill, minionEffectName, applier, duration, null, null);
+        RitualMinionEffect(Skill skill, Player applier, long duration, int speedAmplifier, double percentDamageIncrease, double percentDamageMitigation) {
+            super(skill, minionRitualEffectName, applier, duration, null, null);
             types.add(EffectType.BENEFICIAL);
             types.add(EffectType.DARK);
 
             this.percentDamageIncrease = percentDamageIncrease;
+            this.percentDamageMitigation = percentDamageMitigation;
             if (speedAmplifier > -1) {
                 addPotionEffect(new PotionEffect(PotionEffectType.SPEED, (int) (duration / 50), speedAmplifier));
             }
@@ -276,6 +302,10 @@ public class SkillUnholyRitual extends ActiveSkill {
 
         double getPercentDamageIncrease() {
             return percentDamageIncrease;
+        }
+
+        double getPercentDamageMitigation() {
+            return percentDamageMitigation;
         }
     }
 }
