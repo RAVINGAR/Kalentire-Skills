@@ -13,10 +13,8 @@ import com.herocraftonline.heroes.characters.equipment.EquipmentType;
 import com.herocraftonline.heroes.characters.skill.*;
 import com.herocraftonline.heroes.chat.ChatComponents;
 import com.herocraftonline.heroes.util.Util;
-import org.bukkit.Bukkit;
-import org.bukkit.Location;
-import org.bukkit.Material;
-import org.bukkit.Sound;
+import org.bukkit.*;
+import org.bukkit.Effect;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
@@ -41,6 +39,7 @@ public class SkillTheWither extends ActiveSkill {
     private String applyText;
     private String expireText;
 
+    private String maxStacksErrorMessage = "$1 is fully withered!";
     public SkillTheWither(Heroes plugin) {
         super(plugin, "TheWither");
         setDescription("Channel the power of the Wither himself, altering your appearance and granting you passive wither damage immunity. " +
@@ -203,6 +202,8 @@ public class SkillTheWither extends ActiveSkill {
     }
 
     public static class WitherDecayEffect extends StackingEffect implements HealthRegainReduction {
+        private final int maxStacks;
+        private int currentStackCount;
 
         private final int witherAmplifier;
         private double healingReductionPerStack;
@@ -215,6 +216,7 @@ public class SkillTheWither extends ActiveSkill {
             this.types.add(EffectType.HEALING_REDUCTION);
             this.types.add(EffectType.WITHER);
 
+            this.maxStacks = maxStacks;
             this.witherAmplifier = witherAmplifier;
             this.healingReductionPerStack = healhReductionPerStack;
 
@@ -261,6 +263,12 @@ public class SkillTheWither extends ActiveSkill {
             CharacterTemplate targetCT = plugin.getCharacterManager().getCharacter((LivingEntity) event.getEntity());
             targetCT.addEffectStack(getWitherDecayEffectName(player), skill, player, duration,
                     () -> new WitherDecayEffect(skill, player, witherAmplifier, healingReduction, maxStacks));
+            WitherDecayEffect effect = (WitherDecayEffect) targetCT.getEffect(getWitherDecayEffectName(player));
+            if (effect.getStackCount() == effect.getMaxStacks()) {
+                maxStacksErrorMessage = maxStacksErrorMessage.replace("$1", targetCT.getName());
+                String message = "    " + ChatComponents.GENERIC_SKILL + ChatColor.DARK_GRAY + maxStacksErrorMessage;
+                hero.getPlayer().sendMessage(message);
+            }
         }
 
         @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
