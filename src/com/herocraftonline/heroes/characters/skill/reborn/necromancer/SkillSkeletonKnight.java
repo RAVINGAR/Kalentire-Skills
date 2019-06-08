@@ -35,7 +35,7 @@ public class SkillSkeletonKnight extends ActiveSkill {
         super(plugin, "SkeletonKnight");
         setDescription("Conjures a Skeleton Knight to obey your commands. " +
                 "He has $1 HP, deals $2 damage per hit, and lasts for up to $3 seconds. " +
-                "Your knight will cleave nearby monsters (but not players) on every hit and take $4 reduced damage from other monsters or summons. $9");
+                "Your knight will cleave nearby enemies on every hit at a $4% damage rate. $9");
         setUsage("/skill skeletonknight");
         setIdentifiers("skill skeletonknight");
         setArgumentRange(0, 0);
@@ -56,6 +56,7 @@ public class SkillSkeletonKnight extends ActiveSkill {
 
         double hitDmg = SkillConfigManager.getUseSetting(hero, this, "minion-attack-damage", 25.0, false);
         hitDmg += SkillConfigManager.getUseSetting(hero, this, "minion-attack-damage-per-level", 0.4, false) * hero.getHeroLevel(this);
+        double cleaveDamageMultiplier = SkillConfigManager.getUseSetting(hero, this, "minion-cleave-damage-multiplier", 1.0, false);
 
         long duration = SkillConfigManager.getUseSetting(hero, this, "minion-duration", 45000, false);
 
@@ -75,6 +76,7 @@ public class SkillSkeletonKnight extends ActiveSkill {
                 .replace("$1", Util.decFormat.format(maxHp))
                 .replace("$2", Util.decFormat.format(hitDmg))
                 .replace("$3", Util.decFormat.format(duration / 1000.0))
+                .replace("$4", Util.decFormat.format(cleaveDamageMultiplier))
                 .replace("$9", speedText);
     }
 
@@ -85,6 +87,8 @@ public class SkillSkeletonKnight extends ActiveSkill {
         config.set("maximum-allowed-minions", 3);
         config.set("minion-attack-damage", 25.0);
         config.set("minion-attack-damage-per-level", 0.4);
+        config.set("minion-cleave-radius", 3.0);
+        config.set("minion-cleave-damage-multiplier", 1.0);
         config.set("minion-max-hp", 400.0);
         config.set("minion-max-hp-per-level", 4.0);
         config.set("minion-duration", 60000);
@@ -145,28 +149,21 @@ public class SkillSkeletonKnight extends ActiveSkill {
             if (event.getDamage() <= 0 || !(event.getDamager() instanceof LivingEntity) || !(event.getEntity() instanceof LivingEntity))
                 return;
 
-            // Handle Mob vs Summon damage mitigation
-            if (!(event.getDamager() instanceof Player) && !(event.getEntity() instanceof Player)) {
-                CharacterTemplate defenderCT = plugin.getCharacterManager().getCharacter((LivingEntity) event.getEntity());
-                if (defenderCT.hasEffect(minionEffectName)) {
-                    SkeletonKnightEffect effect = (SkeletonKnightEffect) defenderCT.getEffect(minionEffectName);
-                    event.setDamage(event.getDamage() * (1.0 - effect.getPveDamageMitigation()));
-                }
-            }
-
             // Handle Summon cleave attack
             if (!(event.getDamager() instanceof Player)) {
                 CharacterTemplate attackerCT = plugin.getCharacterManager().getCharacter((LivingEntity) event.getDamager());
                 if (attackerCT.hasEffect(minionEffectName)) {
-                    handleMinionCleave(event, (Monster) attackerCT);
+                    SkeletonKnightEffect effect = (SkeletonKnightEffect) attackerCT.getEffect(minionEffectName);
+                    handleMinionCleave(event, (Monster) attackerCT, effect);
                 }
             }
         }
 
-        public void handleMinionCleave(EntityDamageByEntityEvent event, Monster summon) {
+        public void handleMinionCleave(EntityDamageByEntityEvent event, Monster summon, SkeletonKnightEffect effect) {
             Hero summoner = summon.getSummoner();
             LivingEntity target = (LivingEntity) event.getEntity();
-            double radius = SkillConfigManager.getUseSetting(summoner, skill, SkillSetting.RADIUS, 3.0, false);
+            double radius = effect.getCleaveRadius();
+            double damage = event.getDamage() * effect.getCleaveDamageMultiplier();
 
             for (Entity entity : target.getNearbyEntities(radius, radius, radius)) {
                 if (!(entity instanceof LivingEntity) || entity.equals(event.getEntity()))
@@ -174,13 +171,14 @@ public class SkillSkeletonKnight extends ActiveSkill {
 
                 LivingEntity aoeTarget = (LivingEntity) entity;
                 addSpellTarget(aoeTarget, summoner);
-                damageEntity(aoeTarget, summon.getEntity(), event.getDamage(), EntityDamageEvent.DamageCause.ENTITY_ATTACK, false);
+                damageEntity(aoeTarget, summon.getEntity(), damage, EntityDamageEvent.DamageCause.ENTITY_ATTACK, false);
             }
         }
     }
 
     public class SkeletonKnightEffect extends SummonEffect {
-        private double pveDamageMitigation;
+        private double cleaveRadius;
+        private double cleaveDamageMultiplier;
 
         SkeletonKnightEffect(Skill skill, Hero summoner, long duration) {
             super(skill, minionEffectName, duration, summoner, null);
@@ -200,7 +198,8 @@ public class SkillSkeletonKnight extends ActiveSkill {
         public void applyToMonster(Monster monster) {
             super.applyToMonster(monster);
 
-            this.pveDamageMitigation = SkillConfigManager.getUseSetting(getSummoner(), skill, "minion-pve-damage-mitigation", 0.5, false);
+            this.cleaveRadius = SkillConfigManager.getUseSetting(getSummoner(), skill, "minion-cleave-radius", 3.0, false);
+            this.cleaveDamageMultiplier = SkillConfigManager.getUseSetting(getSummoner(), skill, "minion-cleave-damage-multiplier", 1.0, false);
 
             double maxHp = SkillConfigManager.getScaledUseSettingDouble(getSummoner(), skill, "minion-max-hp", 400.0, false);
             double hitDmg = SkillConfigManager.getScaledUseSettingDouble(getSummoner(), skill, "minion-attack-damage", 25.0, false);
@@ -213,8 +212,12 @@ public class SkillSkeletonKnight extends ActiveSkill {
             monster.setDamage(hitDmg);
         }
 
-        public double getPveDamageMitigation() {
-            return pveDamageMitigation;
+        public double getCleaveRadius() {
+            return cleaveRadius;
+        }
+
+        public double getCleaveDamageMultiplier() {
+            return cleaveDamageMultiplier;
         }
     }
 }

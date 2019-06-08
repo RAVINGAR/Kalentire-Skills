@@ -27,8 +27,8 @@ public class SkillForcePush extends TargettedSkill {
 
     public SkillForcePush(Heroes plugin) {
         super(plugin, "Forcepush");
-        setDescription("Deal $1 magic damage and force your target away from you. " +
-                "If you target an ally, they will be healed for $2 instead.");
+        setDescription("Deal $1 magic damage and force your target away from you$2. " +
+                "If you target an ally, they will be healed for $3 instead.");
         setUsage("/skill forcepush");
         setIdentifiers("skill forcepush");
         setArgumentRange(0, 0);
@@ -41,9 +41,18 @@ public class SkillForcePush extends TargettedSkill {
         double damage = SkillConfigManager.getScaledUseSettingDouble(hero, this, SkillSetting.DAMAGE, false);
         double healing = SkillConfigManager.getScaledUseSettingDouble(hero, this, SkillSetting.HEALING, false);
 
+        int duration = SkillConfigManager.getScaledUseSettingInt(hero, this, SkillSetting.DURATION, false);
+        int slowAmplifier = SkillConfigManager.getUseSetting(hero, this, "slow-amplifier", 1, false);
+
+        String slowText = "";
+        if (duration > 0 && slowAmplifier > -1) {
+            slowText = " and slowing them for " + Util.decFormat.format(duration / 1000.0) + " second(s)";
+        }
+
         return getDescription()
                 .replace("$1", Util.decFormat.format(damage))
-                .replace("$2", Util.decFormat.format(healing));
+                .replace("$2", slowText)
+                .replace("$3", Util.decFormat.format(healing));
     }
 
     @Override
