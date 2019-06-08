@@ -198,8 +198,8 @@ public class SkillSkeletonKnight extends ActiveSkill {
         public void applyToMonster(Monster monster) {
             super.applyToMonster(monster);
 
-            this.cleaveRadius = SkillConfigManager.getUseSetting(summoner, skill, "minion-cleave-radius", 3.0, false);
-            this.cleaveDamageMultiplier = SkillConfigManager.getUseSetting(summoner, skill, "minion-cleave-damage-multiplier", 1.0, false);
+            this.cleaveRadius = SkillConfigManager.getUseSetting(getSummoner(), skill, "minion-cleave-radius", 3.0, false);
+            this.cleaveDamageMultiplier = SkillConfigManager.getUseSetting(getSummoner(), skill, "minion-cleave-damage-multiplier", 1.0, false);
 
             double maxHp = SkillConfigManager.getScaledUseSettingDouble(getSummoner(), skill, "minion-max-hp", 400.0, false);
             double hitDmg = SkillConfigManager.getScaledUseSettingDouble(getSummoner(), skill, "minion-attack-damage", 25.0, false);

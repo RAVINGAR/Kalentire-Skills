@@ -90,7 +90,7 @@ public class SkillSacrifice extends ActiveSkill {
         hero.tryHeal(null, this, healthToRestore);
         hero.tryRestoreMana(hero, this, (int) manaToRestore);
         if (hero.isVerboseMana())
-            player.sendMessage(ChatComponents.Bars.mana(newMana, hero.getMaxMana(), true));
+            player.sendMessage(ChatComponents.Bars.mana(hero.getMana(), hero.getMaxMana(), true));
 
         return SkillResult.NORMAL;
     }
