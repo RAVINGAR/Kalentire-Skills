@@ -132,7 +132,7 @@ public class SkillRecklessFlurry extends ActiveSkill {
             this.skill = skill;
         }
 
-        @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
+        @EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
         public void onSkillDamage(SkillDamageEvent event) {
 
             // Handle incoming

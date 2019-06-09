@@ -114,7 +114,7 @@ public class SkillPyromania extends PassiveSkill {
             this.skill = skill;
         }
 
-        @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
+        @EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
         public void onSkillDamage(SkillDamageEvent event) {
             if (event.getSkill() == null || !event.getSkill().getTypes().contains(SkillType.ABILITY_PROPERTY_FIRE))
                 return;
@@ -139,7 +139,7 @@ public class SkillPyromania extends PassiveSkill {
                     + Util.decFormat.format(damageDifference) + "!");
         }
 
-        @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
+        @EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
         public void onFireDamageTaken(EntityDamageEvent event) {
             if (event.getCause() != EntityDamageEvent.DamageCause.FIRE_TICK
                     && event.getCause() != EntityDamageEvent.DamageCause.FIRE

@@ -2,7 +2,6 @@ package com.herocraftonline.heroes.characters.skill.reborn.hellspawn;
 
 import com.herocraftonline.heroes.Heroes;
 import com.herocraftonline.heroes.api.SkillResult;
-import com.herocraftonline.heroes.attributes.AttributeType;
 import com.herocraftonline.heroes.characters.CharacterTemplate;
 import com.herocraftonline.heroes.characters.Hero;
 import com.herocraftonline.heroes.characters.effects.common.BurningEffect;
@@ -27,7 +26,7 @@ import java.util.Map.Entry;
 
 public class SkillChaosOrb extends ActiveSkill {
 
-    private Map<EnderPearl, Long> pearls = new LinkedHashMap<EnderPearl, Long>(100) {
+    private Map<EnderPearl, Long> orbs = new LinkedHashMap<EnderPearl, Long>(100) {
         private static final long serialVersionUID = 4329526013158603250L;
 
         @Override
@@ -67,7 +66,7 @@ public class SkillChaosOrb extends ActiveSkill {
     public ConfigurationSection getDefaultConfig() {
         ConfigurationSection config = super.getDefaultConfig();
         config.set(SkillSetting.DAMAGE.node(), 120.0);
-        config.set(SkillSetting.DAMAGE_INCREASE_PER_INTELLECT.node(), 1.25);
+        config.set(SkillSetting.DAMAGE_INCREASE_PER_INTELLECT.node(), 0.0);
         config.set("burn-duration", 2000);
         config.set("burn-damage-multiplier", 1.5);
         config.set("velocity-multiplier", 0.75);
@@ -80,23 +79,23 @@ public class SkillChaosOrb extends ActiveSkill {
     public SkillResult use(Hero hero, String[] args) {
         Player player = hero.getPlayer();
 
-        final EnderPearl pearl = player.launchProjectile(EnderPearl.class);
-        pearl.setFireTicks(100);
-        pearls.put(pearl, System.currentTimeMillis());
+        final EnderPearl orb = player.launchProjectile(EnderPearl.class);
+        orb.setFireTicks(100);
+        orbs.put(orb, System.currentTimeMillis());
 
         double mult = SkillConfigManager.getUseSetting(hero, this, "velocity-multiplier", 0.4, false);
-        Vector vel = pearl.getVelocity().normalize().multiply(mult);
+        Vector vel = orb.getVelocity().normalize().multiply(mult);
 
-        pearl.setVelocity(vel);
-        pearl.setShooter(player);
+        orb.setVelocity(vel);
+        orb.setShooter(player);
 
         int ticksBeforeDrop = SkillConfigManager.getUseSetting(hero, this, "ticks-before-drop", 8, false);
         final double yValue = SkillConfigManager.getUseSetting(hero, this, "y-value-drop", 0.4, false);
 
         Bukkit.getScheduler().scheduleSyncDelayedTask(plugin, new Runnable() {
             public void run() {
-                if (!pearl.isDead()) {
-                    pearl.setVelocity(pearl.getVelocity().setY(-yValue));
+                if (!orb.isDead()) {
+                    orb.setVelocity(orb.getVelocity().setY(-yValue));
                 }
             }
         }, ticksBeforeDrop);
@@ -110,21 +109,21 @@ public class SkillChaosOrb extends ActiveSkill {
     }
 
     public class SkillEntityListener implements Listener {
-
         private final Skill skill;
 
         public SkillEntityListener(Skill skill) {
             this.skill = skill;
         }
 
-        @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
+        @EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
         public void onEntityDamage(EntityDamageByEntityEvent event) {
             Entity projectile = event.getDamager();
-            if (!(projectile instanceof EnderPearl) || !pearls.containsKey(projectile)) {
+            if (!(projectile instanceof EnderPearl) || !orbs.containsKey(projectile))
                 return;
-            }
 
-            pearls.remove(projectile);
+            orbs.remove(projectile);
+            event.setCancelled(true);
+
             if (!(event.getEntity() instanceof LivingEntity))
                 return;
 
@@ -136,10 +135,8 @@ public class SkillChaosOrb extends ActiveSkill {
             Player player = (Player) dmgSource;
             Hero hero = plugin.getCharacterManager().getHero(player);
 
-            if (!damageCheck(player, targetLE)) {
-                event.setCancelled(true);
+            if (!damageCheck(player, targetLE))
                 return;
-            }
 
             int burnDuration = SkillConfigManager.getUseSetting(hero, skill, "burn-duration", 2000, false);
             double burnMultipliaer = SkillConfigManager.getUseSetting(hero, skill, "burn-damage-multiplier", 1.5, false);
@@ -150,8 +147,6 @@ public class SkillChaosOrb extends ActiveSkill {
 
             CharacterTemplate targetCT = plugin.getCharacterManager().getCharacter(targetLE);
             targetCT.addEffect(new BurningEffect(skill, player, burnDuration, burnMultipliaer));
-
-            event.setCancelled(true);
         }
     }
 }

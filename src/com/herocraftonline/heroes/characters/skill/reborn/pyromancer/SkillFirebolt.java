@@ -2,14 +2,14 @@ package com.herocraftonline.heroes.characters.skill.reborn.pyromancer;
 
 import com.herocraftonline.heroes.Heroes;
 import com.herocraftonline.heroes.api.SkillResult;
-import com.herocraftonline.heroes.attributes.AttributeType;
 import com.herocraftonline.heroes.characters.CharacterTemplate;
 import com.herocraftonline.heroes.characters.Hero;
 import com.herocraftonline.heroes.characters.effects.common.BurningEffect;
 import com.herocraftonline.heroes.characters.skill.*;
-
 import com.herocraftonline.heroes.util.Util;
-import org.bukkit.*;
+import org.bukkit.Bukkit;
+import org.bukkit.Effect;
+import org.bukkit.Particle;
 import org.bukkit.Sound;
 import org.bukkit.block.Block;
 import org.bukkit.configuration.ConfigurationSection;
@@ -21,7 +21,6 @@ import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityDamageEvent.DamageCause;
 import org.bukkit.event.entity.ProjectileHitEvent;
 import org.bukkit.projectiles.ProjectileSource;
-import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.scheduler.BukkitScheduler;
 import org.bukkit.util.Vector;
 
@@ -143,7 +142,7 @@ public class SkillFirebolt extends ActiveSkill {
             this.skill = skill;
         }
 
-        @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
+        @EventHandler(priority = EventPriority.MONITOR)
         public void onProjectileHit(ProjectileHitEvent event) {
             if (!(event.getEntity() instanceof Snowball))
                 return;
@@ -168,14 +167,15 @@ public class SkillFirebolt extends ActiveSkill {
             }
         }
 
-        @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
+        @EventHandler(priority = EventPriority.HIGH)    // Don't ignore cancelled.
         public void onEntityDamage(EntityDamageByEntityEvent event) {
             Entity projectile = event.getDamager();
-            if (!(projectile instanceof Snowball) || !fireballs.containsKey(projectile)) {
+            if (!(projectile instanceof Snowball) || !fireballs.containsKey(projectile))
                 return;
-            }
 
             fireballs.remove(projectile);
+            event.setCancelled(true);
+
             if (!(event.getEntity() instanceof LivingEntity))
                 return;
 
@@ -187,10 +187,8 @@ public class SkillFirebolt extends ActiveSkill {
             Player player = (Player) dmgSource;
             Hero hero = plugin.getCharacterManager().getHero(player);
 
-            if (!damageCheck(player, targetLE)) {
-                event.setCancelled(true);
+            if (!damageCheck(player, targetLE))
                 return;
-            }
 
             int burnDuration = SkillConfigManager.getUseSetting(hero, skill, "burn-duration", 2000, false);
             double burnMultipliaer = SkillConfigManager.getUseSetting(hero, skill, "burn-damage-multiplier", 2.0, false);
@@ -204,8 +202,6 @@ public class SkillFirebolt extends ActiveSkill {
 
             targetLE.getWorld().spawnParticle(Particle.FLAME, targetLE.getLocation(), 50, 0.2F, 0.7F, 0.2F, 16);
             targetLE.getWorld().playSound(targetLE.getLocation(), Sound.BLOCK_FIRE_AMBIENT, 7.0F, 1.0F);
-
-            event.setCancelled(true);
         }
     }
 }

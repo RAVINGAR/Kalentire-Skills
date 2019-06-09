@@ -148,7 +148,7 @@ public class SkillManaShield extends ActiveSkill {
             this.skill = skill;
         }
 
-        @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
+        @EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
         public void onCharacterDamage(EntityDamageEvent event) {
             if (!(event.getEntity() instanceof Player)) {
                 return;

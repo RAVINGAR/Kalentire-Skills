@@ -236,7 +236,7 @@ public class SkillLichForm extends ActiveSkill {
             this.skill = skill;
         }
 
-        @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
+        @EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
         public void onEquipmentChanged(EquipmentChangedEvent event) {
             if (event.getType() != EquipmentType.HELMET || event.getOldArmorPiece() == null
                     || event.getOldArmorPiece().getType() != noDisguiseLibTransformMaterial
