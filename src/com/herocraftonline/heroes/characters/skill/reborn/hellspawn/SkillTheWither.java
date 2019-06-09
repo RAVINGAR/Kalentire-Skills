@@ -22,6 +22,7 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
+import org.bukkit.event.entity.EntityDeathEvent;
 import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.PlayerInventory;
@@ -289,23 +290,24 @@ public class SkillTheWither extends ActiveSkill {
         }
 
         @EventHandler(priority = EventPriority.LOWEST)
-        public void onPlayerDeath(PlayerDeathEvent event) {
-            if (event.getDrops() == null || event.getDrops().isEmpty())
+        public void onPlayerDeath(EntityDeathEvent event) {
+            if (!(event.getEntity() instanceof Player))
                 return;
-
-            Hero hero = plugin.getCharacterManager().getHero(event.getEntity());
+            Player player = (Player) event.getEntity();
+            Hero hero = plugin.getCharacterManager().getHero(player);
             if (!hero.hasEffect(toggleableEffectName))
                 return;
 
-            Optional<ItemStack> helmItem = event.getDrops().stream().filter(x -> x.getType() == Material.SKULL_ITEM &&
-                        x.getData() != null &&
-                        x.getData().getData() == (byte) 1 &&
-                        !x.getItemMeta().getDisplayName().equals(helmItemName))
-                    .findFirst();
-            if (!helmItem.isPresent())
-                return;
-
-            event.getDrops().remove(helmItem.get());
+            ItemStack transformedHead = new ItemStack(Material.SKULL_ITEM, 1, (short) 1);
+            ItemMeta itemMeta = transformedHead.getItemMeta();
+            itemMeta.setDisplayName(helmItemName);
+            itemMeta.setUnbreakable(true);
+            transformedHead.setItemMeta(itemMeta);
+            for (ItemStack item : event.getDrops()) {
+                if (item.isSimilar(transformedHead)) {
+                    event.getDrops().remove(transformedHead);
+                }
+            }
         }
     }
 }
