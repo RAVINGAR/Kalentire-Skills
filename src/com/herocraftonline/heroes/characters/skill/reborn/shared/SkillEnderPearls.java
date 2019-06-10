@@ -7,6 +7,7 @@ import com.herocraftonline.heroes.characters.effects.ExpirableEffect;
 import com.herocraftonline.heroes.characters.skill.*;
 import com.herocraftonline.heroes.chat.ChatComponents;
 import com.herocraftonline.heroes.nms.NMSHandler;
+import com.herocraftonline.heroes.util.MaterialUtil;
 import com.herocraftonline.heroes.util.Util;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -173,49 +174,38 @@ public class SkillEnderPearls extends PassiveSkill {
                 return;
             }
 
-            // Store some of the original teleport location variables
             Location teleportLoc = event.getTo();
             Block teleportLocBlock = teleportLoc.getBlock();
             Material teleportLocBlockType = teleportLocBlock.getType();
             float pitch = teleportLoc.getPitch();
             float yaw = teleportLoc.getYaw();
+            boolean validLocation = true;
 
-            int verticalLeniency = SkillConfigManager.getUseSetting(hero, skill, "vertical-leniency", 2, false);
-
-            boolean validLocation = false;
-            int i = 0;
-            do {
-                if (Util.transparentBlocks.contains(teleportLocBlockType)) {
-                    if (Util.transparentBlocks.contains(teleportLocBlock.getRelative(BlockFace.UP).getType())) {
-                        validLocation = true;
-                        break;
-                    }
-
-                    // Give them a block of wiggle room if we've got an invalid location.
-                    if (Util.transparentBlocks.contains(teleportLocBlock.getRelative(BlockFace.DOWN).getType())) {
-                        teleportLoc = teleportLoc.subtract(0, 1, 0);
-                        teleportLocBlock = teleportLoc.getBlock();
-                        teleportLocBlockType = teleportLocBlock.getType();
-                    } else
-                        break;
-                }
-                i++;
+            if (!teleportLocBlockType.isSolid()) {
+                teleportLoc.subtract(0, teleportLoc.getY() - (int) teleportLoc.getY(), 0);
             }
-            while (i <= verticalLeniency);
 
-            if (!validLocation) {
-                // Going up, we only ever need 1 block of vertical leniency, so just do a single block check.
-                teleportLoc = event.getTo().add(0, 1, 0);
-                teleportLocBlock = teleportLoc.getBlock();
-                teleportLocBlockType = teleportLocBlock.getType();
+            if (teleportLocBlock.getRelative(BlockFace.UP).getType().isSolid()) {
+                teleportLoc.subtract(0,1,0);
+            }
 
-                if (Util.transparentBlocks.contains(teleportLocBlockType) && Util.transparentBlocks.contains(teleportLocBlock.getRelative(BlockFace.UP).getType()))
-                    validLocation = true;
+            teleportLocBlock = teleportLoc.getBlock();
+            teleportLocBlockType = teleportLocBlock.getType();
+            // if the enderpearl doesn't land on transparent or a half block fail
+            if (!Util.transparentBlocks.contains(teleportLocBlockType)
+                && !(teleportLocBlockType == Material.STEP)
+                && !(teleportLocBlockType == Material.BED_BLOCK)
+                && !(teleportLocBlockType == Material.SNOW)
+                && !(teleportLocBlockType == Material.WOOD_STEP)
+                && !(teleportLocBlockType == Material.STONE_SLAB2)
+                && !(teleportLocBlockType == Material.PURPUR_SLAB)) {
+                validLocation = false;
             }
 
             if (!validLocation) {
                 event.getPlayer().sendMessage("    " + ChatComponents.GENERIC_SKILL + "A mysterious force prevents you from teleporting to your ender pearl location.");
                 return;
+
             }
 
             // Move our location to the block it landed on, and center it. This fixes several exploit issues.
