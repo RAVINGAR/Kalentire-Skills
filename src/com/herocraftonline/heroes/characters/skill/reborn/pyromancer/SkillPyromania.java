@@ -125,7 +125,7 @@ public class SkillPyromania extends PassiveSkill {
 
             Hero hero = (Hero) event.getDamager();
             Player player = hero.getPlayer();
-            PyromaniaEffect effect = (PyromaniaEffect)hero.getEffect(skill.getName());
+            PyromaniaEffect effect = (PyromaniaEffect) hero.getEffect(skill.getName());
             if (effect.getDamageIncrease() <= 0.0)
                 return;
 

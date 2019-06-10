@@ -2,11 +2,9 @@ package com.herocraftonline.heroes.characters.skill.reborn.pyromancer;
 
 import com.herocraftonline.heroes.Heroes;
 import com.herocraftonline.heroes.api.SkillResult;
-import com.herocraftonline.heroes.attributes.AttributeType;
 import com.herocraftonline.heroes.characters.CharacterTemplate;
 import com.herocraftonline.heroes.characters.Hero;
 import com.herocraftonline.heroes.characters.effects.common.BurningEffect;
-import com.herocraftonline.heroes.characters.effects.common.CombustEffect;
 import com.herocraftonline.heroes.characters.skill.*;
 import com.herocraftonline.heroes.characters.skill.tools.BasicDamageMissile;
 import com.herocraftonline.heroes.characters.skill.tools.BasicMissile;
@@ -27,7 +25,6 @@ import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.entity.EntityDamageEvent;
-import org.bukkit.plugin.Plugin;
 import org.bukkit.util.Vector;
 
 import java.util.Collection;
@@ -167,9 +164,6 @@ public class SkillGreatFireball extends ActiveSkill {
 
                 addSpellTarget(target, hero);
                 damageEntity(target, player, this.explosionDamage, EntityDamageEvent.DamageCause.MAGIC);
-
-                CharacterTemplate targetCT = plugin.getCharacterManager().getCharacter(target);
-                targetCT.addEffect(new CombustEffect(skill, player));
             }
         }
     }
