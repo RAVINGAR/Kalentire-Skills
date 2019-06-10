@@ -41,12 +41,10 @@ public class SkillFamine extends TargettedSkill {
 
     public String getDescription(Hero hero) {
         double radius = SkillConfigManager.getScaledUseSettingDouble(hero, this, SkillSetting.RADIUS, false);
-
         int duration = SkillConfigManager.getScaledUseSettingInt(hero, this, SkillSetting.DURATION, false);
         int period = SkillConfigManager.getUseSetting(hero, this, SkillSetting.PERIOD, 1000, true);
 
         double degenPercent = SkillConfigManager.getUseSetting(hero, this, "stamina-degen-percent", 0.5, false);
-
         int staminaDrain = SkillConfigManager.getUseSetting(hero, this, "stamina-drain-per-tick", 60, false);
         double drainIncrease = SkillConfigManager.getUseSetting(hero, this, "stamina-drain-increase-intellect", 0.0, false);
 

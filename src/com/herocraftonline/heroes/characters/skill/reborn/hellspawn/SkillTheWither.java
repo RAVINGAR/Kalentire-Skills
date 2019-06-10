@@ -29,6 +29,7 @@ import org.bukkit.inventory.PlayerInventory;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.Optional;
 import java.util.logging.Level;
@@ -166,12 +167,7 @@ public class SkillTheWither extends ActiveSkill {
         private void addWitherSkull(Hero hero, Player player) {
             PlayerInventory inventory = player.getInventory();
 
-            ItemStack transformedHead = new ItemStack(Material.SKULL_ITEM, 1, (short) 1);
-            ItemMeta itemMeta = transformedHead.getItemMeta();
-            itemMeta.setDisplayName(helmItemName);
-            itemMeta.setUnbreakable(true);
-            transformedHead.setItemMeta(itemMeta);
-
+            ItemStack transformedHead = createHelmItem();
             EquipmentChangedEvent replaceEvent = new EquipmentChangedEvent(player, EquipMethod.APPLYING_SKILL_EFFECT, EquipmentType.HELMET, inventory.getHelmet(), transformedHead);
             Bukkit.getServer().getPluginManager().callEvent(replaceEvent);
             if (replaceEvent.isCancelled()) {
@@ -200,6 +196,16 @@ public class SkillTheWither extends ActiveSkill {
             inventory.setHelmet(emptyHelmet);
             Util.syncInventory(player, plugin);
         }
+    }
+
+    @NotNull
+    private ItemStack createHelmItem() {
+        ItemStack transformedHead = new ItemStack(Material.SKULL_ITEM, 1, (short) 1);
+        ItemMeta itemMeta = transformedHead.getItemMeta();
+        itemMeta.setDisplayName(helmItemName);
+        itemMeta.setUnbreakable(true);
+        transformedHead.setItemMeta(itemMeta);
+        return transformedHead;
     }
 
     public static class WitherDecayEffect extends StackingEffect implements HealthRegainReduction {
@@ -293,16 +299,13 @@ public class SkillTheWither extends ActiveSkill {
         public void onPlayerDeath(EntityDeathEvent event) {
             if (!(event.getEntity() instanceof Player))
                 return;
+
             Player player = (Player) event.getEntity();
             Hero hero = plugin.getCharacterManager().getHero(player);
             if (!hero.hasEffect(toggleableEffectName))
                 return;
 
-            ItemStack transformedHead = new ItemStack(Material.SKULL_ITEM, 1, (short) 1);
-            ItemMeta itemMeta = transformedHead.getItemMeta();
-            itemMeta.setDisplayName(helmItemName);
-            itemMeta.setUnbreakable(true);
-            transformedHead.setItemMeta(itemMeta);
+            ItemStack transformedHead = createHelmItem();
             for (ItemStack item : event.getDrops()) {
                 if (item.isSimilar(transformedHead)) {
                     event.getDrops().remove(transformedHead);
