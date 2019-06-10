@@ -186,7 +186,6 @@ public class SkillFirebolt extends ActiveSkill {
 
             Player player = (Player) dmgSource;
             Hero hero = plugin.getCharacterManager().getHero(player);
-
             if (!damageCheck(player, targetLE))
                 return;
 
