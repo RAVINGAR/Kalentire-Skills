@@ -304,7 +304,7 @@ public class SkillSummonEnderCrystal extends TargettedLocationSkill {
             activeConstructions.clear();
         }
 
-        @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
+        @EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
         public void onEntityExplode(EntityExplodeEvent e) {
             if (!(e.getEntity() instanceof EnderCrystal))
                 return;
@@ -314,7 +314,7 @@ public class SkillSummonEnderCrystal extends TargettedLocationSkill {
                 e.setCancelled(true);
         }
 
-        @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
+        @EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
         public void onEntityDamageByEntity(EntityDamageByEntityEvent e) {
             if (!(e.getEntity() instanceof EnderCrystal))
                 return;
@@ -338,7 +338,7 @@ public class SkillSummonEnderCrystal extends TargettedLocationSkill {
                 event.setCancelled(true);
         }
 
-        @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
+        @EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
         public void onBlockSpread(BlockSpreadEvent event) {
             Block block = event.getBlock();
             Block sourceBlock = event.getSource();
@@ -348,7 +348,7 @@ public class SkillSummonEnderCrystal extends TargettedLocationSkill {
                 event.setCancelled(true);
         }
 
-        @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
+        @EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
         public void onBlockBreak(BlockBreakEvent event) {
             Block block = event.getBlock();
 
@@ -357,7 +357,7 @@ public class SkillSummonEnderCrystal extends TargettedLocationSkill {
                 event.setCancelled(true);
         }
 
-        @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
+        @EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
         public void onBlockFromTo(BlockFromToEvent event) {
             Block fromBlock = event.getBlock();
             Block toBlock = event.getToBlock();
@@ -367,7 +367,7 @@ public class SkillSummonEnderCrystal extends TargettedLocationSkill {
                 event.setCancelled(true);
         }
 
-        @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
+        @EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
         public void onBlockDamage(BlockDamageEvent event) {
             Block block = event.getBlock();
 
@@ -376,7 +376,7 @@ public class SkillSummonEnderCrystal extends TargettedLocationSkill {
                 event.setCancelled(true);
         }
 
-        @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
+        @EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
         public void onEntityChangeBlock(EntityChangeBlockEvent event) {
             Block block = event.getBlock();
 
@@ -385,7 +385,7 @@ public class SkillSummonEnderCrystal extends TargettedLocationSkill {
                 event.setCancelled(true);
         }
 
-        @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
+        @EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
         public void onHangingBreak(HangingBreakEvent event) {
             Block block = event.getEntity().getLocation().getBlock();
 
@@ -395,7 +395,7 @@ public class SkillSummonEnderCrystal extends TargettedLocationSkill {
             }
         }
 
-        @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
+        @EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
         public void onBlockPistonExtend(BlockPistonExtendEvent event) {
 
             List<Block> activeBlocks = getAllActiveBlocksIncludingEnderCrystals();
@@ -403,7 +403,7 @@ public class SkillSummonEnderCrystal extends TargettedLocationSkill {
                 event.setCancelled(true);
         }
 
-        @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
+        @EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
         public void onBlockPistonRetract(BlockPistonRetractEvent event) {
 
             List<Block> activeBlocks = getAllActiveBlocksIncludingEnderCrystals();

@@ -20,8 +20,6 @@ import com.herocraftonline.heroes.characters.skill.TargettedSkill;
 
 public class SkillInfusion extends TargettedSkill {
 
-    //TODO check if health cost should use healing scale as well
-
     public SkillInfusion(Heroes plugin) {
         super(plugin, "Infusion");
         setDescription("Infuse your target with life, restoring $1 of their health and negating their bleeding. Healing is improved by $2% per level of Blood Union. This ability costs $3 health and $4 mana to use.");

@@ -2,8 +2,6 @@ package com.herocraftonline.heroes.characters.skill.reborn.necromancer;
 
 import com.herocraftonline.heroes.Heroes;
 import com.herocraftonline.heroes.api.SkillResult;
-import com.herocraftonline.heroes.api.events.HeroRegainHealthEvent;
-import com.herocraftonline.heroes.attributes.AttributeType;
 import com.herocraftonline.heroes.characters.Hero;
 import com.herocraftonline.heroes.characters.skill.SkillConfigManager;
 import com.herocraftonline.heroes.characters.skill.SkillSetting;
@@ -14,6 +12,7 @@ import de.slikey.effectlib.EffectManager;
 import de.slikey.effectlib.effect.LineEffect;
 import org.bukkit.Color;
 import org.bukkit.Particle;
+import org.bukkit.Sound;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
@@ -61,16 +60,11 @@ public class SkillDrainLife extends TargettedSkill {
         broadcastExecuteText(hero, target);
 
         double damage = SkillConfigManager.getScaledUseSettingDouble(hero, this, SkillSetting.DAMAGE, false);
-
         addSpellTarget(target, hero);
         damageEntity(target, player, damage, DamageCause.MAGIC);
 
         double multiplier = SkillConfigManager.getUseSetting(hero, this, "healing-multiplier", 1.5, false);
-
-        HeroRegainHealthEvent hrEvent = new HeroRegainHealthEvent(hero, (damage * multiplier), this);         // Bypass self heal as this can only be used on themself.
-        plugin.getServer().getPluginManager().callEvent(hrEvent);
-        if (!hrEvent.isCancelled())
-            hero.heal(hrEvent.getDelta());
+        hero.tryHeal(hero, this, damage * multiplier, true);
 
         EffectManager effectManager = new EffectManager(plugin);
         LineEffect lineVisual = new LineEffect(effectManager);
@@ -80,6 +74,8 @@ public class SkillDrainLife extends TargettedSkill {
         lineVisual.setTargetEntity(target);
 
         effectManager.start(lineVisual);
+
+        player.getWorld().playSound(target.getLocation(), Sound.ENTITY_GENERIC_DRINK, 1.0F, 1.0F);
 
         return SkillResult.NORMAL;
     }

@@ -124,14 +124,14 @@ public class SkillRampartVine extends ActiveSkill {
 
     public class SkillBlockListener implements Listener {
 
-        @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
+        @EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
         public void onBlockBreak(BlockBreakEvent event) {
             if (changedBlocks.contains(event.getBlock().getLocation())) {
                 event.setCancelled(true);
             }
         }
 
-        @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
+        @EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
         public void onBlockSpread(BlockSpreadEvent event) {
             Block sourceBlock = event.getSource();
             Location sourceLocation = sourceBlock.getLocation();

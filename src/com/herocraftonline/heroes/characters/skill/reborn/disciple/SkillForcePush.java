@@ -6,6 +6,8 @@ import com.herocraftonline.heroes.api.SkillResult;
 import com.herocraftonline.heroes.attributes.AttributeType;
 import com.herocraftonline.heroes.characters.CharacterTemplate;
 import com.herocraftonline.heroes.characters.Hero;
+import com.herocraftonline.heroes.characters.effects.EffectType;
+import com.herocraftonline.heroes.characters.effects.common.SlowEffect;
 import com.herocraftonline.heroes.characters.skill.SkillConfigManager;
 import com.herocraftonline.heroes.characters.skill.SkillSetting;
 import com.herocraftonline.heroes.characters.skill.SkillType;
@@ -25,8 +27,8 @@ public class SkillForcePush extends TargettedSkill {
 
     public SkillForcePush(Heroes plugin) {
         super(plugin, "Forcepush");
-        setDescription("Deal $1 magic damage and force your target away from you. " +
-                "If you target an ally, they will be healed for $2 instead.");
+        setDescription("Deal $1 magic damage and force your target away from you$2. " +
+                "If you target an ally, they will be healed for $3 instead.");
         setUsage("/skill forcepush");
         setIdentifiers("skill forcepush");
         setArgumentRange(0, 0);
@@ -37,29 +39,37 @@ public class SkillForcePush extends TargettedSkill {
     @Override
     public String getDescription(Hero hero) {
         double damage = SkillConfigManager.getScaledUseSettingDouble(hero, this, SkillSetting.DAMAGE, false);
-
         double healing = SkillConfigManager.getScaledUseSettingDouble(hero, this, SkillSetting.HEALING, false);
+
+        int duration = SkillConfigManager.getScaledUseSettingInt(hero, this, SkillSetting.DURATION, false);
+        int slowAmplifier = SkillConfigManager.getUseSetting(hero, this, "slow-amplifier", 1, false);
+
+        String slowText = "";
+        if (duration > 0 && slowAmplifier > -1) {
+            slowText = " and slowing them for " + Util.decFormat.format(duration / 1000.0) + " second(s)";
+        }
 
         return getDescription()
                 .replace("$1", Util.decFormat.format(damage))
-                .replace("$2", Util.decFormat.format(healing));
+                .replace("$2", slowText)
+                .replace("$3", Util.decFormat.format(healing));
     }
 
     @Override
     public ConfigurationSection getDefaultConfig() {
-        ConfigurationSection node = super.getDefaultConfig();
-
-        node.set(SkillSetting.MAX_DISTANCE.node(), 10.0);
-        node.set(SkillSetting.DAMAGE.node(), 50.0);
-        node.set(SkillSetting.DAMAGE_INCREASE_PER_INTELLECT.node(), 0.0);
-        node.set("horizontal-power", 1.5);
-        node.set("horizontal-power-increase-per-intellect", 0.0375);
-        node.set("vertical-power", 0.25);
-        node.set("vertical-power-increase-per-intellect", 0.0075);
-        node.set("ncp-exemption-duration", 1500);
-        node.set("push-delay", 0.2);
-
-        return node;
+        ConfigurationSection config = super.getDefaultConfig();
+        config.set(SkillSetting.MAX_DISTANCE.node(), 10.0);
+        config.set(SkillSetting.DAMAGE.node(), 50.0);
+        config.set(SkillSetting.DAMAGE_INCREASE_PER_INTELLECT.node(), 0.0);
+        config.set(SkillSetting.DURATION.node(), 0);
+        config.set("slow-amplifier", -1);
+        config.set("horizontal-power", 1.5);
+        config.set("horizontal-power-increase-per-intellect", 0.0375);
+        config.set("vertical-power", 0.25);
+        config.set("vertical-power-increase-per-intellect", 0.0075);
+        config.set("ncp-exemption-duration", 1500);
+        config.set("push-delay", 0.2);
+        return config;
     }
 
     @Override
@@ -134,6 +144,17 @@ public class SkillForcePush extends TargettedSkill {
             if (damage > 0) {
                 addSpellTarget(target, hero);
                 damageEntity(target, player, damage, DamageCause.MAGIC, false);
+            }
+
+            int duration = SkillConfigManager.getScaledUseSettingInt(hero, this, SkillSetting.DURATION, false);
+            int slowAmplifier = SkillConfigManager.getUseSetting(hero, this, "slow-amplifier", 1, false);
+
+            if (slowAmplifier > -1 && duration > 0) {
+                SlowEffect slowEffect = new SlowEffect(this, player, duration, slowAmplifier, null, null);
+                slowEffect.types.add(EffectType.DISPELLABLE);
+
+                CharacterTemplate targetCT = plugin.getCharacterManager().getCharacter(target);
+                targetCT.addEffect(slowEffect);
             }
         }
 

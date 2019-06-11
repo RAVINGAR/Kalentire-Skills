@@ -21,15 +21,20 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
+import org.bukkit.event.entity.EntityDeathEvent;
+import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.PlayerInventory;
 import org.bukkit.inventory.meta.ItemMeta;
+import org.jetbrains.annotations.NotNull;
 
+import java.util.Optional;
 import java.util.logging.Level;
 
 public class SkillTransform extends ActiveSkill {
 
+    private final String helmItemName = "Transformed";
     private String toggleableEffectName = "EnderBeastTransformed";
     private String applyText;
     private String expireText;
@@ -101,7 +106,6 @@ public class SkillTransform extends ActiveSkill {
     }
 
     public class TransformedEffect extends PeriodicEffect {
-
         private final double healthDrainTick;
 
         TransformedEffect(Skill skill, Player applier, long period, double healthDrainTick) {
@@ -133,12 +137,7 @@ public class SkillTransform extends ActiveSkill {
             Player player = hero.getPlayer();
             PlayerInventory inventory = player.getInventory();
 
-            ItemStack transformedHead = new ItemStack(Material.SKULL_ITEM, 1, (short) 5);
-            ItemMeta itemmeta = transformedHead.getItemMeta();
-            itemmeta.setDisplayName("Transformed");
-            itemmeta.setUnbreakable(true);
-            transformedHead.setItemMeta(itemmeta);
-
+            ItemStack transformedHead = createHelmItem();
             EquipmentChangedEvent replaceEvent = new EquipmentChangedEvent(player, EquipMethod.APPLYING_SKILL_EFFECT, EquipmentType.HELMET, inventory.getHelmet(), transformedHead);
             Bukkit.getServer().getPluginManager().callEvent(replaceEvent);
             if (replaceEvent.isCancelled()) {
@@ -172,16 +171,21 @@ public class SkillTransform extends ActiveSkill {
         }
     }
 
+    @NotNull
+    private ItemStack createHelmItem() {
+        ItemStack transformedHead = new ItemStack(Material.SKULL_ITEM, 1, (short) 5);
+        ItemMeta itemMeta = transformedHead.getItemMeta();
+        itemMeta.setDisplayName(helmItemName);
+        itemMeta.setUnbreakable(true);
+        transformedHead.setItemMeta(itemMeta);
+        return transformedHead;
+    }
+
     public class HelmetListener implements Listener {
         private final Skill skill;
 
         HelmetListener(Skill skill) {
             this.skill = skill;
-        }
-
-        @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
-        public void onPlayerDisconnect(PlayerQuitEvent event) {
-
         }
 
         @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
@@ -198,6 +202,23 @@ public class SkillTransform extends ActiveSkill {
             final Hero hero = plugin.getCharacterManager().getHero(event.getPlayer());
             if (hero.hasEffect(toggleableEffectName))
                 event.setCancelled(true);
+        }
+
+        @EventHandler(priority = EventPriority.LOWEST)
+        public void onPlayerDeath(EntityDeathEvent event) {
+            if (!(event.getEntity() instanceof Player))
+                return;
+            Player player = (Player) event.getEntity();
+            Hero hero = plugin.getCharacterManager().getHero(player);
+            if (!hero.hasEffect(toggleableEffectName))
+                return;
+
+            ItemStack transformedHead = createHelmItem();
+            for (ItemStack item : event.getDrops()) {
+                if (item.isSimilar(transformedHead)) {
+                    event.getDrops().remove(transformedHead);
+                }
+            }
         }
     }
 }

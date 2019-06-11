@@ -2,23 +2,19 @@ package com.herocraftonline.heroes.characters.skill.reborn.hellspawn;
 
 import com.herocraftonline.heroes.Heroes;
 import com.herocraftonline.heroes.api.SkillResult;
-import com.herocraftonline.heroes.api.events.WeaponDamageEvent;
 import com.herocraftonline.heroes.characters.CharacterTemplate;
 import com.herocraftonline.heroes.characters.Hero;
 import com.herocraftonline.heroes.characters.Monster;
 import com.herocraftonline.heroes.characters.effects.*;
 import com.herocraftonline.heroes.characters.effects.common.interfaces.HealthRegainReduction;
-import com.herocraftonline.heroes.characters.effects.common.interfaces.ManaRegenDecrease;
 import com.herocraftonline.heroes.characters.equipment.EquipMethod;
 import com.herocraftonline.heroes.characters.equipment.EquipmentChangedEvent;
 import com.herocraftonline.heroes.characters.equipment.EquipmentType;
 import com.herocraftonline.heroes.characters.skill.*;
 import com.herocraftonline.heroes.chat.ChatComponents;
 import com.herocraftonline.heroes.util.Util;
-import org.bukkit.Bukkit;
-import org.bukkit.Location;
-import org.bukkit.Material;
-import org.bukkit.Sound;
+import org.bukkit.*;
+import org.bukkit.Effect;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
@@ -26,20 +22,26 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
+import org.bukkit.event.entity.EntityDeathEvent;
+import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.PlayerInventory;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
+import org.jetbrains.annotations.NotNull;
 
+import java.util.Optional;
 import java.util.logging.Level;
 
 public class SkillTheWither extends ActiveSkill {
 
+    private final String helmItemName = "Wither Form";
     private String toggleableEffectName = "WitherForm";
     private String applyText;
     private String expireText;
 
+    private String maxStacksErrorMessage = "$1 is fully withered!";
     public SkillTheWither(Heroes plugin) {
         super(plugin, "TheWither");
         setDescription("Channel the power of the Wither himself, altering your appearance and granting you passive wither damage immunity. " +
@@ -165,12 +167,7 @@ public class SkillTheWither extends ActiveSkill {
         private void addWitherSkull(Hero hero, Player player) {
             PlayerInventory inventory = player.getInventory();
 
-            ItemStack transformedHead = new ItemStack(Material.SKULL_ITEM, 1, (short) 1);
-            ItemMeta itemMeta = transformedHead.getItemMeta();
-            itemMeta.setDisplayName("Wither Form");
-            itemMeta.setUnbreakable(true);
-            transformedHead.setItemMeta(itemMeta);
-
+            ItemStack transformedHead = createHelmItem();
             EquipmentChangedEvent replaceEvent = new EquipmentChangedEvent(player, EquipMethod.APPLYING_SKILL_EFFECT, EquipmentType.HELMET, inventory.getHelmet(), transformedHead);
             Bukkit.getServer().getPluginManager().callEvent(replaceEvent);
             if (replaceEvent.isCancelled()) {
@@ -201,7 +198,19 @@ public class SkillTheWither extends ActiveSkill {
         }
     }
 
+    @NotNull
+    private ItemStack createHelmItem() {
+        ItemStack transformedHead = new ItemStack(Material.SKULL_ITEM, 1, (short) 1);
+        ItemMeta itemMeta = transformedHead.getItemMeta();
+        itemMeta.setDisplayName(helmItemName);
+        itemMeta.setUnbreakable(true);
+        transformedHead.setItemMeta(itemMeta);
+        return transformedHead;
+    }
+
     public static class WitherDecayEffect extends StackingEffect implements HealthRegainReduction {
+        private final int maxStacks;
+        private int currentStackCount;
 
         private final int witherAmplifier;
         private double healingReductionPerStack;
@@ -214,6 +223,7 @@ public class SkillTheWither extends ActiveSkill {
             this.types.add(EffectType.HEALING_REDUCTION);
             this.types.add(EffectType.WITHER);
 
+            this.maxStacks = maxStacks;
             this.witherAmplifier = witherAmplifier;
             this.healingReductionPerStack = healhReductionPerStack;
 
@@ -260,6 +270,12 @@ public class SkillTheWither extends ActiveSkill {
             CharacterTemplate targetCT = plugin.getCharacterManager().getCharacter((LivingEntity) event.getEntity());
             targetCT.addEffectStack(getWitherDecayEffectName(player), skill, player, duration,
                     () -> new WitherDecayEffect(skill, player, witherAmplifier, healingReduction, maxStacks));
+            WitherDecayEffect effect = (WitherDecayEffect) targetCT.getEffect(getWitherDecayEffectName(player));
+            if (effect.getStackCount() == effect.getMaxStacks()) {
+                maxStacksErrorMessage = maxStacksErrorMessage.replace("$1", targetCT.getName());
+                String message = "    " + ChatComponents.GENERIC_SKILL + ChatColor.DARK_GRAY + maxStacksErrorMessage;
+                hero.getPlayer().sendMessage(message);
+            }
         }
 
         @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
@@ -269,13 +285,32 @@ public class SkillTheWither extends ActiveSkill {
                     || event.getOldArmorPiece() == null
                     || event.getOldArmorPiece().getType() != Material.SKULL_ITEM
                     || event.getOldArmorPiece().getData() == null
-                    || event.getOldArmorPiece().getData().getData() != (byte) 1) {
+                    || event.getOldArmorPiece().getData().getData() != (byte) 1
+                    || !event.getOldArmorPiece().getItemMeta().getDisplayName().equals(helmItemName)) {
                 return;
             }
 
             final Hero hero = plugin.getCharacterManager().getHero(event.getPlayer());
             if (hero.hasEffect(toggleableEffectName))
                 event.setCancelled(true);
+        }
+
+        @EventHandler(priority = EventPriority.LOWEST)
+        public void onPlayerDeath(EntityDeathEvent event) {
+            if (!(event.getEntity() instanceof Player))
+                return;
+
+            Player player = (Player) event.getEntity();
+            Hero hero = plugin.getCharacterManager().getHero(player);
+            if (!hero.hasEffect(toggleableEffectName))
+                return;
+
+            ItemStack transformedHead = createHelmItem();
+            for (ItemStack item : event.getDrops()) {
+                if (item.isSimilar(transformedHead)) {
+                    event.getDrops().remove(transformedHead);
+                }
+            }
         }
     }
 }

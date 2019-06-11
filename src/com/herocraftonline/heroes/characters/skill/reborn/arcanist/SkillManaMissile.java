@@ -31,8 +31,6 @@ import org.bukkit.util.Vector;
 import java.util.List;
 
 public class SkillManaMissile extends PassiveSkill {
-
-    private static Color blueViolet = Color.fromRGB(138, 43, 226);
     private static String cooldownEffectName = "ManaMissile-Cooldown";
 
     public SkillManaMissile(Heroes plugin) {

@@ -9,7 +9,10 @@ import com.herocraftonline.heroes.characters.skill.SkillSetting;
 import com.herocraftonline.heroes.characters.skill.SkillType;
 import com.herocraftonline.heroes.chat.ChatComponents;
 import com.herocraftonline.heroes.util.Util;
-import org.bukkit.*;
+import org.bukkit.Location;
+import org.bukkit.Material;
+import org.bukkit.Sound;
+import org.bukkit.World;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
 import org.bukkit.configuration.ConfigurationSection;
@@ -127,7 +130,7 @@ public class SkillFlameDash extends ActiveSkill {
                         stepDownCurrentBlock = tempStepDownBlock;
                     } else {
                         foundValidFloorBlock = true;
-                        totalStepUpsTaken-= i;
+                        totalStepUpsTaken -= i;
                         currentBlock = stepDownCurrentBlock;
                         break;
                     }
@@ -155,7 +158,7 @@ public class SkillFlameDash extends ActiveSkill {
 
                     if (!isWaterBlock(stepUpCurrentBlock.getType()) && Util.transparentBlocks.contains(stepUpCurrentBlock.getType())) {
                         foundValidNewBlock = true;
-                        totalStepUpsTaken+= i;
+                        totalStepUpsTaken += i;
                         currentBlock = stepUpCurrentBlock;
                         break;
                     }

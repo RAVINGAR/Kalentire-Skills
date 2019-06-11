@@ -12,22 +12,17 @@ import com.herocraftonline.heroes.chat.ChatComponents;
 import com.herocraftonline.heroes.util.Util;
 import io.lumine.xikage.mythicmobs.MythicMobs;
 import io.lumine.xikage.mythicmobs.mobs.ActiveMob;
-import me.libraryaddict.disguise.DisguiseAPI;
-import me.libraryaddict.disguise.disguisetypes.Disguise;
-import me.libraryaddict.disguise.disguisetypes.DisguiseType;
-import me.libraryaddict.disguise.disguisetypes.MobDisguise;
-import me.libraryaddict.disguise.disguisetypes.watchers.LivingWatcher;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
-import org.bukkit.Material;
 import org.bukkit.configuration.ConfigurationSection;
-import org.bukkit.entity.*;
+import org.bukkit.entity.Entity;
+import org.bukkit.entity.LivingEntity;
+import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityDamageEvent;
-import org.bukkit.inventory.ItemStack;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 
@@ -40,7 +35,7 @@ public class SkillSkeletonKnight extends ActiveSkill {
         super(plugin, "SkeletonKnight");
         setDescription("Conjures a Skeleton Knight to obey your commands. " +
                 "He has $1 HP, deals $2 damage per hit, and lasts for up to $3 seconds. " +
-                "Your knight will cleave nearby monsters (but not players) on every hit and take $4 reduced damage from other monsters or summons. $9");
+                "Your knight will cleave nearby enemies on every hit at a $4% damage rate. $9");
         setUsage("/skill skeletonknight");
         setIdentifiers("skill skeletonknight");
         setArgumentRange(0, 0);
@@ -61,6 +56,7 @@ public class SkillSkeletonKnight extends ActiveSkill {
 
         double hitDmg = SkillConfigManager.getUseSetting(hero, this, "minion-attack-damage", 25.0, false);
         hitDmg += SkillConfigManager.getUseSetting(hero, this, "minion-attack-damage-per-level", 0.4, false) * hero.getHeroLevel(this);
+        double cleaveDamageMultiplier = SkillConfigManager.getUseSetting(hero, this, "minion-cleave-damage-multiplier", 1.0, false);
 
         long duration = SkillConfigManager.getUseSetting(hero, this, "minion-duration", 45000, false);
 
@@ -80,6 +76,7 @@ public class SkillSkeletonKnight extends ActiveSkill {
                 .replace("$1", Util.decFormat.format(maxHp))
                 .replace("$2", Util.decFormat.format(hitDmg))
                 .replace("$3", Util.decFormat.format(duration / 1000.0))
+                .replace("$4", Util.decFormat.format(cleaveDamageMultiplier))
                 .replace("$9", speedText);
     }
 
@@ -90,6 +87,8 @@ public class SkillSkeletonKnight extends ActiveSkill {
         config.set("maximum-allowed-minions", 3);
         config.set("minion-attack-damage", 25.0);
         config.set("minion-attack-damage-per-level", 0.4);
+        config.set("minion-cleave-radius", 3.0);
+        config.set("minion-cleave-damage-multiplier", 1.0);
         config.set("minion-max-hp", 400.0);
         config.set("minion-max-hp-per-level", 4.0);
         config.set("minion-duration", 60000);
@@ -147,48 +146,39 @@ public class SkillSkeletonKnight extends ActiveSkill {
 
         @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
         public void onEntityDamage(EntityDamageByEntityEvent event) {
-            if (event.getDamage() <= 0 || event.getEntity() instanceof Player)
-                return;
-            if (!(event.getDamager() instanceof LivingEntity) || !(event.getEntity() instanceof LivingEntity))
+            if (event.getDamage() <= 0 || !(event.getDamager() instanceof LivingEntity) || !(event.getEntity() instanceof LivingEntity))
                 return;
 
-            // Handle Mob vs Summon damage mitigation
+            // Handle Summon cleave attack
             if (!(event.getDamager() instanceof Player)) {
-                CharacterTemplate defenderCT = plugin.getCharacterManager().getCharacter((LivingEntity) event.getEntity());
-                if (defenderCT.hasEffect(minionEffectName)) {
-                    SkeletonKnightEffect effect = (SkeletonKnightEffect) defenderCT.getEffect(minionEffectName);
-                    event.setDamage(event.getDamage() * (1.0 - effect.getPveDamageMitigation()));
+                CharacterTemplate attackerCT = plugin.getCharacterManager().getCharacter((LivingEntity) event.getDamager());
+                if (attackerCT.hasEffect(minionEffectName)) {
+                    SkeletonKnightEffect effect = (SkeletonKnightEffect) attackerCT.getEffect(minionEffectName);
+                    handleMinionCleave(event, (Monster) attackerCT, effect);
                 }
-            }
-
-            // Handle Summon vs Mob cleave attack
-            CharacterTemplate attackerCT = plugin.getCharacterManager().getCharacter((LivingEntity) event.getDamager());
-            if (attackerCT.hasEffect(minionEffectName)) {
-                handleMinionCleave(event, (Monster) attackerCT);
             }
         }
 
-        public void handleMinionCleave(EntityDamageByEntityEvent event, Monster attackerCT) {
-            Hero summoner = attackerCT.getSummoner();
+        public void handleMinionCleave(EntityDamageByEntityEvent event, Monster summon, SkeletonKnightEffect effect) {
+            Hero summoner = summon.getSummoner();
             LivingEntity target = (LivingEntity) event.getEntity();
-            double radius = SkillConfigManager.getScaledUseSettingDouble(summoner, skill, SkillSetting.RADIUS, 3.0, false);
+            double radius = effect.getCleaveRadius();
+            double damage = event.getDamage() * effect.getCleaveDamageMultiplier();
 
             for (Entity entity : target.getNearbyEntities(radius, radius, radius)) {
                 if (!(entity instanceof LivingEntity) || entity.equals(event.getEntity()))
                     continue;
 
                 LivingEntity aoeTarget = (LivingEntity) entity;
-                if (aoeTarget instanceof Player)    // Only AoE mobs
-                    continue;
-
                 addSpellTarget(aoeTarget, summoner);
-                damageEntity((LivingEntity) entity, summoner.getPlayer(), event.getDamage(), EntityDamageEvent.DamageCause.ENTITY_ATTACK);
+                damageEntity(aoeTarget, summon.getEntity(), damage, EntityDamageEvent.DamageCause.ENTITY_ATTACK, false);
             }
         }
     }
 
     public class SkeletonKnightEffect extends SummonEffect {
-        private double pveDamageMitigation;
+        private double cleaveRadius;
+        private double cleaveDamageMultiplier;
 
         SkeletonKnightEffect(Skill skill, Hero summoner, long duration) {
             super(skill, minionEffectName, duration, summoner, null);
@@ -208,7 +198,8 @@ public class SkillSkeletonKnight extends ActiveSkill {
         public void applyToMonster(Monster monster) {
             super.applyToMonster(monster);
 
-            this.pveDamageMitigation = SkillConfigManager.getUseSetting(getSummoner(), skill, "minion-pve-damage-mitigation", 0.5, false);
+            this.cleaveRadius = SkillConfigManager.getUseSetting(getSummoner(), skill, "minion-cleave-radius", 3.0, false);
+            this.cleaveDamageMultiplier = SkillConfigManager.getUseSetting(getSummoner(), skill, "minion-cleave-damage-multiplier", 1.0, false);
 
             double maxHp = SkillConfigManager.getScaledUseSettingDouble(getSummoner(), skill, "minion-max-hp", 400.0, false);
             double hitDmg = SkillConfigManager.getScaledUseSettingDouble(getSummoner(), skill, "minion-attack-damage", 25.0, false);
@@ -221,8 +212,12 @@ public class SkillSkeletonKnight extends ActiveSkill {
             monster.setDamage(hitDmg);
         }
 
-        public double getPveDamageMitigation() {
-            return pveDamageMitigation;
+        public double getCleaveRadius() {
+            return cleaveRadius;
+        }
+
+        public double getCleaveDamageMultiplier() {
+            return cleaveDamageMultiplier;
         }
     }
 }

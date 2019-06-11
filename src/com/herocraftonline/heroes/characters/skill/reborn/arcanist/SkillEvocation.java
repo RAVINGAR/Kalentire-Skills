@@ -23,7 +23,6 @@ import org.bukkit.util.Vector;
 import java.util.List;
 
 public class SkillEvocation extends ActiveSkill {
-
     private static Color MANA_BLUE = Color.fromRGB(0, 191, 255);
 
     private String applyText;

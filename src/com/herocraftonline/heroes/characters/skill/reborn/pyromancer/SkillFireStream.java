@@ -2,7 +2,6 @@ package com.herocraftonline.heroes.characters.skill.reborn.pyromancer;
 
 import com.herocraftonline.heroes.Heroes;
 import com.herocraftonline.heroes.api.SkillResult;
-import com.herocraftonline.heroes.attributes.AttributeType;
 import com.herocraftonline.heroes.characters.CharacterTemplate;
 import com.herocraftonline.heroes.characters.Hero;
 import com.herocraftonline.heroes.characters.effects.EffectType;
@@ -46,8 +45,8 @@ public class SkillFireStream extends ActiveSkill {
                 + "Each fireball deals $2 damage and will ignite them, dealing $3 burning damage over the next $4 second(s). "
                 + "Additional hits on the same target will deal $5% less damage per hit. The burning effect will not stack.");
         setUsage("/skill firestream");
-        setArgumentRange(0, 0);
         setIdentifiers("skill firestream");
+        setArgumentRange(0, 0);
         setTypes(SkillType.ABILITY_PROPERTY_FIRE, SkillType.ABILITY_PROPERTY_PROJECTILE, SkillType.SILENCEABLE, SkillType.DAMAGING);
 
         Bukkit.getServer().getPluginManager().registerEvents(new SkillEntityListener(this), plugin);
@@ -176,7 +175,7 @@ public class SkillFireStream extends ActiveSkill {
             this.skill = skill;
         }
 
-        @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
+        @EventHandler(priority = EventPriority.MONITOR)
         public void onProjectileHit(ProjectileHitEvent event) {
             if (!(event.getEntity() instanceof Snowball))
                 return;
@@ -201,12 +200,8 @@ public class SkillFireStream extends ActiveSkill {
             }
         }
 
-        @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
+        @EventHandler(priority = EventPriority.LOWEST)    // Don't ignore cancelled.
         public void onEntityDamage(EntityDamageByEntityEvent event) {
-            if (!(event.getEntity() instanceof LivingEntity)) {
-                return;
-            }
-
             Entity projectile = event.getDamager();
             if (!(projectile instanceof Snowball) || !projectiles.containsKey(projectile)) {
                 return;
@@ -215,14 +210,18 @@ public class SkillFireStream extends ActiveSkill {
             projectiles.remove(projectile);
             event.setCancelled(true);
 
+            if (!(event.getEntity() instanceof LivingEntity))
+                return;
+
             ProjectileSource source = ((Projectile) event.getDamager()).getShooter();
             if (!(source instanceof Player))
                 return;
 
             Player dmger = (Player) source;
             LivingEntity targetLE = (LivingEntity) event.getEntity();
-            if (!damageCheck((Player) dmger, targetLE))
+            if (!damageCheck((Player) dmger, targetLE)) {
                 return;
+            }
 
             Hero hero = plugin.getCharacterManager().getHero(dmger);
             CharacterTemplate targetCT = plugin.getCharacterManager().getCharacter(targetLE);
@@ -234,7 +233,7 @@ public class SkillFireStream extends ActiveSkill {
                 effectivenessMultiplier = victimEffect.getCurrentEffectivenessMultiplier();
                 victimEffect.addStack();
             } else {
-                double effectivenessDecrease = SkillConfigManager.getUseSetting(hero, skill, "effectiveness-decrease-per-hit-percent", 0.20, false);
+                double effectivenessDecrease = SkillConfigManager.getUseSetting(hero, skill, "effectiveness-decrease-per-hit-percent", 0.05, false);
                 targetCT.addEffect(new FireStreamVictimEffect(skill, dmger, effectivenessDecrease));
             }
 
@@ -249,7 +248,7 @@ public class SkillFireStream extends ActiveSkill {
             damageEntity(targetLE, dmger, damage * effectivenessMultiplier, DamageCause.MAGIC);
 
             // Effectiveness multiplier should not apply to the combust debuff.
-            if (effectivenessMultiplier != 1.0)
+            if (effectivenessMultiplier == 1.0)
                 targetCT.addEffect(new BurningEffect(skill, dmger, burnDuration, false, burnMultipliaer));
 
             targetLE.getWorld().spawnParticle(Particle.FLAME, targetLE.getLocation(), 50, 0.2F, 0.7F, 0.2F, 16);

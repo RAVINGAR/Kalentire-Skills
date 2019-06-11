@@ -155,7 +155,7 @@ public class SkillDarkBolt extends ActiveSkill {
             }, 1);
         }
 
-        @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
+        @EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
         public void onEntityDamage(EntityDamageEvent event) {
             if (!(event instanceof EntityDamageByEntityEvent) || !(event.getEntity() instanceof LivingEntity))
                 return;

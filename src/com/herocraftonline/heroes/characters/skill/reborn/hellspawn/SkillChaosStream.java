@@ -2,7 +2,6 @@ package com.herocraftonline.heroes.characters.skill.reborn.hellspawn;
 
 import com.herocraftonline.heroes.Heroes;
 import com.herocraftonline.heroes.api.SkillResult;
-import com.herocraftonline.heroes.attributes.AttributeType;
 import com.herocraftonline.heroes.characters.CharacterTemplate;
 import com.herocraftonline.heroes.characters.Hero;
 import com.herocraftonline.heroes.characters.effects.EffectType;
@@ -45,8 +44,8 @@ public class SkillChaosStream extends ActiveSkill {
                 + "Each orb deals $2 damage and will ignite them, dealing $3 burning damage over the next $4 second(s). "
                 + "Additional hits on the same target will deal $5% less damage per hit. The burning effect will not stack.");
         setUsage("/skill chaosstream");
-        setArgumentRange(0, 0);
         setIdentifiers("skill chaosstream");
+        setArgumentRange(0, 0);
         setTypes(SkillType.ABILITY_PROPERTY_FIRE, SkillType.ABILITY_PROPERTY_PROJECTILE, SkillType.SILENCEABLE, SkillType.DAMAGING);
 
         Bukkit.getServer().getPluginManager().registerEvents(new SkillEntityListener(this), plugin);
@@ -187,14 +186,13 @@ public class SkillChaosStream extends ActiveSkill {
     }
 
     public class SkillEntityListener implements Listener {
-
         private final Skill skill;
 
         public SkillEntityListener(Skill skill) {
             this.skill = skill;
         }
 
-        @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
+        @EventHandler(priority = EventPriority.MONITOR)
         public void onProjectileHit(ProjectileHitEvent event) {
             if (!(event.getEntity() instanceof EnderPearl))
                 return;
@@ -208,19 +206,18 @@ public class SkillChaosStream extends ActiveSkill {
             }
         }
 
-        @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
+        @EventHandler(priority = EventPriority.HIGH)
         public void onEntityDamage(EntityDamageByEntityEvent event) {
-            if (!(event.getEntity() instanceof LivingEntity)) {
-                return;
-            }
-
             Entity projectile = event.getDamager();
-            if (!(projectile instanceof EnderPearl) || !projectiles.containsKey(projectile)) {
+            if (!(projectile instanceof EnderPearl) || !projectiles.containsKey(projectile))
                 return;
-            }
 
             projectiles.remove(projectile);
-            event.setCancelled(true);
+            if (!event.isCancelled())
+                event.setCancelled(true);
+
+            if (!(event.getEntity() instanceof LivingEntity))
+                return;
 
             ProjectileSource source = ((Projectile) event.getDamager()).getShooter();
             if (!(source instanceof Player))
@@ -256,7 +253,7 @@ public class SkillChaosStream extends ActiveSkill {
             damageEntity(targetLE, dmger, damage * effectivenessMultiplier, DamageCause.MAGIC);
 
             // Effectiveness multiplier should not apply to the combust debuff.
-            if (effectivenessMultiplier != 1.0)
+            if (effectivenessMultiplier == 1.0)
                 targetCT.addEffect(new BurningEffect(skill, dmger, burnDuration, false, burnMultipliaer));
 
             targetLE.getWorld().spawnParticle(Particle.FLAME, targetLE.getLocation(), 50, 0.2F, 0.7F, 0.2F, 16);

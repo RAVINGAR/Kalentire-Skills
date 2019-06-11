@@ -228,7 +228,7 @@ public class SkillSneak extends ActiveSkill {
             }
         }
 
-        @EventHandler(priority = EventPriority.HIGHEST)
+        @EventHandler(priority = EventPriority.HIGH)
         public void onPlayerToggleSneak(PlayerToggleSneakEvent event) {
             final Hero hero = plugin.getCharacterManager().getHero(event.getPlayer());
             if (hero.hasEffect(toggleableEffectName)) {
