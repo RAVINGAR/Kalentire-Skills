@@ -9,9 +9,11 @@ import com.herocraftonline.heroes.characters.effects.EffectType;
 import com.herocraftonline.heroes.characters.effects.ExpirableEffect;
 import com.herocraftonline.heroes.characters.skill.*;
 import com.herocraftonline.heroes.chat.ChatComponents;
+import com.herocraftonline.heroes.util.Util;
 import org.bukkit.Bukkit;
 import org.bukkit.Sound;
 import org.bukkit.configuration.ConfigurationSection;
+import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
@@ -24,7 +26,7 @@ public class SkillStoneSkin extends ActiveSkill {
 
     public SkillStoneSkin(Heroes plugin) {
         super(plugin, "StoneSkin");
-        setDescription("Your skin turns to stone for $1 second(s). While active, enemies receive damage on attack! Additionally protects you $2% from $3$4.");
+        setDescription("Your skin turns to stone for $1 second(s). While active, enemies receive $2 damage on attack! Additionally protects you $3% from $4.");
         setArgumentRange(0, 0);
         setUsage("/skill stoneskin");
         setIdentifiers("skill stoneskin", "skill sskin");
@@ -35,13 +37,32 @@ public class SkillStoneSkin extends ActiveSkill {
 
     @Override
     public String getDescription(Hero hero) {
-        return getDescription();
+        long duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, 5000, false);
+        boolean useEnemyDamagePercent = SkillConfigManager.getUseSetting(hero,this,"use-enemy-damage-percent", true);
+        double enemyDamagePercent = SkillConfigManager.getUseSettingDouble(hero, this, "enemy-damage-percent", false);
+        double enemyDamage = SkillConfigManager.getUseSettingDouble(hero, this, "enemy-damage", false);
+        double damageReduction = SkillConfigManager.getUseSettingDouble(hero, this, "damage-reduction", false);
+
+        boolean reduceMagicDamage = SkillConfigManager.getUseSetting(hero, this, "reduce-magic-damage",false);
+        boolean resistLightning = SkillConfigManager.getUseSetting(hero, this, "resist-lightning",true);
+
+        String damageSourcesString = String.format("physical%s attacks%s",
+                reduceMagicDamage ? " and magical" : "",
+                resistLightning ? ", and resists lightning." : ".");
+
+        return getDescription().replace("$1", Util.decFormat.format(duration / 1000))
+                .replace("$2", useEnemyDamagePercent ? Util.decFormat.format(enemyDamagePercent * 100) + "%" : Util.decFormat.format(enemyDamage))
+                .replace("$3", Util.decFormat.format(damageReduction * 100))
+                .replace("$4", damageSourcesString);
     }
 
     @Override
     public ConfigurationSection getDefaultConfig() {
         ConfigurationSection config = super.getDefaultConfig();
 
+        config.set("use-enemy-damage-percent", true);
+        config.set("enemy-damage-percent", 0.1);
+        config.set("enemy-damage", 5.0);
         config.set("damage-reduction", 0.05);
         config.set("reduce-magic-damage", false);
         config.set("resist-lightning", true);
@@ -91,6 +112,19 @@ public class SkillStoneSkin extends ActiveSkill {
             if (!defenderHero.hasEffect("StoneSkin"))
                 return;
 
+            // Harm attacker for physical attacks
+            if (event.getSkill().isType(SkillType.ABILITY_PROPERTY_PHYSICAL)) {
+                boolean useEnemyDamagePercent = SkillConfigManager.getUseSetting(defenderHero, skill,"use-enemy-damage-percent", true);
+                double enemyDamagePercent = SkillConfigManager.getUseSettingDouble(defenderHero, skill, "enemy-damage-percent", false);
+                double enemyDamage = SkillConfigManager.getUseSettingDouble(defenderHero, skill, "enemy-damage", false);
+
+                double damage = useEnemyDamagePercent ? (enemyDamagePercent * event.getDamage()) : enemyDamage;
+                if (damage > 0){
+                    LivingEntity attacker = event.getDamager().getEntity();
+                    damageEntity(attacker, defenderHero.getEntity(), damage); //FIXME: use a damage cause or just custom damage cause?
+                }
+            }
+
             // Handle reduction of magic based damage.
             // Also Consider resisting lightning over the requirement to reduce magic damage
             boolean reduceMagicDamage = SkillConfigManager.getUseSetting(defenderHero, skill, "reduce-magic-damage",false);
@@ -125,6 +159,16 @@ public class SkillStoneSkin extends ActiveSkill {
             double damageFactor = 1.0 - ((StoneSkinEffect) defenderHero.getEffect("StoneSkin")).getDamageReduction();
             event.setDamage((event.getDamage() * damageFactor));
 
+            // Harm attacker for physical attacks
+            boolean useEnemyDamagePercent = SkillConfigManager.getUseSetting(defenderHero, skill,"use-enemy-damage-percent", true);
+            double enemyDamagePercent = SkillConfigManager.getUseSettingDouble(defenderHero, skill, "enemy-damage-percent", false);
+            double enemyDamage = SkillConfigManager.getUseSettingDouble(defenderHero, skill, "enemy-damage", false);
+
+            double damage = useEnemyDamagePercent ? (enemyDamagePercent * event.getDamage()) : enemyDamage;
+            if (damage > 0){
+                LivingEntity attacker = event.getDamager().getEntity();
+                damageEntity(attacker, defenderHero.getEntity(), damage); //FIXME: use a damage cause or just custom damage cause?
+            }
         }
 
     }
