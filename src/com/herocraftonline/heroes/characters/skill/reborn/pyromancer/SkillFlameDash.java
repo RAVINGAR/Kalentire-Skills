@@ -28,7 +28,7 @@ public class SkillFlameDash extends ActiveSkill {
     public SkillFlameDash(Heroes plugin) {
         super(plugin, "FlameDash");
         setDescription("Dash straight forward at the speed of flame for up to $1 blocks away and auto-jumping any blocks that are in your path. " +
-                "Any flammable blocks passed while dashing will be set on fire. Does not work in water.");
+                "Any flammable blocks passed while dashing will be set on fire.");
         setUsage("/skill flamedash");
         setIdentifiers("skill flamedash");
         setArgumentRange(0, 0);
@@ -61,10 +61,10 @@ public class SkillFlameDash extends ActiveSkill {
 
         Material standingBlockType = playerLoc.getBlock().getType();
         Material belowBlockType = playerLoc.getBlock().getRelative(BlockFace.DOWN).getType();
-        if (isWaterBlock(standingBlockType) || isWaterBlock(belowBlockType)) {
-            player.sendMessage("    " + ChatComponents.GENERIC_SKILL + "You cannot flame dash in water!");
-            return SkillResult.FAIL;
-        }
+        //if (isWaterBlock(standingBlockType) || isWaterBlock(belowBlockType)) {
+        //    player.sendMessage("    " + ChatComponents.GENERIC_SKILL + "You cannot flame dash in water!");
+        //    return SkillResult.FAIL;
+        //}
 
         return performFlameDash(hero, player);
     }
@@ -98,8 +98,11 @@ public class SkillFlameDash extends ActiveSkill {
         }
 
         List<Material> mustStepDownBlocks = new ArrayList<Material>(Util.transparentBlocks);
-        mustStepDownBlocks.remove(Material.FIRE);
+        mustStepDownBlocks.remove(Material.WATER);
+        mustStepDownBlocks.remove(Material.STATIONARY_WATER);
+        mustStepDownBlocks.remove(Material.STATIONARY_LAVA);
         mustStepDownBlocks.remove(Material.LAVA);
+        mustStepDownBlocks.remove(Material.FIRE);
 
         List<Block> fireTickBlocks = new ArrayList<Block>();
         List<Block> possibleFireTickBlocks = new ArrayList<Block>();
@@ -110,8 +113,8 @@ public class SkillFlameDash extends ActiveSkill {
             Block iterBlock = iter.next();
             currentBlock = world.getBlockAt(iterBlock.getX(), iterBlock.getY() + totalStepUpsTaken, iterBlock.getZ());
 
-            if (isWaterBlock(currentBlock.getType()))
-                break;
+            //if (isWaterBlock(currentBlock.getType()))
+            //    break;
 
             possibleFireTickBlocks.add(previousBlock);
 
@@ -124,9 +127,10 @@ public class SkillFlameDash extends ActiveSkill {
 
                     Block tempStepDownBlock = stepDownCurrentBlock.getRelative(BlockFace.DOWN);
 
-                    if (isWaterBlock(tempStepDownBlock.getType())) {
-                        break;
-                    } else if (mustStepDownBlocks.contains(tempStepDownBlock.getType())) {
+                    //if (isWaterBlock(tempStepDownBlock.getType())) {
+                    //    break;
+                    //} else
+                    if (mustStepDownBlocks.contains(tempStepDownBlock.getType())) {
                         stepDownCurrentBlock = tempStepDownBlock;
                     } else {
                         foundValidFloorBlock = true;
@@ -152,11 +156,14 @@ public class SkillFlameDash extends ActiveSkill {
                     // If it's the first step, make sure we have space above the previous block.
                     if (i == 1) {
                         stepUpPreviousBlock = stepUpPreviousBlock.getRelative(BlockFace.UP);
-                        if (isWaterBlock(stepUpPreviousBlock.getType()) || !Util.transparentBlocks.contains(stepUpPreviousBlock.getType()))
-                            break;
+                        if (//isWaterBlock(stepUpPreviousBlock.getType()) ||
+                              !Util.transparentBlocks.contains(stepUpPreviousBlock.getType())) {
+                                break;
+                            }
                     }
 
-                    if (!isWaterBlock(stepUpCurrentBlock.getType()) && Util.transparentBlocks.contains(stepUpCurrentBlock.getType())) {
+                    if (//!isWaterBlock(stepUpCurrentBlock.getType()) &&
+                          Util.transparentBlocks.contains(stepUpCurrentBlock.getType())) {
                         foundValidNewBlock = true;
                         totalStepUpsTaken += i;
                         currentBlock = stepUpCurrentBlock;
@@ -207,6 +214,10 @@ public class SkillFlameDash extends ActiveSkill {
         teleportLocation.setPitch(pitch);
         teleportLocation.setYaw(yaw);
         player.teleport(teleportLocation);
+    }
+
+    private boolean isLiquidBlock(Material mat) {
+        return isWaterBlock(mat) || isLavaBlock(mat);
     }
 
     private boolean isWaterBlock(Material mat) {
