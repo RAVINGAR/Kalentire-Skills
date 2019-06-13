@@ -10,8 +10,8 @@ import com.herocraftonline.heroes.characters.effects.common.ManaRegenPercentIncr
 import com.herocraftonline.heroes.characters.effects.common.StaminaRegenPercentDecreaseEffect;
 import com.herocraftonline.heroes.characters.effects.common.StaminaRegenPercentIncreaseEffect;
 import com.herocraftonline.heroes.characters.skill.*;
-import com.herocraftonline.heroes.characters.skill.tools.BasicDamageMissile;
 import com.herocraftonline.heroes.characters.skill.tools.BasicMissile;
+import com.herocraftonline.heroes.characters.skill.tools.MISSILE_TARGET_TYPE;
 import com.herocraftonline.heroes.chat.ChatComponents;
 import com.herocraftonline.heroes.util.Util;
 import de.slikey.effectlib.Effect;
@@ -117,7 +117,7 @@ public class SkillTimeBomb extends ActiveSkill {
         private double explosionRadius;
 
         TimeBombMissile(Heroes plugin, Skill skill, Hero hero) {
-            super(plugin, skill, hero);
+            super(plugin, skill, hero, MISSILE_TARGET_TYPE.NEUTRAL);
 
             this.explosionRadius = SkillConfigManager.getUseSetting(hero, skill, "explosion-radius", 4.0, false);
             this.visualEffect = new TimeBombVisualEffect(this.effectManager, getEntityDetectRadius(), 0);
@@ -133,10 +133,6 @@ public class SkillTimeBomb extends ActiveSkill {
                 getWorld().playSound(getLocation(), Sound.ENTITY_GHAST_SHOOT, 0.5F, 0.5F);
             }
         }
-        protected void onFinalTick() {
-            effectManager.dispose();
-
-        }
 
         @Override
         protected void onBlockHit(Block block, Vector hitPoint, BlockFace hitFace, Vector hitForce) {
@@ -144,7 +140,7 @@ public class SkillTimeBomb extends ActiveSkill {
         }
 
         @Override
-        protected void onEntityHit(Entity entity, Vector hitOrigin, Vector hitForce) {
+        protected void onValidTargetFound(LivingEntity target, Vector hitOrigin, Vector hitForce) {
             performExplosion();
         }
 
@@ -183,7 +179,6 @@ public class SkillTimeBomb extends ActiveSkill {
     }
 
     class ManaIncreaseEffect extends ManaRegenPercentIncreaseEffect {
-
         ManaIncreaseEffect(Skill skill, Player applier, long duration, double delta) {
             super(skill, applier, duration, delta, applyText, expireText);
             types.add(EffectType.TEMPORAL);
@@ -202,7 +197,6 @@ public class SkillTimeBomb extends ActiveSkill {
     }
 
     class ManaDecreaseEffect extends ManaRegenPercentDecreaseEffect {
-
         public ManaDecreaseEffect(Skill skill, Player applier, long duration, double delta) {
             super(skill, applier, duration, delta, badApplyText, badExpireText);
             types.add(EffectType.TEMPORAL);
@@ -221,7 +215,6 @@ public class SkillTimeBomb extends ActiveSkill {
     }
 
     class StaminaIncreaseEffect extends StaminaRegenPercentIncreaseEffect {
-
         public StaminaIncreaseEffect(Skill skill, Player applier, long duration, double delta) {
             super(skill, applier, duration, delta, null, null);
             types.add(EffectType.SILENT_ACTIONS);
@@ -239,7 +232,6 @@ public class SkillTimeBomb extends ActiveSkill {
     }
 
     class StaminaDecreaseEffect extends StaminaRegenPercentDecreaseEffect {
-
         public StaminaDecreaseEffect(Skill skill, Player applier, long duration, double delta) {
             super(skill, applier, duration, delta, null, null);
             types.add(EffectType.SILENT_ACTIONS);
@@ -278,14 +270,14 @@ public class SkillTimeBomb extends ActiveSkill {
             this.iterations = 500;
 
             this.primaryParticle = Particle.REDSTONE;
-            this.primaryColor = Color.PURPLE;
+            this.primaryColor = Color.GRAY;
             this.primaryRadius = radius;
             this.primaryRadiusDecrease = decreasePerTick / this.period;
             this.primaryYOffset = 0.0D;
             this.primaryParticleCount = 10;
 
             this.secondaryParticle = Particle.SPELL_MOB;
-            this.secondaryColor = Color.AQUA;
+            this.secondaryColor = Color.GRAY;
             this.secondaryRadius = secondaryRadiusMultiplier(radius);
             this.secondaryRadiusDecrease = secondaryRadiusMultiplier(decreasePerTick) / this.period;
             this.secondaryYOffset = 0.0D;
@@ -314,7 +306,7 @@ public class SkillTimeBomb extends ActiveSkill {
             Location location = this.getLocation();
             Vector vector = new Vector(0.0D, primaryYOffset, 0.0D);
             location.add(vector);
-            this.display(Particle.SMOKE_LARGE, location);
+            this.display(Particle.SPIT, location);
             location.subtract(vector);
         }
 
