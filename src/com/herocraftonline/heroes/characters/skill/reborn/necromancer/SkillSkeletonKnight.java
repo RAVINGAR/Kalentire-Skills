@@ -146,32 +146,38 @@ public class SkillSkeletonKnight extends ActiveSkill {
 
         @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
         public void onEntityDamage(EntityDamageByEntityEvent event) {
-            if (event.getDamage() <= 0 || !(event.getDamager() instanceof LivingEntity) || !(event.getEntity() instanceof LivingEntity))
+            if (event.getDamage() <= 0 || event.getCause() != EntityDamageEvent.DamageCause.ENTITY_ATTACK)
+                return;
+            if (!(event.getDamager() instanceof LivingEntity) || !(event.getEntity() instanceof LivingEntity))
                 return;
 
             // Handle Summon cleave attack
             if (!(event.getDamager() instanceof Player)) {
-                CharacterTemplate attackerCT = plugin.getCharacterManager().getCharacter((LivingEntity) event.getDamager());
-                if (attackerCT.hasEffect(minionEffectName)) {
-                    SkeletonKnightEffect effect = (SkeletonKnightEffect) attackerCT.getEffect(minionEffectName);
-                    handleMinionCleave(event, (Monster) attackerCT, effect);
+                Monster attackerM = plugin.getCharacterManager().getMonster((LivingEntity) event.getDamager());
+                if (attackerM.hasEffect(minionEffectName)) {
+                    SkeletonKnightEffect effect = (SkeletonKnightEffect) attackerM.getEffect(minionEffectName);
+                    handleMinionCleave(event, attackerM, effect);
                 }
             }
         }
 
         public void handleMinionCleave(EntityDamageByEntityEvent event, Monster summon, SkeletonKnightEffect effect) {
             Hero summoner = summon.getSummoner();
-            LivingEntity target = (LivingEntity) event.getEntity();
+            LivingEntity summonLE = summon.getEntity();
+            LivingEntity baseTarget = (LivingEntity) event.getEntity();
             double radius = effect.getCleaveRadius();
             double damage = event.getDamage() * effect.getCleaveDamageMultiplier();
 
-            for (Entity entity : target.getNearbyEntities(radius, radius, radius)) {
-                if (!(entity instanceof LivingEntity) || entity.equals(event.getEntity()))
+            for (Entity entity : baseTarget.getNearbyEntities(radius, radius, radius)) {
+                if (!(entity instanceof LivingEntity) || entity.equals(baseTarget))
                     continue;
 
                 LivingEntity aoeTarget = (LivingEntity) entity;
+                if (!damageCheck(summoner.getPlayer(), aoeTarget))
+                    continue;
+
                 addSpellTarget(aoeTarget, summoner);
-                damageEntity(aoeTarget, summon.getEntity(), damage, EntityDamageEvent.DamageCause.ENTITY_ATTACK, false);
+                damageEntity(aoeTarget, summonLE, damage, EntityDamageEvent.DamageCause.CUSTOM, false); // If you change this to ENTITY_ATTACK you will get an infinite loop.
             }
         }
     }
