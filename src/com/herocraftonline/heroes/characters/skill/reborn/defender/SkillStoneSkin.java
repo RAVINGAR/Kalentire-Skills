@@ -11,13 +11,18 @@ import com.herocraftonline.heroes.characters.skill.*;
 import com.herocraftonline.heroes.chat.ChatComponents;
 import com.herocraftonline.heroes.util.Util;
 import org.bukkit.Bukkit;
+import org.bukkit.Location;
 import org.bukkit.Sound;
 import org.bukkit.configuration.ConfigurationSection;
+import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
+import org.bukkit.util.Vector;
+
+import java.util.List;
 
 public class SkillStoneSkin extends ActiveSkill {
 
@@ -26,7 +31,8 @@ public class SkillStoneSkin extends ActiveSkill {
 
     public SkillStoneSkin(Heroes plugin) {
         super(plugin, "StoneSkin");
-        setDescription("Your skin turns to stone for $1 second(s). While active, enemies receive $2 damage on attack! Additionally protects you $3% from $4.");
+        setDescription("Your skin turns to stone for $1 second(s). While active, enemies receive $2 damage on attack! " +
+                "Additionally protects you $3% from $4. On expiry the stone explodes off your skin causing $5% of received damage to enemies in $6 blocks$7.");
         setArgumentRange(0, 0);
         setUsage("/skill stoneskin");
         setIdentifiers("skill stoneskin", "skill sskin");
@@ -42,6 +48,13 @@ public class SkillStoneSkin extends ActiveSkill {
         double enemyDamagePercent = SkillConfigManager.getUseSettingDouble(hero, this, "enemy-damage-percent", false);
         double enemyDamage = SkillConfigManager.getUseSettingDouble(hero, this, "enemy-damage", false);
         double damageReduction = SkillConfigManager.getUseSettingDouble(hero, this, "damage-reduction", false);
+        double endDamageModifier = SkillConfigManager.getUseSettingDouble(hero, this, "end-damage-modifier-based-on-received-damage", false);
+        double endDamageRadius = SkillConfigManager.getUseSettingDouble(hero, this, "end-damage-radius", false);
+
+        double hPower = SkillConfigManager.getUseSettingDouble(hero, this, "end-horizontal-knockback-power", false);
+        double vPower = SkillConfigManager.getUseSettingDouble(hero, this, "end-vertical-knockback-power", false);
+
+        boolean isKnockback = hPower > 0 || vPower > 0;
 
         boolean reduceMagicDamage = SkillConfigManager.getUseSetting(hero, this, "reduce-magic-damage",false);
         boolean resistLightning = SkillConfigManager.getUseSetting(hero, this, "resist-lightning",true);
@@ -53,7 +66,10 @@ public class SkillStoneSkin extends ActiveSkill {
         return getDescription().replace("$1", Util.decFormat.format(duration / 1000))
                 .replace("$2", useEnemyDamagePercent ? Util.decFormat.format(enemyDamagePercent * 100) + "%" : Util.decFormat.format(enemyDamage))
                 .replace("$3", Util.decFormat.format(damageReduction * 100))
-                .replace("$4", damageSourcesString);
+                .replace("$4", damageSourcesString)
+                .replace("$5", Util.decFormat.format(endDamageModifier * 100))
+                .replace("$6", Util.decFormat.format(endDamageRadius))
+                .replace("$7", isKnockback ? " with knockback" : "");
     }
 
     @Override
@@ -66,8 +82,12 @@ public class SkillStoneSkin extends ActiveSkill {
         config.set("damage-reduction", 0.05);
         config.set("reduce-magic-damage", false);
         config.set("resist-lightning", true);
-        config.set(SkillSetting.COOLDOWN.node(), 25000);
-        config.set(SkillSetting.DURATION.node(), 15000);
+        config.set("end-horizontal-knockback-power", 1.0);
+        config.set("end-vertical-knockback-power", 0.2);
+        config.set("end-damage-modifier-based-on-received-damage", 0.2);
+        config.set("end-damage-radius", 3.0);
+        config.set(SkillSetting.COOLDOWN.node(), 16000);
+        config.set(SkillSetting.DURATION.node(), 8000);
         return config;
     }
 
@@ -121,6 +141,7 @@ public class SkillStoneSkin extends ActiveSkill {
                 double damage = useEnemyDamagePercent ? (enemyDamagePercent * event.getDamage()) : enemyDamage;
                 if (damage > 0){
                     LivingEntity attacker = event.getDamager().getEntity();
+                    plugin.getDamageManager().addSpellTarget(attacker, defenderHero, skill);
                     damageEntity(attacker, defenderHero.getEntity(), damage); //FIXME: use a damage cause or just custom damage cause?
                 }
             }
@@ -130,21 +151,28 @@ public class SkillStoneSkin extends ActiveSkill {
             boolean reduceMagicDamage = SkillConfigManager.getUseSetting(defenderHero, skill, "reduce-magic-damage",false);
             boolean resistLightning = SkillConfigManager.getUseSetting(defenderHero, skill, "resist-lightning",true);
             if (!( (event.getSkill().isType(SkillType.ABILITY_PROPERTY_LIGHTNING) && resistLightning)
-                    || (event.getSkill().isType(SkillType.ABILITY_PROPERTY_MAGICAL) && reduceMagicDamage) ))
-                return;
+                    || (event.getSkill().isType(SkillType.ABILITY_PROPERTY_MAGICAL) && reduceMagicDamage) )) {
                 // If skill is lightning and not resisting lightning -> Don't modify
                 // OR? If skill is magical and not reducing magic damage -> Don't modify
 
-            // If skill is lightning and resisting lightning
-            // OR skill is magical and reducing magic damage
-            // OR skill is not lightning or magical (e.g. physical or projectile)
-
-            if (resistLightning && event.getSkill().isType(SkillType.ABILITY_PROPERTY_LIGHTNING)){
-                event.setCancelled(true);
+                StoneSkinEffect stoneSkinEffect = (StoneSkinEffect) defenderHero.getEffect("StoneSkin");
+                stoneSkinEffect.increaseDamageReceived(event.getDamage());
             } else {
-                double damageFactor = 1.0 - ((StoneSkinEffect) defenderHero.getEffect("StoneSkin")).getDamageReduction();
-                event.setDamage((event.getDamage() * damageFactor));
-            }
+                    // If skill is lightning and resisting lightning
+                    // OR skill is magical and reducing magic damage
+                    // OR skill is not lightning or magical (e.g. physical or projectile)
+
+                    if (resistLightning && event.getSkill().isType(SkillType.ABILITY_PROPERTY_LIGHTNING)) {
+                        event.setCancelled(true);
+                    } else {
+                        StoneSkinEffect stoneSkinEffect = (StoneSkinEffect) defenderHero.getEffect("StoneSkin");
+                        double damageFactor = 1.0 - stoneSkinEffect.getDamageReduction();
+                        event.setDamage((event.getDamage() * damageFactor));
+                        if (event.getDamage() > 0) {
+                            stoneSkinEffect.increaseDamageReceived(event.getDamage());
+                        }
+                    }
+                }
         }
 
         @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
@@ -156,8 +184,12 @@ public class SkillStoneSkin extends ActiveSkill {
             if (!defenderHero.hasEffect("StoneSkin"))
                 return;
 
-            double damageFactor = 1.0 - ((StoneSkinEffect) defenderHero.getEffect("StoneSkin")).getDamageReduction();
+            StoneSkinEffect stoneSkinEffect = (StoneSkinEffect) defenderHero.getEffect("StoneSkin");
+            double damageFactor = 1.0 - stoneSkinEffect.getDamageReduction();
             event.setDamage((event.getDamage() * damageFactor));
+            if (event.getDamage() > 0) {
+                stoneSkinEffect.increaseDamageReceived(event.getDamage());
+            }
 
             // Harm attacker for physical attacks
             boolean useEnemyDamagePercent = SkillConfigManager.getUseSetting(defenderHero, skill,"use-enemy-damage-percent", true);
@@ -167,6 +199,7 @@ public class SkillStoneSkin extends ActiveSkill {
             double damage = useEnemyDamagePercent ? (enemyDamagePercent * event.getDamage()) : enemyDamage;
             if (damage > 0){
                 LivingEntity attacker = event.getDamager().getEntity();
+                plugin.getDamageManager().addSpellTarget(attacker, defenderHero, skill);
                 damageEntity(attacker, defenderHero.getEntity(), damage); //FIXME: use a damage cause or just custom damage cause?
             }
         }
@@ -175,6 +208,7 @@ public class SkillStoneSkin extends ActiveSkill {
 
     public class StoneSkinEffect extends ExpirableEffect {
         private final double damageReduction;
+        private double damageReceived;
 
         public StoneSkinEffect(Skill skill, Player applier, long duration, double damageReduction,
                                String applyText, String expireText) {
@@ -189,6 +223,55 @@ public class SkillStoneSkin extends ActiveSkill {
 
         public double getDamageReduction() {
             return damageReduction;
+        }
+
+        public void increaseDamageReceived(double damage){
+            this.damageReceived += damage;
+        }
+
+        @Override
+        public void removeFromHero(Hero hero) {
+            super.removeFromHero(hero);
+            performKnockback(hero, damageReceived);
+        }
+    }
+
+    private void performKnockback(Hero hero, double receivedDamage) {
+        Player player = hero.getPlayer();
+
+        double hPower = SkillConfigManager.getUseSettingDouble(hero, this, "end-horizontal-knockback-power", false);
+        double vPower = SkillConfigManager.getUseSettingDouble(hero, this, "end-vertical-knockback-power", false);
+        double endDamagePercentPerReceivedDamage = SkillConfigManager.getUseSettingDouble(hero, this, "end-damage-modifier-based-on-received-damage", false);
+        double radius = SkillConfigManager.getUseSettingDouble(hero, this, "end-damage-radius", false);
+
+        double damage = endDamagePercentPerReceivedDamage * receivedDamage;
+
+        List<Entity> entities = hero.getPlayer().getNearbyEntities(radius, radius, radius);
+        for (Entity entity : entities) {
+            if (!(entity instanceof LivingEntity))
+                continue;
+            if (!damageCheck(player, (LivingEntity) entity))
+                continue;
+
+            final LivingEntity target = (LivingEntity) entity;
+            if (damage > 0) {
+                plugin.getDamageManager().addSpellTarget(target, hero, this);
+                damageEntity(target, player, damage);
+            }
+
+            // Do our knockback
+            Location playerLoc = player.getLocation();
+            Location targetLoc = target.getLocation();
+
+            double xDir = targetLoc.getX() - playerLoc.getX();
+            double zDir = targetLoc.getZ() - playerLoc.getZ();
+            double magnitude = Math.sqrt(xDir * xDir + zDir * zDir);
+
+            xDir = xDir / magnitude * hPower;
+            zDir = zDir / magnitude * hPower;
+
+            final Vector velocity = new Vector(xDir, vPower, zDir);
+            target.setVelocity(velocity);
         }
     }
 }
