@@ -44,6 +44,7 @@ public class SkillDefenceInNumbers extends PassiveSkill {
         ConfigurationSection config = super.getDefaultConfig();
         config.set(SkillSetting.PERIOD.node(), 5000);
         config.set(SkillSetting.RADIUS.node(), 20);
+        config.set("protect-allies", true);
         config.set("incoming-multiplier-base", .9);
         config.set("incoming-multiplier-per-ally", .05);
         config.set("incoming-multiplier-improvement-when-buffed", .05);
@@ -109,16 +110,20 @@ public class SkillDefenceInNumbers extends PassiveSkill {
     @Override
     public void apply(Hero hero) {
         long period = SkillConfigManager.getUseSetting(hero, this, SkillSetting.PERIOD.node(), 5000, false);
+        boolean protectAllies = SkillConfigManager.getUseSettingBool(hero, this, "protect-allies");
 
-        hero.addEffect(new DefenceInNumbersEffect(this, this.getName(), hero.getPlayer(), period, applyText, expireText));
+        hero.addEffect(new DefenceInNumbersEffect(this, this.getName(), hero.getPlayer(), protectAllies, period, applyText, expireText));
     }
 
     public class DefenceInNumbersEffect extends PeriodicEffect {
 
-        public DefenceInNumbersEffect(Skill skill, String name, Player applier, long period, String applyText, String removeText) {
+        boolean protectAllies;
+
+        public DefenceInNumbersEffect(Skill skill, String name, Player applier, boolean protectAllies, long period, String applyText, String removeText) {
             super(skill, name, applier, period, applyText, removeText);
             setEffectTypes(EffectType.INTERNAL, EffectType.SILENT_ACTIONS, EffectType.BENEFICIAL, EffectType.AREA_OF_EFFECT);
             setPersistent(true);
+            this.protectAllies = protectAllies;
         }
 
         @Override
@@ -140,8 +145,8 @@ public class SkillDefenceInNumbers extends PassiveSkill {
             super.tickHero(hero);
             //TODO boost effect when buffing a ally
 
-            // Need atleast one ally
-            if (!hasAllies(hero))
+            // Need to protect allies and atleast one ally
+            if (!protectAllies || !hasAllies(hero))
                 return;
 
             // Check required ally number

@@ -239,6 +239,8 @@ public class SkillStoneSkin extends ActiveSkill {
     private void performKnockback(Hero hero, double receivedDamage) {
         Player player = hero.getPlayer();
 
+        //TODO add explosion particle?
+
         double hPower = SkillConfigManager.getUseSettingDouble(hero, this, "end-horizontal-knockback-power", false);
         double vPower = SkillConfigManager.getUseSettingDouble(hero, this, "end-vertical-knockback-power", false);
         double endDamagePercentPerReceivedDamage = SkillConfigManager.getUseSettingDouble(hero, this, "end-damage-modifier-based-on-received-damage", false);
