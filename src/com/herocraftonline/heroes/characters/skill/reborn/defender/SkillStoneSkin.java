@@ -142,7 +142,7 @@ public class SkillStoneSkin extends ActiveSkill {
                 if (damage > 0){
                     LivingEntity attacker = event.getDamager().getEntity();
                     plugin.getDamageManager().addSpellTarget(attacker, defenderHero, skill);
-                    damageEntity(attacker, defenderHero.getEntity(), damage); //FIXME: use a damage cause or just custom damage cause?
+                    damageEntity(attacker, defenderHero.getEntity(), damage, false); //FIXME: use a damage cause or just custom damage cause?
                 }
             }
 
@@ -200,7 +200,7 @@ public class SkillStoneSkin extends ActiveSkill {
             if (damage > 0){
                 LivingEntity attacker = event.getDamager().getEntity();
                 plugin.getDamageManager().addSpellTarget(attacker, defenderHero, skill);
-                damageEntity(attacker, defenderHero.getEntity(), damage); //FIXME: use a damage cause or just custom damage cause?
+                damageEntity(attacker, defenderHero.getEntity(), damage, false); //FIXME: use a damage cause or just custom damage cause?
             }
         }
 
@@ -249,6 +249,10 @@ public class SkillStoneSkin extends ActiveSkill {
         double damage = endDamagePercentPerReceivedDamage * receivedDamage;
 
         List<Entity> entities = hero.getPlayer().getNearbyEntities(radius, radius, radius);
+        //TODO: remove debug message
+        hero.getPlayer().sendMessage("Received " + Util.decFormat.format(receivedDamage)
+                + " damage during stoneskin and applied " + Util.decFormat.format(damage)
+                + " to " + Util.decFormat.format(entities.size()) + " enemies.");
         for (Entity entity : entities) {
             if (!(entity instanceof LivingEntity))
                 continue;
