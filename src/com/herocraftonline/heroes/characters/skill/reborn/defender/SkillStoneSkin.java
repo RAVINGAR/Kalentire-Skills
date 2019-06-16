@@ -31,8 +31,8 @@ public class SkillStoneSkin extends ActiveSkill {
 
     public SkillStoneSkin(Heroes plugin) {
         super(plugin, "StoneSkin");
-        setDescription("Your skin turns to stone for $1 second(s). While active, enemies receive $2 damage on attack! " +
-                "Additionally protects you $3% from $4. On expiry the stone explodes off your skin causing $5% of received damage to enemies in $6 blocks$7.");
+        setDescription("Your skin turns to stone for $1 second(s). While active, enemies receive $2 damage on physical attacks! " +
+                "Additionally protects you $3% from $4. On expiry the stones explode off your skin causing $5% of received damage to enemies in $6 blocks$7.");
         setArgumentRange(0, 0);
         setUsage("/skill stoneskin");
         setIdentifiers("skill stoneskin", "skill sskin");
@@ -153,29 +153,23 @@ public class SkillStoneSkin extends ActiveSkill {
             // Also Consider resisting lightning over the requirement to reduce magic damage
             boolean reduceMagicDamage = SkillConfigManager.getUseSetting(defenderHero, skill, "reduce-magic-damage",false);
             boolean resistLightning = SkillConfigManager.getUseSetting(defenderHero, skill, "resist-lightning",true);
-            if (!( (event.getSkill().isType(SkillType.ABILITY_PROPERTY_LIGHTNING) && resistLightning)
-                    || (event.getSkill().isType(SkillType.ABILITY_PROPERTY_MAGICAL) && reduceMagicDamage) )) {
-                // If skill is lightning and not resisting lightning -> Don't modify
-                // OR? If skill is magical and not reducing magic damage -> Don't modify
-
-                StoneSkinEffect stoneSkinEffect = (StoneSkinEffect) defenderHero.getEffect("StoneSkin");
-                stoneSkinEffect.increaseDamageReceived(event.getDamage());
+            boolean isLightningSkill = event.getSkill().isType(SkillType.ABILITY_PROPERTY_LIGHTNING);
+            boolean isMagicalSkill = event.getSkill().isType(SkillType.ABILITY_PROPERTY_MAGICAL);
+            if (isLightningSkill && resistLightning){
+                // Resist lightning damage
+                event.setCancelled(true);
             } else {
-                    // If skill is lightning and resisting lightning
-                    // OR skill is magical and reducing magic damage
-                    // OR skill is not lightning or magical (e.g. physical or projectile)
-
-                    if (resistLightning && event.getSkill().isType(SkillType.ABILITY_PROPERTY_LIGHTNING)) {
-                        event.setCancelled(true);
-                    } else {
-                        StoneSkinEffect stoneSkinEffect = (StoneSkinEffect) defenderHero.getEffect("StoneSkin");
-                        double damageFactor = 1.0 - stoneSkinEffect.getDamageReduction();
-                        event.setDamage((event.getDamage() * damageFactor));
-                        if (event.getDamage() > 0) {
-                            stoneSkinEffect.increaseDamageReceived(event.getDamage());
-                        }
-                    }
+                StoneSkinEffect stoneSkinEffect = (StoneSkinEffect) defenderHero.getEffect("StoneSkin");
+                if (!isMagicalSkill || reduceMagicDamage) {
+                    //Reduce non-magical skill damage (e.g. physical or projectile) or magical damage only when enabled
+                    double damageFactor = 1.0 - stoneSkinEffect.getDamageReduction();
+                    event.setDamage((event.getDamage() * damageFactor));
                 }
+                //Record damage
+                if (event.getDamage() > 0) {
+                    stoneSkinEffect.increaseDamageReceived(event.getDamage());
+                }
+            }
         }
 
         @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
