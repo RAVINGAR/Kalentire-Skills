@@ -88,6 +88,9 @@ public class SkillStoneSkin extends ActiveSkill {
         config.set("end-damage-radius", 3.0);
         config.set(SkillSetting.COOLDOWN.node(), 16000);
         config.set(SkillSetting.DURATION.node(), 8000);
+        config.set(SkillSetting.USE_TEXT.node(), null); // remove entry
+        config.set(SkillSetting.APPLY_TEXT.node(), ChatComponents.GENERIC_SKILL + "%hero%'s skin has turned to stone.");
+        config.set(SkillSetting.EXPIRE_TEXT.node(), ChatComponents.GENERIC_SKILL + "%hero%'s skin softens.");
         return config;
     }
 
