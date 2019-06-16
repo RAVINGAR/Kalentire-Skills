@@ -65,13 +65,13 @@ public class SkillBoilBlood extends ActiveSkill {
 
     public ConfigurationSection getDefaultConfig() {
         ConfigurationSection config = super.getDefaultConfig();
-        config.set(SkillSetting.DAMAGE.node(), 30);
+        config.set(SkillSetting.DAMAGE.node(), 30.0);
         config.set(SkillSetting.DAMAGE_INCREASE_PER_INTELLECT.node(), 0.0);
-        config.set(SkillSetting.RADIUS.node(), 5);
-        config.set(SkillSetting.DAMAGE_TICK.node(), 5);
+        config.set(SkillSetting.RADIUS.node(), 5.0);
+        config.set(SkillSetting.DAMAGE_TICK.node(), 5.0);
         config.set(SkillSetting.DAMAGE_TICK_INCREASE_PER_INTELLECT.node(), 0.0);
         config.set(SkillSetting.PERIOD.node(), 2000);
-        config.set(SkillSetting.DURATION.node(), 8000);
+        config.set(SkillSetting.DURATION.node(), 10000);
         config.set(SkillSetting.APPLY_TEXT.node(), ChatComponents.GENERIC_SKILL + "%target%'s blood begins to boil!");
         config.set(SkillSetting.EXPIRE_TEXT.node(), ChatComponents.GENERIC_SKILL + "%target%'s blood is no longer boiling.");
         config.set("blood-union-required-for-use", 3);
@@ -144,7 +144,7 @@ public class SkillBoilBlood extends ActiveSkill {
         }
 
         // Decrease Blood Union
-        BloodUnionEffect buEffect = (BloodUnionEffect) hero.getEffect("BloodUnionEffect");
+        BloodUnionEffect buEffect = (BloodUnionEffect) hero.getEffect(BloodUnionEffect.unionEffectName);
         buEffect.decreaseBloodUnion(bloodUnionReq);
 
         return SkillResult.NORMAL;

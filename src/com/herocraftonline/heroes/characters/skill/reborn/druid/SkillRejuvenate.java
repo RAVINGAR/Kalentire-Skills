@@ -31,14 +31,16 @@ public class SkillRejuvenate extends TargettedSkill {
         int period = SkillConfigManager.getUseSetting(hero, this, SkillSetting.PERIOD, 2000, false);
         int duration = SkillConfigManager.getScaledUseSettingInt(hero, this, SkillSetting.DURATION, false);
 
-        double healing = SkillConfigManager.getUseSetting(hero, this, SkillSetting.HEALING_TICK, 10, false);
-        healing = getScaledHealing(hero, healing);
+        double healing = SkillConfigManager.getScaledUseSettingDouble(hero, this, SkillSetting.HEALING_TICK, false);
 
         String formattedHealing = Util.decFormat.format(healing * ((double) duration / (double) period));
         String formattedSelfHealing = Util.decFormat.format((healing * ((double) duration / (double) period)) * Heroes.properties.selfHeal);
         String formattedDuration = Util.decFormat.format(duration / 1000.0);
 
-        return getDescription().replace("$1", formattedHealing).replace("$2", formattedDuration).replace("$3", formattedSelfHealing);
+        return getDescription()
+                .replace("$1", formattedHealing)
+                .replace("$2", formattedDuration)
+                .replace("$3", formattedSelfHealing);
     }
 
     public ConfigurationSection getDefaultConfig() {
@@ -77,8 +79,7 @@ public class SkillRejuvenate extends TargettedSkill {
             return SkillResult.INVALID_TARGET_NO_MSG;
         }
 
-        double healing = SkillConfigManager.getUseSetting(hero, this, SkillSetting.HEALING_TICK, 10, false);
-        healing = getScaledHealing(hero, healing);
+        double healing = SkillConfigManager.getScaledUseSettingDouble(hero, this, SkillSetting.HEALING_TICK, false);
 
         int period = SkillConfigManager.getUseSetting(hero, this, SkillSetting.PERIOD, 2000, false);
         int duration = SkillConfigManager.getScaledUseSettingInt(hero, this, SkillSetting.DURATION, false);

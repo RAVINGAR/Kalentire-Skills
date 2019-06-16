@@ -162,8 +162,9 @@ public class SkillTimeBomb extends ActiveSkill {
                 SkillTimeShift timeShiftSkill = (SkillTimeShift) plugin.getSkillManager().getSkill(SkillTimeShift.skillName);
                 CharacterTemplate targetCt = plugin.getCharacterManager().getCharacter(target);
                 if (hero.isAlliedTo(target)) {
-                    if (hero.getPlayer() != target)
+                    if (hero.getPlayer() != target) {
                         timeShiftSkill.use(hero, target, new String[]{"NoBroadcast"});
+                    }
                     targetCt.addEffect(new ManaIncreaseEffect(skill, player, (long) duration, manaPercentIncrease));
                     targetCt.addEffect(new StaminaIncreaseEffect(skill, player, (long) duration, staminaPercentIncrease));
                 } else {
@@ -183,16 +184,6 @@ public class SkillTimeBomb extends ActiveSkill {
             super(skill, applier, duration, delta, applyText, expireText);
             types.add(EffectType.TEMPORAL);
             types.add(EffectType.SILENT_ACTIONS);
-        }
-
-        @Override
-        public void applyToHero(Hero hero) {
-            super.applyToHero(hero);
-        }
-
-        @Override
-        public void removeFromHero(Hero hero) {
-            super.removeFromHero(hero);
         }
     }
 
@@ -219,32 +210,12 @@ public class SkillTimeBomb extends ActiveSkill {
             super(skill, applier, duration, delta, null, null);
             types.add(EffectType.SILENT_ACTIONS);
         }
-
-        @Override
-        public void applyToHero(Hero hero) {
-            super.applyToHero(hero);
-        }
-
-        @Override
-        public void removeFromHero(Hero hero) {
-            super.removeFromHero(hero);
-        }
     }
 
     class StaminaDecreaseEffect extends StaminaRegenPercentDecreaseEffect {
         public StaminaDecreaseEffect(Skill skill, Player applier, long duration, double delta) {
             super(skill, applier, duration, delta, null, null);
             types.add(EffectType.SILENT_ACTIONS);
-        }
-
-        @Override
-        public void applyToHero(Hero hero) {
-            super.applyToHero(hero);
-        }
-
-        @Override
-        public void removeFromHero(Hero hero) {
-            super.removeFromHero(hero);
         }
     }
 
@@ -268,16 +239,17 @@ public class SkillTimeBomb extends ActiveSkill {
 
             this.period = 1;
             this.iterations = 500;
+            this.type = de.slikey.effectlib.EffectType.REPEATING;
 
             this.primaryParticle = Particle.REDSTONE;
-            this.primaryColor = Color.GRAY;
+            this.primaryColor = Color.YELLOW;
             this.primaryRadius = radius;
             this.primaryRadiusDecrease = decreasePerTick / this.period;
             this.primaryYOffset = 0.0D;
             this.primaryParticleCount = 10;
 
             this.secondaryParticle = Particle.SPELL_MOB;
-            this.secondaryColor = Color.GRAY;
+            this.secondaryColor = Color.TEAL;
             this.secondaryRadius = secondaryRadiusMultiplier(radius);
             this.secondaryRadiusDecrease = secondaryRadiusMultiplier(decreasePerTick) / this.period;
             this.secondaryYOffset = 0.0D;

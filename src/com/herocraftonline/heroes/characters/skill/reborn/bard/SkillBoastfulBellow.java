@@ -33,26 +33,21 @@ public class SkillBoastfulBellow extends TargettedSkill {
 
     @Override
     public String getDescription(Hero hero) {
-        int radius = SkillConfigManager.getUseSetting(hero, this, SkillSetting.RADIUS, 5, false);
+        double radius = SkillConfigManager.getUseSetting(hero, this, SkillSetting.RADIUS, 5.0, false);
+        double damage = SkillConfigManager.getScaledUseSettingDouble(hero, this, SkillSetting.DAMAGE, false);
 
-        double damage = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE, 50, false);
-        double damageIncrease = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE_INCREASE_PER_INTELLECT, 1.0, false);
-        damage += damageIncrease * hero.getAttributeValue(AttributeType.INTELLECT);
-
-        String formattedDamage = Util.decFormat.format(damage);
-
-        return getDescription().replace("$1", formattedDamage).replace("$2", radius + "");
+        return getDescription()
+                .replace("$1", Util.decFormat.format(damage))
+                .replace("$2", Util.decFormat.format(radius));
     }
 
     @Override
     public ConfigurationSection getDefaultConfig() {
         ConfigurationSection node = super.getDefaultConfig();
-
-        node.set(SkillSetting.MAX_DISTANCE.node(), 4);
-        node.set(SkillSetting.DAMAGE.node(), 60);
-        node.set(SkillSetting.DAMAGE_INCREASE_PER_INTELLECT.node(), 1.5);
-        node.set(SkillSetting.RADIUS.node(), 3);
-
+        node.set(SkillSetting.MAX_DISTANCE.node(), 4.0);
+        node.set(SkillSetting.DAMAGE.node(), 60.0);
+        node.set(SkillSetting.DAMAGE_INCREASE_PER_INTELLECT.node(), 0.0);
+        node.set(SkillSetting.RADIUS.node(), 3.0);
         return node;
     }
 
@@ -60,10 +55,8 @@ public class SkillBoastfulBellow extends TargettedSkill {
     public SkillResult use(Hero hero, LivingEntity target, String[] args) {
         Player player = hero.getPlayer();
 
-        int radius = SkillConfigManager.getUseSetting(hero, this, SkillSetting.RADIUS, 5, false);
-        double damage = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE, 50, false);
-        double damageIncrease = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE_INCREASE_PER_INTELLECT, 1.5, false);
-        damage += damageIncrease * hero.getAttributeValue(AttributeType.INTELLECT);
+        double radius = SkillConfigManager.getUseSetting(hero, this, SkillSetting.RADIUS, 5.0, false);
+        double damage = SkillConfigManager.getScaledUseSettingDouble(hero, this, SkillSetting.DAMAGE, false);
 
         broadcastExecuteText(hero, target);
 

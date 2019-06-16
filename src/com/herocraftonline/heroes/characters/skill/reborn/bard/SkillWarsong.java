@@ -21,6 +21,7 @@ import org.bukkit.Sound;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
+import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityDamageEvent.DamageCause;
 import org.bukkit.scheduler.BukkitRunnable;
@@ -52,32 +53,31 @@ public class SkillWarsong extends ActiveSkill {
 
     @Override
     public String getDescription(Hero hero) {
-        int radius = SkillConfigManager.getUseSetting(hero, this, SkillSetting.RADIUS, 6, false);
+        double radius = SkillConfigManager.getUseSetting(hero, this, SkillSetting.RADIUS, 6.0, false);
         int duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, 3000, false);
 
-        double damageModifier = SkillConfigManager.getUseSetting(hero, this, "damage-bonus", 1.1, false);
-        double damageModifierTickIncrease = SkillConfigManager.getUseSetting(hero, this, "damage-bonus-increase-per-charisma", 0.00375, false);
-        damageModifier += (int) (damageModifierTickIncrease * hero.getAttributeValue(AttributeType.CHARISMA));
+        double damageModifier = SkillConfigManager.getScaledUseSettingDouble(hero, this, "damage-bonus", 1.1, false);
 
         String formattedDuration = Util.decFormat.format(duration / 1000.0);
         String formattedDamageModifier = Util.decFormat.format((damageModifier - 1.0) * 100.0);
 
-        return getDescription().replace("$1", radius + "").replace("$2", formattedDamageModifier).replace("$3", formattedDuration);
+        return getDescription()
+                .replace("$1", radius + "")
+                .replace("$2", formattedDamageModifier)
+                .replace("$3", formattedDuration);
     }
 
     @Override
     public ConfigurationSection getDefaultConfig() {
-        ConfigurationSection node = super.getDefaultConfig();
-
-        node.set(SkillSetting.RADIUS.node(), 12);
-        node.set("damage-bonus", 1.1);
-        node.set("damage-bonus-increase-per-charisma", 0.00375);
-        node.set(SkillSetting.DURATION.node(), 3000);
-        node.set(SkillSetting.APPLY_TEXT.node(), ChatComponents.GENERIC_SKILL + "Your muscles bulge with power!");
-        node.set(SkillSetting.EXPIRE_TEXT.node(), ChatComponents.GENERIC_SKILL + "You feel strength leave your body!");
-        node.set(SkillSetting.DELAY.node(), 1000);
-
-        return node;
+        ConfigurationSection config = super.getDefaultConfig();
+        config.set(SkillSetting.RADIUS.node(), 8.0);
+        config.set("damage-bonus", 1.1);
+        config.set("damage-bonus-increase-per-charisma", 0.0);
+        config.set(SkillSetting.DURATION.node(), 3000);
+        config.set(SkillSetting.APPLY_TEXT.node(), ChatComponents.GENERIC_SKILL + "Your muscles bulge with power!");
+        config.set(SkillSetting.EXPIRE_TEXT.node(), ChatComponents.GENERIC_SKILL + "You feel strength leave your body!");
+        config.set(SkillSetting.DELAY.node(), 1000);
+        return config;
     }
 
     @Override
@@ -93,13 +93,11 @@ public class SkillWarsong extends ActiveSkill {
         Player player = hero.getPlayer();
 
         int duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, 3000, false);
-        int radius = SkillConfigManager.getUseSetting(hero, this, SkillSetting.RADIUS, 6, false);
-
-        double damageModifier = SkillConfigManager.getUseSetting(hero, this, "damage-bonus", 1.1, false);
-        double damageModifierTickIncrease = SkillConfigManager.getUseSetting(hero, this, "damage-bonus-increase-per-charisma", 0.00375, false);
-        damageModifier += (int) (damageModifierTickIncrease * hero.getAttributeValue(AttributeType.CHARISMA));
-
+        double radius = SkillConfigManager.getUseSetting(hero, this, SkillSetting.RADIUS, 6.0, false);
+        double damageModifier = SkillConfigManager.getScaledUseSettingDouble(hero, this, "damage-bonus", 1.1, false);
         WarsongEffect mEffect = new WarsongEffect(this, player, duration, damageModifier);
+
+        broadcastExecuteText(hero);
 
         if (!hero.hasParty()) {
             if (hero.hasEffect("Warsong")) {
@@ -110,24 +108,18 @@ public class SkillWarsong extends ActiveSkill {
             }
 
             hero.addEffect(new SoundEffect(this, "WarsongSong", 100, skillSong));
-            broadcastExecuteText(hero);
             hero.addEffect(mEffect);
         } else {
             hero.addEffect(new SoundEffect(this, "WarsongSong", 100, skillSong));
 
-            broadcastExecuteText(hero);
-
-            int radiusSquared = radius * radius;
+            double radiusSquared = radius * radius;
             Location loc = player.getLocation();
             for (Hero pHero : hero.getParty().getMembers()) {
                 Player pPlayer = pHero.getPlayer();
-                if (!pPlayer.getWorld().equals(player.getWorld())) {
+                if (!pPlayer.getWorld().equals(player.getWorld()))
                     continue;
-                }
-
-                if (pPlayer.getLocation().distanceSquared(loc) > radiusSquared) {
+                if (pPlayer.getLocation().distanceSquared(loc) > radiusSquared)
                     continue;
-                }
 
                 if (pHero.hasEffect("Warsong")) {
                     if (((WarsongEffect) pHero.getEffect("Warsong")).getDamageBonus() > mEffect.getDamageBonus()) {
@@ -149,7 +141,7 @@ public class SkillWarsong extends ActiveSkill {
 
     public class SkillHeroListener implements Listener {
 
-        @EventHandler()
+        @EventHandler(priority = EventPriority.NORMAL, ignoreCancelled = true)
         public void onWeaponDamage(WeaponDamageEvent event) {
             if (event.getCause() != DamageCause.ENTITY_ATTACK) {
                 return;
@@ -164,15 +156,15 @@ public class SkillWarsong extends ActiveSkill {
     }
 
     public class WarsongEffect extends ExpirableEffect {
-
         private final double damageBonus;
 
         public WarsongEffect(Skill skill, Player applier, long duration, double damageBonus) {
-            super(skill, "Warsong", applier, duration, null, null);
+            super(skill, "Warsong", applier, duration, applyText, expireText);
 
             types.add(EffectType.DISPELLABLE);
             types.add(EffectType.BENEFICIAL);
             types.add(EffectType.MAGIC);
+            types.add(EffectType.SILENT_ACTIONS);
 
             this.damageBonus = damageBonus;
         }
@@ -188,36 +180,24 @@ public class SkillWarsong extends ActiveSkill {
             Player player = hero.getPlayer();
             final Player p = player;
 
-            if (player == this.getApplier()) {
-                new BukkitRunnable() {
+            if (player != this.getApplier())
+                return;
 
-                    private double time = 0;
+            new BukkitRunnable() {
+                private double time = 0;
 
-                    @Override
-                    public void run() {
-                        Location location = p.getLocation();
-                        if (time < 0.75) {
-                            p.getWorld().spigot().playEffect(location, Effect.NOTE, 0, 0, 6.3F, 1.0F, 6.3F, 0.0F, 1, 16);
-                            //p.getWorld().spawnParticle(Particle.NOTE, location, 1, 6.3, 1, 6.3, 0); 1.13
-                        } else {
-                            cancel();
-                        }
-                        time += 0.01;
+                @Override
+                public void run() {
+                    Location location = p.getLocation();
+                    if (time < 0.75) {
+                        p.getWorld().spigot().playEffect(location, Effect.NOTE, 0, 0, 6.3F, 1.0F, 6.3F, 0.0F, 1, 16);
+                        //p.getWorld().spawnParticle(Particle.NOTE, location, 1, 6.3, 1, 6.3, 0); 1.13
+                    } else {
+                        cancel();
                     }
-                }.runTaskTimer(plugin, 1, 4);
-            }
-
-
-            player.sendMessage(applyText);
-        }
-
-        @Override
-        public void removeFromHero(Hero hero) {
-            super.removeFromHero(hero);
-
-            Player player = hero.getPlayer();
-
-            player.sendMessage(expireText);
+                    time += 0.01;
+                }
+            }.runTaskTimer(plugin, 1, 4);
         }
     }
 }

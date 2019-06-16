@@ -3,7 +3,6 @@ package com.herocraftonline.heroes.characters.skill.reborn.bard;
 import com.herocraftonline.heroes.Heroes;
 import com.herocraftonline.heroes.api.SkillResult;
 import com.herocraftonline.heroes.api.events.HeroRegainManaEvent;
-import com.herocraftonline.heroes.attributes.AttributeType;
 import com.herocraftonline.heroes.characters.Hero;
 import com.herocraftonline.heroes.characters.Monster;
 import com.herocraftonline.heroes.characters.effects.EffectType;
@@ -24,7 +23,6 @@ import org.bukkit.scheduler.BukkitRunnable;
 //import org.bukkit.Particle; 1.13
 
 public class SkillManasong extends ActiveSkill {
-
     private Song skillSong;
 
     private String applyText;
@@ -48,32 +46,32 @@ public class SkillManasong extends ActiveSkill {
     public String getDescription(Hero hero) {
         int period = SkillConfigManager.getUseSetting(hero, this, SkillSetting.PERIOD, 1500, false);
         int duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, 3000, false);
-        int radius = SkillConfigManager.getUseSetting(hero, this, SkillSetting.RADIUS, 6, false);
+        double radius = SkillConfigManager.getUseSetting(hero, this, SkillSetting.RADIUS, 6, false);
 
-        int manaRestoreTick = SkillConfigManager.getUseSetting(hero, this, "mana-restore-tick", 12, false);
-        double manaRestoreTickIncrease = SkillConfigManager.getUseSetting(hero, this, "mana-restore-tick-increase-per-charisma", 0.15, false);
-        manaRestoreTick += (int) (manaRestoreTickIncrease * hero.getAttributeValue(AttributeType.CHARISMA));
+        int manaRestoreTick = SkillConfigManager.getScaledUseSettingInt(hero, this, "mana-restore-tick", false);
 
         String formattedPeriod = Util.decFormat.format(period / 1000.0);
         String formattedDuration = Util.decFormat.format(duration / 1000.0);
 
-        return getDescription().replace("$1", formattedDuration).replace("$2", manaRestoreTick + "").replace("$3", radius + "").replace("$4", formattedPeriod);
+        return getDescription()
+                .replace("$1", formattedDuration)
+                .replace("$2", manaRestoreTick + "")
+                .replace("$3", radius + "")
+                .replace("$4", formattedPeriod);
     }
 
     @Override
     public ConfigurationSection getDefaultConfig() {
-        ConfigurationSection node = super.getDefaultConfig();
-
-        node.set(SkillSetting.RADIUS.node(), 12);
-        node.set("mana-restore-tick", 8);
-        node.set("mana-restore-tick-increase-per-charisma", 0.25);
-        node.set(SkillSetting.PERIOD.node(), 1500);
-        node.set(SkillSetting.DURATION.node(), 3000);
-        node.set(SkillSetting.APPLY_TEXT.node(), ChatComponents.GENERIC_SKILL + "You are gifted with a song of mana!");
-        node.set(SkillSetting.EXPIRE_TEXT.node(), ChatComponents.GENERIC_SKILL + "The manasong has ended.");
-        node.set(SkillSetting.DELAY.node(), 1000);
-
-        return node;
+        ConfigurationSection config = super.getDefaultConfig();
+        config.set(SkillSetting.RADIUS.node(), 12.0);
+        config.set("mana-restore-tick", 8);
+        config.set("mana-restore-tick-increase-per-charisma", 0.0);
+        config.set(SkillSetting.PERIOD.node(), 1500);
+        config.set(SkillSetting.DURATION.node(), 3000);
+        config.set(SkillSetting.APPLY_TEXT.node(), ChatComponents.GENERIC_SKILL + "You are gifted with a song of mana!");
+        config.set(SkillSetting.EXPIRE_TEXT.node(), ChatComponents.GENERIC_SKILL + "The manasong has ended.");
+        config.set(SkillSetting.DELAY.node(), 1000);
+        return config;
     }
 
     @Override
@@ -92,11 +90,9 @@ public class SkillManasong extends ActiveSkill {
 
         int period = SkillConfigManager.getUseSetting(hero, this, SkillSetting.PERIOD, 1500, false);
         int duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, 3000, false);
-        int radius = SkillConfigManager.getUseSetting(hero, this, SkillSetting.RADIUS, 6, false);
+        double radius = SkillConfigManager.getUseSetting(hero, this, SkillSetting.RADIUS, 6, false);
 
-        int manaRestoreTick = SkillConfigManager.getUseSetting(hero, this, "mana-restore-tick", 12, false);
-        double manaRestoreTickIncrease = SkillConfigManager.getUseSetting(hero, this, "mana-restore-tick-increase-per-charisma", 0.15, false);
-        manaRestoreTick += (int) (manaRestoreTickIncrease * hero.getAttributeValue(AttributeType.CHARISMA));
+        int manaRestoreTick = SkillConfigManager.getScaledUseSettingInt(hero, this, "mana-restore-tick", false);
 
         ManasongEffect mEffect = new ManasongEffect(this, hero.getPlayer(), period, duration, radius, manaRestoreTick);
         hero.addEffect(mEffect);
@@ -112,12 +108,11 @@ public class SkillManasong extends ActiveSkill {
     }
 
     public class ManasongEffect extends PeriodicExpirableEffect {
-
-        private final int radius;
+        private final double radius;
         private final int manaRestore;
 
-        public ManasongEffect(Skill skill, Player applier, int period, int duration, int radius, int manaRestore) {
-            super(skill, "Manasong", applier, period, duration, null, null);
+        public ManasongEffect(Skill skill, Player applier, int period, int duration, double radius, int manaRestore) {
+            super(skill, "Manasong", applier, period, duration, applyText, expireText);
 
             this.radius = radius;
             this.manaRestore = manaRestore;
@@ -125,6 +120,7 @@ public class SkillManasong extends ActiveSkill {
             types.add(EffectType.BENEFICIAL);
             types.add(EffectType.MAGIC);
             types.add(EffectType.MANA_INCREASING);
+            types.add(EffectType.SILENT_ACTIONS);
         }
 
         @Override
@@ -136,7 +132,6 @@ public class SkillManasong extends ActiveSkill {
 
             if (player == this.getApplier()) {
                 new BukkitRunnable() {
-
                     private double time = 0;
 
                     @Override
@@ -152,18 +147,6 @@ public class SkillManasong extends ActiveSkill {
                     }
                 }.runTaskTimer(plugin, 1, 4);
             }
-
-
-            player.sendMessage(applyText);
-        }
-
-        @Override
-        public void removeFromHero(Hero hero) {
-            super.removeFromHero(hero);
-
-            Player player = hero.getPlayer();
-
-            player.sendMessage(expireText);
         }
 
         @Override
@@ -171,7 +154,7 @@ public class SkillManasong extends ActiveSkill {
             Player player = hero.getPlayer();
 
             if (hero.hasParty()) {
-                int radiusSquared = radius * radius;
+                double radiusSquared = radius * radius;
                 Location playerLocation = player.getLocation();
                 // Loop through the player's party members and heal as necessary
                 for (Hero member : hero.getParty().getMembers()) {

@@ -99,14 +99,14 @@ public class SkillTypicalHuman extends PassiveSkill {
 
 // Commented out as only testing code for the apply/unapply of the skill's effect (remains here as may be useful in future)
 //    @Override
-//    public void tryApplying(Hero hero) {
+//    public void applyOrRemove(Hero hero) {
 //        final Player player = hero.getPlayer();
 //        String apply_message = hero.canUseSkill(this) ? ( !hero.hasEffect(this.getName()) ? "apply":"not apply") : "unapply";
 //        this.broadcast(player.getLocation(),
 //                "    (" + apply_message + ")(" + player.getMaxHealth() + ")",
 //                player.getName(), this.getName());
 //
-//        super.tryApplying(hero);
+//        super.applyOrRemove(hero);
 //    }
 
     @Override

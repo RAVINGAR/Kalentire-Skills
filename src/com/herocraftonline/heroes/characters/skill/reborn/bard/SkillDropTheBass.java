@@ -1,6 +1,7 @@
 package com.herocraftonline.heroes.characters.skill.reborn.bard;
 
 //src=http://pastie.org/private/oeherulcmebfy0lerywsw
+
 import com.herocraftonline.heroes.Heroes;
 import com.herocraftonline.heroes.api.SkillResult;
 import com.herocraftonline.heroes.characters.Hero;
@@ -10,13 +11,15 @@ import com.herocraftonline.heroes.characters.effects.common.SoundEffect.Note;
 import com.herocraftonline.heroes.characters.effects.common.SoundEffect.Song;
 import com.herocraftonline.heroes.characters.skill.*;
 import com.herocraftonline.heroes.chat.ChatComponents;
+import com.herocraftonline.heroes.util.GeometryUtil;
 import com.herocraftonline.heroes.util.Util;
-import org.bukkit.*;
+import org.bukkit.Effect;
+import org.bukkit.Location;
+import org.bukkit.Sound;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
-import org.bukkit.Sound;
 
-import java.util.ArrayList;
+import java.util.List;
 //import java.util.List; 1.13
 
 public class SkillDropTheBass extends ActiveSkill {
@@ -66,41 +69,21 @@ public class SkillDropTheBass extends ActiveSkill {
         return node;
     }
 
-    public ArrayList<Location> circle(Location centerPoint, int particleAmount, double circleRadius)
-    {
-        World world = centerPoint.getWorld();
-
-        double increment = (2 * Math.PI) / particleAmount;
-
-        ArrayList<Location> locations = new ArrayList<Location>();
-
-        for (int i = 0; i < particleAmount; i++)
-        {
-            double angle = i * increment;
-            double x = centerPoint.getX() + (circleRadius * Math.cos(angle));
-            double z = centerPoint.getZ() + (circleRadius * Math.sin(angle));
-            locations.add(new Location(world, x, centerPoint.getY(), z));
-        }
-        return locations;
-    }
-
     @Override
     public SkillResult use(final Hero hero, String[] args) {
-
-        final Skill theSkill = this;
         final Player player = hero.getPlayer();
 
         broadcastExecuteText(hero);
 
         hero.addEffect(new SoundEffect(this, "DropTheBassSong", 100, skillSong));
 
-        final int duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION.node(), 10000, false);
-        int radius = SkillConfigManager.getUseSetting(hero, this, SkillSetting.RADIUS.node(), 15, false);
+        final int duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, 10000, false);
+        double radius = SkillConfigManager.getUseSetting(hero, this, SkillSetting.RADIUS, 15.0, false);
 
-        //List<Location> circle = circle(player.getLocation(), 72, radius); 1.13
-        for (int i = 0; i < circle(player.getLocation(), 72, radius).size(); i++) // 1.13 (int i = 0; i < circle.size(); i++)
+        List<Location> circle = GeometryUtil.circle(player.getLocation(), 72, radius);
+        for (int i = 0; i < circle.size(); i++) // 1.13 (int i = 0; i < circle.size(); i++)
         {
-            player.getWorld().spigot().playEffect(circle(player.getLocation(), 72, radius).get(i), org.bukkit.Effect.NOTE, 0, 0, 0, 0.2F, 0, 1, 1, 20);
+            player.getWorld().spigot().playEffect(circle.get(i), org.bukkit.Effect.NOTE, 0, 0, 0, 0.2F, 0, 1, 1, 20);
             //player.getWorld().spawnParticle(Particle.NOTE, circle.get(i), 1, 0, 0.2, 0, 1); 1.13
         }
 
@@ -113,15 +96,14 @@ public class SkillDropTheBass extends ActiveSkill {
                     continue;
 
                 if (memberPlayer.getLocation().distanceSquared(player.getLocation()) <= radiusSquared) {
-                    member.addEffect(new SafeFallEffect(theSkill, player, duration));
+                    member.addEffect(new SafeFallEffect(this, player, duration));
                 }
 
                 member.getPlayer().getWorld().spigot().playEffect(member.getPlayer().getLocation(), Effect.CLOUD, 0, 0, 0, 0, 0, 1, 16, 16);
                 //member.getPlayer().getWorld().spawnParticle(Particle.CLOUD, member.getPlayer().getLocation(), 16, 0, 0, 0, 1); 1.13
             }
-        }
-        else {
-            hero.addEffect(new SafeFallEffect(theSkill, player, duration));
+        } else {
+            hero.addEffect(new SafeFallEffect(this, player, duration));
         }
 
         //1.13 needs this block not here

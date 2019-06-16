@@ -35,7 +35,8 @@ public class SkillManaMissile extends PassiveSkill {
 
     public SkillManaMissile(Heroes plugin) {
         super(plugin, "ManaMissile");
-        setDescription("When you attack with your $1 you fire a missile of mana toward your foe. Missiles deal held weapon damage upon impact.");
+        setDescription("When you attack with your Staff you fire a missile of mana toward your foe. " +
+                "Missiles deal $1 held weapon's damage upon impact.$2");
         setUsage("/skill manamissile");
         setIdentifiers("skill manamissile");
         setArgumentRange(0, 0);
@@ -56,12 +57,11 @@ public class SkillManaMissile extends PassiveSkill {
 
         String disableText = "";
         if (isMeleeDisabled)
-            disableText = " Mana Missile users are very physically weak, and cannot do damage with their " + weaponText + "s.";
+            disableText = " You are also no longer able to melee with your primary weapon type.";
 
         return getDescription()
-                .replace("$1", weaponText)
-                .replace("$2", damageMutliplierText)
-                .replace("$3", disableText);
+                .replace("$1", damageMutliplierText)
+                .replace("$2", disableText);
     }
 
     public ConfigurationSection getDefaultConfig() {

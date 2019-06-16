@@ -80,7 +80,7 @@ public class SkillSerratedArrows extends PassiveSkill {
             double damage = SkillConfigManager.getUseSetting(hero, this.skill, SkillSetting.DAMAGE, 90, false);
             long duration = SkillConfigManager.getUseSetting(hero, this.skill, SkillSetting.DURATION, 30000, false);
 
-            if (!hero.hasEffect(skill.getName()))
+            if (!hero.hasEffect(getPassiveEffectName()))
                 return;
 
             LivingEntity target = (LivingEntity) event.getEntity();

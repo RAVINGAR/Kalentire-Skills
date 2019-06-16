@@ -130,7 +130,12 @@ public class SkillBackstab extends ActiveSkill implements Passive {
     }
 
     @Override
-    public void tryApplying(Hero hero) {
+    public String getPassiveEffectName() {
+        return this.getName();
+    }
+
+    @Override
+    public void applyOrRemove(Hero hero) {
 
     }
 

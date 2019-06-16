@@ -146,7 +146,7 @@ public class SkillSkeletonKnight extends ActiveSkill {
             Hero summoner = ((SkeletonKnightEffect) attackerCT.getEffect(minionEffectName)).getSummoner();
 
             LivingEntity target = (LivingEntity) event.getEntity();
-            int radius = SkillConfigManager.getUseSetting(summoner, skill, SkillSetting.RADIUS, 3, false);
+            double radius = SkillConfigManager.getUseSetting(summoner, skill, SkillSetting.RADIUS, 3.0, false);
             double hitDmg = SkillConfigManager.getUseSetting(summoner, skill, "minion-attack-damage", 25.0, false);
             hitDmg += SkillConfigManager.getUseSetting(summoner, skill, "minion-attack-damage-per-level", 0.4, false) * summoner.getHeroLevel(skill);
 

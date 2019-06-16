@@ -55,7 +55,7 @@ public class SkillNightmare extends ActiveSkill {
     public ConfigurationSection getDefaultConfig() {
         ConfigurationSection config = super.getDefaultConfig();
         config.set(SkillSetting.DAMAGE.node(), 45);
-        config.set(SkillSetting.ON_INTERRUPT_FORCE_COOLDOWN.node(), 2000);
+        config.set(SkillSetting.ON_INTERRUPT_FORCE_COOLDOWN.node(), 5000);
         config.set(SkillSetting.RADIUS.node(), 8.0);
         config.set(SkillSetting.DURATION.node(), 4000);
         config.set(SkillSetting.DURATION_INCREASE_PER_CHARISMA.node(), 50);
@@ -88,7 +88,7 @@ public class SkillNightmare extends ActiveSkill {
         double damage = SkillConfigManager.getScaledUseSettingDouble(hero, this, SkillSetting.DAMAGE, false);
         double radius = SkillConfigManager.getScaledUseSettingDouble(hero, this, SkillSetting.RADIUS, false);
         int duration = SkillConfigManager.getScaledUseSettingInt(hero, this, SkillSetting.DURATION, false);
-        long interruptForceCooldown = SkillConfigManager.getUseSetting(hero, this, SkillSetting.ON_INTERRUPT_FORCE_COOLDOWN, 2000, false);
+        long interruptForceCooldown = SkillConfigManager.getUseSetting(hero, this, SkillSetting.ON_INTERRUPT_FORCE_COOLDOWN, 5000, false);
 
         broadcastExecuteText(hero);
 
@@ -129,7 +129,7 @@ public class SkillNightmare extends ActiveSkill {
             types.add(EffectType.BLIND);
             types.add(EffectType.DISPELLABLE);
 
-            addPotionEffect(new PotionEffect(PotionEffectType.BLINDNESS, (int) ((duration / 1000) * 20), 3));
+            addPotionEffect(new PotionEffect(PotionEffectType.BLINDNESS, (int) duration / 50, 3));
         }
     }
 }

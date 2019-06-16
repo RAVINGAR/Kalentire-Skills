@@ -22,8 +22,7 @@ import org.bukkit.event.entity.EntityDamageEvent.DamageCause;
 import org.bukkit.inventory.ItemStack;
 
 public class SkillAccentedStrikes extends ActiveSkill {
-
-    private String effectName = "Envenom";
+    private String effectName = "AccentedStrikes";
 
     private String applyText;
     private String expireText;
@@ -42,17 +41,12 @@ public class SkillAccentedStrikes extends ActiveSkill {
 
     @Override
     public String getDescription(Hero hero) {
-
         int duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, 10000, false);
+        double damage = SkillConfigManager.getScaledUseSettingDouble(hero, this, SkillSetting.DAMAGE, false);
 
-        double damage = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE, 5, false);
-        double damageIncrease = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE_INCREASE_PER_INTELLECT, 2.0, false);
-        damage += damageIncrease * hero.getAttributeValue(AttributeType.INTELLECT);
-
-        String formattedDamage = Util.decFormat.format(damage);
-        String formattedDuration = Util.decFormat.format(duration / 1000.0);
-
-        return getDescription().replace("$1", formattedDuration).replace("$2", formattedDamage);
+        return getDescription()
+                .replace("$1", Util.decFormat.format(duration / 1000.0))
+                .replace("$2", Util.decFormat.format(damage));
     }
 
     @Override
@@ -60,8 +54,8 @@ public class SkillAccentedStrikes extends ActiveSkill {
         ConfigurationSection config = super.getDefaultConfig();
         config.set("weapons", Util.swords);
         config.set(SkillSetting.DURATION.node(), 10000);
-        config.set(SkillSetting.DAMAGE.node(), 5);
-        config.set(SkillSetting.DAMAGE_INCREASE_PER_INTELLECT.node(), (double) 2);
+        config.set(SkillSetting.DAMAGE.node(), 5.0);
+        config.set(SkillSetting.DAMAGE_INCREASE_PER_INTELLECT.node(), 0.0);
         config.set(SkillSetting.APPLY_TEXT.node(), ChatComponents.GENERIC_SKILL + "%hero% has begun accenting his strikes.");
         config.set(SkillSetting.EXPIRE_TEXT.node(), ChatComponents.GENERIC_SKILL + "%hero% no longer has accented strikes.");
         return config;
@@ -131,14 +125,14 @@ public class SkillAccentedStrikes extends ActiveSkill {
             ItemStack item = NMSHandler.getInterface().getItemInMainHand(player.getInventory());
             if (!SkillConfigManager.getUseSetting(hero, skill, "weapons", Util.swords).contains(item.getType().name())) {
                 if (arrow) {
-                    dealEnvenomDamage(hero, target);
+                    dealAccentedStrikesDamage(hero, target);
                 }
             } else {
-                dealEnvenomDamage(hero, target);
+                dealAccentedStrikesDamage(hero, target);
             }
         }
 
-        private void dealEnvenomDamage(final Hero hero, final LivingEntity target) {
+        private void dealAccentedStrikesDamage(final Hero hero, final LivingEntity target) {
             Bukkit.getServer().getScheduler().scheduleSyncDelayedTask(plugin, new Runnable() {
                 public void run() {
                     if (!(damageCheck(hero.getPlayer(), target)))
@@ -155,7 +149,6 @@ public class SkillAccentedStrikes extends ActiveSkill {
     }
 
     public class AccentedStrikesEffect extends ExpirableEffect {
-
         public AccentedStrikesEffect(Skill skill, Player applier, long duration) {
             super(skill, effectName, applier, duration, applyText, expireText);
 
@@ -176,11 +169,6 @@ public class SkillAccentedStrikes extends ActiveSkill {
                     hero.removeEffect(effect);
                 }
             }
-        }
-
-        @Override
-        public void removeFromHero(Hero hero) {
-            super.removeFromHero(hero);
         }
     }
 }

@@ -33,12 +33,11 @@ public class SkillBloodGift extends TargettedSkill {
         int manacost = SkillConfigManager.getUseSetting(hero, this, SkillSetting.MANA, 110, false);
 
         double healing = SkillConfigManager.getScaledUseSettingDouble(hero, this, SkillSetting.HEALING, false);
-        healing = getScaledHealing(hero, healing);
-        double healIncrease = SkillConfigManager.getUseSetting(hero, this, "heal-increase-percent-per-blood-union", 0.04, false) * 100;
+        double healIncreasePerBloodUnion = SkillConfigManager.getUseSetting(hero, this, "heal-increase-percent-per-blood-union", 0.04, false) * 100;
 
         return getDescription()
                 .replace("$1", Util.decFormat.format(healing))
-                .replace("$2", Util.decFormat.format(healIncrease))
+                .replace("$2", Util.decFormat.format(healIncreasePerBloodUnion))
                 .replace("$3", Util.decFormat.format(healthCost))
                 .replace("$4", manacost + "");
     }

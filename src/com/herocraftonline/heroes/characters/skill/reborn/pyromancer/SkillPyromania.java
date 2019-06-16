@@ -19,7 +19,6 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityDamageEvent;
 
 public class SkillPyromania extends PassiveSkill {
-
     public SkillPyromania(Heroes plugin) {
         super(plugin, "Pyromania");
         setDescription("You passively take $1% less damage from Fire. " +
@@ -47,8 +46,6 @@ public class SkillPyromania extends PassiveSkill {
     @Override
     public ConfigurationSection getDefaultConfig() {
         ConfigurationSection config = super.getDefaultConfig();
-        config.set(SkillSetting.APPLY_TEXT.node(), "");
-        config.set(SkillSetting.UNAPPLY_TEXT.node(), "");
         config.set("damage-reduction-percent", 0.2);
         config.set("damage-percent-increase-per-fire-tick", 0.0025);
         config.set("max-damage-increase-percent", 0.25);
@@ -58,14 +55,7 @@ public class SkillPyromania extends PassiveSkill {
 
     @Override
     public void apply(Hero hero) {
-        String applyText = SkillConfigManager.getRaw(this, SkillSetting.APPLY_TEXT,
-                ChatComponents.GENERIC_SKILL + "%hero% gained %skill%!")
-                .replace("%hero%", "$1").replace("%skill%", getName());
-        String unapplyText = SkillConfigManager.getRaw(this, SkillSetting.UNAPPLY_TEXT,
-                ChatComponents.GENERIC_SKILL + "%hero% lost %skill%!")
-                .replace("%hero%", "$1").replace("%skill%", getName());
-
-        PyromaniaEffect effect = new PyromaniaEffect(this, hero.getPlayer(), applyText, unapplyText);
+        PyromaniaEffect effect = new PyromaniaEffect(this, hero.getPlayer());
         hero.addEffect(effect);
     }
 
@@ -75,8 +65,8 @@ public class SkillPyromania extends PassiveSkill {
         private double maxPercentIncrease;
         private double manaRegainPerDamage;
 
-        PyromaniaEffect(Skill skill, Player player, String applyText, String unapplyText) {
-            super(skill, skill.getName(), player, applyText, unapplyText);
+        PyromaniaEffect(SkillPyromania skill, Player player) {
+            super(skill, skill.getPassiveEffectName(), player, applyText, unapplyText);
 
             types.add(EffectType.INTERNAL);
             setPersistent(true);
@@ -120,12 +110,12 @@ public class SkillPyromania extends PassiveSkill {
                 return;
             if (event.getDamage() <= 0.0)
                 return;
-            if (!(event.getDamager() instanceof Hero) || !event.getDamager().hasEffect(skill.getName()))
+            if (!(event.getDamager() instanceof Hero) || !event.getDamager().hasEffect(getPassiveEffectName()))
                 return;
 
             Hero hero = (Hero) event.getDamager();
             Player player = hero.getPlayer();
-            PyromaniaEffect effect = (PyromaniaEffect) hero.getEffect(skill.getName());
+            PyromaniaEffect effect = (PyromaniaEffect) hero.getEffect(getPassiveEffectName());
             if (effect.getDamageIncrease() <= 0.0)
                 return;
 
@@ -154,12 +144,12 @@ public class SkillPyromania extends PassiveSkill {
             Player player = (Player) event.getEntity();
             Hero hero = plugin.getCharacterManager().getHero(player);
             EntityDamageEvent.DamageCause cause = event.getCause();
-            if (!hero.hasEffect(skill.getName()))
+            if (!hero.hasEffect(getPassiveEffectName()))
                 return;
             if (event.getDamage() <= 0)
                 return;
 
-            PyromaniaEffect effect = (PyromaniaEffect) hero.getEffect(skill.getName());
+            PyromaniaEffect effect = (PyromaniaEffect) hero.getEffect(getPassiveEffectName());
             event.setDamage(event.getDamage() * (1.0 - effect.getReductionPercent()));
 
             int manaIncrease = (int) (effect.getManaRegainPerDamage() * event.getDamage());

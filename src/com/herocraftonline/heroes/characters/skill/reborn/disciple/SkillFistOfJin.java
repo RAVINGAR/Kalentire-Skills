@@ -43,9 +43,7 @@ public class SkillFistOfJin extends PassiveSkill {
         double cdDuration = Util.formatDouble(SkillConfigManager.getUseSetting(hero, this, "healing-internal-cooldown", 1000.0, false) / 1000.0);
 
         double selfHeal = SkillConfigManager.getScaledUseSettingDouble(hero, this, "heal-per-hit-self", false);
-        selfHeal = getScaledHealing(hero, selfHeal);
         double partyHeal = SkillConfigManager.getScaledUseSettingDouble(hero, this, "heal-per-hit-party", false);
-        partyHeal = getScaledHealing(hero, partyHeal);
 
         double radius = SkillConfigManager.getScaledUseSettingDouble(hero, this, SkillSetting.RADIUS, false);
 
@@ -120,9 +118,7 @@ public class SkillFistOfJin extends PassiveSkill {
 
 
             double selfHeal = SkillConfigManager.getScaledUseSettingDouble(hero, skill, "heal-per-hit-self", false);
-            selfHeal = getScaledHealing(hero, selfHeal);
             double partyHeal = SkillConfigManager.getScaledUseSettingDouble(hero, skill, "heal-per-hit-party", false);
-            partyHeal = getScaledHealing(hero, partyHeal);
 
             double radius = SkillConfigManager.getScaledUseSettingDouble(hero, skill, SkillSetting.RADIUS, false);
             double radiusSquared = radius * radius;
@@ -178,22 +174,5 @@ public class SkillFistOfJin extends PassiveSkill {
         public CooldownEffect(Skill skill, Player applier, long duration) {
             super(skill, "FistOfJinCooldownEffect", applier, duration);
         }
-    }
-
-    /**
-     * @param hero    the {@link Hero} using the skill
-     * @param healing the base healing rate to scale
-     * @return if health scaling enabled with a scaling expression return healing * expression scaling, otherwise return base healing.
-     */
-    public double getScaledHealing(Hero hero, double healing) {
-        boolean scaledHealing = SkillConfigManager.getUseSetting(hero, this, SkillSetting.IS_SCALED_HEALING, false);
-        if (scaledHealing) {
-            String expression = SkillConfigManager.getUseSetting(hero, this, SkillSetting.HEALING_SCALE_EXPRESSION, "1");
-            if (!expression.equals("1")) {
-                Scaling healingScaling = new ExpressionScaling(hero.getHeroClass(), expression);
-                healing = healing * healingScaling.getScaled(hero);
-            }
-        }
-        return healing;
     }
 }

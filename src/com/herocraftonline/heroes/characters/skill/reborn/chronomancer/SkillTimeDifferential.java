@@ -101,7 +101,7 @@ public class SkillTimeDifferential extends TargettedSkill {
         final LivingEntity target = targetCT.getEntity();
         final World world = target.getWorld();
         final Location loc = target.getLocation();
-        final double finalHealing = getScaledHealing(hero, healing);
+        final double finalHealing = healing;
         final int delaySeconds = SkillConfigManager.getUseSetting(hero, this, "healing-delay", 1000, false);
         final int finalCount = totalStackCount;
 

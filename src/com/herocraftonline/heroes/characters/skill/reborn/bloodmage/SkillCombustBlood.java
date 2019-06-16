@@ -25,7 +25,7 @@ public class SkillCombustBlood extends TargettedSkill {
 
     public SkillCombustBlood(Heroes plugin) {
         super(plugin, "CombustBlood");
-        setDescription("Boil the blood of your target, dealing $1 dark damage. " +
+        setDescription("Combust the blood of your target, dealing $1 dark damage. " +
                 "If you have Blood Union $2 or greater, the target will bleed, taking an additional $3 damage over $4 second(s). " +
                 "Increases Blood Union by 1.");
         setUsage("/skill combustblood");
@@ -37,9 +37,9 @@ public class SkillCombustBlood extends TargettedSkill {
     @Override
     public ConfigurationSection getDefaultConfig() {
         ConfigurationSection config = super.getDefaultConfig();
-        config.set(SkillSetting.MAX_DISTANCE.node(), 12);
+        config.set(SkillSetting.MAX_DISTANCE.node(), 12.0);
         config.set(SkillSetting.MAX_DISTANCE_INCREASE_PER_INTELLECT.node(), 0.0);
-        config.set(SkillSetting.DAMAGE.node(), 25);
+        config.set(SkillSetting.DAMAGE.node(), 25.0);
         config.set(SkillSetting.DAMAGE_INCREASE_PER_INTELLECT.node(), 0.0);
         config.set("blood-union-increase", 1);
         config.set("blood-union-required-for-dot", 3);

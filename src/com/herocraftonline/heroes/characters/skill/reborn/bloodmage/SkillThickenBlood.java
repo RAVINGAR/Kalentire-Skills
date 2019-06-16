@@ -23,7 +23,8 @@ public class SkillThickenBlood extends TargettedSkill {
 
     public SkillThickenBlood(Heroes plugin) {
         super(plugin, "ThickenBlood");
-        setDescription("Thicken the blood of your target, causing them to be unable to use stamina for $1 second(s).");
+        setDescription("Thicken the blood of your target, causing them to be unable to use stamina for $1 second(s). " +
+                "Monsters hit with this ability will be slowed for the duration instead.");
         setUsage("/skill thickenblood");
         setIdentifiers("skill thickenblood");
         setArgumentRange(0, 0);
@@ -38,7 +39,7 @@ public class SkillThickenBlood extends TargettedSkill {
 
     public ConfigurationSection getDefaultConfig() {
         ConfigurationSection config = super.getDefaultConfig();
-        config.set(SkillSetting.MAX_DISTANCE.node(), 7);
+        config.set(SkillSetting.MAX_DISTANCE.node(), 8.0);
         config.set(SkillSetting.DURATION.node(), 6000);
         config.set(SkillSetting.DURATION_INCREASE_PER_INTELLECT.node(), 0);
         config.set(SkillSetting.APPLY_TEXT.node(), ChatComponents.GENERIC_SKILL + "%target%'s blood has thickened!");

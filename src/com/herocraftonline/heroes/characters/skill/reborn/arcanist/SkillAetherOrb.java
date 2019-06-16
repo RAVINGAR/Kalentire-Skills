@@ -34,9 +34,8 @@ public class SkillAetherOrb extends ActiveSkill {
 
     public SkillAetherOrb(Heroes plugin) {
 		super(plugin, "AetherOrb");
-		setDescription("Call upon the forces of the aether and launch it forward in front of you. "
-                + "Upon landing, an orb of Aether is formed at the location, dealing $1 damage every $2 second(s) for up to $3 second(s). "
-                + "The orb can only hit up to $4 targets within $5 blocks every time it pulses.");
+		setDescription("Call upon the Aether to launch it in front of you. " +
+                "Upon landing an Orb is spawned at the location pulsing $1 damage on up to $4 targets in a $5 block radius every $2 second(s) for $3 seconds.");
 		setUsage("/skill aetherorb");
 		setIdentifiers("skill aetherorb");
 		setArgumentRange(0, 0);

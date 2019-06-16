@@ -36,7 +36,6 @@ public class SkillChakra extends ActiveSkill {
     public String getDescription(Hero hero) {
         double radius = SkillConfigManager.getScaledUseSettingDouble(hero, this, SkillSetting.RADIUS, false);
         double healing = SkillConfigManager.getScaledUseSettingDouble(hero, this, SkillSetting.HEALING, false);
-        healing = getScaledHealing(hero, healing);
         int removals = SkillConfigManager.getScaledUseSettingInt(hero, this, "max-removals", true);
 
         return getDescription()
@@ -70,7 +69,6 @@ public class SkillChakra extends ActiveSkill {
         double radiusSquared = radius * radius;
 
         double healing = SkillConfigManager.getScaledUseSettingDouble(hero, this, SkillSetting.HEALING, false);
-        healing = getScaledHealing(hero, healing);
 
         int removals = SkillConfigManager.getScaledUseSettingInt(hero, this, "max-removals", true);
 

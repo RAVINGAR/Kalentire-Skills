@@ -54,7 +54,12 @@ public class SkillRewind extends ActiveSkill implements Passive {
     }
 
     @Override
-    public void tryApplying(Hero hero) {
+    public String getPassiveEffectName() {
+        return trackerEffectName;
+    }
+
+    @Override
+    public void applyOrRemove(Hero hero) {
         Player player = hero.getPlayer();
         if (hero.canUseSkill(this)) {
             this.apply(hero);
@@ -73,7 +78,8 @@ public class SkillRewind extends ActiveSkill implements Passive {
 
     @Override
     public void unapply(Hero hero) {
-        hero.removeEffect(hero.getEffect(trackerEffectName));
+        if (hero.hasEffect(trackerEffectName))
+            hero.removeEffect(hero.getEffect(trackerEffectName));
     }
 
     @Override
@@ -178,32 +184,32 @@ public class SkillRewind extends ActiveSkill implements Passive {
 //
 //        @EventHandler(priority = EventPriority.MONITOR)
 //        public void onAfterClassChange(AfterClassChangeEvent event) {
-//            tryApplying(event.getHero());
+//            applyOrRemove(event.getHero());
 //        }
 
         @EventHandler(priority = EventPriority.MONITOR)
         public void onHeroChangeLevel(HeroChangeLevelEvent event) {
-            tryApplying(event.getHero());
+            applyOrRemove(event.getHero());
         }
 
         @EventHandler(priority = EventPriority.MONITOR)
         public void onSkillLearnEvent(SkillLearnEvent event) {
-            tryApplying(event.getHero());
+            applyOrRemove(event.getHero());
         }
 
         @EventHandler(priority = EventPriority.MONITOR)
         public void onSkillUnlearnEvent(SkillUnlearnEvent event) {
-            tryApplying(event.getHero());
+            applyOrRemove(event.getHero());
         }
 
         @EventHandler(priority = EventPriority.MONITOR)
         public void onHeroSkillPrepare(SkillPrepareEvent event) {
-            tryApplying(event.getHero());
+            applyOrRemove(event.getHero());
         }
 
         @EventHandler(priority = EventPriority.MONITOR)
         public void onHeroSkillUnprepare(SkillUnprepareEvent event) {
-            tryApplying(event.getHero());
+            applyOrRemove(event.getHero());
         }
     }
 }

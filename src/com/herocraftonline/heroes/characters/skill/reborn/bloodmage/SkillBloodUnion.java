@@ -53,13 +53,7 @@ public class SkillBloodUnion extends PassiveSkill {
     }
 
     @Override
-    public void unapply(Hero hero) {
-        if (hero.hasEffect(BloodUnionEffect.unionEffectName)) {
-            hero.removeEffect(hero.getEffect(BloodUnionEffect.unionEffectName));
-        }
-    }
-
-    public boolean hasPassive(Hero hero) {
-        return hero.hasEffect(BloodUnionEffect.unionEffectName);
+    public String getPassiveEffectName() {
+        return BloodUnionEffect.unionEffectName;
     }
 }

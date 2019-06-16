@@ -37,9 +37,7 @@ public class SkillHealingBloom extends ActiveSkill {
         int period = SkillConfigManager.getUseSetting(hero, this, SkillSetting.PERIOD, 2000, false);
         int duration = SkillConfigManager.getScaledUseSettingInt(hero, this, SkillSetting.DURATION, false);
 
-        double healing = SkillConfigManager.getUseSetting(hero, this, SkillSetting.HEALING_TICK, 17.0, false);
-        healing = getScaledHealing(hero, healing);
-
+        double healing = SkillConfigManager.getScaledUseSettingDouble(hero, this, SkillSetting.HEALING_TICK, 17.0, false);
         double tickMultiplier = (double) duration / (double) period;
 
         return getDescription()
@@ -65,8 +63,7 @@ public class SkillHealingBloom extends ActiveSkill {
         double radius = SkillConfigManager.getScaledUseSettingDouble(hero, this, SkillSetting.RADIUS, false);
         double radiusSquared = radius * radius;
         int duration = SkillConfigManager.getScaledUseSettingInt(hero, this, SkillSetting.DURATION, false);
-        double healing = SkillConfigManager.getUseSetting(hero, this, SkillSetting.HEALING_TICK, 17.0, false);
-        healing = getScaledHealing(hero, healing);
+        double healing = SkillConfigManager.getScaledUseSettingDouble(hero, this, SkillSetting.HEALING_TICK, 17.0, false);
 
         int period = SkillConfigManager.getUseSetting(hero, this, SkillSetting.PERIOD, 2000, false);
 

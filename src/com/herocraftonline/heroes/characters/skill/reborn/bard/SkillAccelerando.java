@@ -1,6 +1,7 @@
 package com.herocraftonline.heroes.characters.skill.reborn.bard;
 
 // src http://pastie.org/private/syyyftinqa5r1uv4ixka
+
 import com.herocraftonline.heroes.Heroes;
 import com.herocraftonline.heroes.api.SkillResult;
 import com.herocraftonline.heroes.api.events.SkillDamageEvent;
@@ -17,7 +18,6 @@ import com.herocraftonline.heroes.util.Util;
 import org.bukkit.*;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
-import org.bukkit.Sound;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
@@ -94,20 +94,18 @@ public class SkillAccelerando extends ActiveSkill {
     public void init() {
         super.init();
 
-        applyText = SkillConfigManager.getRaw(this, SkillSetting.APPLY_TEXT, ChatComponents.GENERIC_SKILL + "%hero% gained a burst of speed!");
-        expireText = SkillConfigManager.getRaw(this, SkillSetting.EXPIRE_TEXT, ChatComponents.GENERIC_SKILL + "%hero% returned to normal speed!");
+        applyText = SkillConfigManager.getRaw(this, SkillSetting.APPLY_TEXT, ChatComponents.GENERIC_SKILL + "%hero% gained a burst of speed!").replace("%hero%", "$1");
+        expireText = SkillConfigManager.getRaw(this, SkillSetting.EXPIRE_TEXT, ChatComponents.GENERIC_SKILL + "%hero% returned to normal speed!").replace("%hero%", "$1");
     }
 
-    public ArrayList<Location> circle(Location centerPoint, int particleAmount, double circleRadius)
-    {
+    public ArrayList<Location> circle(Location centerPoint, int particleAmount, double circleRadius) {
         World world = centerPoint.getWorld();
 
         double increment = (2 * Math.PI) / particleAmount;
 
         ArrayList<Location> locations = new ArrayList<Location>();
 
-        for (int i = 0; i < particleAmount; i++)
-        {
+        for (int i = 0; i < particleAmount; i++) {
             double angle = i * increment;
             double x = centerPoint.getX() + (circleRadius * Math.cos(angle));
             double z = centerPoint.getZ() + (circleRadius * Math.sin(angle));
@@ -135,8 +133,8 @@ public class SkillAccelerando extends ActiveSkill {
             return SkillResult.NORMAL;
         }
 
-        int radius = SkillConfigManager.getUseSetting(hero, this, SkillSetting.RADIUS, 15, false);
-        int rSquared = radius * radius;
+        double radius = SkillConfigManager.getUseSetting(hero, this, SkillSetting.RADIUS, 15, false);
+        double rSquared = radius * radius;
 
         Location playerLoc = player.getLocation();
 
@@ -197,19 +195,10 @@ public class SkillAccelerando extends ActiveSkill {
     public class AccelerandoEffect extends SpeedEffect {
 
         public AccelerandoEffect(Skill skill, Player applier, int duration, int multiplier) {
-            super(skill, "Accelerando", applier, duration, multiplier, null, null);
+            super(skill, "Accelerando", applier, duration, multiplier, applyText, expireText);
 
             types.add(EffectType.DISPELLABLE);
-        }
-
-        @Override
-        public void applyToHero(Hero hero) {
-            super.applyToHero(hero);
-
-            Player player = hero.getPlayer();
-            if (applyText != null && applyText.length() > 0) {
-                player.sendMessage("    " + applyText.replace("%hero%",  player.getName()));
-            }
+            types.add(EffectType.SILENT_ACTIONS);
         }
 
         @Override
@@ -225,13 +214,8 @@ public class SkillAccelerando extends ActiveSkill {
                         AccelerandoEffect.super.removeFromHero(hero);
                     }
                 }, 2L);
-            }
-            else {
+            } else {
                 super.removeFromHero(hero);
-            }
-
-            if (expireText != null && expireText.length() > 0) {
-                player.sendMessage("    " + expireText.replace("%hero%", player.getName()));
             }
         }
     }
