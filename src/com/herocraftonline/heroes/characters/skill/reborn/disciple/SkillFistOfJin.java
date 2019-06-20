@@ -1,6 +1,7 @@
 package com.herocraftonline.heroes.characters.skill.reborn.disciple;
 
 import com.herocraftonline.heroes.Heroes;
+import com.herocraftonline.heroes.api.SkillResult;
 import com.herocraftonline.heroes.api.events.HeroRegainHealthEvent;
 import com.herocraftonline.heroes.api.events.WeaponDamageEvent;
 import com.herocraftonline.heroes.attributes.AttributeType;
@@ -9,12 +10,13 @@ import com.herocraftonline.heroes.characters.classes.scaling.ExpressionScaling;
 import com.herocraftonline.heroes.characters.classes.scaling.Scaling;
 import com.herocraftonline.heroes.characters.effects.EffectType;
 import com.herocraftonline.heroes.characters.effects.ExpirableEffect;
+import com.herocraftonline.heroes.characters.effects.PeriodicEffect;
 import com.herocraftonline.heroes.characters.skill.*;
+import com.herocraftonline.heroes.chat.ChatComponents;
 import com.herocraftonline.heroes.nms.NMSHandler;
+import com.herocraftonline.heroes.util.GeometryUtil;
 import com.herocraftonline.heroes.util.Util;
-import org.bukkit.Bukkit;
-import org.bukkit.Location;
-import org.bukkit.Material;
+import org.bukkit.*;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Arrow;
 import org.bukkit.entity.LivingEntity;
@@ -22,157 +24,217 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
+import org.bukkit.event.entity.EntityDamageByEntityEvent;
+import org.bukkit.event.entity.EntityDamageEvent;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class SkillFistOfJin extends PassiveSkill {
+import static org.bukkit.event.entity.EntityDamageEvent.*;
+
+public class SkillFistOfJin extends ActiveSkill {
+
+    private static final String effectName = "FistsOfJin";
+    private final String cooldownEffectName = "FistOfJinCooldownEffect";
+    private String applyText;
+    private String expireText;
 
     public SkillFistOfJin(Heroes plugin) {
         super(plugin, "FistOfJin");
-        setDescription("Each of your melee strikes restore $1 health to you, and $2 health to party members within $3 blocks. " +
-                "You cannot heal more than once per $4 second(s).");
-        setTypes(SkillType.SILENCEABLE, SkillType.HEALING, SkillType.AREA_OF_EFFECT);
-        setEffectTypes(EffectType.HEALING, EffectType.BENEFICIAL, EffectType.MAGIC);
+        setDescription("Enhance your fists with Jin. Each of your melee strikes restore $1 health to you, and $2 health to party members within $3 blocks. " +
+                "You cannot heal more than once per $4 second(s). " +
+                "Costs $5 mana per $6 second(s) to maintain the effect.");
+        setUsage("/skill fistofjin");
+        setIdentifiers("skill fistofjin");
+        setArgumentRange(0, 0);
+        setTypes(SkillType.BUFFING, SkillType.SILENCEABLE, SkillType.AREA_OF_EFFECT, SkillType.HEALING, SkillType.ABILITY_PROPERTY_PHYSICAL);
 
         Bukkit.getPluginManager().registerEvents(new SkillHeroListener(this), plugin);
     }
 
     @Override
     public String getDescription(Hero hero) {
-        double cdDuration = Util.formatDouble(SkillConfigManager.getUseSetting(hero, this, "healing-internal-cooldown", 1000.0, false) / 1000.0);
+        double cdDuration = SkillConfigManager.getUseSetting(hero, this, "healing-internal-cooldown", 1000, false);
+        int manaTick = SkillConfigManager.getUseSetting(hero, this, "mana-tick", 22, false);
+        int manaTickPeriod = SkillConfigManager.getUseSetting(hero, this, "mana-tick-period", 1000, false);
 
         double selfHeal = SkillConfigManager.getScaledUseSettingDouble(hero, this, "heal-per-hit-self", false);
         double partyHeal = SkillConfigManager.getScaledUseSettingDouble(hero, this, "heal-per-hit-party", false);
 
-        double radius = SkillConfigManager.getScaledUseSettingDouble(hero, this, SkillSetting.RADIUS, false);
+        double radius = SkillConfigManager.getUseSetting(hero, this, SkillSetting.RADIUS, 8.0, false);
 
         return getDescription()
                 .replace("$1", Util.decFormat.format(selfHeal))
                 .replace("$2", Util.decFormat.format(partyHeal))
                 .replace("$3", Util.decFormat.format(radius))
-                .replace("$4", cdDuration + "");
+                .replace("$4", Util.decFormat.format(cdDuration / 1000.0))
+                .replace("$5", manaTick + "")
+                .replace("$6", Util.decFormat.format(manaTickPeriod / 1000.0));
     }
 
     @Override
     public ConfigurationSection getDefaultConfig() {
-        ConfigurationSection node = super.getDefaultConfig();
+        ConfigurationSection config = super.getDefaultConfig();
+        config.set(SkillSetting.APPLY_TEXT.node(), "");
+        config.set(SkillSetting.UNAPPLY_TEXT.node(), "");
+        config.set(SkillSetting.RADIUS.node(), 8.0);
+        config.set("mana-tick", 22);
+        config.set("mana-tick-period", 1000);
+        config.set("healing-internal-cooldown", 1000);
+        config.set("heal-per-hit-self", 8);
+        config.set("heal-per-hit-party", 3);
+        return config;
+    }
 
-        node.set(SkillSetting.APPLY_TEXT.node(), "");
-        node.set(SkillSetting.UNAPPLY_TEXT.node(), "");
-        node.set("healing-internal-cooldown", 1000);
-        node.set("heal-per-hit-self", 8);
-        node.set("heal-per-hit-party", 3);
-        node.set(SkillSetting.HEALING_INCREASE_PER_WISDOM.node(), 0.15);
-        node.set(SkillSetting.RADIUS.node(), 6);
-        node.set(SkillSetting.RADIUS_INCREASE_PER_WISDOM.node(), 0.1);
+    @Override
+    public void init() {
+        super.init();
 
-        // heal scaling parameters for use in children skills
-        node.set(SkillSetting.IS_SCALED_HEALING.node(), false);
-        node.set(SkillSetting.HEALING_SCALE_EXPRESSION.node(), "1");
+        applyText = SkillConfigManager.getRaw(this,
+                "toggle-on-text", ChatComponents.GENERIC_SKILL + "%hero% has Fists of Jin!")
+                .replace("%hero%", "$1");
 
-        List<String> weaponList = new ArrayList<String>(5);
-        weaponList.add("AIR");
-        weaponList.add("STICK");
-        weaponList.add("FISHING_ROD");
-        weaponList.add("RAW_FISH");
-        weaponList.add("BLAZE_ROD");
+        expireText = SkillConfigManager.getRaw(this,
+                "toggle-off-text", ChatComponents.GENERIC_SKILL + "%hero% no longer has Fists of Jin.")
+                .replace("%hero%", "$1");
+    }
 
-        node.set("weapons", weaponList);
+    @Override
+    public SkillResult use(Hero hero, String[] strings) {
+        Player player = hero.getPlayer();
 
-        return node;
+        int manaTickPeriod = SkillConfigManager.getUseSetting(hero, this, "mana-tick-period", 1000, false);
+        hero.addEffect(new FistOfJinEffect(this, player, manaTickPeriod));
+
+        player.getWorld().playSound(player.getLocation(), Sound.ENTITY_WITHER_SPAWN, 0.5F, 1.0F);
+
+        List<Location> circle = GeometryUtil.circle(player.getLocation(), 36, 1.5);
+        for (Location location : circle) {
+            player.getWorld().spigot().playEffect(location, Effect.SPELL, 0, 0, 0.2F, 1.5F, 0.2F, 0, 4, 16);
+        }
+        return SkillResult.NORMAL;
+    }
+
+    public class FistOfJinEffect extends PeriodicEffect {
+        private int manaTick;
+        private boolean firstTime = true;
+        private double radius;
+        private double radiusSquared;
+        private double selfHeal;
+        private double partyHeal;
+        private int cdDuration;
+
+        FistOfJinEffect(Skill skill, Player applier, int period) {
+            super(skill, effectName, applier, period, applyText, expireText);
+
+            types.add(EffectType.DISPELLABLE);
+            types.add(EffectType.BENEFICIAL);
+            types.add(EffectType.MANA_DECREASING);
+            types.add(EffectType.AREA_OF_EFFECT);
+            types.add(EffectType.HEALING);
+        }
+
+        @Override
+        public void applyToHero(Hero hero) {
+            super.applyToHero(hero);
+            firstTime = true;
+
+            this.cdDuration = SkillConfigManager.getUseSetting(hero, skill, "healing-internal-cooldown", 1000, false);
+            this.selfHeal = SkillConfigManager.getScaledUseSettingDouble(hero, skill, "heal-per-hit-self", false);
+            this.partyHeal = SkillConfigManager.getScaledUseSettingDouble(hero, skill, "heal-per-hit-party", false);
+            this.manaTick = SkillConfigManager.getUseSetting(hero, skill, "mana-tick", 13, false);
+            this.radius = SkillConfigManager.getUseSetting(hero, skill, SkillSetting.RADIUS, 12.0, false);
+            this.radiusSquared = radius * radius;
+        }
+
+        @Override
+        public void tickHero(Hero hero) {
+            super.tickHero(hero);
+
+            if (firstTime) {        // Don't drain mana on first tick
+                firstTime = false;
+            } else {
+                // Remove the effect if they don't have enough mana
+                if (hero.getMana() < manaTick) {
+                    hero.removeEffect(this);
+                } else {
+                    hero.setMana(hero.getMana() - manaTick);
+                }
+            }
+        }
+
+        public double getRadiusSquared() {
+            return radiusSquared;
+        }
+
+        public double getSelfHeal() {
+            return selfHeal;
+        }
+
+        public double getPartyHeal() {
+            return partyHeal;
+        }
+
+        public int getCdDuration() {
+            return cdDuration;
+        }
     }
 
     private class SkillHeroListener implements Listener {
         private Skill skill;
 
-        public SkillHeroListener(Skill skill) {
+        SkillHeroListener(Skill skill) {
             this.skill = skill;
-
         }
 
         @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
-        public void onWeaponDamage(WeaponDamageEvent event) {
-            if (!(event.getDamager() instanceof Hero) || !(event.getEntity() instanceof LivingEntity)) {
+        public void onWeaponDamage(EntityDamageByEntityEvent event) {
+            if (!(event.getDamager() instanceof Player) || !(event.getEntity() instanceof LivingEntity) || event.getCause() != DamageCause.ENTITY_ATTACK) {
                 return;
             }
 
-            Hero hero = (Hero) event.getDamager();
-            Player player = hero.getPlayer();
-
-            if (!hero.canUseSkill(skill))
+            Player player = (Player) event.getDamager();
+            Hero hero = plugin.getCharacterManager().getHero(player);
+            if (hero.hasEffect(cooldownEffectName))
                 return;
-            if (hero.hasEffect("FistOfJinCooldownEffect"))      // On cooldown, don't heal.
+            if (!hero.hasEffect(effectName))
                 return;
 
-            // Make sure they are actually dealing damage to the target.
-            if (!damageCheck(player, (LivingEntity) event.getEntity())) {
-                return;
-            }
+            FistOfJinEffect effect = (FistOfJinEffect) hero.getEffect(effectName);
+            double radiusSquared = effect.getRadiusSquared();
 
-            if (!(event.getAttackerEntity() instanceof Arrow)) {
-                Material item = NMSHandler.getInterface().getItemInMainHand(player.getInventory()).getType();
-                if (!SkillConfigManager.getUseSetting(hero, skill, "weapons", Util.tools).contains(item.name()))
-                    return;
-            }
-
-
-            double selfHeal = SkillConfigManager.getScaledUseSettingDouble(hero, skill, "heal-per-hit-self", false);
-            double partyHeal = SkillConfigManager.getScaledUseSettingDouble(hero, skill, "heal-per-hit-party", false);
-
-            double radius = SkillConfigManager.getScaledUseSettingDouble(hero, skill, SkillSetting.RADIUS, false);
-            double radiusSquared = radius * radius;
-
-            int cdDuration = SkillConfigManager.getUseSetting(hero, skill, "healing-internal-cooldown", 1000, false);
-
-            // Check if the hero has a party
-            if (hero.hasParty()) {
+            if (!hero.hasParty()) {
+                hero.tryHeal(hero, skill, effect.getSelfHeal(), true);
+            } else {
                 Location playerLocation = player.getLocation();
                 // Loop through the player's party members and heal as necessary
                 for (Hero member : hero.getParty().getMembers()) {
                     Location memberLocation = member.getPlayer().getLocation();
 
                     // Ensure the party member is in the same world.
-                    if (memberLocation.getWorld().equals(playerLocation.getWorld())) {
+                    if (!memberLocation.getWorld().equals(playerLocation.getWorld())) {
+                        continue;
+                    }
 
-                        // Check to see if we're dealing with the hero himself.
-                        if (member.equals(hero)) {
-                            HeroRegainHealthEvent healEvent = new HeroRegainHealthEvent(hero, selfHeal, skill, null);     // Bypass self-heal nerf.
-                            Bukkit.getPluginManager().callEvent(healEvent);
-                            if (!healEvent.isCancelled()) {
-                                hero.heal(healEvent.getDelta());
-                                CooldownEffect cdEffect = new CooldownEffect(skill, player, cdDuration);
-                                hero.addEffect(cdEffect);
-                            }
-                        } else if (memberLocation.distanceSquared(playerLocation) <= radiusSquared) {
-                            // Check to see if they are close enough to the player to receive healing
-
-                            HeroRegainHealthEvent healEvent = new HeroRegainHealthEvent(member, partyHeal, skill, hero);
-                            Bukkit.getPluginManager().callEvent(healEvent);
-                            if (!healEvent.isCancelled()) {
-                                member.heal(healEvent.getDelta());
-                                CooldownEffect cdEffect = new CooldownEffect(skill, player, cdDuration);
-                                hero.addEffect(cdEffect);
-                            }
-                        }
+                    // Check to see if we're dealing with the hero himself.
+                    if (member.equals(hero)) {
+                        hero.tryHeal(hero, skill, effect.getSelfHeal(), true);
+                    } else if (memberLocation.distanceSquared(playerLocation) <= radiusSquared) {
+                        // Check to see if they are close enough to the player to receive healing
+                        member.tryHeal(hero, skill, effect.getPartyHeal());
                     }
                 }
-            } else {
-                HeroRegainHealthEvent healEvent = new HeroRegainHealthEvent(hero, selfHeal, skill, null);     // Bypass self-heal nerf
-                Bukkit.getPluginManager().callEvent(healEvent);
-                if (!healEvent.isCancelled()) {
-                    hero.heal(healEvent.getDelta());
-                    CooldownEffect cdEffect = new CooldownEffect(skill, player, cdDuration);
-                    hero.addEffect(cdEffect);
-                }
             }
+
+            CooldownEffect cdEffect = new CooldownEffect(skill, player, effect.getCdDuration());
+            hero.addEffect(cdEffect);
         }
     }
 
-    // Effect required for implementing an internal cooldown on healing
+    // Effect for implementing an internal cooldown on healing
     private class CooldownEffect extends ExpirableEffect {
-        public CooldownEffect(Skill skill, Player applier, long duration) {
-            super(skill, "FistOfJinCooldownEffect", applier, duration);
+        CooldownEffect(Skill skill, Player applier, long duration) {
+            super(skill, cooldownEffectName, applier, duration);
         }
     }
 }

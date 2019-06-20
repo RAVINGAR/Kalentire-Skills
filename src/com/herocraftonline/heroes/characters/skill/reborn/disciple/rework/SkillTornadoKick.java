@@ -1,4 +1,4 @@
-package com.herocraftonline.heroes.characters.skill.reborn.disciple;
+package com.herocraftonline.heroes.characters.skill.reborn.disciple.rework;
 
 import com.google.common.collect.Lists;
 import com.herocraftonline.heroes.Heroes;
@@ -21,28 +21,30 @@ import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
+import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.entity.EntityDamageEvent.DamageCause;
 import org.bukkit.util.Vector;
 
+import java.util.ArrayList;
 import java.util.List;
 
-public class SkillIronFist extends ActiveSkill {
+public class SkillTornadoKick extends ActiveSkill {
 
-    public SkillIronFist(Heroes plugin) {
-        super(plugin, "IronFist");
+    public SkillTornadoKick(Heroes plugin) {
+        super(plugin, "TornadoKick");
         setDescription("Strike the ground with an iron fist, striking all targets within $1 blocks, dealing $2 damage and knocking them away from you. " +
                 "Targets hit will also be slowed for $3 second(s).");
-        setUsage("/skill ironfist");
+        setUsage("/skill tornadokick");
+        setIdentifiers("skill tornadokick");
         setArgumentRange(0, 0);
-        setIdentifiers("skill ironfist");
         setTypes(SkillType.ABILITY_PROPERTY_PHYSICAL, SkillType.FORCE, SkillType.DAMAGING, SkillType.AGGRESSIVE, SkillType.AREA_OF_EFFECT);
     }
 
     @Override
     public String getDescription(Hero hero) {
-        double radius = SkillConfigManager.getScaledUseSettingDouble(hero, this, SkillSetting.RADIUS, false);
+        double radius = SkillConfigManager.getUseSetting(hero, this, SkillSetting.RADIUS, 5.0, false);
         double damage = SkillConfigManager.getScaledUseSettingDouble(hero, this, SkillSetting.DAMAGE, false);
-        int duration = SkillConfigManager.getScaledUseSettingInt(hero, this, SkillSetting.DURATION, false);
+        int duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, 4000, false);
 
         String formattedDamage = Util.decFormat.format(damage);
         String formattedDuration = Util.decFormat.format(duration / 1000.0);
@@ -79,15 +81,17 @@ public class SkillIronFist extends ActiveSkill {
     public SkillResult use(Hero hero, String[] args) {
         Player player = hero.getPlayer();
 
-        double radius = SkillConfigManager.getScaledUseSettingDouble(hero, this, SkillSetting.RADIUS, false);
+        double radius = SkillConfigManager.getUseSetting(hero, this, SkillSetting.RADIUS, 5.0, false);
         double damage = SkillConfigManager.getScaledUseSettingDouble(hero, this, SkillSetting.DAMAGE, false);
         double hPower = SkillConfigManager.getScaledUseSettingDouble(hero, this, "horizontal-power", false);
         double vPower = SkillConfigManager.getScaledUseSettingDouble(hero, this, "vertical-power", false);
-        int duration = SkillConfigManager.getScaledUseSettingInt(hero, this, SkillSetting.DURATION, false);
+        int duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, 4000, false);
 
         int slowAmplifier = SkillConfigManager.getUseSetting(hero, this, "slow-amplifier", 1, false);
 
         broadcastExecuteText(hero);
+
+        applyJumpVelocity(player, new Vector(0, 1.25, 0));
 
         List<Entity> entities = hero.getPlayer().getNearbyEntities(radius, radius, radius);
         for (Entity entity : entities) {
@@ -96,50 +100,14 @@ public class SkillIronFist extends ActiveSkill {
             }
 
             // Check if the target is damagable
-            if (!damageCheck(player, (LivingEntity) entity)) {
+            final LivingEntity target = (LivingEntity) entity;
+            if (!damageCheck(player, target)) {
                 continue;
             }
 
-            final LivingEntity target = (LivingEntity) entity;
+            applyJumpVelocity(target, new Vector(0, 1.25, 0));
 
-            double individualHPower = hPower;
-            double individualVPower = vPower;
-            Material mat = target.getLocation().getBlock().getRelative(BlockFace.DOWN).getType();
-            switch (mat) {
-                case WATER:
-                case LAVA:
-                case SOUL_SAND:
-                    individualHPower /= 2;
-                    individualVPower /= 2;
-                    break;
-                default:
-                    break;
-            }
-
-            // Damage the target
-            addSpellTarget(target, hero);
-            damageEntity(target, player, damage, DamageCause.ENTITY_ATTACK, false);
-
-            // Do our knockback
-            Location playerLoc = player.getLocation();
-            Location targetLoc = target.getLocation();
-
-            double xDir = targetLoc.getX() - playerLoc.getX();
-            double zDir = targetLoc.getZ() - playerLoc.getZ();
-            double magnitude = Math.sqrt(xDir * xDir + zDir * zDir);
-
-            final double x = xDir / magnitude * individualHPower;
-            final double z = zDir / magnitude * individualHPower;
-            final double y = individualVPower;
-
-            // Let's bypass the nocheat issues...
-            NCPUtils.applyExemptions(target, new NCPFunction() {
-
-                @Override
-                public void execute() {
-                    target.setVelocity(new Vector(x, y, z));
-                }
-            }, Lists.newArrayList("MOVING"), SkillConfigManager.getUseSetting(hero, this, "ncp-exemption-duration", 500, false));
+            knockback(hero, player, damage, hPower, vPower, target);
 
             SlowEffect sEffect = new SlowEffect(this, player, duration, slowAmplifier, null, null);
             sEffect.types.add(EffectType.DISPELLABLE);
@@ -147,11 +115,12 @@ public class SkillIronFist extends ActiveSkill {
             targetCT.addEffect(sEffect);
         }
 
-        for (double r = 1; r < 5 * 2; r++) {
-            List<Location> particleLocations = GeometryUtil.circle(player.getLocation(), 72, r / 2);
-            for (int i = 0; i < particleLocations.size(); i++) {
-                player.getWorld().spigot().playEffect(particleLocations.get(i).add(0, 0.1, 0), Effect.TILE_BREAK, player.getLocation().getBlock().getRelative(BlockFace.DOWN).getType().getId(), 0, 0, 0.3F, 0, 0.1F, 2, 16);
-//                player.getWorld().spawnParticle(Particle.BLOCK_CRACK, particleLocations.get(i).add(0, 0.1, 0), 2, 0, 0.3, 0, 0.1, player.getLocation().getBlock().getRelative(BlockFace.DOWN).getBlockData());
+        // TORNADOOOO
+        for (int h = 0; h < 2; h++) {
+            List<Location> locations = GeometryUtil.circle(player.getLocation(), 36, (double) h + 1.2);
+            for (int i = 0; i < locations.size(); i++) {
+                //player.getWorld().spigot().playEffect(locations.get(i).add(0, (double) h + 0.2, 0), org.bukkit.Effect.CLOUD, 0, 0, 0, 0, 0, 0, 8, 16);
+                player.getWorld().spawnParticle(Particle.CLOUD, locations.get(i).add(0, (double) h + 0.2, 0), 8, 0, 0, 0, 0);
             }
         }
 
@@ -159,5 +128,65 @@ public class SkillIronFist extends ActiveSkill {
         player.getWorld().playSound(player.getLocation(), Sound.ENTITY_GENERIC_EXPLODE, 0.5F, 1.0F);
 
         return SkillResult.NORMAL;
+    }
+
+    public void knockback(Hero hero, Player player, double damage, double hPower, double vPower, LivingEntity target) {
+        double individualHPower = hPower;
+        double individualVPower = vPower;
+        Material mat = target.getLocation().getBlock().getRelative(BlockFace.DOWN).getType();
+        switch (mat) {
+            case WATER:
+            case LAVA:
+            case SOUL_SAND:
+                individualHPower /= 2;
+                individualVPower /= 2;
+                break;
+            default:
+                break;
+        }
+
+        // Damage the target
+        addSpellTarget(target, hero);
+        damageEntity(target, player, damage, DamageCause.ENTITY_ATTACK, false);
+
+        // Do our knockback
+        Location playerLoc = player.getLocation();
+        Location targetLoc = target.getLocation();
+
+        double xDir = targetLoc.getX() - playerLoc.getX();
+        double zDir = targetLoc.getZ() - playerLoc.getZ();
+        double magnitude = Math.sqrt(xDir * xDir + zDir * zDir);
+
+        final double x = xDir / magnitude * individualHPower;
+        final double z = zDir / magnitude * individualHPower;
+        final double y = individualVPower;
+
+        // Let's bypass the nocheat issues...
+        NCPUtils.applyExemptions(target, new NCPFunction() {
+
+            @Override
+            public void execute() {
+                target.setVelocity(new Vector(x, y, z));
+            }
+        }, Lists.newArrayList("MOVING"), SkillConfigManager.getUseSetting(hero, this, "ncp-exemption-duration", 500, false));
+    }
+
+    public void launchUpwards(Hero hero, LivingEntity target, Vector velocity) {
+        long exemptionDuration = SkillConfigManager.getUseSetting(hero, this, "ncp-exemption-duration", 0, false);
+        if (exemptionDuration > 0) {
+            NCPUtils.applyExemptions(target, new NCPFunction() {
+                @Override
+                public void execute() {
+                    applyJumpVelocity(target, velocity);
+                }
+            }, Lists.newArrayList("MOVING"), exemptionDuration);
+        } else {
+            applyJumpVelocity(target, velocity);
+        }
+    }
+
+    private void applyJumpVelocity(LivingEntity target, Vector velocity) {
+        target.setVelocity(velocity);
+        target.setFallDistance(-3F);
     }
 }

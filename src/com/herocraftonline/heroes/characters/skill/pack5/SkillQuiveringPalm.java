@@ -34,9 +34,9 @@ import com.herocraftonline.heroes.characters.skill.TargettedSkill;
 import com.herocraftonline.heroes.chat.ChatComponents;
 import com.herocraftonline.heroes.util.Util;
 
-public class SkillFistOfJin extends TargettedSkill {
+public class SkillQuiveringPalm extends TargettedSkill {
 
-    public SkillFistOfJin(Heroes plugin) {
+    public SkillQuiveringPalm(Heroes plugin) {
         super(plugin, "QuiveringPalm");
         setDescription("Strike your target with a Quivering Palm dealing $1 damage and weakening the target, causing them to take $2% increased melee damage for $3 second(s). The strike also disorients the target, causing nausea.");
         setUsage("/skill quiveringpalm");

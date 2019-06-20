@@ -27,8 +27,8 @@ public class SkillForcePush extends TargettedSkill {
 
     public SkillForcePush(Heroes plugin) {
         super(plugin, "Forcepush");
-        setDescription("Deal $1 magic damage and force your target away from you$2. " +
-                "If you target an ally, they will be healed for $3 instead.");
+        setDescription("Deal $1 magic damage and push your target away from you$2. " +
+                "If you target an ally, they will be healed for $3 instead of being dealt damage.");
         setUsage("/skill forcepush");
         setIdentifiers("skill forcepush");
         setArgumentRange(0, 0);
@@ -61,6 +61,8 @@ public class SkillForcePush extends TargettedSkill {
         config.set(SkillSetting.MAX_DISTANCE.node(), 10.0);
         config.set(SkillSetting.DAMAGE.node(), 50.0);
         config.set(SkillSetting.DAMAGE_INCREASE_PER_INTELLECT.node(), 0.0);
+        config.set(SkillSetting.HEALING.node(), 50.0);
+        config.set(SkillSetting.HEALING_INCREASE_PER_INTELLECT.node(), 0.0);
         config.set(SkillSetting.DURATION.node(), 0);
         config.set("slow-amplifier", -1);
         config.set("horizontal-power", 1.5);
