@@ -35,7 +35,7 @@ public class SkillBloodBond extends ActiveSkill {
         super(plugin, "BloodBond");
         setDescription("Form a Blood Bond with your party. " +
                 "While bound, you convert $1% of your magic damage into health for you and all party members within a $2 block radius. " +
-                "Costs $4 health to use, and $3 mana per second to maintain the effect.");
+                "Costs $3 health to use, and $4 mana per $5 second(s) to maintain the effect.");
         setUsage("/skill bloodbond");
         setIdentifiers("skill bloodbond");
         setArgumentRange(0, 0);
@@ -49,25 +49,28 @@ public class SkillBloodBond extends ActiveSkill {
     public String getDescription(Hero hero) {
         double healPercent = SkillConfigManager.getUseSetting(hero, this, "heal-percent", 0.2, false);
         int manaTick = SkillConfigManager.getUseSetting(hero, this, "mana-tick", 22, false);
+        int manaTickPeriod = SkillConfigManager.getUseSetting(hero, this, "mana-tick-period", 1000, false);
         double radius = SkillConfigManager.getUseSetting(hero, this, SkillSetting.RADIUS.node(), 10.0, false);
         double healthCost = SkillConfigManager.getUseSetting(hero, this, SkillSetting.HEALTH_COST.node(), 25.0, false);
 
+
         return getDescription()
-                .replace("$1", Util.decFormat.format((healPercent * 100)))
+                .replace("$1", Util.decFormat.format((healPercent * 100.0)))
                 .replace("$2", Util.decFormat.format(radius))
-                .replace("$3", manaTick + "")
-                .replace("$4", Util.decFormat.format(healthCost));
+                .replace("$3", Util.decFormat.format(healthCost))
+                .replace("$4", manaTick + "")
+                .replace("$5", Util.decFormat.format(manaTickPeriod / 1000.0));
     }
 
     @Override
     public ConfigurationSection getDefaultConfig() {
         ConfigurationSection config = super.getDefaultConfig();
         config.set("heal-percent", 0.2);
-        config.set(SkillSetting.RADIUS.node(), 10.0);
+        config.set(SkillSetting.RADIUS.node(), 12.0);
         config.set("mana-tick", 22);
         config.set("mana-tick-period", 1000);
-        config.set("toggle-on-text", ChatComponents.GENERIC_SKILL + "%hero% has formed a " + ChatColor.BOLD + "Blood Bond" + ChatColor.RESET + "!");
-        config.set("toggle-off-text", ChatComponents.GENERIC_SKILL + "%hero% has broken his " + ChatColor.BOLD + "Blood Bond" + ChatColor.RESET + "!");
+        config.set(SkillSetting.APPLY_TEXT.node(), ChatComponents.GENERIC_SKILL + "%hero% has formed a Blood Bond!");
+        config.set(SkillSetting.EXPIRE_TEXT.node(), ChatComponents.GENERIC_SKILL + "%hero% has broken their Bond of Blood.");
         return config;
     }
 
@@ -76,11 +79,11 @@ public class SkillBloodBond extends ActiveSkill {
         super.init();
 
         this.applyText = SkillConfigManager.getRaw(this,
-                "toggle-on-text", ChatComponents.GENERIC_SKILL + "%hero% has formed a " + ChatColor.BOLD + "Blood Bond" + ChatColor.RESET + "!")
+                SkillSetting.APPLY_TEXT, ChatComponents.GENERIC_SKILL + "%hero% has formed a Blood Bond!")
                 .replace("%hero%", "$1");
 
         this.expireText = SkillConfigManager.getRaw(this,
-                "toggle-off-text", ChatComponents.GENERIC_SKILL + "%hero% has broken his " + ChatColor.BOLD + "Blood Bond" + ChatColor.RESET + "!")
+                SkillSetting.EXPIRE_TEXT, ChatComponents.GENERIC_SKILL + "%hero% has broken their Bond of Blood.")
                 .replace("%hero%", "$1");
     }
 

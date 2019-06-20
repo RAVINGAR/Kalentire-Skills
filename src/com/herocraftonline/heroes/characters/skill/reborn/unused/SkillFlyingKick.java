@@ -1,4 +1,4 @@
-package com.herocraftonline.heroes.characters.skill.reborn.disciple;
+package com.herocraftonline.heroes.characters.skill.reborn.unused;
 
 import com.google.common.collect.Lists;
 import com.herocraftonline.heroes.Heroes;

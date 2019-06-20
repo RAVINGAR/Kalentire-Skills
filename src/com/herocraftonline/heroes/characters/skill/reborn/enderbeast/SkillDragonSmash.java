@@ -54,7 +54,6 @@ public class SkillDragonSmash extends ActiveSkill implements Listener {
     @Override
     public String getDescription(Hero hero) {
         double radius = SkillConfigManager.getScaledUseSettingDouble(hero, this, SkillSetting.RADIUS, false);
-
         double damage = SkillConfigManager.getScaledUseSettingDouble(hero, this, SkillSetting.DAMAGE, false);
 
         final double damagePerBlockHeight = SkillConfigManager.getUseSetting(hero, this, "damage-per-block-height", 10.0, false);

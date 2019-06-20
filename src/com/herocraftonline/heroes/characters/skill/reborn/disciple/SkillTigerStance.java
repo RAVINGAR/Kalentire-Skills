@@ -1,4 +1,4 @@
-package com.herocraftonline.heroes.characters.skill.reborn.bloodmage;
+package com.herocraftonline.heroes.characters.skill.reborn.disciple;
 
 import com.herocraftonline.heroes.Heroes;
 import com.herocraftonline.heroes.api.SkillResult;
@@ -18,24 +18,24 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 
-public class SkillFocusOfMind extends ActiveSkill {
-    public static String stanceEffectName = "FocusOfMind";
+public class SkillTigerStance extends ActiveSkill {
+    public static String stanceEffectName = "TigerStance";
 
-    private static String baseStanceMessage = "    " + ChatComponents.GENERIC_SKILL + ChatColor.RED + "Current Focus: " + ChatColor.WHITE + "<";
+    private static String baseStanceMessage = "    " + ChatComponents.GENERIC_SKILL + ChatColor.YELLOW + "Current Stance: " + ChatColor.WHITE + "<";
     private static String endStanceMessage = ChatColor.WHITE + ">";
     private static String unfocusedStanceText = "Unfocused";
-    private static String sanguineStanceText = "Sanguine";
-    private static String vigorousStanceText = "Vigorous";
+    private static String tigerStanceText = "Tiger";
+    private static String jinStanceText = "Jin";
     private static String delimiter = ChatColor.WHITE + " | ";
 
-    public SkillFocusOfMind(Heroes plugin) {
-        super(plugin, "FocusOfMind");
+    public SkillTigerStance(Heroes plugin) {
+        super(plugin, "TigerStance");
         setDescription("Shift the focus of mind, altering the potency of your other abilities.\n" +
                 ChatColor.GRAY + "Unfocused: " + ChatColor.WHITE + "Your damage and healing are unchanged.\n" +
-                ChatColor.DARK_RED + "Sanguine: " + ChatColor.WHITE + "Your damage is increased by $1% and your healing is reduced by $2%.\n" +
-                ChatColor.RED + "Vigorous: " + ChatColor.WHITE + "your healing is increased by $3% and your damage is reduced by $4%.");
-        setUsage("/skill focusofmind or /skill focusofmind <stancename>");
-        setIdentifiers("skill focusofmind");
+                ChatColor.GOLD + "Tiger: " + ChatColor.WHITE + "Your damage is increased by $1% and your healing is reduced by $2%.\n" +
+                ChatColor.YELLOW + "Jin: " + ChatColor.WHITE + "your healing is increased by $3% and your damage is reduced by $4%.");
+        setUsage("/skill tigerstance or /skill tigerstance <stancename>");
+        setIdentifiers("skill tigerstance");
         setArgumentRange(0, 1);
         setTypes(SkillType.ABILITY_PROPERTY_DARK, SkillType.FORM_ALTERING, SkillType.SILENCEABLE, SkillType.BUFFING);
 
@@ -44,17 +44,17 @@ public class SkillFocusOfMind extends ActiveSkill {
 
     @Override
     public String getDescription(Hero hero) {
-        double sanguineDamageIncrease = SkillConfigManager.getUseSetting(hero, this, "sanguine-damage-percent-increase", 0.25, false);
-        double sanguineHealingDecrease = SkillConfigManager.getUseSetting(hero, this, "sanguine-healing-percent-decrease", 0.5, false);
+        double tigerDamageIncrease = SkillConfigManager.getUseSetting(hero, this, "tiger-damage-percent-increase", 0.25, false);
+        double tigerHealingDecrease = SkillConfigManager.getUseSetting(hero, this, "tiger-healing-percent-decrease", 0.5, false);
 
-        double vigorousHealingIncrease = SkillConfigManager.getUseSetting(hero, this, "vigorous-healing-percent-increase", 0.35, false);
-        double vigorousDamageDecrease = SkillConfigManager.getUseSetting(hero, this, "vigorous-damage-percent-decrease", 0.5, false);
+        double jinHealingIncrease = SkillConfigManager.getUseSetting(hero, this, "jin-healing-percent-increase", 0.35, false);
+        double jinDamageDecrease = SkillConfigManager.getUseSetting(hero, this, "jin-damage-percent-decrease", 0.5, false);
 
         return getDescription()
-                .replace("$1", Util.decFormat.format(sanguineDamageIncrease))
-                .replace("$2", Util.decFormat.format(sanguineHealingDecrease))
-                .replace("$3", Util.decFormat.format(vigorousHealingIncrease))
-                .replace("$4", Util.decFormat.format(vigorousDamageDecrease));
+                .replace("$1", Util.decFormat.format(tigerDamageIncrease))
+                .replace("$2", Util.decFormat.format(tigerHealingDecrease))
+                .replace("$3", Util.decFormat.format(jinHealingIncrease))
+                .replace("$4", Util.decFormat.format(jinDamageDecrease));
     }
 
     @Override
@@ -62,10 +62,10 @@ public class SkillFocusOfMind extends ActiveSkill {
         ConfigurationSection config = super.getDefaultConfig();
         config.set(SkillSetting.COOLDOWN.node(), 500);
         config.set(SkillSetting.USE_TEXT.node(), "");
-        config.set("sanguine-damage-percent-increase", 0.25);
-        config.set("sanguine-healing-percent-decrease", 0.5);
-        config.set("vigorous-healing-percent-increase", 0.35);
-        config.set("vigorous-damage-percent-decrease", 0.5);
+        config.set("tiger-damage-percent-increase", 0.25);
+        config.set("tiger-healing-percent-decrease", 0.5);
+        config.set("jin-healing-percent-increase", 0.35);
+        config.set("jin-damage-percent-decrease", 0.5);
         return config;
     }
 
@@ -82,10 +82,10 @@ public class SkillFocusOfMind extends ActiveSkill {
         broadcastExecuteText(hero);
 
         if (!hero.hasEffect(stanceEffectName)) {
-            hero.addEffect(new FocusEffect(this, player));
+            hero.addEffect(new StanceEffect(this, player));
         }
 
-        FocusEffect effect = (FocusEffect) hero.getEffect(stanceEffectName);
+        StanceEffect effect = (StanceEffect) hero.getEffect(stanceEffectName);
         if (stanceOverride != null) {
             effect.setCurrentStance(stanceOverride);
         } else {
@@ -97,18 +97,18 @@ public class SkillFocusOfMind extends ActiveSkill {
 
     public enum StanceType {
         UNFOCUSED,
-        SANGUINE,
-        VIGOROUS
+        TIGER,
+        JIN
     }
 
-    public static class FocusEffect extends Effect {
+    public static class StanceEffect extends Effect {
         private StanceType currentStance = StanceType.UNFOCUSED;
-        private double sanguineDamageIncrease;
-        private double sanguineHealingDecrease;
-        private double vigorousHealingIncrease;
-        private double vigorousDamageDecrease;
+        private double tigerDamageIncrease;
+        private double tigerHealingDecrease;
+        private double jinHealingIncrease;
+        private double jinDamageDecrease;
 
-        FocusEffect(Skill skill, Player applier) {
+        StanceEffect(Skill skill, Player applier) {
             super(skill, stanceEffectName, applier, null, null);
 
             types.add(EffectType.DISPELLABLE);
@@ -121,11 +121,11 @@ public class SkillFocusOfMind extends ActiveSkill {
             super.applyToHero(hero);
             Player player = hero.getPlayer();
 
-            this.sanguineDamageIncrease = SkillConfigManager.getUseSetting(hero, skill, "sanguine-damage-percent-increase", 0.25, false);
-            this.sanguineHealingDecrease = SkillConfigManager.getUseSetting(hero, skill, "sanguine-healing-percent-decrease", 0.5, false);
+            this.tigerDamageIncrease = SkillConfigManager.getUseSetting(hero, skill, "tiger-damage-percent-increase", 0.25, false);
+            this.tigerHealingDecrease = SkillConfigManager.getUseSetting(hero, skill, "tiger-healing-percent-decrease", 0.5, false);
 
-            this.vigorousHealingIncrease = SkillConfigManager.getUseSetting(hero, skill, "vigorous-healing-percent-increase", 0.35, false);
-            this.vigorousDamageDecrease = SkillConfigManager.getUseSetting(hero, skill, "vigorous-damage-percent-decrease", 0.5, false);
+            this.jinHealingIncrease = SkillConfigManager.getUseSetting(hero, skill, "jin-healing-percent-increase", 0.35, false);
+            this.jinDamageDecrease = SkillConfigManager.getUseSetting(hero, skill, "jin-damage-percent-decrease", 0.5, false);
         }
 
         public void setCurrentStance(StanceType stance) {
@@ -143,10 +143,10 @@ public class SkillFocusOfMind extends ActiveSkill {
 
         public void nextStance() {
             if (this.currentStance == StanceType.UNFOCUSED) {
-                setCurrentStance(StanceType.SANGUINE);
-            } else if (this.currentStance == StanceType.SANGUINE) {
-                setCurrentStance(StanceType.VIGOROUS);
-            } else if (this.currentStance == StanceType.VIGOROUS) {
+                setCurrentStance(StanceType.TIGER);
+            } else if (this.currentStance == StanceType.TIGER) {
+                setCurrentStance(StanceType.JIN);
+            } else if (this.currentStance == StanceType.JIN) {
                 setCurrentStance(StanceType.UNFOCUSED);
             }
         }
@@ -154,32 +154,32 @@ public class SkillFocusOfMind extends ActiveSkill {
         public String getCurrentStanceMessage() {
             @SuppressWarnings("StringBufferReplaceableByString")
             StringBuilder builder = new StringBuilder(baseStanceMessage);
-            builder.append(this.currentStance == StanceType.UNFOCUSED ? ChatColor.DARK_RED : ChatColor.GRAY);
+            builder.append(this.currentStance == StanceType.UNFOCUSED ? ChatColor.GOLD : ChatColor.GRAY);
             builder.append(unfocusedStanceText);
             builder.append(delimiter);
-            builder.append(this.currentStance == StanceType.SANGUINE ? ChatColor.DARK_RED : ChatColor.GRAY);
-            builder.append(sanguineStanceText);
+            builder.append(this.currentStance == StanceType.TIGER ? ChatColor.GOLD : ChatColor.GRAY);
+            builder.append(tigerStanceText);
             builder.append(delimiter);
-            builder.append(this.currentStance == StanceType.VIGOROUS ? ChatColor.DARK_RED : ChatColor.GRAY);
-            builder.append(vigorousStanceText);
+            builder.append(this.currentStance == StanceType.JIN ? ChatColor.GOLD : ChatColor.GRAY);
+            builder.append(jinStanceText);
             builder.append(endStanceMessage);
             return builder.toString();
         }
 
         public double getDamageMultiplier() {
-            if (this.currentStance == StanceType.SANGUINE) {
-                return 1.0 + this.sanguineDamageIncrease;
-            } else if (this.currentStance == StanceType.VIGOROUS) {
-                return 1.0 - this.vigorousDamageDecrease;
+            if (this.currentStance == StanceType.TIGER) {
+                return 1.0 + this.tigerDamageIncrease;
+            } else if (this.currentStance == StanceType.JIN) {
+                return 1.0 - this.jinDamageDecrease;
             }
             return 1.0;
         }
 
         public double getHealingMultiplier() {
-            if (this.currentStance == StanceType.SANGUINE) {
-                return 1.0 - this.sanguineHealingDecrease;
-            } else if (this.currentStance == StanceType.VIGOROUS) {
-                return 1.0 + this.vigorousHealingIncrease;
+            if (this.currentStance == StanceType.TIGER) {
+                return 1.0 - this.tigerHealingDecrease;
+            } else if (this.currentStance == StanceType.JIN) {
+                return 1.0 + this.jinHealingIncrease;
             }
             return 1.0;
         }
@@ -197,7 +197,7 @@ public class SkillFocusOfMind extends ActiveSkill {
             if (!event.getDamager().hasEffect(stanceEffectName))
                 return;
 
-            FocusEffect effect = (FocusEffect) event.getDamager().getEffect(stanceEffectName);
+            StanceEffect effect = (StanceEffect) event.getDamager().getEffect(stanceEffectName);
             if (effect.getCurrentStance() == StanceType.UNFOCUSED)
                 return;
 
@@ -209,7 +209,7 @@ public class SkillFocusOfMind extends ActiveSkill {
             if (event.getHealer() == null || !event.getHealer().hasEffect(stanceEffectName))
                 return;
 
-            FocusEffect effect = (FocusEffect) event.getHealer().getEffect(stanceEffectName);
+            StanceEffect effect = (StanceEffect) event.getHealer().getEffect(stanceEffectName);
             if (effect.getCurrentStance() == StanceType.UNFOCUSED)
                 return;
 

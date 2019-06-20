@@ -24,8 +24,7 @@ import org.bukkit.util.Vector;
 import java.util.ArrayList;
 
 public class SkillLungingBite extends ActiveSkill {
-    String applyText;
-    String expireText;
+    private String applyText;
 
     public SkillLungingBite(Heroes plugin) {
         super(plugin, "LungingBite");
@@ -35,16 +34,14 @@ public class SkillLungingBite extends ActiveSkill {
         setUsage("/skill lungingbite");
         setIdentifiers("skill lungingbite");
         setArgumentRange(0, 0);
-        setTypes(SkillType.DAMAGING, SkillType.MOVEMENT_INCREASING, SkillType.ABILITY_PROPERTY_PHYSICAL, SkillType.AGGRESSIVE);
+        setTypes(SkillType.DAMAGING, SkillType.MOVEMENT_INCREASING, SkillType.VELOCITY_INCREASING, SkillType.ABILITY_PROPERTY_PHYSICAL, SkillType.AGGRESSIVE);
     }
 
     public String getDescription(Hero hero) {
-        double baseDamage = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE, 35.0, true);
-        double bonusDmg = SkillConfigManager.getUseSetting(hero, this, "bonus-damage-per-level", 5.0, true);
+        double damage = SkillConfigManager.getScaledUseSettingDouble(hero, this, SkillSetting.DAMAGE, 35.0, true);
         int stuckInJawsDuration = SkillConfigManager.getUseSetting(hero, this, "transform-jaws-duration", 2500, false);
 
-        double damage = baseDamage + bonusDmg;
-        double normalHeal = damage / 2.0;
+        double killHeal = damage / 2.0;
         double actualDuration = stuckInJawsDuration / 1000.0;
 
         return getDescription()
@@ -66,10 +63,10 @@ public class SkillLungingBite extends ActiveSkill {
     public ConfigurationSection getDefaultConfig() {
         ConfigurationSection config = super.getDefaultConfig();
         config.set(SkillSetting.DAMAGE.node(), 35.0);
-        config.set("damage-radius", 3.0);
-        config.set("bonus-damage-per-level", 0.5);
-        config.set("speed-boost-per-level", 0.00125);
+        config.set(SkillSetting.DAMAGE_INCREASE.node(), 0.5);
+        config.set(SkillSetting.RADIUS.node(), 3.0);
         config.set("speed-mult", 1.0);
+        config.set("speed-mult-per-level", 0.00125);
         config.set("transform-jaws-period", 200);
         config.set("transform-jaws-duration", 2500);
         config.set("transform-jaws-pull-power-reduction", 6.0);
@@ -87,18 +84,16 @@ public class SkillLungingBite extends ActiveSkill {
     }
 
     private void PerformLungingBite(Hero hero, Player player) {
-        double damage = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE, 35.0, true);
-        double bonusDmg = SkillConfigManager.getUseSetting(hero, this, "bonus-damage-per-level", 5.0, true);
+        final double damage = SkillConfigManager.getScaledUseSettingDouble(hero, this, SkillSetting.DAMAGE, 35.0, true);
+        final double speedMult = SkillConfigManager.getScaledUseSettingDouble(hero, this, "speed-mult", 1.0, true);
 
-        final double speedMult = SkillConfigManager.getUseSetting(hero, this, "speed-mult", 1.0, true);
-        double boost = hero.getHeroLevel() * SkillConfigManager.getUseSetting(hero, this, "speed-boost-per-level", 0.000125, true);
-        double radius = SkillConfigManager.getUseSetting(hero, this, "damage-radius", 3.0, true);
+        double radius = SkillConfigManager.getUseSetting(hero, this, SkillSetting.RADIUS, 3.0, true);
 
         int stuckInJawsPeriod = SkillConfigManager.getUseSetting(hero, this, "transform-jaws-period", 200, false);
         int stuckInJawsDuration = SkillConfigManager.getUseSetting(hero, this, "transform-jaws-duration", 2500, false);
         double stuckInJawsPullPowerReduction = SkillConfigManager.getUseSetting(hero, this, "transform-jaws-pull-power-reduction", 6.0, false);
 
-        final Vector velocity = player.getLocation().getDirection().clone().setY(0.0D).multiply(speedMult + boost);
+        final Vector velocity = player.getLocation().getDirection().clone().setY(0.0D).multiply(speedMult);
         player.getWorld().spawnParticle(Particle.CLOUD, player.getLocation(), 25, 0, 0.1, 0, 0.5);
         player.getWorld().playSound(player.getLocation(), Sound.ENTITY_ENDERDRAGON_FLAP, 1.0F, 1.0F);
 

@@ -1,4 +1,4 @@
-package com.herocraftonline.heroes.characters.skill.reborn.disciple;
+package com.herocraftonline.heroes.characters.skill.reborn.unused;
 
 import com.google.common.collect.Lists;
 import com.herocraftonline.heroes.Heroes;
@@ -15,10 +15,7 @@ import com.herocraftonline.heroes.characters.skill.TargettedSkill;
 import com.herocraftonline.heroes.characters.skill.ncp.NCPFunction;
 import com.herocraftonline.heroes.characters.skill.ncp.NCPUtils;
 import com.herocraftonline.heroes.util.Util;
-import org.bukkit.Bukkit;
-import org.bukkit.Location;
-import org.bukkit.Material;
-import org.bukkit.Particle;
+import org.bukkit.*;
 import org.bukkit.block.BlockFace;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.LivingEntity;
@@ -26,14 +23,14 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.entity.EntityDamageEvent.DamageCause;
 import org.bukkit.util.Vector;
 
-public class SkillForcePull extends TargettedSkill {
+public class SkillForcePush extends TargettedSkill {
 
-    public SkillForcePull(Heroes plugin) {
-        super(plugin, "Forcepull");
-        setDescription("Deal $1 magic damage and force your target away from you$2. " +
-                "If you target an ally, they will be healed for $3 instead.");
-        setUsage("/skill forcepull");
-        setIdentifiers("skill forcepull");
+    public SkillForcePush(Heroes plugin) {
+        super(plugin, "Forcepush");
+        setDescription("Deal $1 magic damage and push your target away from you$2. " +
+                "If you target an ally, they will be healed for $3 instead of being dealt damage.");
+        setUsage("/skill forcepush");
+        setIdentifiers("skill forcepush");
         setArgumentRange(0, 0);
         setTypes(SkillType.FORCE, SkillType.ABILITY_PROPERTY_MAGICAL, SkillType.INTERRUPTING, SkillType.SILENCEABLE,
                 SkillType.MULTI_GRESSIVE, SkillType.NO_SELF_TARGETTING);
@@ -66,13 +63,14 @@ public class SkillForcePull extends TargettedSkill {
         config.set(SkillSetting.DAMAGE_INCREASE_PER_INTELLECT.node(), 0.0);
         config.set(SkillSetting.HEALING.node(), 50.0);
         config.set(SkillSetting.HEALING_INCREASE_PER_INTELLECT.node(), 0.0);
-        config.set(SkillSetting.DURATION.node(), 2000);
-        config.set("slow-amplifier", 1);
-        config.set("horizontal-power", 0.3);
-        config.set("horizontal-power-increase-per-intellect", 0.0125);
-        config.set("vertical-power", 0.4);
-        config.set("ncp-exemption-duration", 1000);
-        config.set("pull-delay", 0.2);
+        config.set(SkillSetting.DURATION.node(), 0);
+        config.set("slow-amplifier", -1);
+        config.set("horizontal-power", 1.5);
+        config.set("horizontal-power-increase-per-intellect", 0.0375);
+        config.set("vertical-power", 0.25);
+        config.set("vertical-power-increase-per-intellect", 0.0075);
+        config.set("ncp-exemption-duration", 1500);
+        config.set("push-delay", 0.2);
         return config;
     }
 
@@ -98,7 +96,7 @@ public class SkillForcePull extends TargettedSkill {
                 break;
         }
 
-        double tempVPower = SkillConfigManager.getUseSetting(hero, this, "vertical-power", 0.4, false);
+        double tempVPower = SkillConfigManager.getScaledUseSettingDouble(hero, this, "vertical-power", false);
 
         if (weakenVelocity)
             tempVPower *= 0.75;
@@ -113,10 +111,10 @@ public class SkillForcePull extends TargettedSkill {
             public void execute() {
                 target.setVelocity(pushUpVector);
             }
-        }, Lists.newArrayList("MOVING"), SkillConfigManager.getUseSetting(hero, this, "ncp-exemption-duration", 1000, false));
+        }, Lists.newArrayList("MOVING"), SkillConfigManager.getUseSetting(hero, this, "ncp-exemption-duration", 1500, false));
 
-        final double xDir = (playerLoc.getX() - targetLoc.getX()) / 3;
-        final double zDir = (playerLoc.getZ() - targetLoc.getZ()) / 3;
+        final double xDir = targetLoc.getX() - playerLoc.getX();
+        final double zDir = targetLoc.getZ() - playerLoc.getZ();
 
         double tempHPower = SkillConfigManager.getScaledUseSettingDouble(hero, this, "horizontal-power", false);
 
@@ -125,8 +123,8 @@ public class SkillForcePull extends TargettedSkill {
 
         final double hPower = tempHPower;
 
-        // push them "up" first. THEN we can pull them to us.
-        double delay = SkillConfigManager.getUseSetting(hero, this, "pull-delay", 0.2, false);
+        // Push them "up" first. THEN we can push them away.
+        double delay = SkillConfigManager.getUseSetting(hero, this, "push-delay", 0.2, false);
         Bukkit.getScheduler().scheduleSyncDelayedTask(plugin, new Runnable() {
             public void run() {
                 // Push them away
@@ -162,8 +160,16 @@ public class SkillForcePull extends TargettedSkill {
             }
         }
 
-        //player.getWorld().spigot().playEffect(target.getLocation().add(0, 0.5, 0), org.bukkit.Effect.FLYING_GLYPH, 0, 0, 0, 0, 0, 1, 150, 16);
-        player.getWorld().spawnParticle(Particle.ENCHANTMENT_TABLE, target.getLocation().add(0, 0.5, 0), 150, 0, 0, 0, 1);
+        player.getWorld().playSound(target.getLocation(), Sound.ENTITY_GENERIC_BURN, 0.5f, 2.0f);
+
+//        player.getWorld().spigot().playEffect(target.getLocation().add(0, 0.5, 0),
+//                org.bukkit.Effect.WITCH_MAGIC,
+//                0, 0,
+//                0, 0, 0,
+//                1,
+//                150,
+//                SkillConfigManager.getScaledUseSettingDouble(hero, this, SkillSetting.MAX_DISTANCE, false) +
+        player.getWorld().spawnParticle(Particle.SPELL_WITCH, target.getLocation().add(0, 0.5, 0), 150, 0, 0, 0, 1);
 
         return SkillResult.NORMAL;
     }

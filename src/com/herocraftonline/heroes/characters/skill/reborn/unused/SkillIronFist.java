@@ -1,9 +1,8 @@
-package com.herocraftonline.heroes.characters.skill.reborn.disciple;
+package com.herocraftonline.heroes.characters.skill.reborn.unused;
 
 import com.google.common.collect.Lists;
 import com.herocraftonline.heroes.Heroes;
 import com.herocraftonline.heroes.api.SkillResult;
-import com.herocraftonline.heroes.attributes.AttributeType;
 import com.herocraftonline.heroes.characters.CharacterTemplate;
 import com.herocraftonline.heroes.characters.Hero;
 import com.herocraftonline.heroes.characters.effects.EffectType;
@@ -14,6 +13,7 @@ import com.herocraftonline.heroes.characters.skill.SkillSetting;
 import com.herocraftonline.heroes.characters.skill.SkillType;
 import com.herocraftonline.heroes.characters.skill.ncp.NCPFunction;
 import com.herocraftonline.heroes.characters.skill.ncp.NCPUtils;
+import com.herocraftonline.heroes.util.GeometryUtil;
 import com.herocraftonline.heroes.util.Util;
 import org.bukkit.*;
 import org.bukkit.block.BlockFace;
@@ -24,7 +24,6 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.entity.EntityDamageEvent.DamageCause;
 import org.bukkit.util.Vector;
 
-import java.util.ArrayList;
 import java.util.List;
 
 public class SkillIronFist extends ActiveSkill {
@@ -48,15 +47,18 @@ public class SkillIronFist extends ActiveSkill {
         String formattedDamage = Util.decFormat.format(damage);
         String formattedDuration = Util.decFormat.format(duration / 1000.0);
 
-        return getDescription().replace("$1", Util.decFormat.format(radius)).replace("$2", formattedDamage).replace("$3", formattedDuration);
+        return getDescription()
+                .replace("$1", Util.decFormat.format(radius))
+                .replace("$2", formattedDamage)
+                .replace("$3", formattedDuration);
     }
 
     @Override
     public ConfigurationSection getDefaultConfig() {
         ConfigurationSection config = super.getDefaultConfig();
         config.set(SkillSetting.DAMAGE.node(), 50.0);
-        config.set(SkillSetting.DAMAGE_INCREASE_PER_STRENGTH.node(), 1.125);
-        config.set(SkillSetting.RADIUS.node(), 5);
+        config.set(SkillSetting.DAMAGE_INCREASE_PER_STRENGTH.node(), 0.0);
+        config.set(SkillSetting.RADIUS.node(), 5.0);
         config.set(SkillSetting.DURATION.node(), 5000);
         config.set("slow-amplifier", 1);
         config.set("horizontal-power", 0.0);
@@ -71,22 +73,6 @@ public class SkillIronFist extends ActiveSkill {
     public void onWarmup(Hero hero) {
         Player player = hero.getPlayer();
         player.getWorld().playSound(player.getLocation(), Sound.BLOCK_CHEST_OPEN, 0.7F, 0.4F);
-    }
-
-    public ArrayList<Location> circle(Location centerPoint, int particleAmount, double circleRadius) {
-        World world = centerPoint.getWorld();
-
-        double increment = (2 * Math.PI) / particleAmount;
-
-        ArrayList<Location> locations = new ArrayList<Location>();
-
-        for (int i = 0; i < particleAmount; i++) {
-            double angle = i * increment;
-            double x = centerPoint.getX() + (circleRadius * Math.cos(angle));
-            double z = centerPoint.getZ() + (circleRadius * Math.sin(angle));
-            locations.add(new Location(world, x, centerPoint.getY(), z));
-        }
-        return locations;
     }
 
     @Override
@@ -162,7 +148,7 @@ public class SkillIronFist extends ActiveSkill {
         }
 
         for (double r = 1; r < 5 * 2; r++) {
-            ArrayList<Location> particleLocations = circle(player.getLocation(), 72, r / 2);
+            List<Location> particleLocations = GeometryUtil.circle(player.getLocation(), 72, r / 2);
             for (int i = 0; i < particleLocations.size(); i++) {
                 player.getWorld().spigot().playEffect(particleLocations.get(i).add(0, 0.1, 0), Effect.TILE_BREAK, player.getLocation().getBlock().getRelative(BlockFace.DOWN).getType().getId(), 0, 0, 0.3F, 0, 0.1F, 2, 16);
 //                player.getWorld().spawnParticle(Particle.BLOCK_CRACK, particleLocations.get(i).add(0, 0.1, 0), 2, 0, 0.3, 0, 0.1, player.getLocation().getBlock().getRelative(BlockFace.DOWN).getBlockData());

@@ -1,4 +1,4 @@
-package com.herocraftonline.heroes.characters.skill.reborn.disciple;
+package com.herocraftonline.heroes.characters.skill.reborn.unused;
 
 import com.herocraftonline.heroes.Heroes;
 import com.herocraftonline.heroes.characters.CharacterTemplate;
