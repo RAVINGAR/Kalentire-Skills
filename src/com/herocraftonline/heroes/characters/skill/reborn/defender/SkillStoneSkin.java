@@ -90,7 +90,7 @@ public class SkillStoneSkin extends ActiveSkill {
         config.set(SkillSetting.DURATION.node(), 8000);
         config.set(SkillSetting.USE_TEXT.node(), null); // remove entry
         config.set(SkillSetting.APPLY_TEXT.node(), ChatComponents.GENERIC_SKILL + "%hero%'s skin has turned to stone.");
-        config.set(SkillSetting.EXPIRE_TEXT.node(), ChatComponents.GENERIC_SKILL + "%hero%'s skin softens.");
+        config.set(SkillSetting.EXPIRE_TEXT.node(), ChatComponents.GENERIC_SKILL + "%hero%'s skin softens and unleashes the remaining stones.");
         return config;
     }
 

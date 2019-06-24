@@ -70,6 +70,12 @@ public class SkillPort extends ActiveSkill implements Listener, PluginMessageLis
 
         List<String> keys = new ArrayList<>(SkillConfigManager.getUseSettingKeys(hero, this, null));
 
+        // Strip non-world keys
+        for (SkillSetting setting : SkillSetting.values()) {
+            keys.remove(setting.node());
+        }
+        keys.remove("cross-world");
+        keys.remove("icon-url");
 
         if (args.length < this.getMinArguments() || args.length > this.getMaxArguments()) {
             player.sendMessage("You must specify a location when using this skill!");
@@ -81,13 +87,6 @@ public class SkillPort extends ActiveSkill implements Listener, PluginMessageLis
             }
             return SkillResult.SKIP_POST_USAGE;
         }
-
-        // Strip non-world keys
-        for (SkillSetting setting : SkillSetting.values()) {
-            keys.remove(setting.node());
-        }
-        keys.remove("cross-world");
-        keys.remove("icon-url");
 
         String portInfo = SkillConfigManager.getUseSetting(hero, this, args[0].toLowerCase(), (String) null);
         if (portInfo == null) {
