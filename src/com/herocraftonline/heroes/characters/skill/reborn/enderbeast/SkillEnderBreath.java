@@ -28,6 +28,7 @@ import org.bukkit.util.Vector;
 
 import java.util.List;
 import java.util.Random;
+import java.util.logging.Level;
 
 public class SkillEnderBreath extends SkillBaseGroundEffect {
 
@@ -159,6 +160,11 @@ public class SkillEnderBreath extends SkillBaseGroundEffect {
             // let's prentend this code has no bugs
             Location targetStartLoc = target.getLocation();
             int distance = (int) targetStartLoc.distance(desiredLocation);
+            if (distance == 0 || distance > 20) {
+                Heroes.log(Level.WARNING, "Enderbreath Teleport distance is too high or too low. Value: " + distance);
+                return;
+            }
+
             Vector dir = desiredLocation.clone().toVector().subtract(targetStartLoc.toVector());
             Location iterLoc = targetStartLoc.clone().setDirection(dir);
             BlockIterator iter;
@@ -167,10 +173,18 @@ public class SkillEnderBreath extends SkillBaseGroundEffect {
             } catch (IllegalStateException e) {
                 return;
             }
+
             Block validFinalBlock = null;
             Block currentBlock;
+            int loopCount = 0;
             while (iter.hasNext()) {
                 currentBlock = iter.next();
+                loopCount++;
+                if (loopCount > 20) {
+                    Heroes.log(Level.WARNING, "Enderbreath Teleport block iterator is lasting for too long. What the hell is this skill doing??" + distance);
+                    break;
+                }
+
                 Material currentBlockType = currentBlock.getType();
                 if (!Util.transparentBlocks.contains(currentBlockType))
                     break;
