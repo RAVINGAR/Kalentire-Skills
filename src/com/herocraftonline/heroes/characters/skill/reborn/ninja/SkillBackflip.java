@@ -3,7 +3,6 @@ package com.herocraftonline.heroes.characters.skill.reborn.ninja;
 import com.google.common.collect.Lists;
 import com.herocraftonline.heroes.Heroes;
 import com.herocraftonline.heroes.api.SkillResult;
-import com.herocraftonline.heroes.attributes.AttributeType;
 import com.herocraftonline.heroes.characters.Hero;
 import com.herocraftonline.heroes.characters.skill.ActiveSkill;
 import com.herocraftonline.heroes.characters.skill.SkillConfigManager;
@@ -11,6 +10,7 @@ import com.herocraftonline.heroes.characters.skill.SkillSetting;
 import com.herocraftonline.heroes.characters.skill.SkillType;
 import com.herocraftonline.heroes.characters.skill.ncp.NCPFunction;
 import com.herocraftonline.heroes.characters.skill.ncp.NCPUtils;
+import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.Sound;
@@ -109,27 +109,24 @@ public class SkillBackflip extends ActiveSkill {
             hPower *= 0.75;
 
         velocity.multiply(new Vector(-hPower, 1, -hPower));
-
-        // Let's bypass the nocheat issues...
-        NCPUtils.applyExemptions(player, new NCPFunction() {
-            @Override
-            public void execute() {
-                // Backflip!
-                player.setVelocity(velocity);
-                player.setFallDistance(-8f);
-            }
-        }, Lists.newArrayList("MOVING"), SkillConfigManager.getUseSetting(hero, this, "ncp-exemption-duration", 1000, false));
+        backflip(hero, player, velocity);
 
         // If they can use shuriken, let's make them throw a few after they backflip
         boolean throwShuriken = SkillConfigManager.getUseSetting(hero, this, "thow-shurikens", true);
         if (throwShuriken) {
             if (hero.canUseSkill("Shurikens")) {
                 SkillShurikens shurikenSkill = (SkillShurikens) plugin.getSkillManager().getSkill("Shurikens");
-
                 if (shurikenSkill != null)
                     shurikenSkill.tryShurikenToss(hero, false);
             }
         }
+
+        Bukkit.getScheduler().runTaskLater(plugin, new Runnable() {
+            @Override
+            public void run() {
+                player.setFallDistance(-10f);
+            }
+        }, 2);
 
         player.getWorld().playSound(player.getLocation(), Sound.ENTITY_ENDERDRAGON_FLAP, 4.0F, 1.0F);
 
@@ -139,5 +136,17 @@ public class SkillBackflip extends ActiveSkill {
         }
 
         return SkillResult.NORMAL;
+    }
+
+    public void backflip(Hero hero, Player player, Vector velocity) {
+        // Let's bypass the nocheat issues...
+        NCPUtils.applyExemptions(player, new NCPFunction() {
+            @Override
+            public void execute() {
+                // Backflip!
+                player.setVelocity(velocity);
+                player.setFallDistance(-12f);
+            }
+        }, Lists.newArrayList("MOVING"), SkillConfigManager.getUseSetting(hero, this, "ncp-exemption-duration", 1000, false));
     }
 }

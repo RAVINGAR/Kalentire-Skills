@@ -103,13 +103,21 @@ public class SkillSkeletonKnight extends ActiveSkill {
 
         int maxMinions = SkillConfigManager.getUseSetting(hero, this, "maximum-allowed-minions", 3, false);
         int minionCount = 0;
+
+        long oldestMinionRemainingTime = Long.MAX_VALUE;
+        Monster oldestMinion = null;
         for (Monster summon : hero.getSummons()) {
             if (summon.hasEffect(minionEffectName)) {
+                long remainingTime = ((SkeletonKnightEffect) summon.getEffect(minionEffectName)).getRemainingTime();
+                if (remainingTime < oldestMinionRemainingTime) {
+                    oldestMinionRemainingTime = remainingTime;
+                    oldestMinion = summon;
+                }
                 minionCount++;
             }
-            if (minionCount >= maxMinions) {
-                player.sendMessage("    " + ChatComponents.GENERIC_SKILL + "You already have the maximum number of minions of this type!");
-                return SkillResult.FAIL;
+            if (minionCount >= maxMinions && oldestMinion != null) {
+                player.sendMessage("    " + ChatComponents.GENERIC_SKILL + "You already have the maximum number of allowed minions. Your oldest minion was replaced.");
+                oldestMinion.clearEffects();
             }
         }
 

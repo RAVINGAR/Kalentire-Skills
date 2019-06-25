@@ -6,6 +6,7 @@ import com.herocraftonline.heroes.characters.Hero;
 import com.herocraftonline.heroes.characters.Monster;
 import com.herocraftonline.heroes.characters.effects.common.SpeedEffect;
 import com.herocraftonline.heroes.characters.skill.ActiveSkill;
+import com.herocraftonline.heroes.characters.skill.Skill;
 import com.herocraftonline.heroes.characters.skill.SkillConfigManager;
 import com.herocraftonline.heroes.characters.skill.SkillType;
 import com.herocraftonline.heroes.chat.ChatComponents;
@@ -22,6 +23,7 @@ import java.util.Optional;
 
 public class SkillConvocation extends ActiveSkill {
 
+    public static final String speedEffectName = "ConvocationSpeed";
     private final MythicMobs mythicMobs;
 
     public SkillConvocation(Heroes plugin) {
@@ -87,7 +89,7 @@ public class SkillConvocation extends ActiveSkill {
                 summonedMob.ifPresent(ActiveMob::resetTarget);
             }
 
-            summon.addEffect(new SpeedEffect(this, "ConvocationSpeed", player, duration, speedAmplifier));
+            summon.addEffect(new ConvocationSpeedEffect(this, player, duration, speedAmplifier));
             summon.tryHeal(hero, this, heal);
 
             world.playSound(summon.getEntity().getLocation(), Sound.ENTITY_WITHER_HURT, 0.5F, 2.0F);
@@ -113,5 +115,11 @@ public class SkillConvocation extends ActiveSkill {
         }
 
         return SkillResult.NORMAL;
+    }
+
+    public static class ConvocationSpeedEffect extends SpeedEffect {
+        public ConvocationSpeedEffect(Skill skill, Player applier, long duration, int amplifier) {
+            super(skill, speedEffectName, applier, duration, amplifier);
+        }
     }
 }

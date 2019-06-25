@@ -23,6 +23,7 @@ import java.util.Map.Entry;
 
 public class SkillFade extends ActiveSkill {
     private static String effectName = "Faded";
+    private static int VANILLA_DARKNESS_LEVEL_START = 8;
 
     private String applyText;
     private String expireText;
@@ -31,7 +32,8 @@ public class SkillFade extends ActiveSkill {
 
     public SkillFade(Heroes plugin) {
         super(plugin, "Fade");
-        setDescription("You fade into the shadows, hiding you from view. Any unstealthy movements will cause you to reappear. $1");
+        setDescription("You fade into the shadows, hiding you from view. Any unstealthy movements will cause you to reappear. " +
+                "This ability lasts much longer if used in the darkness. $1");
         setNotes("Note: Taking damage, moving, or causing damage removes the effect");
         setUsage("/skill fade");
         setIdentifiers("skill fade");
@@ -65,6 +67,7 @@ public class SkillFade extends ActiveSkill {
         config.set("fail-text", ChatComponents.GENERIC_SKILL + "It's too bright to fade");
         config.set("detection-range", 0.5);
         config.set("max-light-level", -1);
+        config.set("extra-duration-per-darkness-level", 2500);
         config.set("max-move-distance", 1.5);
         return config;
     }
@@ -83,9 +86,10 @@ public class SkillFade extends ActiveSkill {
         Player player = hero.getPlayer();
         Location loc = player.getLocation();
 
+        int lightLevel = loc.getBlock().getLightLevel();
         double requiredLightLevel = SkillConfigManager.getUseSetting(hero, this, "max-light-level", 8, false);
         if (requiredLightLevel > -1) {
-            if (loc.getBlock().getLightLevel() > requiredLightLevel) {
+            if (lightLevel > requiredLightLevel) {
                 player.sendMessage(failText);
                 return SkillResult.FAIL;
             }
@@ -93,10 +97,14 @@ public class SkillFade extends ActiveSkill {
 
         long duration = SkillConfigManager.getScaledUseSettingInt(hero, this, SkillSetting.DURATION, false);
 
-        player.getWorld().playEffect(loc, org.bukkit.Effect.EXTINGUISH, 0, 10);
-        hero.addEffect(new FadeEffect(this, player, duration));
+        double lightLevelDurationIncrease = SkillConfigManager.getUseSetting(hero, this, "extra-duration-per-darkness-level", 2500, false);
+        duration+= lightLevelDurationIncrease * VANILLA_DARKNESS_LEVEL_START - lightLevel;
 
+        hero.addEffect(new FadeEffect(this, player, duration));
         moveChecker.addHero(hero);
+
+        player.getWorld().playEffect(loc, org.bukkit.Effect.EXTINGUISH, 0, 10);
+
         return SkillResult.NORMAL;
     }
 
@@ -138,9 +146,10 @@ public class SkillFade extends ActiveSkill {
                     continue;
                 }
 
+                int lightLevel = newLoc.getBlock().getLightLevel();
                 int requiredLightLevel = SkillConfigManager.getUseSetting(hero, skill, "max-light-level", 8, false);
                 if (requiredLightLevel > -1) {
-                    if (newLoc.getBlock().getLightLevel() > requiredLightLevel) {
+                    if (lightLevel > requiredLightLevel) {
                         hero.removeEffect(hero.getEffect(effectName));
                         heroes.remove();
                         continue;

@@ -42,7 +42,7 @@ public class SkillHealingSpores extends ActiveSkill {
         super(plugin, "HealingSpores");
         setDescription("Summon $1 healing spores that will float and remain inactive around the caster for up to $2 seconds. " +
                 "If you perform a melee attack with your staff it will unleash a single stored spore. " +
-                "Spore pass through enemies and will heal $3 health upon hitting a friendly target.");
+                "Spores pass through enemies and will heal $3 health upon hitting a friendly target.");
         setUsage("/skill healingspores");
         setIdentifiers("skill healingspores");
         setArgumentRange(0, 0);
@@ -61,7 +61,6 @@ public class SkillHealingSpores extends ActiveSkill {
                 .replace("$1", numProjectiles + "")
                 .replace("$2", Util.decFormat.format(duration / 1000.0))
                 .replace("$3", Util.decFormat.format(heal));
-
     }
 
     @Override

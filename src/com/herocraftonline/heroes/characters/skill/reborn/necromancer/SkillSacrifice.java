@@ -5,6 +5,8 @@ import com.herocraftonline.heroes.api.SkillResult;
 import com.herocraftonline.heroes.api.events.HeroRegainHealthEvent;
 import com.herocraftonline.heroes.characters.Hero;
 import com.herocraftonline.heroes.characters.Monster;
+import com.herocraftonline.heroes.characters.effects.EffectType;
+import com.herocraftonline.heroes.characters.effects.ExpirableEffect;
 import com.herocraftonline.heroes.characters.skill.ActiveSkill;
 import com.herocraftonline.heroes.characters.skill.SkillConfigManager;
 import com.herocraftonline.heroes.characters.skill.SkillType;
@@ -18,6 +20,8 @@ import org.bukkit.World;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
 
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 public class SkillSacrifice extends ActiveSkill {
@@ -25,7 +29,8 @@ public class SkillSacrifice extends ActiveSkill {
     public SkillSacrifice(Heroes plugin) {
         super(plugin, "Sacrifice");
         setDescription("You sacrifice all of your currently summoned minions to recover your strength. " +
-                "You will restore $1 health and $2 mana per each minion sacrificed.");
+                "You will restore $1 health and $2 mana per each minion sacrificed. " +
+                "All of their beneficial effects will be transferred to you as well.");
         setUsage("/skill sacrifice");
         setIdentifiers("skill sacrifice");
         setArgumentRange(0, 0);
@@ -69,6 +74,10 @@ public class SkillSacrifice extends ActiveSkill {
         double manaToRestore = 0;
         double healthToRestore = 0.0;
 
+        SkillConvocation.ConvocationSpeedEffect speedEffect = null;
+
+        HashMap<String, ExpirableEffect> beneficialEffects = new HashMap<String, ExpirableEffect>();
+
         for (Monster summon : hero.getSummons()) {
             manaToRestore += manaGainPer;
             healthToRestore += healthGainPer;
@@ -83,14 +92,33 @@ public class SkillSacrifice extends ActiveSkill {
 //                player.getWorld().spawnParticle(Particle.WITCH_MAGIC, particleLocation, 1, 0, 0.1, 0, 0, null, true);
                 }
             }
+
+            for (com.herocraftonline.heroes.characters.effects.Effect effect : summon.getEffects()) {
+                if (!(effect instanceof ExpirableEffect)) {
+                    continue;
+                }
+
+                if (effect.isType(EffectType.BENEFICIAL) && !beneficialEffects.containsKey(effect.getName())) {
+                    beneficialEffects.put(effect.getName(), (ExpirableEffect) effect);
+                }
+            }
+
+            if (summon.hasEffect(SkillConvocation.speedEffectName)) {
+                speedEffect = (SkillConvocation.ConvocationSpeedEffect) summon.getEffect(SkillConvocation.speedEffectName);
+            }
         }
 
         hero.clearSummons();
 
         hero.tryHeal(null, this, healthToRestore);
         hero.tryRestoreMana(hero, this, (int) manaToRestore);
-        if (hero.isVerboseMana())
+        if (hero.isVerboseMana()) {
             player.sendMessage(ChatComponents.Bars.mana(hero.getMana(), hero.getMaxMana(), true));
+        }
+
+        if (speedEffect != null) {
+            hero.addEffect(speedEffect);
+        }
 
         return SkillResult.NORMAL;
     }
