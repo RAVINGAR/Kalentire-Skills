@@ -5,7 +5,6 @@ import com.herocraftonline.heroes.api.SkillResult;
 import com.herocraftonline.heroes.characters.Hero;
 import com.herocraftonline.heroes.characters.effects.Effect;
 import com.herocraftonline.heroes.characters.skill.*;
-import com.herocraftonline.heroes.chat.ChatComponents;
 import org.bukkit.Location;
 import org.bukkit.Sound;
 import org.bukkit.World;
@@ -103,40 +102,34 @@ public class SkillHellgate extends ActiveSkill {
             double rangeSquared = Math.pow(SkillConfigManager.getScaledUseSettingDouble(hero, this, SkillSetting.DURATION, false), 2);
             for (Hero targetHero : hero.getParty().getMembers()) {
                 Player target = targetHero.getPlayer();
+                if (target.equals(player)) {
+                    continue;
+                }
                 if (castLocation.getWorld() != target.getWorld()) {
                     target.sendMessage("You're in a different world than the caster!");
                     player.sendMessage("The party member, " + target.getName() + ", is in a different world than you are!");
-                    continue;
-                }
-
-                if (castLocation.distanceSquared(target.getLocation()) > rangeSquared) {
-                    continue;
-                }
-
-                if (targetHero.isInCombat()) {
-                    if (target.equals(player)) {
-                        player.sendMessage("    " + ChatComponents.GENERIC_SKILL + "Cannot teleport since you are in combat!");
-                    } else {
-                        player.sendMessage("    " + ChatComponents.GENERIC_SKILL + "Cannot teleport " + targetHero.getName() + " - they are in combat!");
-                        target.sendMessage("    " + ChatComponents.GENERIC_SKILL + player.getName() + " attempted to teleport you, but were are in combat!");
-                    }
-                    continue;
-                }
-
-                if (targetHero.hasEffect("Hellgate")) {
-                    HellgateEffect hEffect = (HellgateEffect) targetHero.getEffect("Hellgate");
-                    target.teleport(hEffect.getLocation());
-                    targetHero.removeEffect(hEffect);
                 } else {
-                    target.teleport(teleportLocation);
-                    // If we teleported to a hell-world lets add the effect
-                    if (world.getEnvironment() == Environment.NETHER) {
-                        targetHero.addEffect(new HellgateEffect(this, target.getLocation()));
+                    if (castLocation.distanceSquared(target.getLocation()) > rangeSquared) {
+                        continue;
+                    }
+
+                    if (targetHero.hasEffect("Hellgate")) {
+                        HellgateEffect hEffect = (HellgateEffect) targetHero.getEffect("Hellgate");
+                        target.teleport(hEffect.getLocation());
+                        targetHero.removeEffect(hEffect);
+                    } else {
+                        target.teleport(teleportLocation);
+                        // If we teleported to a hell-world lets add the effect
+                        if (world.getEnvironment() == Environment.NETHER) {
+                            targetHero.addEffect(new HellgateEffect(this, target.getLocation()));
+                        }
                     }
                 }
-
             }
         }
+
+        player.teleport(teleportLocation);
+
         hero.getPlayer().getWorld().playSound(hero.getPlayer().getLocation(), Sound.BLOCK_PORTAL_TRAVEL, 0.5F, 1.0F);
         broadcastExecuteText(hero);
         return SkillResult.NORMAL;
