@@ -44,6 +44,7 @@ public class SkillDisenchant extends ActiveSkill {
             Enchantment ench = next.getKey();
             //Skip over sharpness/prot/punch because  that is durability dependent, not enchantment dependent
             hand.removeEnchantment(ench);
+
             //Handle breaking
             if (randgen.nextInt(100) < Math.pow(hero.getHeroLevel(hero.getSecondClass()), -1) * 100) {
                 hero.getPlayer().sendMessage(ChatColor.GRAY + "Oh no your item broke!");
