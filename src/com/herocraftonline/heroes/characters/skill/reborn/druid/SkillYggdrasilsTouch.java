@@ -115,9 +115,7 @@ public class SkillYggdrasilsTouch extends ActiveSkill {
             Player player = hero.getPlayer();
             // get everyone in the player's party
             final Location heroLoc = player.getLocation();
-            if (hero.getParty() == null) {
-                return;
-            }
+
 
             for (final Hero partyHero : hero.getParty().getMembers()) {
                 if (!player.getWorld().equals(partyHero.getPlayer().getWorld()))
@@ -149,7 +147,7 @@ public class SkillYggdrasilsTouch extends ActiveSkill {
             DynamicLocation dynamicLoc = new DynamicLocation(target);
             visualEffect.setDynamicOrigin(dynamicLoc);
             visualEffect.disappearWithOriginEntity = true;
-            visualEffect.color = Color.fromRGB(145 ,178, 71);
+            visualEffect.color = Color.fromRGB(208 ,255, 104);
             visualEffect.particle = Particle.REDSTONE;
             visualEffect.period = displayPeriod;
             visualEffect.particleSize = 15;
