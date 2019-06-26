@@ -35,10 +35,6 @@ public class SkillDisenchant extends ActiveSkill {
     @Override
     public SkillResult use(Hero hero, String[] args) {
         ItemStack hand = hero.getPlayer().getItemInHand();
-        if (!(Util.isArmor(hand.getType()) || Util.isWeapon(hand.getType()))) {
-            hero.getPlayer().sendMessage(ChatColor.GRAY + "This is not a disenchantable item!");
-            return SkillResult.INVALID_TARGET_NO_MSG;
-        }
         Random randgen = new Random();
         //Get all enchants currently on an item
         Iterator<Entry<Enchantment, Integer>> enchants = hand.getEnchantments().entrySet().iterator();
@@ -47,9 +43,6 @@ public class SkillDisenchant extends ActiveSkill {
             Entry<Enchantment, Integer> next = enchants.next();
             Enchantment ench = next.getKey();
             //Skip over sharpness/prot/punch because  that is durability dependent, not enchantment dependent
-            if (ench.equals(Enchantment.FIRE_ASPECT) || ench.equals(Enchantment.ARROW_FIRE)) {
-                continue;
-            }
             hand.removeEnchantment(ench);
             //Handle breaking
             if (randgen.nextInt(100) < Math.pow(hero.getHeroLevel(hero.getSecondClass()), -1) * 100) {
