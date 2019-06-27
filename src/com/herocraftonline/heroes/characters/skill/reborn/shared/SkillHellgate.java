@@ -52,19 +52,18 @@ public class SkillHellgate extends ActiveSkill {
         Location teleportLocation = null;
         Location castLocation = player.getLocation().clone();
 
-        if (hero.hasEffect("Hellgate")) {
-            teleportLocation = ((HellgateEffect) hero.getEffect("Hellgate")).getLocation();
-            player.teleport(teleportLocation);
-            world = teleportLocation.getWorld();
-            hero.removeEffect(hero.getEffect("Hellgate"));
-        } else if (player.getWorld().getEnvironment() == Environment.NETHER) {
-            // If the player doesn't have the Hellgate effect and is on nether - return them to spawn on the default
-            // world
+        // if in nether, set teleport target to spawn
+        if (player.getWorld().getEnvironment() == Environment.NETHER) {
             world = plugin.getServer().getWorld(defaultWorld);
             if (world == null) {
                 world = plugin.getServer().getWorlds().get(0);
             }
-            player.teleport(world.getSpawnLocation());
+            if (hero.hasEffect("Hellgate")) {
+                teleportLocation = ((HellgateEffect) hero.getEffect("Hellgate")).getLocation();
+                hero.removeEffect(hero.getEffect("Hellgate"));
+            } else {
+                teleportLocation = world.getSpawnLocation();
+            }
         } else {
             // We are on the main world so lets setup a teleport to nether!
             world = plugin.getServer().getWorld(hellWorld);
@@ -81,7 +80,6 @@ public class SkillHellgate extends ActiveSkill {
                 return SkillResult.FAIL;
             }
 
-            hero.addEffect(new HellgateEffect(this, player.getLocation()));
 
             boolean absolute = SkillConfigManager.getUseSetting(hero, this, "teleport-absolute", false);
             if (absolute) {
@@ -99,8 +97,10 @@ public class SkillHellgate extends ActiveSkill {
         }
 
         if (hero.hasParty()) {
+            Location heroLoc = hero.getPlayer().getLocation();
             double rangeSquared = Math.pow(SkillConfigManager.getScaledUseSettingDouble(hero, this, SkillSetting.DURATION, false), 2);
             for (Hero targetHero : hero.getParty().getMembers()) {
+                targetHero.addEffect(new HellgateEffect(this, targetHero.getPlayer().getLocation()));
                 Player target = targetHero.getPlayer();
                 if (target.equals(player)) {
                     continue;
@@ -109,21 +109,10 @@ public class SkillHellgate extends ActiveSkill {
                     target.sendMessage("You're in a different world than the caster!");
                     player.sendMessage("The party member, " + target.getName() + ", is in a different world than you are!");
                 } else {
-                    if (castLocation.distanceSquared(target.getLocation()) > rangeSquared) {
+                    if (target.getLocation().distanceSquared(heroLoc) > rangeSquared) {
                         continue;
                     }
-
-                    if (targetHero.hasEffect("Hellgate")) {
-                        HellgateEffect hEffect = (HellgateEffect) targetHero.getEffect("Hellgate");
-                        target.teleport(hEffect.getLocation());
-                        targetHero.removeEffect(hEffect);
-                    } else {
-                        target.teleport(teleportLocation);
-                        // If we teleported to a hell-world lets add the effect
-                        if (world.getEnvironment() == Environment.NETHER) {
-                            targetHero.addEffect(new HellgateEffect(this, target.getLocation()));
-                        }
-                    }
+                    target.teleport(teleportLocation);
                 }
             }
         }
