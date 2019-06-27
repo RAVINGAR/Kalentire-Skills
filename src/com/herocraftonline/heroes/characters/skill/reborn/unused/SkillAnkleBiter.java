@@ -46,9 +46,7 @@ public class SkillAnkleBiter extends ActiveSkill {
         setArgumentRange(0, 0);
         setTypes(SkillType.SUMMONING, SkillType.ABILITY_PROPERTY_DARK, SkillType.SILENCEABLE);
 
-        if (Bukkit.getServer().getPluginManager().getPlugin("LibsDisguises") != null) {
-            disguiseApiLoaded = true;
-        }
+        disguiseApiLoaded = Bukkit.getServer().getPluginManager().isPluginEnabled("LibsDisguises");
         Bukkit.getServer().getPluginManager().registerEvents(new SkillListener(this), plugin);
     }
 

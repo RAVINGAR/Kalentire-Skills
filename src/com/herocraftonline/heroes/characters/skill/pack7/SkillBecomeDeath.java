@@ -42,9 +42,7 @@ public class SkillBecomeDeath extends ActiveSkill {
         setTypes(SkillType.SILENCEABLE, SkillType.BUFFING, SkillType.ABILITY_PROPERTY_DARK, SkillType.FORM_ALTERING);
         Bukkit.getServer().getPluginManager().registerEvents(new SkillEntityListener(), plugin);
 
-        if (Bukkit.getServer().getPluginManager().getPlugin("LibsDisguises") != null) {
-            disguiseApiLoaded = true;
-        }
+        disguiseApiLoaded = Bukkit.getServer().getPluginManager().isPluginEnabled("LibsDisguises");
     }
 
     @Override

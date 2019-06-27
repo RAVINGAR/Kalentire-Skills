@@ -74,12 +74,12 @@ public class SkillHellgate extends ActiveSkill {
                     }
                 }
             }
+
             // If world is still null then there is no world to teleport to
             if (world == null) {
                 player.sendMessage("No world to open a Hellgate into!");
                 return SkillResult.FAIL;
             }
-
 
             boolean absolute = SkillConfigManager.getUseSetting(hero, this, "teleport-absolute", false);
             if (absolute) {
@@ -98,9 +98,8 @@ public class SkillHellgate extends ActiveSkill {
 
         if (hero.hasParty()) {
             Location heroLoc = hero.getPlayer().getLocation();
-            double rangeSquared = Math.pow(SkillConfigManager.getScaledUseSettingDouble(hero, this, SkillSetting.DURATION, false), 2);
+            double rangeSquared = Math.pow(SkillConfigManager.getUseSettingDouble(hero, this, SkillSetting.RADIUS, false), 2);
             for (Hero targetHero : hero.getParty().getMembers()) {
-                targetHero.addEffect(new HellgateEffect(this, targetHero.getPlayer().getLocation()));
                 Player target = targetHero.getPlayer();
                 if (target.equals(player)) {
                     continue;
@@ -117,10 +116,13 @@ public class SkillHellgate extends ActiveSkill {
             }
         }
 
-        player.teleport(teleportLocation);
-
-        hero.getPlayer().getWorld().playSound(hero.getPlayer().getLocation(), Sound.BLOCK_PORTAL_TRAVEL, 0.5F, 1.0F);
         broadcastExecuteText(hero);
+
+        hero.addEffect(new HellgateEffect(this, player.getLocation()));
+        hero.getPlayer().getWorld().playSound(hero.getPlayer().getLocation(), Sound.BLOCK_PORTAL_TRAVEL, 0.5F, 1.0F);
+        player.teleport(teleportLocation);
+        hero.getPlayer().getWorld().playSound(hero.getPlayer().getLocation(), Sound.BLOCK_PORTAL_TRAVEL, 0.5F, 1.0F);
+
         return SkillResult.NORMAL;
     }
 

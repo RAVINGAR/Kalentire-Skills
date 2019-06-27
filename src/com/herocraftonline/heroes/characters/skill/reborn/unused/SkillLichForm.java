@@ -49,9 +49,7 @@ public class SkillLichForm extends ActiveSkill {
         setTypes(SkillType.SILENCEABLE, SkillType.BUFFING, SkillType.ABILITY_PROPERTY_DARK, SkillType.FORM_ALTERING);
 
         setToggleableEffectName(toggleableEffectName);
-        if (Bukkit.getServer().getPluginManager().getPlugin("LibsDisguises") != null) {
-            disguiseApiLoaded = true;
-        }
+        disguiseApiLoaded = Bukkit.getServer().getPluginManager().isPluginEnabled("LibsDisguises");
     }
 
     @Override

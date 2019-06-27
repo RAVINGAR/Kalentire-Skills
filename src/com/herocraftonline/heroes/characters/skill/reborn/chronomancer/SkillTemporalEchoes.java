@@ -32,7 +32,7 @@ import java.util.logging.Level;
 public class SkillTemporalEchoes extends ActiveSkill {
 
     private final String minionEffectName = "TemporalEchoe";
-    private boolean disguiseApiLoaded;
+    private boolean disguiseApiLoaded = false;
 
     public SkillTemporalEchoes(Heroes plugin) {
         super(plugin, "TemporalEchoes");
@@ -44,9 +44,7 @@ public class SkillTemporalEchoes extends ActiveSkill {
         setIdentifiers("skill temporalechoes");
         setTypes(SkillType.SUMMONING, SkillType.ABILITY_PROPERTY_TEMPORAL, SkillType.SILENCEABLE);
 
-        if (Bukkit.getServer().getPluginManager().getPlugin("LibsDisguises") != null) {
-            disguiseApiLoaded = true;
-        }
+        disguiseApiLoaded = Bukkit.getServer().getPluginManager().isPluginEnabled("LibsDisguises");
     }
 
     public String getDescription(Hero hero) {
@@ -94,7 +92,10 @@ public class SkillTemporalEchoes extends ActiveSkill {
 
             final Monster monster = plugin.getCharacterManager().getMonster(minion);
             monster.setExperience(0);
-            monster.addEffect(new TemporalEchoesMinionEffect(this, hero, duration));
+            if (disguiseApiLoaded)
+                monster.addEffect(new TemporalEchoesMinionWithDisguiseEffect(this, hero, duration));
+            else
+                monster.addEffect(new TemporalEchoesMinionEffect(this, hero, duration));
 
             Vector launchVector = player.getLocation().getDirection().normalize()
                     .add(new Vector(ThreadLocalRandom.current().nextDouble(randomMin, randomMax), 0, ThreadLocalRandom.current().nextDouble(randomMin, randomMax)))
@@ -132,43 +133,52 @@ public class SkillTemporalEchoes extends ActiveSkill {
             minion.setCustomName(applier.getName());
             minion.setCustomNameVisible(true);
             monster.setDamage(hitDmg);
+        }
+    }
 
-            if (disguiseApiLoaded) {
-                try {
-                    if (!DisguiseAPI.isDisguised(minion)) {
-                        DisguiseAPI.undisguiseToAll(minion);
-                    }
+    private class TemporalEchoesMinionWithDisguiseEffect extends TemporalEchoesMinionEffect {
+        TemporalEchoesMinionWithDisguiseEffect(Skill skill, Hero summoner, long duration) {
+            super(skill, summoner, duration);
+        }
 
-                    PlayerDisguise disguise = new PlayerDisguise(applier);
-                    disguise.setKeepDisguiseOnPlayerDeath(true);
-                    disguise.setEntity(minion);
-                    disguise.setShowName(true);
-                    disguise.setModifyBoundingBox(false);
-                    disguise.setReplaceSounds(true);
-                    disguise.setDisplayedInTab(false);
-                    LivingWatcher watcher = disguise.getWatcher();
+        @Override
+        public void applyToMonster(Monster monster) {
+            LivingEntity minion = monster.getEntity();
 
-                    PlayerInventory inventory = applier.getInventory();
-                    watcher.setArmor(inventory.getArmorContents().clone());
-                    watcher.setItemInMainHand(inventory.getItemInMainHand().clone());
-                    watcher.setItemInOffHand(inventory.getItemInOffHand().clone());
-                    disguise.startDisguise();
-                } catch (Exception ex) {
-                    Heroes.log(Level.WARNING, "We got that LibsDisguises error again. Not an actual problem, but yeah.");
+            try {
+                if (!DisguiseAPI.isDisguised(minion)) {
+                    DisguiseAPI.undisguiseToAll(minion);
                 }
+
+                PlayerDisguise disguise = new PlayerDisguise(applier);
+                disguise.setKeepDisguiseOnPlayerDeath(true);
+                disguise.setEntity(minion);
+                disguise.setShowName(true);
+                disguise.setModifyBoundingBox(false);
+                disguise.setReplaceSounds(true);
+                disguise.setDisplayedInTab(false);
+                LivingWatcher watcher = disguise.getWatcher();
+
+                PlayerInventory inventory = applier.getInventory();
+                watcher.setArmor(inventory.getArmorContents().clone());
+                watcher.setItemInMainHand(inventory.getItemInMainHand().clone());
+                watcher.setItemInOffHand(inventory.getItemInOffHand().clone());
+                disguise.startDisguise();
+            } catch (Exception ex) {
+                Heroes.log(Level.WARNING, "We got that LibsDisguises error again. Not an actual problem, but yeah.");
             }
+
+            super.applyToMonster(monster);
         }
 
         @Override
         public void removeFromMonster(Monster monster) {
             LivingEntity minion = monster.getEntity();
 
-            if (disguiseApiLoaded) {
-                if (DisguiseAPI.isDisguised(minion)) {
-                    Disguise disguise = DisguiseAPI.getDisguise(minion);
-                    disguise.stopDisguise();
-                    disguise.removeDisguise();
-                }
+            if (DisguiseAPI.isDisguised(minion)) {
+                Disguise disguise = DisguiseAPI.getDisguise(minion);
+                disguise.stopDisguise();
+                disguise.removeDisguise();
             }
 
             // Execute this last since it will cleanup the minion

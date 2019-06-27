@@ -4,7 +4,6 @@ import com.herocraftonline.heroes.Heroes;
 import com.herocraftonline.heroes.api.SkillResult;
 import com.herocraftonline.heroes.characters.Hero;
 import com.herocraftonline.heroes.characters.Monster;
-import com.herocraftonline.heroes.characters.effects.EffectType;
 import com.herocraftonline.heroes.characters.effects.common.SummonEffect;
 import com.herocraftonline.heroes.characters.skill.ActiveSkill;
 import com.herocraftonline.heroes.characters.skill.Skill;
@@ -15,16 +14,13 @@ import me.libraryaddict.disguise.DisguiseAPI;
 import me.libraryaddict.disguise.disguisetypes.Disguise;
 import me.libraryaddict.disguise.disguisetypes.DisguiseType;
 import me.libraryaddict.disguise.disguisetypes.MobDisguise;
-import me.libraryaddict.disguise.disguisetypes.watchers.LivingWatcher;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
-import org.bukkit.Material;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.entity.Wolf;
-import org.bukkit.inventory.ItemStack;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 import org.bukkit.util.Vector;
@@ -54,9 +50,7 @@ public class SkillStampede extends ActiveSkill {
         setIdentifiers("skill stampede");
         setTypes(SkillType.SUMMONING, SkillType.ABILITY_PROPERTY_DARK, SkillType.SILENCEABLE);
 
-        if (Bukkit.getServer().getPluginManager().getPlugin("LibsDisguises") != null) {
-            disguiseApiLoaded = true;
-        }
+        disguiseApiLoaded = Bukkit.getServer().getPluginManager().isPluginEnabled("LibsDisguises");
     }
 
     public String getDescription(Hero hero) {
@@ -104,7 +98,10 @@ public class SkillStampede extends ActiveSkill {
 
             final Monster monster = plugin.getCharacterManager().getMonster(minion);
             monster.setExperience(0);
-            monster.addEffect(new StampedeEffect(this, hero, duration));
+            if (disguiseApiLoaded)
+                monster.addEffect(new StampedeWithDisguiseEffect(this, hero, duration));
+            else
+                monster.addEffect(new StampedeEffect(this, hero, duration));
 
             Vector launchVector = player.getLocation().getDirection().normalize()
                     .add(new Vector(ThreadLocalRandom.current().nextDouble(randomMin, randomMax), 0, ThreadLocalRandom.current().nextDouble(randomMin, randomMax)))
@@ -145,6 +142,17 @@ public class SkillStampede extends ActiveSkill {
             minion.setCustomName(ChatColor.DARK_GREEN + applier.getName() + "'s Minion");
             minion.setCustomNameVisible(true);
             monster.setDamage(hitDmg);
+        }
+    }
+
+    public class StampedeWithDisguiseEffect extends StampedeEffect {
+        public StampedeWithDisguiseEffect(Skill skill, Hero summoner, long duration) {
+            super(skill, summoner, duration);
+        }
+
+        @Override
+        public void applyToMonster(Monster monster) {
+            LivingEntity minion = monster.getEntity();
 
             if (disguiseApiLoaded) {
                 if (!DisguiseAPI.isDisguised(minion)) {
@@ -167,6 +175,8 @@ public class SkillStampede extends ActiveSkill {
                 disguise.setReplaceSounds(true);
                 disguise.startDisguise();
             }
+
+            super.applyToMonster(monster);
         }
 
         @Override
