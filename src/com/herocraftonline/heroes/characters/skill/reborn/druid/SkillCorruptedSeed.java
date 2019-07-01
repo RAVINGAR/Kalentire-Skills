@@ -33,7 +33,7 @@ public class SkillCorruptedSeed extends TargettedSkill {
 
     public SkillCorruptedSeed(Heroes plugin) {
         super(plugin, "CorruptedSeed");
-        setDescription("Plant a corrupted seed in yourself or an ally, recasting this ability will explode the seed silencing nearby enemies. " +
+        setDescription("Plant a corrupted seed in yourself or an ally damaging the player who carries the seed for $2 for the duration, recasting this ability will explode the seed silencing nearby enemies for $1 seconds. " +
                 "While the user is holding a seed they will take periodic damage");
         setUsage("/skill corruptedseed");
         setIdentifiers("skill corruptedseed");

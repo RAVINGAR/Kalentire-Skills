@@ -26,7 +26,7 @@ public class SkillGiftOfEir extends ActiveSkill {
 
     public SkillGiftOfEir(Heroes plugin) {
         super(plugin, "GiftOfEir");
-        setDescription("You become immobilized and invulnerable for $1 seconds. Donate $2% of your mana shared to your party members around $3 radius ");
+        setDescription("You become immobilized, invulnerable and silenced for $1 seconds. Donate $2% of your mana shared to your party members around $3 radius ");
         setUsage("/skill giftofeir");
         setIdentifiers("skill giftofeir");
         setArgumentRange(0, 0);
