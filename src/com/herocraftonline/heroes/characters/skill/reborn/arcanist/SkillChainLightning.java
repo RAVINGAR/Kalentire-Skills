@@ -2,7 +2,6 @@ package com.herocraftonline.heroes.characters.skill.reborn.arcanist;
 
 import com.herocraftonline.heroes.Heroes;
 import com.herocraftonline.heroes.api.SkillResult;
-import com.herocraftonline.heroes.attributes.AttributeType;
 import com.herocraftonline.heroes.characters.Hero;
 import com.herocraftonline.heroes.characters.effects.PeriodicEffect;
 import com.herocraftonline.heroes.characters.skill.*;
@@ -90,11 +89,12 @@ public class SkillChainLightning extends TargettedSkill {
         private int maxTargets = 0;
         private int maxChainDistance;
         private double damage;
+        private double damageReductionPercentPerJump;
         private float lightningVolume;
 
         private LivingEntity lastTarget = null;
         private LivingEntity initialTarget;
-        private int hitCount = 0;
+        private int jumpCount = 0;
 
         public ChainLightningEffect(Skill skill, Player player, long period, LivingEntity target) {
             super(skill, "ChainLightningDelayedCast", player, period, null, null);
@@ -112,6 +112,7 @@ public class SkillChainLightning extends TargettedSkill {
 
             this.maxTargets = SkillConfigManager.getUseSetting(hero, skill, "max-targets", 5, false);
             this.maxChainDistance = SkillConfigManager.getUseSetting(hero, skill, "max-chain-distance", 5, false);
+            this.damageReductionPercentPerJump = SkillConfigManager.getUseSetting(hero, skill, "damage-reduction-percent-per-jump", 0.1, false);
             this.lightningVolume = (float) SkillConfigManager.getUseSetting(hero, skill, "lightning-volume", 0.7F, false);
 
             addSpellTarget(initialTarget, hero);
@@ -119,6 +120,7 @@ public class SkillChainLightning extends TargettedSkill {
 
             playVisualEffects(applier, initialTarget);
 
+            jumpCount++;
             hitTargets.add(initialTarget);
             lastTarget = initialTarget;
         }
@@ -175,7 +177,8 @@ public class SkillChainLightning extends TargettedSkill {
         public void tickHero(Hero hero) {
             super.tickHero(hero);
 
-            if (lastTarget == null || maxTargets == 0 || hitCount >= maxTargets) {
+            double damageThisJump = damage - (damage * (damageReductionPercentPerJump * jumpCount));
+            if (lastTarget == null || maxTargets == 0 || jumpCount >= maxTargets || damageThisJump <= 0.0) {
                 hero.removeEffect(this);
                 return;
             }
@@ -192,12 +195,12 @@ public class SkillChainLightning extends TargettedSkill {
 
                 hitTargets.add(newTarget);
                 addSpellTarget(newTarget, hero);
-                damageEntity(newTarget, applier, damage, DamageCause.MAGIC);
+                damageEntity(newTarget, applier, damageThisJump, DamageCause.MAGIC);
 
                 playVisualEffects(lastTarget, newTarget);
 
                 lastTarget = newTarget;
-                hitCount++;
+                jumpCount++;
                 hitTarget = true;
                 break;
             }
