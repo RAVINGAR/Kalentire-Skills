@@ -41,7 +41,7 @@ public class SkillGreatFireball extends ActiveSkill {
         setUsage("/skill greatfireball");
         setIdentifiers("skill greatfireball");
         setArgumentRange(0, 0);
-        setTypes(SkillType.ABILITY_PROPERTY_FIRE, SkillType.SILENCEABLE, SkillType.DAMAGING, SkillType.AGGRESSIVE);
+        setTypes(SkillType.ABILITY_PROPERTY_FIRE, SkillType.AREA_OF_EFFECT, SkillType.SILENCEABLE, SkillType.DAMAGING, SkillType.AGGRESSIVE);
     }
 
     @Override
