@@ -10,8 +10,8 @@ import com.herocraftonline.heroes.characters.effects.common.ManaRegenPercentIncr
 import com.herocraftonline.heroes.characters.effects.common.StaminaRegenPercentDecreaseEffect;
 import com.herocraftonline.heroes.characters.effects.common.StaminaRegenPercentIncreaseEffect;
 import com.herocraftonline.heroes.characters.skill.*;
-import com.herocraftonline.heroes.characters.skill.tools.BasicDamageMissile;
 import com.herocraftonline.heroes.characters.skill.tools.BasicMissile;
+import com.herocraftonline.heroes.characters.skill.tools.MISSILE_TARGET_TYPE;
 import com.herocraftonline.heroes.chat.ChatComponents;
 import com.herocraftonline.heroes.util.Util;
 import de.slikey.effectlib.Effect;
@@ -49,7 +49,7 @@ public class SkillTimeBomb extends ActiveSkill {
         setUsage("/skill timebomb");
         setIdentifiers("skill timebomb");
         setArgumentRange(0, 0);
-        setTypes(SkillType.ABILITY_PROPERTY_TEMPORAL, SkillType.MULTI_GRESSIVE, SkillType.NO_SELF_TARGETTING, SkillType.SILENCEABLE);
+        setTypes(SkillType.ABILITY_PROPERTY_TEMPORAL, SkillType.AREA_OF_EFFECT, SkillType.MULTI_GRESSIVE, SkillType.NO_SELF_TARGETTING, SkillType.SILENCEABLE);
     }
 
     @Override
@@ -90,6 +90,7 @@ public class SkillTimeBomb extends ActiveSkill {
         config.set("stamina-percent-increase", 1.25);
         config.set("mana-percent-decrease", 0.75);
         config.set("stamina-percent-decrease", 0.75);
+        config.set("num-timeshift-stacks-applied", 2);
         return config;
     }
 
@@ -117,9 +118,10 @@ public class SkillTimeBomb extends ActiveSkill {
         private double explosionRadius;
 
         TimeBombMissile(Heroes plugin, Skill skill, Hero hero) {
-            super(plugin, skill, hero);
+            super(plugin, skill, hero, MISSILE_TARGET_TYPE.NEUTRAL);
 
             this.explosionRadius = SkillConfigManager.getUseSetting(hero, skill, "explosion-radius", 4.0, false);
+            this.visualEffect = null;
             this.visualEffect = new TimeBombVisualEffect(this.effectManager, getEntityDetectRadius(), 0);
         }
 
@@ -133,10 +135,6 @@ public class SkillTimeBomb extends ActiveSkill {
                 getWorld().playSound(getLocation(), Sound.ENTITY_GHAST_SHOOT, 0.5F, 0.5F);
             }
         }
-        protected void onFinalTick() {
-            effectManager.dispose();
-
-        }
 
         @Override
         protected void onBlockHit(Block block, Vector hitPoint, BlockFace hitFace, Vector hitForce) {
@@ -144,7 +142,7 @@ public class SkillTimeBomb extends ActiveSkill {
         }
 
         @Override
-        protected void onEntityHit(Entity entity, Vector hitOrigin, Vector hitForce) {
+        protected void onValidTargetFound(LivingEntity target, Vector hitOrigin, Vector hitForce) {
             performExplosion();
         }
 
@@ -154,6 +152,7 @@ public class SkillTimeBomb extends ActiveSkill {
             double manaPercentDecrease = SkillConfigManager.getUseSetting(hero, skill, "mana-percent-decrease", 0.75, false);
             double staminaPercentDecrease = SkillConfigManager.getUseSetting(hero, skill, "stamina-percent-decrease", 0.75, false);
             double duration = SkillConfigManager.getUseSetting(hero, skill, SkillSetting.DURATION, 5000, false);
+            int numStacks = SkillConfigManager.getUseSetting(hero, skill, "num-timeshift-stacks-applied", 2, false);
 
             getWorld().playSound(getLocation(), Sound.BLOCK_GLASS_BREAK, 1.0F, 0.8F);
 
@@ -166,15 +165,17 @@ public class SkillTimeBomb extends ActiveSkill {
                 SkillTimeShift timeShiftSkill = (SkillTimeShift) plugin.getSkillManager().getSkill(SkillTimeShift.skillName);
                 CharacterTemplate targetCt = plugin.getCharacterManager().getCharacter(target);
                 if (hero.isAlliedTo(target)) {
-                    if (hero.getPlayer() != target)
-                        timeShiftSkill.use(hero, target, new String[]{"NoBroadcast"});
+                    if (hero.getPlayer() != target) {
+                        timeShiftSkill.timeshiftTarget(hero, target, numStacks, false);
+                    }
                     targetCt.addEffect(new ManaIncreaseEffect(skill, player, (long) duration, manaPercentIncrease));
                     targetCt.addEffect(new StaminaIncreaseEffect(skill, player, (long) duration, staminaPercentIncrease));
                 } else {
                     if (!damageCheck(player, target))
                         continue;
 
-                    timeShiftSkill.use(hero, target, new String[]{"NoBroadcast"});
+                    timeShiftSkill.timeshiftTarget(hero, target, numStacks, false);
+
                     targetCt.addEffect(new ManaDecreaseEffect(skill, player, (long) duration, manaPercentDecrease));
                     targetCt.addEffect(new StaminaDecreaseEffect(skill, player, (long) duration, staminaPercentDecrease));
                 }
@@ -183,26 +184,14 @@ public class SkillTimeBomb extends ActiveSkill {
     }
 
     class ManaIncreaseEffect extends ManaRegenPercentIncreaseEffect {
-
         ManaIncreaseEffect(Skill skill, Player applier, long duration, double delta) {
             super(skill, applier, duration, delta, applyText, expireText);
             types.add(EffectType.TEMPORAL);
             types.add(EffectType.SILENT_ACTIONS);
         }
-
-        @Override
-        public void applyToHero(Hero hero) {
-            super.applyToHero(hero);
-        }
-
-        @Override
-        public void removeFromHero(Hero hero) {
-            super.removeFromHero(hero);
-        }
     }
 
     class ManaDecreaseEffect extends ManaRegenPercentDecreaseEffect {
-
         public ManaDecreaseEffect(Skill skill, Player applier, long duration, double delta) {
             super(skill, applier, duration, delta, badApplyText, badExpireText);
             types.add(EffectType.TEMPORAL);
@@ -221,38 +210,16 @@ public class SkillTimeBomb extends ActiveSkill {
     }
 
     class StaminaIncreaseEffect extends StaminaRegenPercentIncreaseEffect {
-
         public StaminaIncreaseEffect(Skill skill, Player applier, long duration, double delta) {
             super(skill, applier, duration, delta, null, null);
             types.add(EffectType.SILENT_ACTIONS);
         }
-
-        @Override
-        public void applyToHero(Hero hero) {
-            super.applyToHero(hero);
-        }
-
-        @Override
-        public void removeFromHero(Hero hero) {
-            super.removeFromHero(hero);
-        }
     }
 
     class StaminaDecreaseEffect extends StaminaRegenPercentDecreaseEffect {
-
         public StaminaDecreaseEffect(Skill skill, Player applier, long duration, double delta) {
             super(skill, applier, duration, delta, null, null);
             types.add(EffectType.SILENT_ACTIONS);
-        }
-
-        @Override
-        public void applyToHero(Hero hero) {
-            super.applyToHero(hero);
-        }
-
-        @Override
-        public void removeFromHero(Hero hero) {
-            super.removeFromHero(hero);
         }
     }
 
@@ -276,16 +243,17 @@ public class SkillTimeBomb extends ActiveSkill {
 
             this.period = 1;
             this.iterations = 500;
+            this.type = de.slikey.effectlib.EffectType.REPEATING;
 
             this.primaryParticle = Particle.REDSTONE;
-            this.primaryColor = Color.PURPLE;
+            this.primaryColor = Color.YELLOW;
             this.primaryRadius = radius;
             this.primaryRadiusDecrease = decreasePerTick / this.period;
             this.primaryYOffset = 0.0D;
             this.primaryParticleCount = 10;
 
             this.secondaryParticle = Particle.SPELL_MOB;
-            this.secondaryColor = Color.AQUA;
+            this.secondaryColor = Color.TEAL;
             this.secondaryRadius = secondaryRadiusMultiplier(radius);
             this.secondaryRadiusDecrease = secondaryRadiusMultiplier(decreasePerTick) / this.period;
             this.secondaryYOffset = 0.0D;
@@ -314,7 +282,7 @@ public class SkillTimeBomb extends ActiveSkill {
             Location location = this.getLocation();
             Vector vector = new Vector(0.0D, primaryYOffset, 0.0D);
             location.add(vector);
-            this.display(Particle.SMOKE_LARGE, location);
+            this.display(Particle.SPIT, location);
             location.subtract(vector);
         }
 

@@ -22,9 +22,9 @@ public class SkillRejuvenate extends TargettedSkill {
         super(plugin, "Rejuvenate");
         setDescription("You restore $1 health to the target over $2 second(s). You are only healed for $3 health from this effect.");
         setUsage("/skill rejuvenate <target>");
-        setArgumentRange(0, 1);
         setIdentifiers("skill rejuvenate");
-        setTypes(SkillType.ABILITY_PROPERTY_MAGICAL, SkillType.BUFFING, SkillType.HEALING, SkillType.SILENCEABLE, SkillType.NAME_TARGETTING_ENABLED);
+        setArgumentRange(0, 1);
+        setTypes(SkillType.ABILITY_PROPERTY_MAGICAL, SkillType.BUFFING, SkillType.HEALING, SkillType.SILENCEABLE, SkillType.DEFENSIVE_NAME_TARGETTING_ENABLED);
     }
 
     public String getDescription(Hero hero) {

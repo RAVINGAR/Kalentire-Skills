@@ -2,6 +2,7 @@ package com.herocraftonline.heroes.characters.skill.reborn.druid;
 
 import com.herocraftonline.heroes.Heroes;
 import com.herocraftonline.heroes.api.SkillResult;
+import com.herocraftonline.heroes.api.events.WeaponDamageEvent;
 import com.herocraftonline.heroes.characters.CharacterTemplate;
 import com.herocraftonline.heroes.characters.Hero;
 import com.herocraftonline.heroes.characters.effects.EffectType;
@@ -36,6 +37,7 @@ import java.util.logging.Level;
 
 public class SkillHealingSpores extends ActiveSkill {
     private static String sporeEffectName = "FloatingHealingSpores";
+    private static String cooldownEffectName = "HealingSpores-Cooldown";
     private static Color FEL_GREEN = Color.fromRGB(19, 255, 41);
 
     public SkillHealingSpores(Heroes plugin) {
@@ -71,6 +73,7 @@ public class SkillHealingSpores extends ActiveSkill {
         config.set(BasicMissile.PROJECTILE_VELOCITY_NODE, 65.0);
         config.set(BasicMissile.PROJECTILE_DURATION_TICKS_NODE, 30);
         config.set(BasicMissile.PROJECTILE_SIZE_NODE, 0.25);
+        config.set("spore-launch-cooldown", 250);
         config.set("projectile-visual-radius", 0.4);
         config.set("projectile-launch-delay-ticks", 15);
         config.set("num-projectiles", 5);
@@ -104,9 +107,29 @@ public class SkillHealingSpores extends ActiveSkill {
             Hero hero = plugin.getCharacterManager().getHero(player);
             if (!hero.hasEffect(sporeEffectName))
                 return;
+            if (hero.hasEffect(cooldownEffectName))
+                return;
 
             HealingSporesEffect effect = (HealingSporesEffect) hero.getEffect(sporeEffectName);
             effect.launchSpore(hero);
+            hero.addEffect(new CooldownEffect(skill, player, effect.getLaunchCooldown()));
+        }
+
+        @EventHandler(priority = EventPriority.NORMAL, ignoreCancelled = true)
+        public void onWeaponDamage(WeaponDamageEvent event) {
+            if (event.isProjectile() || !(event.getDamager() instanceof Hero))
+                return;
+
+            Hero hero = ((Hero) event.getDamager());
+            Player player = hero.getPlayer();
+            if (!hero.hasEffect(sporeEffectName))
+                return;
+            if (hero.hasEffect(cooldownEffectName))
+                return;
+
+            HealingSporesEffect effect = (HealingSporesEffect) hero.getEffect(sporeEffectName);
+            effect.launchSpore(hero);
+            hero.addEffect(new CooldownEffect(skill, player, effect.getLaunchCooldown()));
         }
     }
 
@@ -114,6 +137,7 @@ public class SkillHealingSpores extends ActiveSkill {
         private int firedProjectiles = 0;
         private int maxProjectiles;
         private double projectileRadius;
+        private int launchCooldown;
         private List<Pair<EffectManager, SphereEffect>> missileVisuals = new ArrayList<Pair<EffectManager, SphereEffect>>();
 
         HealingSporesEffect(Skill skill, Player applier, long duration) {
@@ -128,6 +152,7 @@ public class SkillHealingSpores extends ActiveSkill {
 
             this.maxProjectiles = SkillConfigManager.getUseSetting(hero, skill, "num-projectiles", 4, false);
             this.projectileRadius = SkillConfigManager.getUseSetting(hero, skill, BasicMissile.PROJECTILE_SIZE_NODE, 0.15, false);
+            this.launchCooldown = SkillConfigManager.getUseSetting(hero, skill, "spore-launch-cooldown", 250, false);
             double visualRadius = SkillConfigManager.getUseSetting(hero, skill, "projectile-visual-radius", 0.4, false);
             int projDurationTicks = SkillConfigManager.getUseSetting(hero, skill, BasicMissile.PROJECTILE_DURATION_TICKS_NODE, 30, false);
 
@@ -185,6 +210,10 @@ public class SkillHealingSpores extends ActiveSkill {
                 removeFromHero(hero);
             }
         }
+
+        public int getLaunchCooldown() {
+            return launchCooldown;
+        }
     }
 
     interface MissileDeathCallback {
@@ -210,10 +239,11 @@ public class SkillHealingSpores extends ActiveSkill {
         protected void onTick() {
             this.visualEffect.setLocation(getLocation());
         }
+    }
 
-        protected void onValidTargetFound(LivingEntity target, Vector origin, Vector force) {
-            CharacterTemplate targetCT = plugin.getCharacterManager().getCharacter(target);
-            targetCT.tryHeal(hero, skill, healing);
+    private class CooldownEffect extends ExpirableEffect {
+        CooldownEffect(Skill skill, Player applier, long duration) {
+            super(skill, cooldownEffectName, applier, duration);
         }
     }
 }

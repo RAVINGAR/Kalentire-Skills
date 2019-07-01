@@ -2,7 +2,7 @@ package com.herocraftonline.heroes.characters.skill.reborn.necromancer;
 
 import com.herocraftonline.heroes.Heroes;
 import com.herocraftonline.heroes.api.SkillResult;
-import com.herocraftonline.heroes.characters.CharacterTemplate;
+import com.herocraftonline.heroes.api.events.SkillDamageEvent;
 import com.herocraftonline.heroes.characters.Hero;
 import com.herocraftonline.heroes.characters.Monster;
 import com.herocraftonline.heroes.characters.effects.EffectType;
@@ -87,20 +87,18 @@ public class SkillSkeletonKnight extends ActiveSkill {
         config.set("maximum-allowed-minions", 3);
         config.set("minion-attack-damage", 25.0);
         config.set("minion-attack-damage-per-level", 0.4);
-        config.set("minion-cleave-radius", 3.0);
-        config.set("minion-cleave-damage-multiplier", 1.0);
         config.set("minion-max-hp", 400.0);
         config.set("minion-max-hp-per-level", 4.0);
         config.set("minion-duration", 60000);
         config.set("minion-speed-amplifier", -1);
         config.set("launch-velocity", 2.0);
-        config.set(SkillSetting.RADIUS.node(), 3.0);
         return config;
     }
 
     public SkillResult use(Hero hero, String[] args) {
         Player player = hero.getPlayer();
 
+        int numSummons = SkillConfigManager.getUseSetting(hero, this, "number-minions-summoned", 2, false);
         int maxMinions = SkillConfigManager.getUseSetting(hero, this, "maximum-allowed-minions", 3, false);
         int minionCount = 0;
 
@@ -152,20 +150,34 @@ public class SkillSkeletonKnight extends ActiveSkill {
             this.skill = skill;
         }
 
-        @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
-        public void onEntityDamage(EntityDamageByEntityEvent event) {
-            if (event.getDamage() <= 0 || event.getCause() != EntityDamageEvent.DamageCause.ENTITY_ATTACK)
+//        @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
+//        public void onEntityDamage(EntityDamageByEntityEvent event) {
+//            if (event.getDamage() <= 0 || event.getCause() != EntityDamageEvent.DamageCause.ENTITY_ATTACK)
+//                return;
+//            if (!(event.getDamager() instanceof LivingEntity) || !(event.getEntity() instanceof LivingEntity))
+//                return;
+//
+//            // Handle Summon cleave attack
+//            if (!(event.getDamager() instanceof Player)) {
+//                Monster attackerM = plugin.getCharacterManager().getMonster((LivingEntity) event.getDamager());
+//                if (attackerM.hasEffect(minionEffectName)) {
+//                    SkeletonKnightEffect effect = (SkeletonKnightEffect) attackerM.getEffect(minionEffectName);
+//                    handleMinionCleave(event, attackerM, effect);
+//                }
+//            }
+//        }
+
+        @EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
+        public void onSkillDamage(SkillDamageEvent event) {
+            if (event.getDamage() <= 0.0 || event.getSkill() == null || event.getEntity() instanceof Player || !(event.getEntity() instanceof LivingEntity))
                 return;
-            if (!(event.getDamager() instanceof LivingEntity) || !(event.getEntity() instanceof LivingEntity))
+            if (!event.getSkill().getTypes().contains(SkillType.AREA_OF_EFFECT))
                 return;
 
-            // Handle Summon cleave attack
-            if (!(event.getDamager() instanceof Player)) {
-                Monster attackerM = plugin.getCharacterManager().getMonster((LivingEntity) event.getDamager());
-                if (attackerM.hasEffect(minionEffectName)) {
-                    SkeletonKnightEffect effect = (SkeletonKnightEffect) attackerM.getEffect(minionEffectName);
-                    handleMinionCleave(event, attackerM, effect);
-                }
+            Monster defenderM = plugin.getCharacterManager().getMonster((LivingEntity) event.getEntity());
+            if (defenderM.hasEffect(minionEffectName)) {
+                SkeletonKnightEffect effect = (SkeletonKnightEffect) defenderM.getEffect(minionEffectName);
+                event.setDamage(event.getDamage() * (1.0 - effect.getAoeDamageReductionPercent()));
             }
         }
 
@@ -193,6 +205,7 @@ public class SkillSkeletonKnight extends ActiveSkill {
     public class SkeletonKnightEffect extends SummonEffect {
         private double cleaveRadius;
         private double cleaveDamageMultiplier;
+        private double aoeDamageReductionPercent;
 
         SkeletonKnightEffect(Skill skill, Hero summoner, long duration) {
             super(skill, minionEffectName, duration, summoner, null);
@@ -217,6 +230,7 @@ public class SkillSkeletonKnight extends ActiveSkill {
 
             double maxHp = SkillConfigManager.getScaledUseSettingDouble(getSummoner(), skill, "minion-max-hp", 400.0, false);
             double hitDmg = SkillConfigManager.getScaledUseSettingDouble(getSummoner(), skill, "minion-attack-damage", 25.0, false);
+            this.aoeDamageReductionPercent = SkillConfigManager.getScaledUseSettingDouble(getSummoner(), skill, "aoe-damage-reduction-percent", 0.5, false);
 
             LivingEntity minion = monster.getEntity();
             minion.setMaxHealth(maxHp);
@@ -232,6 +246,10 @@ public class SkillSkeletonKnight extends ActiveSkill {
 
         public double getCleaveDamageMultiplier() {
             return cleaveDamageMultiplier;
+        }
+
+        public double getAoeDamageReductionPercent() {
+            return aoeDamageReductionPercent;
         }
     }
 }

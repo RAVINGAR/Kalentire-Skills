@@ -26,7 +26,7 @@ public class SkillCleanseSpirit extends SkillBaseHeal {
         setUsage("/skill cleansespirit <target>");
         setIdentifiers("skill cleansespirit");
         setArgumentRange(0, 1);
-        setTypes(SkillType.ABILITY_PROPERTY_LIGHT, SkillType.DISPELLING, SkillType.NAME_TARGETTING_ENABLED, SkillType.HEALING, SkillType.SILENCEABLE);
+        setTypes(SkillType.ABILITY_PROPERTY_LIGHT, SkillType.DISPELLING, SkillType.DEFENSIVE_NAME_TARGETTING_ENABLED, SkillType.HEALING, SkillType.SILENCEABLE);
     }
 
     @Override

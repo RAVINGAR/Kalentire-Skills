@@ -9,6 +9,7 @@ import com.herocraftonline.heroes.characters.effects.common.InvisibleEffect;
 import com.herocraftonline.heroes.characters.effects.common.SpeedEffect;
 import com.herocraftonline.heroes.characters.skill.*;
 import com.herocraftonline.heroes.chat.ChatComponents;
+import com.herocraftonline.heroes.util.Messaging;
 import com.herocraftonline.heroes.util.Util;
 import org.bukkit.ChatColor;
 import org.bukkit.Sound;
@@ -89,6 +90,7 @@ public class SkillSmokeBomb extends ActiveSkill {
                     effect.isType(EffectType.VELOCITY_DECREASING) ||
                     effect.isType(EffectType.WALK_SPEED_DECREASING) ||
                     effect.isType(EffectType.ROOT)) {
+
                 removed = true;
                 hero.removeEffect(effect);
             }
@@ -113,10 +115,12 @@ public class SkillSmokeBomb extends ActiveSkill {
             super.applyToHero(hero);
 
             Player player = hero.getPlayer();
-            if (applyText != null && applyText.length() > 0 && hero.isInCombat()) {
+            if (applyText != null && applyText.length() > 0) {
                 // Override the standard invis effect message display so that we actually display a message to nearby players
                 //      even though we have a "silent actions" effect type.
-                broadcast(player.getLocation(), "    " + applyText, player.getName());
+                if (hero.isInCombat()) {
+                    broadcast(player.getLocation(), "    " + applyText, player.getName());
+                }
             }
         }
 
@@ -125,10 +129,14 @@ public class SkillSmokeBomb extends ActiveSkill {
             super.removeFromHero(hero);
 
             Player player = hero.getPlayer();
-            if (expireText != null && expireText.length() > 0 && hero.isInCombat()) {
+            if (expireText != null && expireText.length() > 0) {
                 // Override the standard invis effect message display so that we actually display a message to nearby players
                 //      even though we have a "silent actions" effect type.
-                broadcast(player.getLocation(), "    " + expireText, player.getName());
+                if (hero.isInCombat()) {
+                    broadcast(player.getLocation(), "    " + expireText, player.getName());
+                } else {
+                    Messaging.send(player, "    " + expireText, player.getName());
+                }
             }
         }
     }

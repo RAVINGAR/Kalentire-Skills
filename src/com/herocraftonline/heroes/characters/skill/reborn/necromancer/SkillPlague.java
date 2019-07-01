@@ -17,6 +17,7 @@ import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
+import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 
@@ -28,9 +29,9 @@ public class SkillPlague extends TargettedSkill {
 
     public SkillPlague(Heroes plugin) {
         super(plugin, "Plague");
-        setDescription("You cast a plague upon your target for $1 seconds. " +
+        setDescription("You cast a plague upon your target, dealing $3 damage over $1 seconds. " +
                 "While afflicted, the target will have their healing reduced by $2%. " +
-                "They will also be dealt $3 damage every $4 second(s), at which time they will spread the plague to all other enemies within $5 blocks.");
+                "Every $4 seconds the plague will spread to all other enemies within $5 blocks.");
         setUsage("/skill plague");
         setIdentifiers("skill plague");
         setArgumentRange(0, 0);
@@ -41,16 +42,21 @@ public class SkillPlague extends TargettedSkill {
     public String getDescription(Hero hero) {
         int duration = SkillConfigManager.getScaledUseSettingInt(hero, this, SkillSetting.DURATION, false);
         int period = SkillConfigManager.getUseSetting(hero, this, SkillSetting.PERIOD, 2500, false);
-
         double radius = SkillConfigManager.getScaledUseSettingDouble(hero, this, SkillSetting.RADIUS, false);
         double healingReduction = SkillConfigManager.getUseSetting(hero, this, "healing-reduction-percent", 0.15, false);
-
         double tickDamage = SkillConfigManager.getScaledUseSettingDouble(hero, this, SkillSetting.DAMAGE_TICK, false);
+        boolean applyPoison = SkillConfigManager.getUseSetting(hero, this, "apply-poison-effect", false);
+
+        double damage = tickDamage * ((double) duration / (double) period);
+        if (applyPoison) {
+            double poisonTickDamage = plugin.getDamageManager().getEnvironmentalDamage(EntityDamageEvent.DamageCause.POISON);
+            damage = poisonTickDamage * ((double) duration / 1000.0);
+        }
 
         return getDescription()
                 .replace("$1", Util.decFormat.format(duration / 1000.0))
                 .replace("$2", Util.decFormat.format(healingReduction * 100))
-                .replace("$3", Util.decFormat.format(tickDamage))
+                .replace("$3", Util.decFormat.format(damage))
                 .replace("$4", Util.decFormat.format(period / 1000.0))
                 .replace("$5", Util.decFormat.format(radius));
     }
@@ -64,6 +70,7 @@ public class SkillPlague extends TargettedSkill {
         config.set(SkillSetting.DAMAGE_TICK.node(), 10.0);
         config.set(SkillSetting.DAMAGE_TICK_INCREASE_PER_INTELLECT.node(), 0.0);
         config.set(SkillSetting.RADIUS.node(), 4.0);
+        config.set("apply-poison-effect", false);
         config.set("healing-reduction-percent", 0.15);
         config.set(SkillSetting.APPLY_TEXT.node(), ChatComponents.GENERIC_SKILL + "%target% is infected with the plague!");
         config.set(SkillSetting.EXPIRE_TEXT.node(), ChatComponents.GENERIC_SKILL + "%target% is no longer infected with the plague!");
@@ -93,10 +100,11 @@ public class SkillPlague extends TargettedSkill {
         long period = SkillConfigManager.getUseSetting(hero, this, SkillSetting.PERIOD, 1500, true);
         double radius = SkillConfigManager.getScaledUseSettingDouble(hero, this, SkillSetting.RADIUS, false);
         double healingReduction = SkillConfigManager.getUseSetting(hero, this, "healing-reduction-percent", 0.15, false);
-
         double tickDamage = SkillConfigManager.getScaledUseSettingDouble(hero, this, SkillSetting.DAMAGE_TICK, false);
+        boolean applyPoison = SkillConfigManager.getUseSetting(hero, this, "apply-poison-effect", false);
 
-        plugin.getCharacterManager().getCharacter(target).addEffect(new PlagueEffect(this, player, duration, period, radius, tickDamage, healingReduction));
+        CharacterTemplate targetCT = plugin.getCharacterManager().getCharacter(target);
+        targetCT.addEffect(new PlagueEffect(this, player, duration, period, radius, tickDamage, healingReduction, applyPoison));
 
         player.getWorld().playSound(player.getLocation(), Sound.ENTITY_BAT_HURT, 0.8F, 1.0F);
 
@@ -105,11 +113,12 @@ public class SkillPlague extends TargettedSkill {
 
     class PlagueEffect extends PeriodicDamageEffect implements HealthRegainReduction {
         private final double radius;
+        private final boolean applyPoison;
         private double healingReduction;
 
         private boolean jumped = false;
 
-        PlagueEffect(Skill skill, Player applier, long duration, long period, double radius, double tickDamage, double healingReduction) {
+        PlagueEffect(Skill skill, Player applier, long duration, long period, double radius, double tickDamage, double healingReduction, boolean applyPoison) {
             super(skill, effectName, applier, period, duration, tickDamage, applyText, expireText);
             this.radius = radius;
             this.healingReduction = healingReduction;
@@ -118,7 +127,10 @@ public class SkillPlague extends TargettedSkill {
             types.add(EffectType.DISEASE);
             types.add(EffectType.HARMFUL);
 
-            addPotionEffect(new PotionEffect(PotionEffectType.POISON, (int) duration / 50, 0));
+            this.applyPoison = applyPoison;
+            if (this.applyPoison) {
+                addPotionEffect(new PotionEffect(PotionEffectType.POISON, (int) duration / 50, 0));
+            }
         }
 
         // Clone Constructor
@@ -133,7 +145,11 @@ public class SkillPlague extends TargettedSkill {
             this.jumped = true;
             this.radius = pEffect.radius;
             this.healingReduction = pEffect.healingReduction;
-            addPotionEffect(new PotionEffect(PotionEffectType.POISON, (int) pEffect.getRemainingTime() / 50, 0));
+
+            this.applyPoison = pEffect.applyPoison;
+            if (this.applyPoison) {
+                addPotionEffect(new PotionEffect(PotionEffectType.POISON, (int) pEffect.getRemainingTime() / 50, 0));
+            }
         }
 
         @Override

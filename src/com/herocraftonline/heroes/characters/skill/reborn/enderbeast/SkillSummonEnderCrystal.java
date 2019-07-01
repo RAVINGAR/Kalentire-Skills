@@ -15,6 +15,7 @@ import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.EnderCrystal;
+import org.bukkit.entity.Entity;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -114,6 +115,9 @@ public class SkillSummonEnderCrystal extends TargettedLocationSkill {
         Block validTopBlock = null;
         Block currentBlock = null;
         BlockIterator iter = null;
+        Collection<Entity> nearbyEnts = player.getWorld().getNearbyEntities(startBlock.getLocation(), 2, height + 1, 2);
+        List<Block> nearbyEntityBlocks = nearbyEnts.stream().map(x -> x.getLocation().getBlock()).collect(Collectors.toList());
+
         try {
             Vector startCoords = startBlock.getLocation().toVector();
             Vector straightUp = new Vector(0, 1, 0);
@@ -133,6 +137,12 @@ public class SkillSummonEnderCrystal extends TargettedLocationSkill {
             }
 
             constructionBlocks.add(currentBlock);
+        }
+
+        for (Block block : constructionBlocks) {
+            if (nearbyEntityBlocks.contains(block)) {
+                return null;
+            }
         }
 
         if (cantFit || constructionBlocks.isEmpty())

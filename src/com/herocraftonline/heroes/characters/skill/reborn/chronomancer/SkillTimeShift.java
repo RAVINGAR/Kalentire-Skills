@@ -24,8 +24,6 @@ import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 
-import java.util.Arrays;
-
 public class SkillTimeShift extends TargettedSkill {
     public static String skillName = "TimeShift";
 
@@ -44,10 +42,10 @@ public class SkillTimeShift extends TargettedSkill {
                 "If used on ally, it will instantly heal them for $1 health and increase their movement speed by $2%. " +
                 "If used on an enemy, it will instantly deal $3 damage and decrease their movement speed by $4%. " +
                 "The movement speed effects can stack up to $5 times and lasts up to a maximum of $6 seconds.");
-        setUsage("/skill timeshift");
-        setArgumentRange(0, 0);
+        setUsage("/skill timeshift <ally>");
         setIdentifiers("skill timeshift");
-        setTypes(SkillType.ABILITY_PROPERTY_TEMPORAL, SkillType.MULTI_GRESSIVE, SkillType.NO_SELF_TARGETTING,
+        setArgumentRange(0, 1);
+        setTypes(SkillType.ABILITY_PROPERTY_TEMPORAL, SkillType.MULTI_GRESSIVE, SkillType.NO_SELF_TARGETTING, SkillType.DEFENSIVE_NAME_TARGETTING_ENABLED,
                 SkillType.MOVEMENT_INCREASING, SkillType.MOVEMENT_SLOWING, SkillType.SILENCEABLE);
     }
 
@@ -76,6 +74,7 @@ public class SkillTimeShift extends TargettedSkill {
         ConfigurationSection config = super.getDefaultConfig();
         config.set(SkillSetting.DAMAGE.node(), 25.0);
         config.set(SkillSetting.HEALING.node(), 30.0);
+        config.set("allow-timelink-timeshift-on-same-target", false);
         config.set("ally-percent-speed-increase", 0.05);
         config.set("enemy-percent-speed-decrease", 0.05);
         config.set("max-stacks", 5);
@@ -85,10 +84,11 @@ public class SkillTimeShift extends TargettedSkill {
 
     @Override
     public SkillResult use(Hero hero, LivingEntity target, String[] args) {
-        Player player = hero.getPlayer();
+        return timeshiftTarget(hero, target, 1, false);
+    }
 
-        // This is necessary for compatibility with AoE versions of this skill.
-        boolean shouldBroadcast = args == null || args.length == 0 || Arrays.stream(args).noneMatch(x -> x.equalsIgnoreCase("NoBroadcast"));
+    public SkillResult timeshiftTarget(Hero hero, LivingEntity target, int numStacks, boolean shouldBroadcast) {
+        Player player = hero.getPlayer();
 
         CharacterTemplate targetCT = plugin.getCharacterManager().getCharacter(target);
         if (targetCT.hasEffect("TemporallyWarded")) {
@@ -96,13 +96,15 @@ public class SkillTimeShift extends TargettedSkill {
             return SkillResult.INVALID_TARGET;
         }
 
-        SkillResult result = timeLinkTarget(hero, target, player, shouldBroadcast, targetCT);
+        SkillResult result = determineWhichTimeShift(player, hero, target, targetCT, numStacks, shouldBroadcast);
         if (result == SkillResult.NORMAL) {
             if (hero.hasEffect(SkillTimeLink.timeLinkEffectName)) {
                 SkillTimeLink.TimeLinkEffect effect = (SkillTimeLink.TimeLinkEffect) hero.getEffect(SkillTimeLink.timeLinkEffectName);
                 CharacterTemplate linkedTargetCT = effect.getTargetCT();
-                if (linkedTargetCT != null && !targetCT.equals(linkedTargetCT)) {
-                    timeLinkTarget(hero, linkedTargetCT.getEntity(), player, shouldBroadcast, linkedTargetCT);
+
+                boolean allowDoubleTimeShift = SkillConfigManager.getUseSetting(hero, this, "allow-timelink-timeshift-on-same-target", false);
+                if (linkedTargetCT != null && (allowDoubleTimeShift || !targetCT.equals(linkedTargetCT))) {
+                    determineWhichTimeShift(player, hero, linkedTargetCT.getEntity(), linkedTargetCT, numStacks, shouldBroadcast);
                 }
             }
         }
@@ -110,16 +112,18 @@ public class SkillTimeShift extends TargettedSkill {
         return result;
     }
 
-    public SkillResult timeLinkTarget(Hero hero, LivingEntity target, Player player, boolean shouldBroadcast, CharacterTemplate ctTarget) {
+    private SkillResult determineWhichTimeShift(Player player, Hero hero, LivingEntity target, CharacterTemplate ctTarget, int numStacks, boolean shouldBroadcast) {
         int duration = SkillConfigManager.getScaledUseSettingInt(hero, this, SkillSetting.DURATION, false);
         int maxStacks = SkillConfigManager.getUseSetting(hero, this, "max-stacks", 5, false);
 
         if (hero.isAlliedTo(target))
-            return acceleratedShift(player, hero, target, ctTarget, duration, maxStacks, shouldBroadcast);
-        return deceleratedShift(player, hero, target, ctTarget, duration, maxStacks, shouldBroadcast);
+            return acceleratedShift(player, hero, target, ctTarget, duration, maxStacks, numStacks, shouldBroadcast);
+        return deceleratedShift(player, hero, target, ctTarget, duration, maxStacks, numStacks, shouldBroadcast);
     }
 
-    public SkillResult deceleratedShift(Player player, Hero hero, LivingEntity target, CharacterTemplate targetCT, int duration, int maxStacks, boolean shouldBroadcast) {
+    private SkillResult deceleratedShift(Player player, Hero hero, LivingEntity target, CharacterTemplate targetCT,
+                                         int duration, int maxStacks, int numStacks, boolean shouldBroadcast) {
+
         double speedDecrease = SkillConfigManager.getUseSetting(hero, this, "enemy-percent-speed-decrease", 0.1, false);
 
         DeceleratedShiftedTime effect = null;
@@ -130,14 +134,15 @@ public class SkillTimeShift extends TargettedSkill {
             effect = (DeceleratedShiftedTime) targetCT.getEffect(decelEffectName);
         }
 
-        boolean addedNewStack = effect.addStack(targetCT);
+        boolean addedNewStack = effect.addStack(targetCT, numStacks);
         if (!addedNewStack) {
             player.sendMessage(maxStacksErrorMessage.replace("$1", target.getName()));
             return SkillResult.INVALID_TARGET_NO_MSG;
         }
 
-        if (shouldBroadcast)
+        if (shouldBroadcast) {
             broadcastExecuteText(hero, target);
+        }
 
         double damage = SkillConfigManager.getScaledUseSettingDouble(hero, this, SkillSetting.DAMAGE, false);
         addSpellTarget(target, hero);
@@ -150,7 +155,7 @@ public class SkillTimeShift extends TargettedSkill {
         return SkillResult.NORMAL;
     }
 
-    public SkillResult acceleratedShift(Player player, Hero hero, LivingEntity target, CharacterTemplate targetCT, int duration, int maxStacks, boolean shouldBroadcast) {
+    private SkillResult acceleratedShift(Player player, Hero hero, LivingEntity target, CharacterTemplate targetCT, int duration, int maxStacks, int numStacks, boolean shouldBroadcast) {
         double speedIncrease = SkillConfigManager.getUseSetting(hero, this, "ally-percent-speed-increase", 0.1, false);
 
         AcceleratedShiftedTime effect = null;
@@ -161,14 +166,15 @@ public class SkillTimeShift extends TargettedSkill {
             effect = (AcceleratedShiftedTime) targetCT.getEffect(accelEffectName);
         }
 
-        boolean addedNewStack = effect.addStack(targetCT);
+        boolean addedNewStack = effect.addStack(targetCT, numStacks);
         if (!addedNewStack) {
             player.sendMessage(maxStacksErrorMessage.replace("$1", target.getName()));
             return SkillResult.INVALID_TARGET_NO_MSG;
         }
 
-        if (shouldBroadcast)
+        if (shouldBroadcast) {
             broadcastExecuteText(hero, target);
+        }
 
         double healing = SkillConfigManager.getScaledUseSettingDouble(hero, this, SkillSetting.HEALING, false);
         targetCT.tryHeal(hero, this, healing);  // Ignore failures
@@ -211,11 +217,11 @@ public class SkillTimeShift extends TargettedSkill {
             return currentStackCount;
         }
 
-        public boolean addStack(CharacterTemplate character) {
+        public boolean addStack(CharacterTemplate character, int numStacks) {
             if (currentStackCount >= maxStacks)
                 return false;
 
-            currentStackCount++;
+            currentStackCount = Math.min(maxStacks, currentStackCount + numStacks);
             if (character instanceof Hero) {
                 // WalkSpeed only works on Players
                 setDelta(decreasePerStack * currentStackCount);
@@ -223,7 +229,6 @@ public class SkillTimeShift extends TargettedSkill {
             }
 
             this.setDuration(getDuration());
-
             applier.sendMessage("    " + ChatComponents.GENERIC_SKILL + ChatColor.WHITE + CustomNameManager.getName(character) + "'s "
                     + ChatColor.GOLD + "time has been shifted " + currentStackCount + " times!");
 
@@ -262,18 +267,18 @@ public class SkillTimeShift extends TargettedSkill {
             return currentStackCount;
         }
 
-        public boolean addStack(CharacterTemplate character) {
+        public boolean addStack(CharacterTemplate character, int numStacks) {
             if (currentStackCount >= maxStacks)
                 return false;
 
-            currentStackCount++;
+            currentStackCount = Math.min(maxStacks, currentStackCount + numStacks);
             if (character instanceof Hero) {
                 // WalkSpeed only works on Players
                 setDelta(increasePerStack * currentStackCount);
                 syncTask((Hero) character);
             }
-            this.setDuration(getDuration());
 
+            this.setDuration(getDuration());
             applier.sendMessage("    " + ChatComponents.GENERIC_SKILL + ChatColor.WHITE + CustomNameManager.getName(character) + "'s "
                     + ChatColor.GOLD + "time has been shifted " + currentStackCount + " times!");
 

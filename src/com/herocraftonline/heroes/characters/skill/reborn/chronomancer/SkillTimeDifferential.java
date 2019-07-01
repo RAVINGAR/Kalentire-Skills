@@ -26,10 +26,11 @@ public class SkillTimeDifferential extends TargettedSkill {
         setDescription("Restore your target's time to normal, dispelling any temporal buffs or debuffs, and absorbing their power to achieve an effect. " +
                 "If used on an ally, they will be healed for $1 health and an additional $2 health per temporal buff. " +
                 "If used on an enemy, they will take $3 damage and take an additional $4 damage per temporal debuff. ");
-        setUsage("/skill timedifferential");
-        setArgumentRange(0, 0);
+        setUsage("/skill timedifferential <ally>");
         setIdentifiers("skill timedifferential");
-        setTypes(SkillType.ABILITY_PROPERTY_TEMPORAL, SkillType.DAMAGING, SkillType.MULTI_GRESSIVE, SkillType.NO_SELF_TARGETTING, SkillType.SILENCEABLE);
+        setArgumentRange(0, 1);
+        setTypes(SkillType.ABILITY_PROPERTY_TEMPORAL, SkillType.DAMAGING, SkillType.MULTI_GRESSIVE,
+                SkillType.NO_SELF_TARGETTING, SkillType.DEFENSIVE_NAME_TARGETTING_ENABLED, SkillType.SILENCEABLE);
     }
 
     @Override

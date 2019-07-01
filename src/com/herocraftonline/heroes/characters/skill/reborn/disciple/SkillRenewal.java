@@ -20,7 +20,7 @@ public class SkillRenewal extends SkillBaseHeal {
         setUsage("/skill renewal <target>");
         setIdentifiers("skill renewal");
         setArgumentRange(0, 1);
-        setTypes(SkillType.HEALING, SkillType.NAME_TARGETTING_ENABLED, SkillType.SILENCEABLE, SkillType.ABILITY_PROPERTY_LIGHT);
+        setTypes(SkillType.HEALING, SkillType.DEFENSIVE_NAME_TARGETTING_ENABLED, SkillType.SILENCEABLE, SkillType.ABILITY_PROPERTY_LIGHT);
     }
 
     @Override

@@ -30,7 +30,7 @@ public class SkillChainLightning extends TargettedSkill {
         super(plugin, "ChainLightning");
         setDescription("Conjure a bolt of lightning that strikes from you to your target, dealing $1 damage. " +
                 "The bolt will strike in a chain to up to $2 times and has a maximum range of $3 blocks. " +
-                "The same target cannot be hit multiple times.");
+                "The same target cannot be hit multiple times. Each chain bounce does $4% less damage.");
         setUsage("/skill chainlightning");
         setArgumentRange(0, 0);
         setIdentifiers("skill chainlightning");
@@ -44,11 +44,13 @@ public class SkillChainLightning extends TargettedSkill {
 
         int maxTargets = SkillConfigManager.getUseSetting(hero, this, "max-targets", 5, false);
         int maxChainDistance = SkillConfigManager.getUseSetting(hero, this, "max-chain-distance", 5, false);
+        double damageReductionPercentPerJump = SkillConfigManager.getUseSetting(hero, this, "damage-reduction-percent-per-jump", 0.1, false);
 
         return getDescription()
                 .replace("$1", Util.decFormat.format(damage))
                 .replace("$2", maxTargets + "")
-                .replace("$3", maxChainDistance + "");
+                .replace("$3", maxChainDistance + "")
+                .replace("$4",  Util.decFormat.format(damageReductionPercentPerJump * 100));
     }
 
     @Override
