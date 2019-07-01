@@ -27,7 +27,7 @@ public class SkillSeizeFlame extends TargettedSkill {
     public SkillSeizeFlame(Heroes plugin) {
         super(plugin, "SeizeFlame");
         setDescription("You seize all fire from a target ally and transfering it to you. " +
-                "Your target will also become resistant to fire for $1 second(s).");
+                "Your target will also become resistant to fire and sped up for for $1 second(s).");
         setUsage("/skill seizeflame");
         setIdentifiers("skill seizeflame", "skill fshield");
         setArgumentRange(0, 0);
@@ -102,6 +102,7 @@ public class SkillSeizeFlame extends TargettedSkill {
             types.add(EffectType.FIRE);
 
             addPotionEffect(new PotionEffect(PotionEffectType.FIRE_RESISTANCE, (int) (duration / 50), 1));
+            addPotionEffect(new PotionEffect(PotionEffectType.SPEED, (int) (duration / 50), 2));
         }
     }
 }
