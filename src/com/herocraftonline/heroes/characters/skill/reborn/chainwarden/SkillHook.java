@@ -23,11 +23,9 @@ import org.bukkit.Particle;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
 import org.bukkit.configuration.ConfigurationSection;
-import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.entity.EntityDamageEvent.DamageCause;
-import org.bukkit.plugin.Plugin;
 import org.bukkit.util.Vector;
 
 import java.util.*;
@@ -105,7 +103,7 @@ public class SkillHook extends ActiveSkill {
 
         HookedLocationEffect validHookedLocEffect = ownerEffect.tryGetHookedLocationEffect(targetLoc, grabRadius);
         if (validHookedLocEffect == null) {
-            return ownerEffect.getCurrentHookCount() == 0
+            return ownerEffect.getCurrentTotalHookCount() == 0
                     ? InvalidHookTargetReason.NO_ACTIVE_HOOKS
                     : InvalidHookTargetReason.OUT_OF_RANGE;
         }
@@ -309,8 +307,12 @@ public class SkillHook extends ActiveSkill {
             this.types.add(EffectType.INTERNAL);
         }
 
-        public int getCurrentHookCount() {
+        public int getCurrentTotalHookCount() {
             return (int) this.hookedCharacters.stream().distinct().count() + this.hookedLocations.size();
+        }
+
+        public int getCurrentHookedTargetsCount() {
+            return (int) this.hookedCharacters.stream().distinct().count();
         }
 
         public int getCurrentHookedLocationsCount() {

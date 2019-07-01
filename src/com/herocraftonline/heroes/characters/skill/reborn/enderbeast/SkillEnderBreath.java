@@ -140,7 +140,7 @@ public class SkillEnderBreath extends SkillBaseGroundEffect {
             if (!target.equals(player) && !damageCheck(player, target))
                 return;
 
-            if (target.equals(player)) {
+            if (!target.equals(player)) {
                 addSpellTarget(target, hero);
                 damageEntity(target, player, damageTick, DamageCause.MAGIC, false);
             }

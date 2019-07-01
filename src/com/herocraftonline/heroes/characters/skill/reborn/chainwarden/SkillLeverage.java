@@ -13,8 +13,6 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 
-import java.util.logging.Level;
-
 public class SkillLeverage extends PassiveSkill {
 
     public SkillLeverage(Heroes plugin) {
@@ -63,7 +61,7 @@ public class SkillLeverage extends PassiveSkill {
             if (ownerEffect == null)
                 return;
 
-            int count = ownerEffect.getCurrentHookCount();
+            int count = ownerEffect.getCurrentHookedTargetsCount();
             if (count < 1)
                 return;
 
@@ -89,7 +87,7 @@ public class SkillLeverage extends PassiveSkill {
             if (ownerEffect == null)
                 return;
 
-            int count = ownerEffect.getCurrentHookCount();
+            int count = ownerEffect.getCurrentHookedTargetsCount();
             if (count < 1)
                 return;
 

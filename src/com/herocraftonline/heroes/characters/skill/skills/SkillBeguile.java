@@ -105,11 +105,10 @@ public class SkillBeguile extends TargettedSkill {
     }
 
     public class ConfuseEffect extends PeriodicExpirableEffect {
-
         private final float maxDrift;
 
         public ConfuseEffect(Skill skill, Player applier, long duration, long period, float maxDrift) {
-            super(skill, "Beguile", applier, period, duration);
+            super(skill, "Beguiled", applier, period, duration, applyText, expireText);
 
             types.add(EffectType.HARMFUL);
             types.add(EffectType.DISPELLABLE);
@@ -117,7 +116,7 @@ public class SkillBeguile extends TargettedSkill {
 
             this.maxDrift = maxDrift;
 
-            addPotionEffect(new PotionEffect(PotionEffectType.CONFUSION, (int) (duration / 1000) * 20, 127), false);
+            addPotionEffect(new PotionEffect(PotionEffectType.CONFUSION, (int) (duration / 50), 127), false);
         }
 
         public void adjustVelocity(LivingEntity lEntity) {
@@ -145,31 +144,6 @@ public class SkillBeguile extends TargettedSkill {
         }
 
         @Override
-        public void applyToMonster(Monster monster) {
-            super.applyToMonster(monster);
-        }
-
-        @Override
-        public void applyToHero(Hero hero) {
-            super.applyToHero(hero);
-            Player player = hero.getPlayer();
-            broadcast(player.getLocation(), "    " + applyText, player.getName());
-        }
-
-        @Override
-        public void removeFromMonster(Monster monster) {
-            super.removeFromMonster(monster);
-            broadcast(monster.getEntity().getLocation(), "    " + expireText, CustomNameManager.getName(monster));
-        }
-
-        @Override
-        public void removeFromHero(Hero hero) {
-            super.removeFromHero(hero);
-            Player player = hero.getPlayer();
-            broadcast(player.getLocation(), "    " + expireText, player.getName());
-        }
-
-        @Override
         public void tickMonster(Monster monster) {
             adjustVelocity(monster.getEntity());
             if (monster instanceof Creature) {
@@ -179,16 +153,9 @@ public class SkillBeguile extends TargettedSkill {
 
         @Override
         public void tickHero(final Hero hero) {
-
             // Let's bypass the nocheat issues...
-            NCPUtils.applyExemptions(hero.getPlayer(), new NCPFunction() {
-
-                @Override
-                public void execute()
-                {
-                    adjustVelocity(hero.getPlayer());
-                }
-            }, Lists.newArrayList("MOVING"), SkillConfigManager.getUseSetting(hero, skill, "ncp-exemption-duration", 500, false));
+            NCPUtils.applyExemptions(hero.getPlayer(),
+                    () -> adjustVelocity(hero.getPlayer()), Lists.newArrayList("MOVING"), SkillConfigManager.getUseSetting(hero, skill, "ncp-exemption-duration", 500, false));
         }
     }
 }
