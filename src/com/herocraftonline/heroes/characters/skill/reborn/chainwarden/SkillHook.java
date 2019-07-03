@@ -77,7 +77,6 @@ public class SkillHook extends ActiveSkill {
 
         // This is necessary for compatibility with AoE versions of this skill.
         boolean shouldBroadcast = args == null || args.length == 0 || Arrays.stream(args).noneMatch(x -> x.equalsIgnoreCase("NoBroadcast"));
-
         if (!SkillChainBelt.tryRemoveChain(this, hero, shouldBroadcast)) {
             return SkillResult.FAIL;
         }
@@ -279,15 +278,19 @@ public class SkillHook extends ActiveSkill {
             HookedEffect hookedEffect = new HookedEffect(skill, hero, hookedDuration, hookLeashDistance, hookLeashPower);
 
             // If we're an ally, make the effect beneficial and add it to them.
-            if (hero.isAlliedTo(target)) {
+            if (!hero.isAlliedTo(target)) {
+                if (!damageCheck(player, target)) {
+                    return;
+                }
+            } else {
                 hookedEffect.types.add(EffectType.BENEFICIAL);
                 targetCT.addEffect(hookedEffect);
                 return;
             }
 
             // We're dealing with an enemy. No need to damage check due to BasicDamageMissile doing it for us.
-            skill.addSpellTarget(target, this.hero);
-            skill.damageEntity(target, this.player, this.damage, damageCause);
+            addSpellTarget(target, hero);
+            damageEntity(target, player, damage, damageCause);
 
             hookedEffect.types.add(EffectType.HARMFUL);
             targetCT.addEffect(hookedEffect);
