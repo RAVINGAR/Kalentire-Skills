@@ -59,7 +59,7 @@ public class SkillImpale extends TargettedSkill {
                 .replace("%target%", "$1")
                 .replace("%hero%", "$2");
 
-        applyText = SkillConfigManager.getRaw(this, SkillSetting.APPLY_TEXT, ChatComponents.GENERIC_SKILL + "%target% has been slowed by %hero%'s impale!")
+        applyText = SkillConfigManager.getRaw(this, SkillSetting.APPLY_TEXT, ChatComponents.GENERIC_SKILL + "%target% has been stunned by %hero%'s impale!")
                 .replace("%target%", "$1")
                 .replace("%hero%", "$2");
 
@@ -79,7 +79,7 @@ public class SkillImpale extends TargettedSkill {
         config.set("pinned-stun-duration", 2000);
         config.set("slow-amplitude", 2);
         config.set("stun-apply-text", ChatComponents.GENERIC_SKILL + "%target% has been pinned by %hero%'s impale!");
-        config.set(SkillSetting.APPLY_TEXT.node(), ChatComponents.GENERIC_SKILL + "%target% has been slowed by %hero%'s impale!");
+        config.set(SkillSetting.APPLY_TEXT.node(), ChatComponents.GENERIC_SKILL + "%target% has been stunned by %hero%'s impale!");
         config.set(SkillSetting.EXPIRE_TEXT.node(), ChatComponents.GENERIC_SKILL + "%target% is no longer impaled!");
         return config;
     }
@@ -110,11 +110,11 @@ public class SkillImpale extends TargettedSkill {
             plugin.getCharacterManager().getCharacter(target).addEffect(effect);
         }
 
-        // Add the slow effect
-        duration = SkillConfigManager.getScaledUseSettingInt(hero, this, SkillSetting.DURATION, false);
-        amplitude = SkillConfigManager.getUseSetting(hero, this, "slow-amplitude", 2, false);
 
-        SlowEffect effect = new SlowEffect(this, player, duration, amplitude, applyText, expireText);
+        duration = SkillConfigManager.getScaledUseSettingInt(hero, this, SkillSetting.DURATION, false);
+
+
+        StunEffect effect = new StunEffect(this, player, duration, applyText, expireText);
         plugin.getCharacterManager().getCharacter(target).addEffect(effect);
 
         player.getWorld().playSound(player.getLocation(), Sound.ENTITY_GENERIC_HURT, 1.0F, 1.0F);
