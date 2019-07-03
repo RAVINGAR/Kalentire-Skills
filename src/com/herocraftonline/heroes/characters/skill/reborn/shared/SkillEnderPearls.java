@@ -8,6 +8,7 @@ import com.herocraftonline.heroes.characters.skill.*;
 import com.herocraftonline.heroes.chat.ChatComponents;
 import com.herocraftonline.heroes.nms.NMSHandler;
 import com.herocraftonline.heroes.util.MaterialUtil;
+import com.herocraftonline.heroes.util.Properties;
 import com.herocraftonline.heroes.util.Util;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -27,6 +28,7 @@ import org.bukkit.event.entity.ProjectileLaunchEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerTeleportEvent;
 import org.bukkit.event.player.PlayerTeleportEvent.TeleportCause;
+import org.bukkit.inventory.EquipmentSlot;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.util.Vector;
 
@@ -90,7 +92,13 @@ public class SkillEnderPearls extends PassiveSkill {
 
             Player player = event.getPlayer();
             Hero hero = plugin.getCharacterManager().getHero(player);
-            ItemStack itemInHand = NMSHandler.getInterface().getItemInMainHand(player.getInventory());
+            ItemStack itemInHand;
+            if (Properties.SUBVERSION >= 9 && event.getHand() == EquipmentSlot.OFF_HAND){
+                // EquipmentSlot only exists for 1.9+ (according to Spigot's bukkit source)
+                itemInHand = NMSHandler.getInterface().getItemInOffHand(player.getInventory());
+            } else {
+                itemInHand = NMSHandler.getInterface().getItemInMainHand(player.getInventory());
+            }
 
             if (itemInHand.getType() == Material.ENDER_PEARL) {
                 if (!hero.canUseSkill(skill)) {
