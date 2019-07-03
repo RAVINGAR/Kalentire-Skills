@@ -94,7 +94,7 @@ public class SkillEnderPearls extends PassiveSkill {
             Hero hero = plugin.getCharacterManager().getHero(player);
             ItemStack itemInHand;
             if (Properties.SUBVERSION >= 9 && event.getHand() == EquipmentSlot.OFF_HAND){
-                // EquipmentSlot only exists for 1.9+ (according to Spigot's bukkit source)
+                // EquipmentSlot only exists for 1.9+ (according to Spigot's bukkit source, commit added -> a21d8c465bd7adc9c189d5ac03373afe9da47e53)
                 itemInHand = NMSHandler.getInterface().getItemInOffHand(player.getInventory());
             } else {
                 itemInHand = NMSHandler.getInterface().getItemInMainHand(player.getInventory());
