@@ -36,7 +36,7 @@ public class SkillTemporalEchoes extends ActiveSkill {
 
     public SkillTemporalEchoes(Heroes plugin) {
         super(plugin, "TemporalEchoes");
-        setDescription("Conjures $1 time doubles of yourself to assist you in battle for up to $2 seconds. " +
+        setDescription("Conjures $1 wolves to assist you in battle for up to $2 seconds. " +
                 "Due to the unstable state of their existence, they can only perform melee attacks. " +
                 "They each have $3 health and deal $4 damage per hit.");
         setUsage("/skill temporalechoes");
