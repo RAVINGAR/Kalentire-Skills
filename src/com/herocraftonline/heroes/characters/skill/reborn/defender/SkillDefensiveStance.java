@@ -31,6 +31,7 @@ public class SkillDefensiveStance extends ActiveSkill {
     private String parryText;
     private String parrySkillText;
     private String parrySkillMagicText;
+    //todo make dodging a knockback skill/attack reflect the knockback
 
     public SkillDefensiveStance(Heroes plugin) {
         super(plugin, "DefensiveStance");
@@ -53,6 +54,7 @@ public class SkillDefensiveStance extends ActiveSkill {
         node.set("require-shield-to-activate", false);
         node.set("allow-doors-as-shields", false);
         node.set("allow-trapdoors-as-shields", false);
+        node.set(SkillSetting.USE_TEXT.node(), null); // remove entry
         node.set(SkillSetting.APPLY_TEXT.node(), ChatComponents.GENERIC_SKILL + "%hero% steadies themself in a defensive stance!");
         node.set(SkillSetting.EXPIRE_TEXT.node(), ChatComponents.GENERIC_SKILL + "%hero% loosened their stance!");
         node.set("parry-text", ChatComponents.GENERIC_SKILL + "%hero% parried an attack!");

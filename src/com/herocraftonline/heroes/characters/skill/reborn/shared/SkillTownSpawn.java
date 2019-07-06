@@ -78,6 +78,8 @@ public class SkillTownSpawn extends ActiveSkill {
             double balance = Heroes.econ.getBalance(player);
             if (balance < cost) {
                 player.sendMessage(ChatColor.RED + "Warning:" + ChatColor.GRAY + " Teleport costs " + Heroes.econ.format(cost) + ". You have " + Heroes.econ.format(balance) + ". Teleport will fail!");
+            } else {
+                player.sendMessage(ChatColor.RED + "Warning:" + ChatColor.GRAY + " Teleport costs " + Heroes.econ.format(cost) + ".");
             }
         }
     }
