@@ -116,6 +116,8 @@ public class SkillYggdrasilsTouch extends ActiveSkill {
             // get everyone in the player's party
             final Location heroLoc = player.getLocation();
 
+            if (!hero.hasParty())
+                return;
 
             for (final Hero partyHero : hero.getParty().getMembers()) {
                 if (!player.getWorld().equals(partyHero.getPlayer().getWorld()))
