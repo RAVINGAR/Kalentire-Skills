@@ -25,7 +25,7 @@ public class SkillBloodRitual extends TargettedSkill {
         setUsage("/skill bloodritual <target>");
         setIdentifiers("skill bloodritual");
         setArgumentRange(0, 1);
-        setTypes(SkillType.HEALING, SkillType.SILENCEABLE, SkillType.ABILITY_PROPERTY_DARK, SkillType.DEFENSIVE_NAME_TARGETTING_ENABLED);
+        setTypes(SkillType.HEALING, SkillType.SILENCEABLE, SkillType.ABILITY_PROPERTY_DARK);
     }
 
     public String getDescription(Hero hero) {

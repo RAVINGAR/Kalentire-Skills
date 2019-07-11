@@ -43,6 +43,7 @@ public class SkillCombustBlood extends TargettedSkill {
         config.set(SkillSetting.DAMAGE_INCREASE_PER_INTELLECT.node(), 0.0);
         config.set("blood-union-increase", 1);
         config.set("blood-union-required-for-dot", 3);
+        config.set(SkillSetting.HEALTH_COST.node(), 40.0);
         config.set(SkillSetting.DAMAGE_TICK.node(), 7.5);
         config.set(SkillSetting.DAMAGE_TICK_INCREASE_PER_INTELLECT.node(), 0.0);
         config.set(SkillSetting.PERIOD.node(), 2000);
@@ -57,7 +58,7 @@ public class SkillCombustBlood extends TargettedSkill {
         int bloodUnionReq = SkillConfigManager.getUseSetting(hero, this, "blood-union-required-for-dot", 3, false);
         int period = SkillConfigManager.getUseSetting(hero, this, SkillSetting.PERIOD, 2000, false);
         int duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, 8000, false);
-
+        double healthCost = SkillConfigManager.getUseSetting(hero, this, SkillSetting.HEALTH_COST, 40.0, false);
         double damage = SkillConfigManager.getScaledUseSettingDouble(hero, this, SkillSetting.DAMAGE, false);
         double tickDamage = SkillConfigManager.getScaledUseSettingDouble(hero, this, SkillSetting.DAMAGE_TICK, false);
 
