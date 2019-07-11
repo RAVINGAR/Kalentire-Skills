@@ -2,6 +2,7 @@ package com.herocraftonline.heroes.characters.skill.reborn.bloodmage;
 
 import com.herocraftonline.heroes.Heroes;
 import com.herocraftonline.heroes.api.SkillResult;
+import com.herocraftonline.heroes.attributes.AttributeType;
 import com.herocraftonline.heroes.characters.CharacterTemplate;
 import com.herocraftonline.heroes.characters.Hero;
 import com.herocraftonline.heroes.characters.Monster;
@@ -9,10 +10,14 @@ import com.herocraftonline.heroes.characters.effects.EffectType;
 import com.herocraftonline.heroes.characters.effects.ExpirableEffect;
 import com.herocraftonline.heroes.characters.effects.common.QuickenEffect;
 import com.herocraftonline.heroes.characters.effects.common.SlowEffect;
+import com.herocraftonline.heroes.characters.effects.common.StunEffect;
+import com.herocraftonline.heroes.characters.effects.standard.SlownessEffect;
 import com.herocraftonline.heroes.characters.skill.*;
 import com.herocraftonline.heroes.chat.ChatComponents;
 import com.herocraftonline.heroes.util.Util;
 import org.bukkit.Bukkit;
+import org.bukkit.Particle;
+import org.bukkit.Sound;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Arrow;
 import org.bukkit.entity.LivingEntity;
@@ -21,6 +26,7 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
+import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 
@@ -35,8 +41,8 @@ public class SkillVitalityTheft extends TargettedSkill {
         setDescription(""); //TODO description
         setUsage("/skill vitalitytheft");
         setIdentifiers("skill vitalitytheft", "skill VitalityTheft", "skill vt");
-        setArgumentRange(0, 0);
-        setTypes(SkillType.DEBUFFING, SkillType.BUFFING);
+        setArgumentRange(0, 1);
+        setTypes(SkillType.DEBUFFING, SkillType.BUFFING, SkillType.NO_SELF_TARGETTING, SkillType.AGGRESSIVE);
 
     }
 
@@ -52,7 +58,7 @@ public class SkillVitalityTheft extends TargettedSkill {
     @Override
     public ConfigurationSection getDefaultConfig() {
         ConfigurationSection config = super.getDefaultConfig();
-        config.set("speed-multiplier", 2);
+        config.set("speed-multiplier", 3);
         config.set(SkillSetting.DURATION.node(), 5000);
         config.set("slowness-duration", 5000);
         return config;
@@ -60,59 +66,26 @@ public class SkillVitalityTheft extends TargettedSkill {
 
     @Override
     public SkillResult use(Hero hero, LivingEntity target, String[] args) {
-
         Player player = hero.getPlayer();
-        broadcastExecuteText(hero, target);
 
+        long slownessduration = SkillConfigManager.getUseSetting(hero, this, "slowness-duration", 30, false);
+
+        //slow
+        addSpellTarget(target, hero);
+        plugin.getCharacterManager().getCharacter(target).addEffect(new SlownessEffect(this, player, slownessduration, 3));
+
+        //speed
         final int duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, 5000, false);
-        int multiplier = SkillConfigManager.getUseSetting(hero, this, "speed-multiplier", 2, false);
+        int multiplier = SkillConfigManager.getUseSetting(hero, this, "speed-multiplier", 3, false);
         if (multiplier > 20) {
             multiplier = 20;
         }
         hero.addEffect(new QuickenEffect(this, this.getName(), hero.getPlayer(), duration, multiplier, this.applyText, this.expireText));
-        VitalitySlownessEffect effect = new VitalitySlownessEffect(this, player, duration);
-        CharacterTemplate targCT = plugin.getCharacterManager().getCharacter(target);
-        targCT.addEffect(effect);
-
+        //player.getWorld().spigot().playEffect(target.getLocation().add(0, 0.5, 0), org.bukkit.Effect.SPELL, 0, 0, 0, 0, 0, 1, 50, 16);
+        player.getWorld().spawnParticle(Particle.SPELL, target.getLocation().add(0, 0.5, 0), 50, 0, 0, 0, 1);
         return SkillResult.NORMAL;
-
-    }
-
-
-    public class VitalitySlownessEffect extends SlowEffect {
-        private int originalStamina;
-
-        public VitalitySlownessEffect(Skill skill, Player applier, int duration) {
-            super(skill, "Slowed", applier, duration, 3, applyText, expireText);
-//            types.add(EffectType.SLOW);
-
-        }
-
-//        @Override
-//        public void applyToMonster(Monster monster) {
-//            addPotionEffect(new PotionEffect(PotionEffectType.SLOW,(int) (getDuration() / 50) , 3));
-//
-//            super.applyToMonster(monster);
-//        }
-//
-//        @Override
-//        public void applyToHero(Hero hero) {
-//            super.applyToHero(hero);
-//            final Player player = hero.getPlayer();
-//            addPotionEffect(new PotionEffect(PotionEffectType.SLOW, (int) (getDuration() / 50), 3), false);
-//        }
-
-
-        @Override
-        public void removeFromHero(Hero hero) {
-            super.removeFromHero(hero);
-            final Player player = hero.getPlayer();
-            hero.setStamina(originalStamina);
-        }
     }
 
 }
-
-
 
 
