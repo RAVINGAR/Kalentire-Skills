@@ -30,8 +30,8 @@ public class SkillImpale extends TargettedSkill {
 
     public SkillImpale(Heroes plugin) {
         super(plugin, "Impale");
-        setDescription("You impale your target with your weapon, dealing $1 physical damage and slowing them for $2 second(s). " +
-                "If you impale the target against a wall, they will be stunned for $3 second(s) as well.");
+        setDescription("You impale your target with your weapon, dealing $1 physical damage and stunning them for $2 second(s). " +
+                "If you impale the target against a wall, they will be stunned for $3 second(s).");
         setUsage("/skill impale");
         setArgumentRange(0, 0);
         setIdentifiers("skill impale");
@@ -77,7 +77,6 @@ public class SkillImpale extends TargettedSkill {
         config.set(SkillSetting.DAMAGE_INCREASE_PER_STRENGTH.node(), 0.0);
         config.set(SkillSetting.DURATION.node(), 3000);
         config.set("pinned-stun-duration", 2000);
-        config.set("slow-amplitude", 2);
         config.set("stun-apply-text", ChatComponents.GENERIC_SKILL + "%target% has been pinned by %hero%'s impale!");
         config.set(SkillSetting.APPLY_TEXT.node(), ChatComponents.GENERIC_SKILL + "%target% has been stunned by %hero%'s impale!");
         config.set(SkillSetting.EXPIRE_TEXT.node(), ChatComponents.GENERIC_SKILL + "%target% is no longer impaled!");
@@ -101,7 +100,6 @@ public class SkillImpale extends TargettedSkill {
         Material blockBehindTarget = behindLoc.getBlock().getType();
 
         long duration;
-        int amplitude;
         if ((blockBehindTarget.isSolid() && !Util.transparentBlocks.contains(blockBehindTarget))) {
             // Impaled, let's stun them!
             duration = SkillConfigManager.getUseSetting(hero, this, "pinned-stun-duration", 2000, false);

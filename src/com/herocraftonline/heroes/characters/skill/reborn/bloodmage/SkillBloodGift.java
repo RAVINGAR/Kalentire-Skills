@@ -19,8 +19,8 @@ public class SkillBloodGift extends TargettedSkill {
     public SkillBloodGift(Heroes plugin) {
         super(plugin, "BloodGift");
         setDescription("You gift an ally with your own blood, restoring $1 of their health. " +
-                "Healing is increased by $4% per level of Blood Union. " +
-                "This ability cannot be used on yourself, and costs $2 health and $3 mana to use.");
+                "Healing is increased by $2% per level of Blood Union. " +
+                "This ability cannot be used on yourself, and costs $3 health and $4 mana to use.");
         setUsage("/skill bloodgift <target>");
         setIdentifiers("skill bloodgift");
         setArgumentRange(0, 1);
