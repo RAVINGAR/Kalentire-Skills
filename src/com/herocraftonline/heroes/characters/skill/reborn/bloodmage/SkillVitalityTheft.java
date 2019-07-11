@@ -8,6 +8,7 @@ import com.herocraftonline.heroes.characters.Monster;
 import com.herocraftonline.heroes.characters.effects.EffectType;
 import com.herocraftonline.heroes.characters.effects.ExpirableEffect;
 import com.herocraftonline.heroes.characters.effects.common.QuickenEffect;
+import com.herocraftonline.heroes.characters.effects.common.SlowEffect;
 import com.herocraftonline.heroes.characters.skill.*;
 import com.herocraftonline.heroes.chat.ChatComponents;
 import com.herocraftonline.heroes.util.Util;
@@ -25,13 +26,13 @@ import org.bukkit.potion.PotionEffectType;
 
 public class SkillVitalityTheft extends TargettedSkill {
 
-    private String applyText;
-    private String expireText;
+    private String applyText = "";
+    private String expireText = "";
     private String shotEffectName = "HasFeatheredArrows";
 
     public SkillVitalityTheft(Heroes plugin) {
         super(plugin, "VitalityTheft");
-        setDescription("");
+        setDescription(""); //TODO description
         setUsage("/skill vitalitytheft");
         setIdentifiers("skill vitalitytheft", "skill VitalityTheft", "skill vt");
         setArgumentRange(0, 0);
@@ -58,7 +59,7 @@ public class SkillVitalityTheft extends TargettedSkill {
     }
 
     @Override
-    public SkillResult use(Hero hero, LivingEntity target, String[] strings) {
+    public SkillResult use(Hero hero, LivingEntity target, String[] args) {
 
         Player player = hero.getPlayer();
         broadcastExecuteText(hero, target);
@@ -78,28 +79,28 @@ public class SkillVitalityTheft extends TargettedSkill {
     }
 
 
-    public class VitalitySlownessEffect extends ExpirableEffect {
+    public class VitalitySlownessEffect extends SlowEffect {
         private int originalStamina;
 
         public VitalitySlownessEffect(Skill skill, Player applier, int duration) {
-            super(skill, "Slowed", applier, duration, applyText, expireText);
-            types.add(EffectType.SLOW);
+            super(skill, "Slowed", applier, duration, 3, applyText, expireText);
+//            types.add(EffectType.SLOW);
 
         }
 
-        @Override
-        public void applyToMonster(Monster monster) {
-            addPotionEffect(new PotionEffect(PotionEffectType.SLOW,(int) (getDuration() / 50) , 3));
-
-            super.applyToMonster(monster);
-        }
-
-        @Override
-        public void applyToHero(Hero hero) {
-            super.applyToHero(hero);
-            final Player player = hero.getPlayer();
-            addPotionEffect(new PotionEffect(PotionEffectType.SLOW, (int) (getDuration() / 50), 3), false);
-        }
+//        @Override
+//        public void applyToMonster(Monster monster) {
+//            addPotionEffect(new PotionEffect(PotionEffectType.SLOW,(int) (getDuration() / 50) , 3));
+//
+//            super.applyToMonster(monster);
+//        }
+//
+//        @Override
+//        public void applyToHero(Hero hero) {
+//            super.applyToHero(hero);
+//            final Player player = hero.getPlayer();
+//            addPotionEffect(new PotionEffect(PotionEffectType.SLOW, (int) (getDuration() / 50), 3), false);
+//        }
 
 
         @Override
