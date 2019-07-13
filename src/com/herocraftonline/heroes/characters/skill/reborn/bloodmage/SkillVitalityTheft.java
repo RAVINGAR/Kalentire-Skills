@@ -73,20 +73,6 @@ public class SkillVitalityTheft extends TargettedSkill {
     public SkillResult use(Hero hero, LivingEntity target, String[] args) {
         Player player = hero.getPlayer();
 
-        boolean requireBlazeRod = SkillConfigManager.getUseSetting(hero, this, "require-red-dye", true);
-        if (requireBlazeRod) {
-            PlayerInventory playerInv = player.getInventory();
-            ItemStack mainHand = NMSHandler.getInterface().getItemInMainHand(playerInv);
-            ItemStack offHand = NMSHandler.getInterface().getItemInOffHand(playerInv);
-            Dye redDye = new Dye();
-
-            if ((mainHand == null || mainHand.getType() != Material.INK_SACK) && (offHand == null || offHand.getType() != Material.INK_SACK)) {
-                player.sendMessage("    " + ChatComponents.GENERIC_SKILL + "You are unable to cast this spell without holding a Blaze Rod as a catalyst!");
-                return SkillResult.INVALID_TARGET_NO_MSG;
-            }
-        }
-
-
 
         long slownessduration = SkillConfigManager.getUseSetting(hero, this, "slowness-duration", 30, false);
 
