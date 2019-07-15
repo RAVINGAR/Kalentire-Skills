@@ -176,8 +176,8 @@ public class SkillBloodBond extends ActiveSkill {
 //        }
 
         @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
-        public void onSkillDamage(SkillDamageEvent event) {
-            if ((!(event.getDamager() instanceof Player)))
+        public void onSkillDamage(EntityDamageByEntityEvent event) {
+            if (!event.getCause().equals(DamageCause.MAGIC) || !(event.getDamager() instanceof Player))
                 return;
 
             // Make sure the hero has the bloodbond effect
@@ -202,7 +202,7 @@ public class SkillBloodBond extends ActiveSkill {
                     Location memberLocation = member.getPlayer().getLocation();
                     if (!memberLocation.getWorld().equals(playerLocation.getWorld()))
                         continue;
-                    if (!(memberLocation.distanceSquared(playerLocation) < effect.getRadiusSquared()))
+                    if (memberLocation.distanceSquared(playerLocation) > effect.getRadiusSquared())
                         continue;
 
                     member.tryHeal(hero, skill, healAmount);
