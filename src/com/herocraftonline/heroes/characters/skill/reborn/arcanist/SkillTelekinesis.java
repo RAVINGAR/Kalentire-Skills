@@ -1,5 +1,8 @@
 package com.herocraftonline.heroes.characters.skill.reborn.arcanist;
 
+import com.griefcraft.lwc.LWC;
+import com.griefcraft.lwc.LWCPlugin;
+import com.griefcraft.model.Protection;
 import com.herocraftonline.heroes.Heroes;
 import com.herocraftonline.heroes.api.SkillResult;
 import com.herocraftonline.heroes.characters.Hero;
@@ -11,18 +14,17 @@ import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
-import org.bukkit.block.BlockFace;
 import org.bukkit.block.BlockState;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
-import org.bukkit.material.Attachable;
 import org.bukkit.material.Button;
 import org.bukkit.material.Lever;
-import org.bukkit.material.MaterialData;
 
 import java.util.HashSet;
 
 public class SkillTelekinesis extends ActiveSkill {
+
+    private boolean lwcEnabled = false;
 
     public SkillTelekinesis(Heroes plugin) {
         super(plugin, "Telekinesis");
@@ -31,6 +33,15 @@ public class SkillTelekinesis extends ActiveSkill {
         this.setArgumentRange(0, 0);
         this.setIdentifiers("skill telekinesis");
         this.setTypes(SkillType.FORCE, SkillType.SILENCEABLE);
+
+        if (Bukkit.getServer().getPluginManager().getPlugin("LWC") != null){
+            lwcEnabled = true;
+        }
+    }
+
+    @Override
+    public String getDescription(Hero hero) {
+        return this.getDescription();
     }
 
     @Override
@@ -57,6 +68,7 @@ public class SkillTelekinesis extends ActiveSkill {
         switch (block.getType()) {
             case STONE_BUTTON:
             case WOOD_BUTTON: {
+                if (playerCannotAccessBlockLWCProtection(player, block)) return SkillResult.INVALID_TARGET_NO_MSG;
                 Button button = (Button) state.getData();
                 button.setPowered(true);
                 state.setData(button); // not sure if this is required...
@@ -76,6 +88,7 @@ public class SkillTelekinesis extends ActiveSkill {
                 break;
             }
             case LEVER: {
+                if (playerCannotAccessBlockLWCProtection(player, block)) return SkillResult.INVALID_TARGET_NO_MSG;
                 Lever lever = (Lever) block.getState().getData();
                 lever.setPowered(!lever.isPowered());
                 state.setData(lever); // not sure if this is required...
@@ -113,9 +126,19 @@ public class SkillTelekinesis extends ActiveSkill {
         return SkillResult.NORMAL;
     }
 
-    @Override
-    public String getDescription(Hero hero) {
-        return this.getDescription();
+    private boolean playerCannotAccessBlockLWCProtection(Player player, Block block) {
+        if (lwcEnabled) {
+            LWC lwc = ((LWCPlugin) plugin.getServer().getPluginManager().getPlugin("LWC")).getLWC();
+            Protection protection = lwc.findProtection(block);
+            if (protection != null) {
+                // block is LWC protected
+                if (!lwc.canAccessProtection(player, block)) {
+                    player.sendMessage(ChatColor.GRAY + "You cannot telekinetically interact with that object, it is protected by magic!");
+                    return true;
+                }
+            }
+        }
+        return false;
     }
 
 }

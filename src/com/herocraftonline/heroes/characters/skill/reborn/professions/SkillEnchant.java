@@ -120,6 +120,9 @@ public class SkillEnchant extends PassiveSkill {
                 } else if (enchLevel < ench.getStartLevel()) {
                     entry.setValue(ench.getStartLevel());
                 }
+                //FIXME: allow book enchanting, note that "ench.canEnchantItem" is always false for books...
+                // see https://hub.spigotmc.org/jira/browse/SPIGOT-4985
+                // https://hub.spigotmc.org/javadocs/spigot/org/bukkit/inventory/meta/EnchantmentStorageMeta.html
                 if (level < reqLevel || !ench.canEnchantItem(event.getItem())) {
                     iter.remove();
                 } else {
