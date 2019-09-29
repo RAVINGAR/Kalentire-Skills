@@ -86,8 +86,6 @@ public class SkillTelekinesis extends ActiveSkill {
                 return SkillResult.INVALID_TARGET_NO_MSG;
             }
         }
-        //FIXME remove this debug message
-        player.sendMessage("Updated " + block.getType() + " state ");
 
         //Update block state -
         state.update();
