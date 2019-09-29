@@ -7,6 +7,7 @@ import com.herocraftonline.heroes.characters.skill.ActiveSkill;
 import com.herocraftonline.heroes.characters.skill.SkillConfigManager;
 import com.herocraftonline.heroes.characters.skill.SkillSetting;
 import com.herocraftonline.heroes.characters.skill.SkillType;
+import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
@@ -52,16 +53,32 @@ public class SkillTelekinesis extends ActiveSkill {
         transparent.add(Material.SNOW);
         final Block block = player.getTargetBlock(transparent, SkillConfigManager.getUseSetting(hero, this, SkillSetting.MAX_DISTANCE, 15, false));
 
+        BlockState state = block.getState();
         switch (block.getType()) {
             case STONE_BUTTON:
             case WOOD_BUTTON: {
-                Button button = (Button) block;
+                Button button = (Button) state.getData();
                 button.setPowered(true);
+                state.setData(button); // not sure if this is required...
+
+                // Schedule button turn off (rebounce)
+                long turnOffDelayTicks = block.getType() == Material.STONE_BUTTON ? 10L : 15L;
+                Bukkit.getScheduler().runTaskLater(plugin, new Runnable() {
+                    @Override
+                    public void run() {
+                        BlockState state = block.getState();
+                        Button button = (Button) state.getData();
+                        button.setPowered(false);
+                        state.setData(button);
+                        state.update();
+                    }
+                }, turnOffDelayTicks);
                 break;
             }
             case LEVER: {
-                Lever lever = (Lever) block;
+                Lever lever = (Lever) block.getState().getData();
                 lever.setPowered(!lever.isPowered());
+                state.setData(lever); // not sure if this is required...
                 break;
             }
             default: {
@@ -69,20 +86,30 @@ public class SkillTelekinesis extends ActiveSkill {
                 return SkillResult.INVALID_TARGET_NO_MSG;
             }
         }
+        //FIXME remove this debug message
+        player.sendMessage("Updated " + block.getType() + " state ");
 
         //Update block state -
-        BlockFace face = BlockFace.SELF;
-        BlockState state = block.getState();
         state.update();
-        //Update attached state - workaround for Bukkit-1858
-        MaterialData matData = state.getData();
-        if (matData instanceof Attachable) {
-            face = ((Attachable) matData).getAttachedFace();
-        }
-        Block attached = block.getRelative(face);
-        BlockState attachedState = attached.getState();
-        attached.setTypeId(0, true);
-        attachedState.update(true);
+
+        // Old code that doesn't appear to be required anymore and causes the button/lever to pop into a item.
+        // Left for reference, in case its needed again.
+//        BlockFace face = BlockFace.SELF;
+//        //Update attached state - workaround for Bukkit-1858
+//        MaterialData matData = state.getData();
+//        if (matData instanceof Attachable) {
+//            face = ((Attachable) matData).getAttachedFace();
+//        }
+//        Block attached = block.getRelative(face);
+//        BlockState attachedState = attached.getState();
+//        // debug message
+//        player.sendMessage("attached block: " + attached.getType()
+//                + " (" + attached.getLocation().toString() + ")");
+//        attached.setTypeId(0, true);
+//        attachedState.update(true);
+//        // debug message
+//        player.sendMessage("After: Updated " + block.getType() + " state and attached block: " + attached.getType()
+//                + " (" + attached.getLocation().toString() + ")");
 
         this.broadcastExecuteText(hero);
         return SkillResult.NORMAL;
