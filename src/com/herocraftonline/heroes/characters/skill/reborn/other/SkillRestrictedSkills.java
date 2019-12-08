@@ -1,4 +1,4 @@
-package com.herocraftonline.heroes.characters.skill.reborn.arcanist;
+package com.herocraftonline.heroes.characters.skill.reborn.other;
 
 //TODO use SkillUseEvent and based on config options
 // e.g. region restrictions (list of corner points), + their world name (see Port skill for working with server/world names)
@@ -22,20 +22,24 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
+import org.jetbrains.annotations.Nullable;
 
-import java.util.Arrays;
 import java.util.List;
+import java.util.Set;
 import java.util.logging.Level;
 
 public class SkillRestrictedSkills extends PassiveSkill {
-    private static boolean enabled;
-    private static boolean restrictByRegions;
-    private static boolean restrictAllSkills;
-    private static boolean restrictOnlyPlayersWithSkill;
-    private static String restrictedByRegionMessage;
+    private boolean enabled;
+    private boolean restrictByRegions;
+    private boolean restrictAllSkills;
+    private boolean restrictOnlyPlayersWithSkill;
+    private String restrictedByRegionMessage;
 
-    public SkillRestrictedSkills(Heroes plugin, String name) {
-        super(plugin, name);
+    //TODO store regions, so it doesn't need to be processed on each skill use
+    private Set<RestrictedRegion> restrictedRegions;
+
+    public SkillRestrictedSkills(Heroes plugin) {
+        super(plugin, "RestrictedSkills");
         setDescription("You are unable to use certain skills in certain conditions!");
 
         Bukkit.getPluginManager().registerEvents(new SkillListener(this), plugin);
@@ -54,7 +58,7 @@ public class SkillRestrictedSkills extends PassiveSkill {
         node.set("restrict-all-skills", false);
         node.set("restrict-only-players-with-this-skill", false);
         node.set("restricted-skills", new String[0]);//FIXME: see if this works
-        node.set("restricted-regions", new String[0]);//FIXME: see if this works
+        node.set("restricted-regions", new String[] { "#Examples:", "#server_name:world_name:x1,y1,z1:x2,y2,z2", "#world_name:x1,y1,z1:x2,y2,z2", "#For any y levels: world_name:x1,*,z1:x2,*,z2"});//FIXME: see if this works
         node.set("restricted-by-region-message", "Use of this skill is restricted by this region.");
         return node;
     }
@@ -111,9 +115,15 @@ public class SkillRestrictedSkills extends PassiveSkill {
                 return false;
             }
 
+            Heroes.log(Level.INFO, "server name: " + plugin.getServerName() + ", world name: " + heroLocation.getWorld().getName()); //TODO remove this debug message
 
             for (String regionString : restrictedRegions){
+                if (regionString.startsWith("#")){
+                    continue; // ignore commented strings (such as our examples)
+                }
+
                 List<String> regionArgs = getRegionArgs(regionString);
+                Heroes.log(Level.INFO, "region args: " + regionArgs); //TODO remove this debug message
                 if (regionArgs.size() < 4){
                     Heroes.log(Level.WARNING, "Invalid RestrictedSkill region \"" + regionString + "\".");
                     continue;
@@ -143,8 +153,8 @@ public class SkillRestrictedSkills extends PassiveSkill {
                     continue; // on different world
                 }
 
-                List<Double> point1 = getCoordinates(regionArgs.get(2));
-                List<Double> point2 = getCoordinates(regionArgs.get(3));
+                double[] point1 = getCoordinates(regionArgs.get(2));
+                double[] point2 = getCoordinates(regionArgs.get(3));
                 boolean ignoreY = isIgnoringY(regionArgs.get(2)) || isIgnoringY(regionArgs.get(3));
                 if (point1 == null || point2 == null){
                     Heroes.log(Level.WARNING, "Atleast one of the region corner points is invalid for RestrictedSkill region \""
@@ -152,8 +162,8 @@ public class SkillRestrictedSkills extends PassiveSkill {
                     continue;
                 }
 
-                Location regionLocation1 = new Location(world, point1.get(0), point1.get(1), point1.get(2));
-                Location regionLocation2 = new Location(world, point2.get(0), point2.get(1), point2.get(2));
+                Location regionLocation1 = new Location(world, point1[0], point1[1], point1[2]);
+                Location regionLocation2 = new Location(world, point2[0], point2[1], point2[2]);
                 return locationInRegion(heroLocation, regionLocation1, regionLocation2, ignoreY);
             }
             return false;
@@ -167,10 +177,11 @@ public class SkillRestrictedSkills extends PassiveSkill {
         if (portArgs.size() < 4) {
             portArgs.add(0, null); // skip server check
         }
-        return Lists.newArrayList(regionInfo.split(":"));
+        return portArgs;
     }
 
-    private static List<Double> getCoordinates(String xyzString){
+    @Nullable
+    private static double[] getCoordinates(String xyzString){
         String[] xyzStrings = xyzString.split(",");
         if (xyzStrings.length < 3)
             return null;
@@ -178,13 +189,13 @@ public class SkillRestrictedSkills extends PassiveSkill {
         double x, y, z;
         try {
             x = Double.parseDouble(xyzStrings[0]);
-            y = Double.parseDouble(xyzStrings[1]);
+            y = xyzStrings[1].equals("*") ? 0 : Double.parseDouble(xyzStrings[1]);
             z = Double.parseDouble(xyzStrings[2]);
         } catch (NumberFormatException e){
             return null;
         }
 
-        return Arrays.asList(x,y,z);
+        return new double[]{x,y,z};
     }
 
     private static boolean isIgnoringY(String xyzString){
@@ -207,7 +218,30 @@ public class SkillRestrictedSkills extends PassiveSkill {
         double x = location.getX();
         double y = location.getY();
         double z = location.getZ();
+        // Debug
+//        Heroes.debugLog(Level.INFO, String.format("minX<= : %d, <=maxX: %d \nminY<= : %d, <=maxY: %d \nminZ<= : %d, <=maxZ: %d",
+//                minX <= x ? 1:0, x <= maxX ? 1:0, minY <= y ? 1:0, y <= maxY ? 1:0, minZ <= z ? 1:0, z <= maxZ ? 1:0));
 
         return (minX <= x && x <= maxX) && (ignoreY || (minY <= y && y <= maxY)) && (minZ <= z && z <= maxZ);
+    }
+
+    public class RestrictedRegion {
+        public @Nullable String serverName;
+        public @Nullable String worldName;
+        public double[] minXYZ;
+        public double[] maxXYZ;
+        public boolean ignoreY;
+
+        public RestrictedRegion(String worldName, double[] minXYZ, double[] maxXYZ, boolean ignoreY){
+            this(null, worldName, minXYZ, maxXYZ, ignoreY);
+        }
+
+        public RestrictedRegion(@Nullable String serverName, @Nullable String worldName, double[] minXYZ, double[] maxXYZ, boolean ignoreY){
+            this.serverName = serverName;
+            this.worldName = worldName;
+            this.minXYZ = minXYZ;
+            this.maxXYZ = maxXYZ;
+            this.ignoreY = ignoreY;
+        }
     }
 }
