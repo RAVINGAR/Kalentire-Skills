@@ -3,14 +3,11 @@ package com.herocraftonline.heroes.characters.skill.reborn.ninja;
 import com.herocraftonline.heroes.characters.Monster;
 import com.herocraftonline.heroes.characters.effects.EffectType;
 import com.herocraftonline.heroes.characters.effects.PeriodicEffect;
-import com.herocraftonline.heroes.characters.effects.PeriodicExpirableEffect;
 import com.herocraftonline.heroes.characters.skill.*;
 import com.herocraftonline.heroes.chat.ChatComponents;
-import com.herocraftonline.heroes.nms.NMSHandler;
-import com.herocraftonline.heroes.nms.scoreboard.TeamScoreboard;
-import com.herocraftonline.heroes.nms.scoreboard.TeamScoreboardPacket;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
+import org.bukkit.Material;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
 import org.bukkit.entity.Projectile;
@@ -23,17 +20,12 @@ import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerToggleSneakEvent;
-import org.bukkit.inventory.ItemStack;
 
 import com.herocraftonline.heroes.Heroes;
 import com.herocraftonline.heroes.api.SkillResult;
 import com.herocraftonline.heroes.characters.Hero;
-import com.herocraftonline.heroes.characters.effects.common.SneakEffect;
 import com.herocraftonline.heroes.util.Util;
-
-import java.util.HashSet;
-import java.util.Set;
-import java.util.UUID;
+import org.bukkit.inventory.ItemStack;
 
 public class SkillSneak extends ActiveSkill {
     private static String toggleableEffectName = "Sneaking";
@@ -202,25 +194,35 @@ public class SkillSneak extends ActiveSkill {
             }
         }
 
-        @EventHandler(priority = EventPriority.LOW, ignoreCancelled = true)
+        @EventHandler(priority = EventPriority.LOWEST, ignoreCancelled = true)
         public void onPlayerInteract(PlayerInteractEvent event) {
 
             // Try to force a right click event to work when the player is sneaking.
-            if (!(event.getAction() == Action.RIGHT_CLICK_BLOCK) || !(event.hasItem()))
+            if (!(event.getAction() == Action.RIGHT_CLICK_BLOCK))
                 return;
-            if (event.getClickedBlock() == null)
+            if (event.getClickedBlock() == null || !Util.interactableBlocks.contains(event.getClickedBlock().getType()))
                 return;
 
+            Hero hero = plugin.getCharacterManager().getHero(event.getPlayer());
+            if (!hero.hasEffect(toggleableEffectName))
+                return;
+
+            // Warn user that they may use the advanced crafting table instead due to sneaking.
+            if (!((SneakEffect)hero.getEffect(toggleableEffectName)).isVanillaSneaking() && event.getClickedBlock().getType() == Material.WORKBENCH) {
+                hero.getPlayer().sendMessage(ChatColor.RED
+                        + "Silly ninja, accessing a workbench isn't very stealthly. Stop sneaking to access the normal workbench.");
+            }
+
+            // Allow right-clicking events by players holding a sword, that would normally block instead
+            if (!event.hasItem()) {
+                return;
+            }
             ItemStack activatedItem = event.getItem();
 
             // Check to see if the player is right clicking a block with a sword.
             if (!Util.swords.contains(activatedItem.getType().name()))
                 return;
 
-            if (!Util.interactableBlocks.contains(event.getClickedBlock().getType()))
-                return;
-
-            Hero hero = plugin.getCharacterManager().getHero(event.getPlayer());
             if (hero.hasEffect(toggleableEffectName)) {
                 // We need to cancel the "blocking" portion of the sword
                 // So that he interacts with the block as normal.

@@ -115,15 +115,12 @@ public class SkillRestrictedSkills extends PassiveSkill {
                 return false;
             }
 
-            Heroes.log(Level.INFO, "server name: " + plugin.getServerName() + ", world name: " + heroLocation.getWorld().getName()); //TODO remove this debug message
-
             for (String regionString : restrictedRegions){
                 if (regionString.startsWith("#")){
                     continue; // ignore commented strings (such as our examples)
                 }
 
                 List<String> regionArgs = getRegionArgs(regionString);
-                Heroes.log(Level.INFO, "region args: " + regionArgs); //TODO remove this debug message
                 if (regionArgs.size() < 4){
                     Heroes.log(Level.WARNING, "Invalid RestrictedSkill region \"" + regionString + "\".");
                     continue;
