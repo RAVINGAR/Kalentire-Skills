@@ -62,7 +62,7 @@ public class SkillGreenThumb extends ActiveSkill {
         ConfigurationSection node = super.getDefaultConfig();
         node.set("ignore-region-plugins", false);
         node.set(SkillSetting.CHANCE.node(), 0.3);
-        node.set(SkillSetting.CHANCE_PER_LEVEL.node(), 0.035);
+        node.set(SkillSetting.CHANCE_PER_LEVEL.node(), 0.035); // e.g. if lvl20 starting, 100% chance at level 40
         node.set("chance-per-level-beyond-skill-level", true);
         node.set(SkillSetting.COOLDOWN.node(), 300);
         node.set(SkillSetting.MAX_DISTANCE.node(), 15);

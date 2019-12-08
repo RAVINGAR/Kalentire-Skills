@@ -11,23 +11,23 @@ import com.herocraftonline.heroes.characters.skill.SkillType;
 import com.herocraftonline.heroes.nms.NMSHandler;
 import com.herocraftonline.heroes.util.CompatSound;
 import com.herocraftonline.heroes.util.Util;
+import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.PlayerInventory;
 
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Set;
+import java.util.*;
+import java.util.logging.Level;
 
 public class SkillTransmuteOre extends ActiveSkill {
 
     public SkillTransmuteOre(Heroes plugin) {
         super(plugin, "TransmuteOre");
-        setDescription("You can transmute ores into more valuable ones.");
+        setDescription("You can transmute ores into more valuable ones. See /skill transmuteore info");
         setUsage("/skill transmuteore");
-        setArgumentRange(0, 0);
+        setArgumentRange(0, 1);
         setIdentifiers("skill transmuteore");
         setTypes(SkillType.ABILITY_PROPERTY_EARTH, SkillType.ABILITY_PROPERTY_FIRE);
     }
@@ -58,6 +58,14 @@ public class SkillTransmuteOre extends ActiveSkill {
     @Override
     public SkillResult use(Hero hero, String[] args) {
         Player player = hero.getPlayer();
+
+        if (args.length == 1 && args[0].equalsIgnoreCase("info")){
+            for (String message : buildInfoStringMessages(hero)) {
+                player.sendMessage(message);
+            }
+            return SkillResult.SKIP_POST_USAGE;
+        }
+
         ItemStack item = NMSHandler.getInterface().getItemInMainHand(player.getInventory());
 
         if (SkillConfigManager.getUseSetting(hero, this, "require-furnace", false) && player.getTargetBlock((HashSet<Material>) null, 3).getType() != Material.FURNACE) {
@@ -110,5 +118,61 @@ public class SkillTransmuteOre extends ActiveSkill {
         hero.getPlayer().getWorld().playSound(hero.getPlayer().getLocation(), CompatSound.ENTITY_PLAYER_LEVELUP.value(), 0.8F, 1.0F);
         Util.syncInventory(player, plugin);
         return SkillResult.NORMAL;
+    }
+
+
+    private List<String> buildInfoStringMessages(Hero hero){
+        List<String> messages = new ArrayList<>();
+        messages.add(ChatColor.BLUE + "Transmutation Table:");
+
+        // Remove all skill settings apart from those related to the items
+        Set<String> keySet = new HashSet<>(SkillConfigManager.getUseSettingKeys(hero, this));
+        keySet.remove("require-furnace");
+        for (SkillSetting set : SkillSetting.values()) {
+            keySet.remove(set.node());
+        }
+
+        // Get all valid item names
+        List<String> itemNames = new ArrayList<>();
+        for (String itemName : keySet) {
+            Material itemMaterial = Material.getMaterial(itemName);
+            if (itemMaterial != null){
+                itemNames.add(itemName);
+            } else {
+                Heroes.debugLog(Level.WARNING, "\"" + itemName + "\" is an invalid item for transmuting ores.");
+            }
+        }
+
+        // Sort items by level
+        HashMap<Integer, List<String>> itemsByLevelRequired = new HashMap<>();
+        for (String itemName : itemNames) {
+            int levelRequired = SkillConfigManager.getUseSetting(hero, this, itemName + "." + SkillSetting.LEVEL, 1, true);
+            if (itemsByLevelRequired.containsKey(levelRequired)){
+                itemsByLevelRequired.get(levelRequired).add(itemName);
+            } else {
+                List<String> newList = new ArrayList<>(3);
+                newList.add(itemName);
+                itemsByLevelRequired.put(levelRequired, newList);
+            }
+        }
+
+        // Build up the messages
+        int heroLevel = hero.getHeroLevel(this);
+        for (int itemsRequiredLevel : itemsByLevelRequired.keySet()){
+            String levelString = "Lvl " + itemsRequiredLevel;
+            ChatColor messageColour = heroLevel < itemsRequiredLevel ? ChatColor.RED : ChatColor.GREEN;
+            for (String itemName : itemsByLevelRequired.get(itemsRequiredLevel)) {
+                String product = SkillConfigManager.getUseSetting(hero, this, itemName + ".product", "");
+                int cost = SkillConfigManager.getUseSetting(hero, this, itemName + "." + SkillSetting.REAGENT_COST, 1, true);
+
+                messages.add(messageColour + levelString + ": " + cost + "x" + itemName + " -> " + product);
+            }
+        }
+
+        if (messages.size() == 1){
+            messages.add(ChatColor.RED + "No valid recipes found! Contact dev/admin for assistance.");
+        }
+
+        return messages;
     }
 }
