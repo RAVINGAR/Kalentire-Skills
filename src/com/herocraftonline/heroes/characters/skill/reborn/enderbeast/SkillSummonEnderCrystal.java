@@ -63,7 +63,7 @@ public class SkillSummonEnderCrystal extends TargettedLocationSkill {
                 .replace("$2", Util.decFormat.format(period / 1000.0))
                 .replace("$3", Util.decFormat.format(healDist))
                 .replace("$4", Util.decFormat.format(duration / 1000.0))
-                .replace("$4", Util.decFormat.format(humanHealAmount));
+                .replace("$5", Util.decFormat.format(humanHealAmount));
     }
 
     public ConfigurationSection getDefaultConfig() {
