@@ -47,7 +47,7 @@ public class SkillFlameWalk extends ActiveSkill {
         ConfigurationSection node = super.getDefaultConfig();
 
         node.set(SkillSetting.MAX_DISTANCE.node(), 18);
-//        node.set(SkillSetting.REAGENT.node(), 331);
+//        node.set(SkillSetting.REAGENT.node(), "REDSTONE");
 //        node.set(SkillSetting.REAGENT_COST.node(), 3);
 
         return node;

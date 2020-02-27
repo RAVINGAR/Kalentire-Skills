@@ -44,7 +44,7 @@ public class SkillPhase extends ActiveSkill {
 
         node.set(SkillSetting.MAX_DISTANCE.node(), 6);
         node.set(SkillSetting.MAX_DISTANCE_INCREASE_PER_INTELLECT.node(), 0.15);
-        node.set(SkillSetting.REAGENT.node(), 331);
+        node.set(SkillSetting.REAGENT.node(), "REDSTONE");
         node.set(SkillSetting.REAGENT_COST.node(), 3);
 
         return node;

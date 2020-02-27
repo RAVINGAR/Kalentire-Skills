@@ -88,7 +88,7 @@ public class SkillRecall extends ActiveSkill implements Listener {
         config.set("ignore-region-plugins", false);
         config.set(SkillSetting.NO_COMBAT_USE.node(), true);
         config.set(SkillSetting.DELAY.node(), 10000);
-        config.set(SkillSetting.REAGENT.node(), 331);
+        config.set(SkillSetting.REAGENT.node(), "REDSTONE");
         config.set(SkillSetting.REAGENT_COST.node(), 10);
         return config;
     }
