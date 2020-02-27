@@ -27,12 +27,12 @@ import java.util.Map;
 
 public class SkillFireball extends ActiveSkill {
 
-    private Map<Snowball, FireballAttributes> fireballs = new LinkedHashMap<Snowball, FireballAttributes>(100) {
+    private Map<Snowball, Long> fireballs = new LinkedHashMap<Snowball, Long>(100) {
         private static final long serialVersionUID = 4329526013158603250L;
 
         @Override
-        protected boolean removeEldestEntry(Map.Entry<Snowball, FireballAttributes> eldest) {
-            return (size() > 60 || eldest.getValue().shootTimeMilliseconds + 5000 <= System.currentTimeMillis());
+        protected boolean removeEldestEntry(Map.Entry<Snowball, Long> eldest) {
+            return (size() > 60 || eldest.getValue() + 5000 <= System.currentTimeMillis());
         }
     };
 
@@ -72,15 +72,11 @@ public class SkillFireball extends ActiveSkill {
     public SkillResult use(Hero hero, String[] args) {
         Player player = hero.getPlayer();
 
-        int fireTicks = SkillConfigManager.getUseSetting(hero, this, "fire-ticks", 50, false);
-        double damage = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE, 80, false);
-        double damageIncrease = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE_INCREASE_PER_INTELLECT, 1.5, false);
-
         double mult = SkillConfigManager.getUseSetting(hero, this, "velocity-multiplier", 1.5, false);
         Snowball fireball = player.launchProjectile(Snowball.class);
         fireball.setVelocity(fireball.getVelocity().normalize().multiply(mult));
         fireball.setFireTicks(100);
-        fireballs.put(fireball, new FireballAttributes(System.currentTimeMillis(), fireTicks, damage, damageIncrease));
+        fireballs.put(fireball, System.currentTimeMillis());
         fireball.setShooter(player);
 
         broadcastExecuteText(hero);
@@ -111,7 +107,7 @@ public class SkillFireball extends ActiveSkill {
                 return;
             }
 
-            FireballAttributes fireballAttributes = fireballs.remove(projectile);
+            fireballs.remove(projectile);
             event.setCancelled(true);
 
             LivingEntity targetLE = (LivingEntity) subEvent.getEntity();
@@ -129,36 +125,21 @@ public class SkillFireball extends ActiveSkill {
                 }
 
                 // Ignite the player
-                targetLE.setFireTicks(fireballAttributes.targetFireTicks);
+                targetLE.setFireTicks(SkillConfigManager.getUseSetting(hero, skill, "fire-ticks", 50, false));
                 plugin.getCharacterManager().getCharacter(targetLE).addEffect(new CombustEffect(skill, (Player) dmger));
+
+                double damage = SkillConfigManager.getUseSetting(hero, skill, SkillSetting.DAMAGE, 80, false);
+                double damageIncrease = SkillConfigManager.getUseSetting(hero, skill, SkillSetting.DAMAGE_INCREASE_PER_INTELLECT, 1.5, false);
+                damage += (damageIncrease * hero.getAttributeValue(AttributeType.INTELLECT));
 
                 // Damage the target
                 addSpellTarget(targetLE, hero);
-                damageEntity(targetLE, hero.getPlayer(), fireballAttributes.getDamage(hero), DamageCause.MAGIC);
+                damageEntity(targetLE, hero.getPlayer(), damage, DamageCause.MAGIC);
 
                 //targetLE.getWorld().spigot().playEffect(targetLE.getLocation().add(0, 0.5F, 0), Effect.FLAME, 0, 0, 0.2F, 0.2F, 0.2F, 0.1F, 50, 16);
                 targetLE.getWorld().spawnParticle(Particle.FLAME, targetLE.getLocation().add(0, 0.5, 0), 50, 0.2F, 0.2F, 0.2F, 0.1, true);
                 targetLE.getWorld().playSound(targetLE.getLocation(), Sound.BLOCK_FIRE_AMBIENT, 7.0F, 1.0F);
             }
-        }
-    }
-
-    public class FireballAttributes {
-        public long shootTimeMilliseconds;
-        public int targetFireTicks;
-        public double baseDamage;
-        public double damageIncreasePerIntellect;
-
-        public FireballAttributes(long shootTimeMilliseconds, int targetFireTicks, double baseDamage,
-                                  double damageIncreasePerIntellect){
-            this.shootTimeMilliseconds = shootTimeMilliseconds;
-            this.targetFireTicks = targetFireTicks;
-            this.baseDamage = baseDamage;
-            this.damageIncreasePerIntellect = damageIncreasePerIntellect;
-        }
-
-        public double getDamage(Hero hero){
-            return baseDamage + (damageIncreasePerIntellect * hero.getAttributeValue(AttributeType.INTELLECT));
         }
     }
 }
