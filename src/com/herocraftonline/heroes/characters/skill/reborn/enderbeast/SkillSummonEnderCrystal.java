@@ -246,7 +246,7 @@ public class SkillSummonEnderCrystal extends TargettedLocationSkill {
             super.removeFromHero(hero);
 
             constructionData.deconstruct();
-            activeConstructions.add(constructionData);
+            activeConstructions.remove(constructionData);
         }
 
         private void healHeroAndUpdateBeamIfTransformed(Hero hero) {
