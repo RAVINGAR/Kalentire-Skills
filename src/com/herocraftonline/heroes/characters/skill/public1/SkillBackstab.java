@@ -33,7 +33,8 @@ public class SkillBackstab extends ActiveSkill {
 
     public SkillBackstab(Heroes plugin) {
         super(plugin, "Backstab");
-        setDescription("When attacking a target from behind, you $1 an additional $2% damage. While sneaking, your attacks are more precise, and $3 an additional $4% damage.");
+        setDescription("When attacking a target from behind, you $1 an additional $2% damage. " +
+                "While sneaking, your attacks are more precise, and $3 an additional $4% damage.");
         setUsage("/skill backstab");
         setArgumentRange(0, 0);
         setIdentifiers("skill backstab");
@@ -60,7 +61,7 @@ public class SkillBackstab extends ActiveSkill {
 
         String ambushString = "deal";
         if (ambushChance > -1)
-            backstabString = "have a " + Util.decFormat.format(ambushChance) + "% chance to deal";
+            ambushString = "have a " + Util.decFormat.format(ambushChance) + "% chance to deal";
 
         String formattedBackstabDamageModifier = Util.decFormat.format(backstabDamageModifier * 100);
         String formattedAmbushDamageModifier = Util.decFormat.format(ambushDamageModifier * 100);
