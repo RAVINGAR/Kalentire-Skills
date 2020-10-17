@@ -90,6 +90,7 @@ public class SkillSkeletonKnight extends ActiveSkill {
         config.set("minion-max-hp", 400.0);
         config.set("minion-max-hp-per-level", 4.0);
         config.set("minion-duration", 60000);
+        config.set("minion-leash-distance", 75.0);
         config.set("minion-speed-amplifier", -1);
         config.set("launch-velocity", 2.0);
         return config;
@@ -128,14 +129,16 @@ public class SkillSkeletonKnight extends ActiveSkill {
 
         double launchVelocity = SkillConfigManager.getUseSetting(hero, this, "launch-velocity", 2.0, false);
         long duration = SkillConfigManager.getUseSetting(hero, this, "minion-duration", 45000, false);
+        double leashDistance = SkillConfigManager.getUseSetting(hero, this, "minion-leash-distance", 75.0, false);
 
         String mythicMobMinionName = SkillConfigManager.getUseSetting(hero, this, "mythic-mobs-mob-override-name", "SkeletonKnight");
         ActiveMob mob = mythicMobs.getMobManager().spawnMob(mythicMobMinionName, player.getEyeLocation());
         mob.setOwner(player.getUniqueId());
+        //mob.setTarget();
 
         final Monster monster = plugin.getCharacterManager().getMonster(mob.getLivingEntity());
         monster.setExperience(0);
-        monster.addEffect(new SkeletonKnightEffect(this, hero, duration));
+        monster.addEffect(new SkeletonKnightEffect(this, hero, duration, leashDistance));
 
         mob.getLivingEntity().setVelocity(player.getLocation().getDirection().normalize().multiply(launchVelocity));
         mob.getLivingEntity().setFallDistance(-7F);
@@ -207,8 +210,8 @@ public class SkillSkeletonKnight extends ActiveSkill {
         private double cleaveDamageMultiplier;
         private double aoeDamageReductionPercent;
 
-        SkeletonKnightEffect(Skill skill, Hero summoner, long duration) {
-            super(skill, minionEffectName, duration, summoner, null);
+        SkeletonKnightEffect(Skill skill, Hero summoner, long duration, double maxLeashDistance) {
+            super(skill, minionEffectName, 1000, duration, summoner, 14.0, null, maxLeashDistance);
 
             types.add(EffectType.DISEASE);
             types.add(EffectType.WATER_BREATHING);

@@ -57,7 +57,7 @@ public class SkillConvocation extends ActiveSkill {
     @Override
     public ConfigurationSection getDefaultConfig() {
         ConfigurationSection config = super.getDefaultConfig();
-        config.set("speed-duration", 3000);
+        config.set("speed-duration", 3500);
         config.set("speed-amplifier", 3);
         config.set("minion-healing", 25.0);
         return config;
