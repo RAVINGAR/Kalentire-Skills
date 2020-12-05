@@ -61,7 +61,7 @@ public class SkillRevive extends ActiveSkill {
         Location deathLoc = Util.deaths.get(targetName);
         Location playerLoc = player.getLocation();
         if (!playerLoc.getWorld().equals(deathLoc.getWorld()) || playerLoc.distance(deathLoc) > 50.0) {
-            player.sendMessage("You are out of range.");
+            player.sendMessage("You are out of range, and need to be closer to their place of death.");
             return SkillResult.INVALID_TARGET_NO_MSG;
         }
 
