@@ -172,7 +172,7 @@ public class SkillLichForm extends ActiveSkill {
             MobDisguise disguise = new MobDisguise(DisguiseType.getType(EntityType.SKELETON), true);
             disguise.setKeepDisguiseOnPlayerDeath(false);
             disguise.setEntity(player);
-            disguise.setShowName(true);
+            disguise.setCustomDisguiseName(true); // Is this the same? as disguise.setShowName(true) ?
             disguise.setModifyBoundingBox(false);
             disguise.setReplaceSounds(true);
             disguise.setHearSelfDisguise(true);

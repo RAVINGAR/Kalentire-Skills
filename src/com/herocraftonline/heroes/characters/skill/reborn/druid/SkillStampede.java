@@ -155,7 +155,7 @@ public class SkillStampede extends ActiveSkill {
                 MobDisguise disguise = new MobDisguise(DisguiseType.getType(animalArray[randomNum]), true);
                 disguise.setKeepDisguiseOnPlayerDeath(true);
                 disguise.setEntity(minion);
-                disguise.setShowName(true);
+                disguise.setCustomDisguiseName(true); // Is this the same? as disguise.setShowName(true) ?
                 disguise.setModifyBoundingBox(false);
                 disguise.setReplaceSounds(true);
                 disguise.setHearSelfDisguise(true);

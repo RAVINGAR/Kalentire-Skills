@@ -97,14 +97,9 @@ public class SkillHealingBloom extends ActiveSkill {
 
         return SkillResult.NORMAL;
     }
-<<<<<<< HEAD
-    public void playHoTVisual(LivingEntity target, int duration) {
-         EffectManager effectManager = ;
-=======
 
     public void playVisuals(LivingEntity target, int duration) {
         EffectManager effectManager = new EffectManager(plugin);
->>>>>>> a9ff2d3199054836e6cfc10963aaff2112f5de28
         final int durationTicks = (int) duration / 50;
         final int displayPeriod = 2;
 

@@ -172,7 +172,7 @@ public class SkillTheWither extends ActiveSkill {
             MobDisguise disguise = new MobDisguise(DisguiseType.getType(EntityType.WITHER_SKELETON), true);
             disguise.setKeepDisguiseOnPlayerDeath(false);
             disguise.setEntity(player);
-            disguise.setShowName(true);
+            disguise.setCustomDisguiseName(true); // Is this the same? as disguise.setShowName(true) ?
             disguise.setReplaceSounds(true);
             disguise.setHearSelfDisguise(true);
             disguise.startDisguise();
