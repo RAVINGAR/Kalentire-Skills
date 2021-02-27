@@ -9,6 +9,7 @@
     <property name="dir.bin.path" value="com/herocraftonline/heroes/characters/skill" />
     <property name="dir.dist.path" value="${ant.project.name}/skills" />
     <property name="dir.maven.dependencies" value ="maven" />
+    <property name="jar-version-prefix" value="Herocraft" />
     <!-- Skill packs to only build when running "build-packs" Ant task -->
     <property name="skill-packs" value="public1,pack1,pack2,pack3,pack4,pack5,pack6,pack7,pack8,skills" />
     <!-- Classes of skills to only build when running "build-reborn-classes" Ant task, for specific skills only see below. -->
@@ -52,6 +53,19 @@
         <!--Pre-Cleanup-->
         <delete dir="${dir.bin}"/>
         <delete dir="${dir.dist}/${ant.project.name}" />
+
+        <!--Get git hash, timestamp and hence jar version for build-->
+        <exec executable="git" outputproperty="git-hash">
+            <arg value="rev-parse" />
+            <arg value="--short" />
+            <arg value="HEAD" />
+        </exec>
+        <tstamp> <!--GMT based Timestamp with 12 hour AM/PM time-->
+            <format property="jar-time-stamp" timezone="GMT" pattern="yyyy-MM-dd hh:mm a"/>
+        </tstamp>
+        <echo message="Git hash: ${git-hash}" />
+        <property name="jar-version" value="${jar-version-prefix} ${git-hash} GMT ${jar-time-stamp}"/>
+        <echo message="Jar build version: ${jar-version}" />
 
         <!--Make directories required for the build-->
         <mkdir dir="${dir.dist}" />
@@ -120,7 +134,8 @@
     	<echo message="${dirname}" />
     	<basename file="${dirname}" property="package" />
         <echo message="${package}" />
-        <echo file="${dir.bin}/skill.info" message="main-class: com.herocraftonline.heroes.characters.skill.reborn.${package}.${classname}" />
+        <!--Note: using comma to separate main class and skill version, as its more universal then newlines-->
+        <echo file="${dir.bin}/skill.info" message="main-class: com.herocraftonline.heroes.characters.skill.reborn.${package}.${classname},version: ${jar-version}" />
         <jar jarfile="${dir.dist}/${dir.dist.path}/reborn/${classname}.jar" basedir="${dir.bin}" includes="${dir.bin.path}/reborn/${package}/${classname}*.class skill.info">
             <manifest>
                 <attribute name="Class-Path" value="../../Heroes.jar" />
