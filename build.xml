@@ -9,9 +9,15 @@
     <property name="dir.bin.path" value="com/herocraftonline/heroes/characters/skill" />
     <property name="dir.dist.path" value="${ant.project.name}/skills" />
     <property name="dir.maven.dependencies" value ="maven" />
+    <!-- Skill packs to only build when running "build-packs" Ant task -->
     <property name="skill-packs" value="public1,pack1,pack2,pack3,pack4,pack5,pack6,pack7,pack8,skills" />
-    <!--<property name="reborn-classes" value="arcanist,chainwarden,chronomancer,dragoon,druid,enderbeast,necromancer,pathfinder,pyromancer,professions,shared" />-->
-    <property name="reborn-classes" value="druid" />
+    <!-- Classes of skills to only build when running "build-reborn-classes" Ant task, for specific skills only see below. -->
+    <!--<property name="reborn-classes" value="arcanist,chainwarden,chronomancer,defender,disciple,dragoon,druid,enderbeast,hellspawn,necromancer,ninja,pathfinder,professions,pyromancer,shared" />-->
+    <!--<property name="reborn-classes" value="arcanist" />-->
+
+    <!--Can be used to only build specific skills e.g. ninja\SkillSneak-->
+    <property name="reborn-classes" value="" /> <!-- If uncommented, no specified class packages of skills to build-->
+    <property name="reborn-skills" value="arcanist\SkillBolt,necromancer\SkillWeb" />
 
     <!--Classpath used by javac compiler-->
     <path id="classpath">
@@ -62,6 +68,42 @@
                 <delete dir="${dir.bin}" includes="**/*.class" excludes="**/*.jar" />
             </sequential>
         </for>
+
+        <echo message="Reborn Skills:"/>
+        <for list="${reborn-skills}" param="skillpath">
+            <sequential>
+                <antcall target="jar-skillpath-reborn">
+                    <param name="skillpath" value="@{skillpath}"/>
+                </antcall>
+                <delete dir="${dir.bin}" includes="**/*.class" excludes="**/*.jar" />
+            </sequential>
+        </for>
+
+    </target>
+
+    <target name="jar-skillpath-reborn">
+        <!--Variable creation & checks-->
+        <basename file="${skillpath}" property="classname" />
+        <echo message="class: ${classname}" />
+        <dirname file="${skillpath}" property="dirname" />
+        <!--<echo message="${dirname}" />-->
+        <basename file="${dirname}" property="package" />
+        <echo message="package: ${package}" />
+
+        <!--<echo message="DIR: ${dir.bin}/${dir.bin.path}/reborn/${package}/${classname}" />-->
+        <mkdir dir="${dir.dist}/${dir.dist.path}" />
+        <mkdir dir="${dir.bin}/${dir.dist.path}/reborn/${package}" />
+
+        <!--Build only specific skill class-->
+        <javac sourcepath="" srcdir="src/com/herocraftonline/heroes/characters/skill/reborn/${package}"
+               destdir="bin" classpathref="classpath"
+               debug="on" includeantruntime="false" encoding="utf-8" fork="yes">
+            <include name="${classname}.java" />
+        </javac>
+        <antcall target="jar-skill-reborn">
+            <param name="file" value="${dir.bin}/${dir.bin.path}/reborn/${package}/${classname}.class" />
+        </antcall>
+        <delete file="${dir.bin}/skill.info" />
     </target>
 
     <target name="jar-skills-reborn">
