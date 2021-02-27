@@ -156,6 +156,7 @@ public class SkillDefenceInNumbers extends PassiveSkill {
             }
 
             double radius = SkillConfigManager.getScaledUseSettingDouble(hero, skill, SkillSetting.RADIUS, false);
+            double radiusSquared = radius * radius;
 
             // Apply protection to allies in range of the hero with this passive
             final Player defendingPlayer = hero.getPlayer();
@@ -172,7 +173,7 @@ public class SkillDefenceInNumbers extends PassiveSkill {
                 // If in range reapply effect
                 Player allyPlayer = ally.getPlayer();
                 if (defendingPlayer.getWorld().equals(allyPlayer.getWorld())
-                        && defendingPlayer.getLocation().distance(allyPlayer.getLocation()) <= radius) {
+                        && defendingPlayer.getLocation().distanceSquared(allyPlayer.getLocation()) <= radiusSquared) {
                     ally.addEffect(new DefenceInNumbersAllyEffect(skill, allyEffectName, defendingPlayer,
                             getIncomingMultiplier(hero), getPeriod(),
                             allyApplyText.replace("%hero%", defendingPlayer.getName()),
@@ -236,6 +237,7 @@ public class SkillDefenceInNumbers extends PassiveSkill {
             int requiredAllyNumber = SkillConfigManager.getUseSetting(defendingHero, skill, "required-ally-number", 0, true);
             long period = SkillConfigManager.getUseSetting(defendingHero, skill, SkillSetting.PERIOD.node(), 5000, false);
             double radius = SkillConfigManager.getUseSetting(defendingHero, skill, SkillSetting.RADIUS.node(), 20, false);
+            double radiusSquared = radius * radius;
 
             // remove existing protection
             if (joiningHero.hasEffect(allyEffectName)) {
@@ -245,7 +247,7 @@ public class SkillDefenceInNumbers extends PassiveSkill {
             // If in range apply effect
             Player joiningPlayer = joiningHero.getPlayer();
             if (defendingPlayer.getWorld().equals(joiningPlayer.getWorld())
-                    && defendingPlayer.getLocation().distance(joiningPlayer.getLocation()) <= radius) {
+                    && defendingPlayer.getLocation().distanceSquared(joiningPlayer.getLocation()) <= radiusSquared) {
                 DefenceInNumbersAllyEffect effect = new DefenceInNumbersAllyEffect(
                         skill, allyEffectName, defendingPlayer, getIncomingMultiplier(defendingHero), period,
                         allyApplyText.replace("%hero%", defendingPlayer.getName()),
