@@ -62,7 +62,7 @@ public class SkillEnderPearls extends PassiveSkill {
         ConfigurationSection node = super.getDefaultConfig();
 
         node.set(SkillSetting.APPLY_TEXT.node(), "");
-        node.set(SkillSetting.EXPIRE_TEXT.node(), "");
+        node.set(SkillSetting.UNAPPLY_TEXT.node(), "");
         node.set("vertical-leniency", 2);
         node.set("velocity-multiplier", 0.85);
         node.set("cooldown-during-combat", true);
