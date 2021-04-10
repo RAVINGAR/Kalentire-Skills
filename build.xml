@@ -18,7 +18,8 @@
 
     <!--Can be used to only build specific skills e.g. ninja\SkillSneak-->
     <property name="reborn-classes" value="" /> <!-- If uncommented, no specified class packages of skills to build-->
-    <property name="reborn-skills" value="arcanist\SkillBolt,necromancer\SkillWeb" />
+<!--    <property name="reborn-skills" value="arcanist\SkillBolt,necromancer\SkillWeb" />-->
+    <property name="reborn-skills" value="other\SkillEnchant" />
 
     <!--Classpath used by javac compiler-->
     <path id="classpath">
@@ -71,12 +72,15 @@
         <mkdir dir="${dir.dist}" />
         <mkdir dir="${dir.bin}" />
 
+        <property name="top-package" value="remastered"/>
+
         <for list="${reborn-classes}" param="package">
             <sequential>
                 <mkdir dir="${dir.dist}/${dir.dist.path}" />
-                <mkdir dir="${dir.bin}/${dir.dist.path}/reborn/@{package}" />
-                <javac srcdir="src/com/herocraftonline/heroes/characters/skill/reborn/@{package}" debug="on" destdir="bin" classpathref="classpath" includeantruntime="false" encoding="utf-8" fork="yes" />
+                <mkdir dir="${dir.bin}/${dir.dist.path}/${top-package}/@{package}" />
+                <javac srcdir="src/com/herocraftonline/heroes/characters/skill/@{top-package}/@{package}" debug="on" destdir="bin" classpathref="classpath" includeantruntime="false" encoding="utf-8" fork="yes" />
                 <antcall target="jar-skills-reborn">
+                    <param name="top-package" value="${top-package}"/>
                     <param name="package" value="@{package}"/>
                 </antcall>
                 <delete dir="${dir.bin}" includes="**/*.class" excludes="**/*.jar" />
@@ -87,6 +91,7 @@
         <for list="${reborn-skills}" param="skillpath">
             <sequential>
                 <antcall target="jar-skillpath-reborn">
+                    <param name="top-package" value="${top-package}"/>
                     <param name="skillpath" value="@{skillpath}"/>
                 </antcall>
                 <delete dir="${dir.bin}" includes="**/*.class" excludes="**/*.jar" />
@@ -102,27 +107,28 @@
         <dirname file="${skillpath}" property="dirname" />
         <!--<echo message="${dirname}" />-->
         <basename file="${dirname}" property="package" />
+        <echo message="top-package: ${top-package}" />
         <echo message="package: ${package}" />
 
         <!--<echo message="DIR: ${dir.bin}/${dir.bin.path}/reborn/${package}/${classname}" />-->
         <mkdir dir="${dir.dist}/${dir.dist.path}" />
-        <mkdir dir="${dir.bin}/${dir.dist.path}/reborn/${package}" />
+        <mkdir dir="${dir.bin}/${dir.dist.path}/${top-package}/${package}" />
 
         <!--Build only specific skill class-->
-        <javac sourcepath="" srcdir="src/com/herocraftonline/heroes/characters/skill/reborn/${package}"
+        <javac sourcepath="" srcdir="src/com/herocraftonline/heroes/characters/skill/${top-package}/${package}"
                destdir="bin" classpathref="classpath"
                debug="on" includeantruntime="false" encoding="utf-8" fork="yes">
             <include name="${classname}.java" />
         </javac>
         <antcall target="jar-skill-reborn">
-            <param name="file" value="${dir.bin}/${dir.bin.path}/reborn/${package}/${classname}.class" />
+            <param name="file" value="${dir.bin}/${dir.bin.path}/${top-package}/${package}/${classname}.class" />
         </antcall>
         <delete file="${dir.bin}/skill.info" />
     </target>
 
     <target name="jar-skills-reborn">
         <foreach target="jar-skill-reborn" param="file" parallel="false">
-            <fileset dir="${dir.bin}/${dir.bin.path}/reborn/${package}" includes="Skill*.class" excludes="Skill*$*.class" />
+            <fileset dir="${dir.bin}/${dir.bin.path}/${top-package}/${package}" includes="Skill*.class" excludes="Skill*$*.class" />
         </foreach>
         <delete file="${dir.bin}/skill.info" />
     </target>
@@ -134,9 +140,10 @@
     	<echo message="${dirname}" />
     	<basename file="${dirname}" property="package" />
         <echo message="${package}" />
+        <echo message="top-package: ${top-package}" />
         <!--Note: using comma to separate main class and skill version, as its more universal then newlines-->
-        <echo file="${dir.bin}/skill.info" message="main-class: com.herocraftonline.heroes.characters.skill.reborn.${package}.${classname},version: ${jar-version}" />
-        <jar jarfile="${dir.dist}/${dir.dist.path}/reborn/${classname}.jar" basedir="${dir.bin}" includes="${dir.bin.path}/reborn/${package}/${classname}*.class skill.info">
+        <echo file="${dir.bin}/skill.info" message="main-class: com.herocraftonline.heroes.characters.skill.${top-package}.${package}.${classname},version: ${jar-version}" />
+        <jar jarfile="${dir.dist}/${dir.dist.path}/${top-package}/${classname}.jar" basedir="${dir.bin}" includes="${dir.bin.path}/${top-package}/${package}/${classname}*.class skill.info">
             <manifest>
                 <attribute name="Class-Path" value="../../Heroes.jar" />
             </manifest>
