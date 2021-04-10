@@ -53,6 +53,7 @@
         <mkdir dir="${dir.maven.dependencies}" />
 
         <!--Populate Maven Dependencies -->
+        <!--See https://maven.apache.org/ant-tasks/examples/dependencies.html -->
         <artifact:pom id="skillPom" file="pom.xml" />
         <artifact:dependencies filesetId="mavenDependencies" pomRefId="skillPom" />
         <copy todir="${dir.maven.dependencies}">
@@ -169,6 +170,7 @@
         <mkdir dir="${dir.maven.dependencies}" />
 
         <!--Populate Maven Dependencies -->
+        <!--See https://maven.apache.org/ant-tasks/examples/dependencies.html -->
         <artifact:pom id="skillPom" file="pom.xml" />
         <artifact:dependencies filesetId="mavenDependencies" pomRefId="skillPom" />
         <copy todir="${dir.maven.dependencies}">
