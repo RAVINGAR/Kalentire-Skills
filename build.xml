@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE project>
-<project name="Heroes-Skills" default="build-reborn-classes" basedir="." xmlns:artifact="antlib:org.apache.maven.artifact.ant">
+<project name="Heroes-Skills" default="build-classes-and-skills" basedir="." xmlns:artifact="antlib:org.apache.maven.artifact.ant">
     <property environment="env"/>
     <property name="build.compiler" value="extJavac" />
 
@@ -12,14 +12,25 @@
     <property name="jar-version-prefix" value="Herocraft" />
     <!-- Skill packs to only build when running "build-packs" Ant task -->
     <property name="skill-packs" value="public1,pack1,pack2,pack3,pack4,pack5,pack6,pack7,pack8,skills" />
+
+    <!-- Only "build-classes-and-skills" Ant task related properties -->
+
+    <!-- Chooses the "pack" to build reborn/other classes from when running "build-classes-and-skills" task -->
+    <!-- e.g. "remastered", or "reborn" as these are the only current packages organised with subpackages (classes). -->
+    <!-- Only uncomment ONE at a time, and make sure to adjust "classes" or "skills" below as well! -->
+<!--    <property name="top-package" value="reborn"/>-->
+    <property name="top-package" value="remastered"/>
+
     <!-- Classes of skills to only build when running "build-reborn-classes" Ant task, for specific skills only see below. -->
-    <!--<property name="reborn-classes" value="arcanist,chainwarden,chronomancer,defender,disciple,dragoon,druid,enderbeast,hellspawn,necromancer,ninja,pathfinder,professions,pyromancer,shared" />-->
-    <!--<property name="reborn-classes" value="arcanist" />-->
+    <!--<property name="classes" value="arcanist,chainwarden,chronomancer,defender,disciple,dragoon,druid,enderbeast,hellspawn,necromancer,ninja,pathfinder,professions,pyromancer,shared" />-->
+    <!--<property name="classes" value="arcanist" />-->
 
     <!--Can be used to only build specific skills e.g. ninja\SkillSneak-->
-    <property name="reborn-classes" value="" /> <!-- If uncommented, no specified class packages of skills to build-->
-<!--    <property name="reborn-skills" value="arcanist\SkillBolt,necromancer\SkillWeb" />-->
-    <property name="reborn-skills" value="other\SkillEnchant" />
+    <property name="classes" value="" /> <!-- If uncommented, no specified class packages of skills to build-->
+<!--    <property name="skills" value="arcanist\SkillBolt,necromancer\SkillWeb" />-->
+    <property name="skills" value="other\SkillEnchant" />
+
+    <!-- End of Only "build-classes-and-skills" Ant task related properties -->
 
     <!--Classpath used by javac compiler-->
     <path id="classpath">
@@ -37,7 +48,7 @@
         </classpath>
     </taskdef>
 
-    <target name="build-reborn-classes">
+    <target name="build-classes-and-skills">
         <!--Create Maven Dependencies Storage Folder-->
         <mkdir dir="${dir.maven.dependencies}" />
 
@@ -72,9 +83,10 @@
         <mkdir dir="${dir.dist}" />
         <mkdir dir="${dir.bin}" />
 
-        <property name="top-package" value="remastered"/>
-
-        <for list="${reborn-classes}" param="package">
+        <if><not><equals arg1="${classes}" arg2=""/></not> <!--If classes property isn't blank-->
+            <then><echo message="Classes:"/></then>
+        </if>
+        <for list="${classes}" param="package">
             <sequential>
                 <mkdir dir="${dir.dist}/${dir.dist.path}" />
                 <mkdir dir="${dir.bin}/${dir.dist.path}/${top-package}/@{package}" />
@@ -87,8 +99,10 @@
             </sequential>
         </for>
 
-        <echo message="Reborn Skills:"/>
-        <for list="${reborn-skills}" param="skillpath">
+        <if><not><equals arg1="${skills}" arg2=""/></not> <!--If skills property isn't blank-->
+            <then><echo message="Skills:"/></then>
+        </if>
+        <for list="${skills}" param="skillpath">
             <sequential>
                 <antcall target="jar-skillpath-reborn">
                     <param name="top-package" value="${top-package}"/>
@@ -172,7 +186,7 @@
                 <mkdir dir="${dir.dist}/${dir.dist.path}" />
                 <mkdir dir="${dir.bin}/${dir.dist.path}/@{package}" />
                 <javac srcdir="src/com/herocraftonline/heroes/characters/skill" excludes="**/unusedskills/**" debug="on" destdir="bin" classpathref="classpath" includeantruntime="false" encoding="utf-8" fork="yes" />
-                <antcall target="jar-skills">
+                <antcall target="jar-skills-packs">
                     <param name="package" value="@{package}"/>
                 </antcall>
                 <delete dir="${dir.bin}" includes="**/*.class" excludes="**/*.jar" />
@@ -186,14 +200,14 @@
         <delete dir="${dir.maven.dependencies}" />
     </target>
 
-    <target name="jar-skills">
+    <target name="jar-skills-packs">
         <foreach target="jar-skill" param="file" parallel="false">
             <fileset dir="${dir.bin}/${dir.bin.path}/${package}" includes="Skill*.class" excludes="Skill*$*.class" />
         </foreach>
         <delete file="${dir.bin}/skill.info" />
     </target>
 
-    <target name="jar-skill">
+    <target name="jar-skill-packs">
         <basename file="${file}" suffix=".class" property="classname" />
         <echo message="${classname}" />
         <dirname file="${file}" property="dirname" />
