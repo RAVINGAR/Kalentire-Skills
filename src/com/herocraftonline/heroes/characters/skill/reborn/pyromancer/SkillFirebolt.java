@@ -71,8 +71,8 @@ public class SkillFirebolt extends ActiveSkill {
     @Override
     public ConfigurationSection getDefaultConfig() {
         ConfigurationSection config = super.getDefaultConfig();
-        config.set(SkillSetting.DAMAGE.node(), 80);
-        config.set("projectile-velocity", 1.5);
+        config.set(SkillSetting.DAMAGE.node(), 50);
+        config.set("projectile-velocity", 2.0);
         config.set("burn-duration", 2000);
         config.set("burn-damage-multiplier", 2.0);
         return config;
@@ -85,13 +85,17 @@ public class SkillFirebolt extends ActiveSkill {
         double projVel = SkillConfigManager.getUseSetting(hero, this, "projectile-velocity", 1.5, false);
 
         Snowball projectile = player.launchProjectile(Snowball.class);
-        projectile.setVelocity(player.getLocation().getDirection().normalize().multiply(projVel).subtract(new Vector(0, 0.025, 0)));
+        projectile.setVelocity(player.getLocation().getDirection()
+                        .normalize()
+                        .multiply(projVel)
+//                .subtract(new Vector(0, 0.025, 0))
+        );
         projectile.setFireTicks(100);
 
         fireballs.put(projectile, System.currentTimeMillis());
         projectile.setShooter(player);
 
-        BukkitScheduler scheduler = Bukkit.getServer().getScheduler();
+//        BukkitScheduler scheduler = Bukkit.getServer().getScheduler();
 //        VelocityDropRunnable runnable = new VelocityDropRunnable(scheduler, projectile);
 //        runnable.setTaskId(scheduler.scheduleSyncRepeatingTask(plugin, runnable, 0L, 1L));
 

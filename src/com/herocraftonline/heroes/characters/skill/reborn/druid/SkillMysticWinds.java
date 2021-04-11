@@ -2,7 +2,6 @@ package com.herocraftonline.heroes.characters.skill.reborn.druid;
 
 import com.herocraftonline.heroes.Heroes;
 import com.herocraftonline.heroes.api.SkillResult;
-import com.herocraftonline.heroes.api.events.WeaponDamageEvent;
 import com.herocraftonline.heroes.characters.CharacterTemplate;
 import com.herocraftonline.heroes.characters.Hero;
 import com.herocraftonline.heroes.characters.effects.EffectType;
@@ -15,7 +14,9 @@ import com.herocraftonline.heroes.util.Util;
 import de.slikey.effectlib.EffectManager;
 import de.slikey.effectlib.effect.SphereEffect;
 import de.slikey.effectlib.util.DynamicLocation;
-import org.bukkit.*;
+import org.bukkit.Bukkit;
+import org.bukkit.Location;
+import org.bukkit.Particle;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
@@ -32,19 +33,17 @@ import java.util.List;
 import java.util.logging.Level;
 
 public class SkillMysticWinds extends ActiveSkill {
-    private static String toggleableEffectName = "FloatingMysticWinds";
+    private static String EffectName = "FloatingMysticWinds";
 
     public SkillMysticWinds(Heroes plugin) {
-        super(plugin, "MysticWinds");
-        setDescription("Call $1 mystical gales of wind that will float and remain inactive around the caster for up to $2 seconds. " +
-                "If this ability is cast again within that time, it will unleash each stored stream. " +
-                "Each wind will heal $3 damage, increased by $4 for each number of winds you previously landed on the same target. " +
-                "Total healing for hitting every projectile is $5!");
-        setUsage("/skill mysticwinds");
+        super(plugin, "HealingSpores");
+        setDescription("Summon $1 healing spores that will float and remain inactive around the caster for up to $2 seconds. " +
+                "If this ability is cast again within that time, it will unleash each stored spore. " +
+                "Each spore will heal $3 damage");
+        setUsage("/skill healingspores");
         setArgumentRange(0, 0);
-        setIdentifiers("skill mysticwinds");
-        setTypes(SkillType.ABILITY_PROPERTY_MAGICAL, SkillType.SILENCEABLE, SkillType.HEALING);
-        setToggleableEffectName(toggleableEffectName);
+        setIdentifiers("skill healingspores");
+        setTypes(SkillType.ABILITY_PROPERTY_EARTH, SkillType.SILENCEABLE, SkillType.HEALING);
         Bukkit.getServer().getPluginManager().registerEvents(new SkillHeroListener(this), plugin);
     }
 
@@ -52,26 +51,24 @@ public class SkillMysticWinds extends ActiveSkill {
     public String getDescription(Hero hero) {
         int numProjectiles = SkillConfigManager.getUseSetting(hero, this, "num-projectiles", 4, false);
         long duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, 15000, false);
-        double damage = SkillConfigManager.getUseSetting(hero, this, "projectile-damage", 25.0, false);
-        double damageIncreasePerHit = SkillConfigManager.getUseSetting(hero, this, "projectile-damage-increase-per-hit", 10.0, false);
+        double heal = SkillConfigManager.getUseSetting(hero, this, "projectile-heal", 25.0, false);
+
 
         // lmao
-        double totalMaxPossibleDamage = numProjectiles*damage + damageIncreasePerHit*numProjectiles*(numProjectiles-1)/2;
+
 
         return getDescription()
                 .replace("$1", numProjectiles + "")
                 .replace("$2", Util.decFormat.format((double) duration / 1000))
-                .replace("$3", Util.decFormat.format(damage))
-                .replace("$4", Util.decFormat.format(damageIncreasePerHit))
-                .replace("$5", Util.decFormat.format(totalMaxPossibleDamage));
+                .replace("$3", Util.decFormat.format(heal));
+
     }
 
     @Override
     public ConfigurationSection getDefaultConfig() {
         ConfigurationSection config = super.getDefaultConfig();
         config.set(SkillSetting.DURATION.node(), 15000);
-        config.set("projectile-damage", 25.0);
-        config.set("projectile-damage-increase-per-hit", 10.0);
+        config.set("projectile-heal", 25.0);
         config.set("projectile-velocity", 65.0);
         config.set("projectile-max-ticks-lived", 30);
         config.set("projectile-radius", 0.25);
@@ -86,13 +83,13 @@ public class SkillMysticWinds extends ActiveSkill {
 
         broadcastExecuteText(hero);
         int duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, 15000, false);
-        hero.addEffect(new MysticWindsEffect(this, player, duration));
+
+        hero.addEffect(new HealingSporesEffect(this, player, duration));
         return SkillResult.NORMAL;
     }
 
     private class SkillHeroListener implements Listener {
         private Skill skill;
-
         SkillHeroListener(Skill skill) {
             this.skill = skill;
         }
@@ -104,30 +101,25 @@ public class SkillMysticWinds extends ActiveSkill {
 
             Player player = event.getPlayer();
             Hero hero = plugin.getCharacterManager().getHero(player);
-            if (!hero.hasEffect(toggleableEffectName))
+            if (!hero.hasEffect(EffectName))
                 return;
+//
+            if(hero.hasEffect(EffectName)) {
+                HealingSporesEffect effect = (HealingSporesEffect) hero.getEffect(EffectName);
 
-            hero.removeEffect(hero.getEffect(toggleableEffectName));
-        }
+            }
 
-        @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
-        public void onWeaponDamage(WeaponDamageEvent event) {
-            if (event.isProjectile() || !(event.getDamager() instanceof Hero) || !(event.getDamager().hasEffect(toggleableEffectName)))
-                return;
-
-            event.getDamager().removeEffect(event.getDamager().getEffect(toggleableEffectName));
         }
     }
 
-    private class MysticWindsEffect extends ExpirableEffect {
+    private class HealingSporesEffect extends ExpirableEffect {
         private int numProjectiles;
         private double projectileRadius;
         private List<Pair<EffectManager, SphereEffect>> missileVisuals = new ArrayList<Pair<EffectManager, SphereEffect>>();
 
-        MysticWindsEffect(Skill skill, Player applier, long duration) {
-            super(skill, toggleableEffectName, applier, duration);
-
-            this.types.add(EffectType.MAGIC);
+        HealingSporesEffect(Skill skill, Player applier, long duration) {
+            super(skill, EffectName, applier, duration);
+            this.types.add(EffectType.HEALING);
         }
 
         @Override
@@ -166,7 +158,7 @@ public class SkillMysticWinds extends ActiveSkill {
             super.removeFromHero(hero);
 
             int projectileLaunchDelay = SkillConfigManager.getUseSetting(hero, skill, "projectile-launch-delay-ticks", 3, false);
-
+            //Remove loop move it to public method
             for (int i = 0; i < numProjectiles; i++) {
                 int finalI = i;
                 Bukkit.getScheduler().scheduleSyncDelayedTask(plugin, new Runnable() {
@@ -183,7 +175,7 @@ public class SkillMysticWinds extends ActiveSkill {
                         missileVisual.setLocation(eyeLocation.clone().add(eyeOffset));
                         AetherMissile missile = new AetherMissile(hero, skill, projectileRadius, pair.getLeft(), missileVisual);
                         missile.fireMissile();
-                        eyeLocation.getWorld().playSound(eyeLocation, Sound.ENTITY_PLAYER_LEVELUP, 0.5F, 0.5F);
+
                     }
                 }, projectileLaunchDelay * i);
             }
@@ -203,8 +195,7 @@ public class SkillMysticWinds extends ActiveSkill {
         private final Skill skill;
 
         private final int durationTicks;
-        private final double projectileDamage;
-        private final double damageIncreasePerHit;
+        private final double projectileHeal;
 
         private double defaultSpeed;
 
@@ -216,8 +207,7 @@ public class SkillMysticWinds extends ActiveSkill {
             this.visualEffect = visualEffect;
 
             double projectileSpeed = SkillConfigManager.getUseSetting(hero, skill, "projectile-velocity", 20.0, false);
-            this.projectileDamage = SkillConfigManager.getUseSetting(hero, skill, "projectile-damage", 25.0, false);
-            this.damageIncreasePerHit = SkillConfigManager.getUseSetting(hero, skill, "projectile-damage-increase-per-hit", 10.0, false);
+            this.projectileHeal = SkillConfigManager.getUseSetting(hero, skill, "projectile-heal", 25.0, false);
             this.durationTicks = SkillConfigManager.getUseSetting(hero, skill, "projectile-max-duration", 2000, false) / 50;
 
             setNoGravity();
@@ -266,39 +256,14 @@ public class SkillMysticWinds extends ActiveSkill {
                 return;
              */
 
-            double damage = this.projectileDamage;
+            double heal = this.projectileHeal;
             CharacterTemplate targetCT = plugin.getCharacterManager().getCharacter(target);
-            String effectName = getMultiHitEffectName(player);
-            if (targetCT.hasEffect(effectName)) {
-                MultiMissileHitEffect multiHitEffect = (MultiMissileHitEffect) targetCT.getEffect(effectName);
-                damage+= this.damageIncreasePerHit * multiHitEffect.getHitCount();
-                multiHitEffect.addHit();
-            } else {
-                targetCT.addEffect(new MultiMissileHitEffect(skill, effectName, player, 5000));
-            }
 
-            targetHero.tryHeal(hero, skill, damage);
-            hero.getPlayer().sendMessage("healing: " + damage);
+
+            targetHero.tryHeal(hero, skill, heal);
+            hero.getPlayer().sendMessage("healing: " + heal);
         }
 
-        private String getMultiHitEffectName(Player player) {
-            return player.getName() + "-AetherMissileMultiHit";
-        }
-    }
 
-    private class MultiMissileHitEffect extends ExpirableEffect {
-        private int hitCount = 1;
-
-        MultiMissileHitEffect(Skill skill, String name, Player applier, long duration) {
-            super(skill, name, applier, duration);
-        }
-
-        private int getHitCount() {
-            return this.hitCount;
-        }
-
-        private void addHit() {
-            this.hitCount++;
-        }
     }
 }

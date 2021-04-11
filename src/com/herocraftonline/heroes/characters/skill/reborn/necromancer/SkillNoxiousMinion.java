@@ -163,7 +163,7 @@ public class SkillNoxiousMinion extends ActiveSkill {
 //                PlayerDisguise disguise = new PlayerDisguise(applier);
                 disguise.setKeepDisguiseOnPlayerDeath(true);
                 disguise.setEntity(minion);
-                disguise.setShowName(true);
+                disguise.setCustomDisguiseName(true); // Is this the same? as disguise.setShowName(true) ?
                 disguise.setModifyBoundingBox(false);
                 disguise.setReplaceSounds(true);
 //                LivingWatcher watcher = disguise.getWatcher();

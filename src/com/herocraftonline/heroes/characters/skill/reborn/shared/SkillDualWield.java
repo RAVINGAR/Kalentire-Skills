@@ -18,6 +18,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
+import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.PlayerInventory;
@@ -26,13 +27,14 @@ import org.bukkit.scheduler.BukkitRunnable;
 public class SkillDualWield extends PassiveSkill {
 
     private static String hitCountEffectName = "DualWield-HitCount";
+    private static String cooldownEffectName = "DualWield-CooldownEffect";
 
     private NMSHandler nmsHandler = NMSHandler.getInterface();
 
     public SkillDualWield(Heroes plugin) {
         super(plugin, "DualWield");
-        setDescription("You are able to wield two weapons! After every $1 attacks with your mainhand weapon, "
-                + "you will follow up with an additional attack with your offhand weapon, dealing $2% of its normal damage");
+        setDescription("You are able to wield two weapons! After every $1 attack(s) with your main-hand weapon, " +
+                "you will follow up with an additional attack with your offhand weapon, dealing $2% of its normal damage.");
         setTypes(SkillType.ABILITY_PROPERTY_PHYSICAL, SkillType.DAMAGING);
 
         Bukkit.getServer().getPluginManager().registerEvents(new SkillHeroListener(this), plugin);
@@ -49,6 +51,7 @@ public class SkillDualWield extends PassiveSkill {
 
     public ConfigurationSection getDefaultConfig() {
         ConfigurationSection config = super.getDefaultConfig();
+        config.set("minimum-duration-inbetween-hits", 500);
         config.set("max-duration-inbetween-hits", 5000);
         config.set("attacks-per-offhand-swing", 3);
         config.set("damage-effectiveness", 1.0);
@@ -63,13 +66,16 @@ public class SkillDualWield extends PassiveSkill {
             this.skill = skill;
         }
 
-        @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
+        @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
         public void onWeaponDamage(WeaponDamageEvent event) {
             if (!(event.getDamager() instanceof Hero) || !(event.getEntity() instanceof LivingEntity))
                 return;
 
             Hero hero = (Hero) event.getDamager();
             if (!hero.canUseSkill(skill))
+                return;
+
+            if (hero.hasEffect(cooldownEffectName))
                 return;
 
             Player player = hero.getPlayer();
@@ -89,6 +95,15 @@ public class SkillDualWield extends PassiveSkill {
             }
 
             effect.addHit(hero, (LivingEntity) event.getEntity(), offHand);
+            int cooldownDuration = SkillConfigManager.getUseSetting(hero, skill, "minimum-duration-inbetween-hits", 500, false);
+            hero.addEffect(new CooldownEffect(skill, player, cooldownDuration));
+        }
+    }
+
+    // Effect required for implementing an internal cooldown on healing
+    private class CooldownEffect extends ExpirableEffect {
+        public CooldownEffect(Skill skill, Player applier, long duration) {
+            super(skill, cooldownEffectName, applier, duration);
         }
     }
 
@@ -132,6 +147,9 @@ public class SkillDualWield extends PassiveSkill {
                 new BukkitRunnable() {
                     @Override
                     public void run() {
+                        if (target.isDead() || target.getHealth() <= 0)
+                            return;
+
                         doAttack(target, hero, damage);
                     }
                 }.runTaskLater(plugin, delayTicks);

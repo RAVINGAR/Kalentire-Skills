@@ -19,7 +19,6 @@ import java.util.ArrayList;
 
 public class SkillGiftOfEir extends ActiveSkill {
 
-    private String applyText;
     private String expireText;
 
     public SkillGiftOfEir(Heroes plugin) {
@@ -28,7 +27,7 @@ public class SkillGiftOfEir extends ActiveSkill {
         setUsage("/skill giftofeir");
         setArgumentRange(0, 0);
         setIdentifiers("skill giftofeir");
-        setTypes(SkillType.SILENCEABLE);
+        setTypes(SkillType.SILENCEABLE, SkillType.BUFFING);
     }
 
     @Override
@@ -48,10 +47,8 @@ public class SkillGiftOfEir extends ActiveSkill {
         ConfigurationSection node = super.getDefaultConfig();
         node.set("mana-percent-cost", 0.40);
         node.set(SkillSetting.RADIUS.node(), 5.0);
-        node.set(SkillSetting.PERIOD.node(), 100);
-        node.set("mana-regen-tick", 1000);
+        node.set(SkillSetting.PERIOD.node(), 1000);
         node.set(SkillSetting.DURATION.node(), 5000);
-        node.set(SkillSetting.APPLY_TEXT.node(), ChatComponents.GENERIC_SKILL + "%hero% has become invulnerable!");
         node.set(SkillSetting.EXPIRE_TEXT.node(), ChatComponents.GENERIC_SKILL + "%hero% is once again vulnerable!");
 
         return node;
@@ -60,8 +57,10 @@ public class SkillGiftOfEir extends ActiveSkill {
     @Override
     public void init() {
         super.init();
-        applyText = SkillConfigManager.getRaw(this, SkillSetting.APPLY_TEXT, ChatComponents.GENERIC_SKILL + "%hero% has become invulnerable!").replace("%hero%", "$1");
-        expireText = SkillConfigManager.getRaw(this, SkillSetting.EXPIRE_TEXT, ChatComponents.GENERIC_SKILL + "%hero% is once again vulnerable!").replace("%hero%", "$1");
+
+        expireText = SkillConfigManager.getRaw(this, SkillSetting.EXPIRE_TEXT,
+                ChatComponents.GENERIC_SKILL + "%hero% is once again vulnerable!")
+                .replace("%hero%", "$1");
     }
 
     @Override
@@ -78,13 +77,20 @@ public class SkillGiftOfEir extends ActiveSkill {
         }
 
         long duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, 5000, false);
-        int period = SkillConfigManager.getUseSetting(hero, this, SkillSetting.PERIOD, 100, false);
+        int period = SkillConfigManager.getUseSetting(hero, this, SkillSetting.PERIOD, 1000, false);
         double radius = SkillConfigManager.getUseSetting(hero, this, SkillSetting.RADIUS, 5000, false);
         double radiusSquared = radius * radius;
-        long period2 = SkillConfigManager.getUseSetting(hero, this, "mana-regen,tick", 1000, false);
-        hero.addEffect(new RootEffect(this, player, period, duration));
-        hero.addEffect(new ManaPoolEffect(this, player, period2, duration, radiusSquared));
-        hero.addEffect(new InvulnStationaryEffect(this, player, duration, applyText, expireText));
+        hero.addEffect(new RootEffect(this, player, 100, duration, null ,null));
+        hero.addEffect(new ManaPoolEffect(this, player, period, duration, radiusSquared));
+        hero.addEffect(new InvulnStationaryEffect(this, player, duration, null, expireText));
+        Location location = player.getLocation().clone();
+        VisualEffect.playInstantFirework(FireworkEffect.builder()
+                .flicker(true)
+                .trail(false)
+                .with(FireworkEffect.Type.BURST)
+                .withColor(Color.AQUA)
+                .withFade(Color.TEAL)
+                .build(), location.add(0, 2.0, 0));
 
         return SkillResult.NORMAL;
     }
@@ -197,10 +203,12 @@ public class SkillGiftOfEir extends ActiveSkill {
                 ArrayList<Location> particleLocations = circle(player.getLocation(), 15,  5);
                 for (int i = 0; i < particleLocations.size(); i++)
                 {
-                    player.getWorld().spawnParticle(Particle.SPIT, particleLocations.get(i),1, 3, 0.2, 0.5, 0.2);
+                    Particle.DustOptions dustOptions = new Particle.DustOptions(Color.AQUA, 2);
+                    player.getWorld().spawnParticle(Particle.REDSTONE, particleLocations.get(i),1, 3, 0.2, 0.5, 0.2, dustOptions);
                 }
             }
-            player.getWorld().playSound(player.getLocation(), Sound.ENTITY_GUARDIAN_AMBIENT, 1.0F, 1.2F);
+            player.getWorld().playSound(player.getLocation(), Sound.BLOCK_BEACON_AMBIENT, 1.0F, 1.2F);
+
         }
 
     }

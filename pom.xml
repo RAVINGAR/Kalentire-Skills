@@ -55,6 +55,11 @@
     </build>
 
     <repositories>
+        <!-- For ProtocolLib (dependency of LibsDisguises) -->
+        <repository>
+            <id>dmulloy2-repo</id>
+            <url>https://repo.dmulloy2.net/repository/public/</url>
+        </repository>
         <repository>
             <id>maven-repo</id>
             <url>http://repo1.maven.org/maven2</url>
@@ -77,7 +82,7 @@
         <dependency>
             <groupId>com.herocraftonline.heroes</groupId>
             <artifactId>Heroes</artifactId>
-            <version>1.9.2-SNAPSHOT</version>
+            <version>1.9.7-SNAPSHOT</version>
         </dependency>
         <dependency>
             <groupId>com.herocraftonline.heroes</groupId>
@@ -124,7 +129,8 @@
         <dependency>
             <groupId>LibsDisguises</groupId>
             <artifactId>LibsDisguises</artifactId>
-            <version>9.8.0</version>
+            <version>10.0.15</version>
+<!--            <scope>provided</scope>-->
         </dependency>
         <dependency>
             <groupId>net.elseland.xikage</groupId>

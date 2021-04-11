@@ -60,7 +60,7 @@ public class SkillBackstab extends ActiveSkill {
 
         String ambushString = "deal";
         if (ambushChance > -1)
-            backstabString = "have a " + Util.decFormat.format(ambushChance) + "% chance to deal";
+            ambushString = "have a " + Util.decFormat.format(ambushChance) + "% chance to deal";
 
         String formattedBackstabDamageModifier = Util.decFormat.format(backstabDamageModifier * 100);
         String formattedAmbushDamageModifier = Util.decFormat.format(ambushDamageModifier * 100);

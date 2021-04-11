@@ -54,7 +54,7 @@ public class SkillBerserkerRage extends PassiveSkill {
         ConfigurationSection node = super.getDefaultConfig();
 
         node.set(SkillSetting.APPLY_TEXT.node(), "");
-        node.set(SkillSetting.EXPIRE_TEXT.node(), "");
+        node.set(SkillSetting.UNAPPLY_TEXT.node(), "");
         node.set("damage-percent-increase-per-hp-percent", 0.0075);
         node.set("damage-percent-increase-threshhold", 0.40);
 
