@@ -15,19 +15,11 @@ import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 
 public class SkillBloodUnion extends PassiveSkill {
-
-    //ScoreboardManager manager;
-    //Scoreboard board;
-    //HashMap<Hero, ScoreboardManager> bloodUnionManager;
+    private final static String bloodUnionEffectName = "BloodUnionEffect";
 
     public SkillBloodUnion(Heroes plugin) {
         super(plugin, "BloodUnion");
         setDescription("Your damaging abilities form a Blood Union with your opponents. Blood Union allows you to use certain abilities, and also increases the effectiveness of others. Maximum Blood Union is $1. BloodUnion resets upon switching from monsters to players, and will expire completely if not increased after $2 second(s).");
-
-        //ScoreboardManager manager = Bukkit.getScoreboardManager();
-        //manager.getNewScoreboard();
-
-        //bloodUnionManager = new HashMap<Hero, ScoreboardManager>();
 
         Bukkit.getPluginManager().registerEvents(new BloodUnionListener(this), plugin);
     }
@@ -72,7 +64,7 @@ public class SkillBloodUnion extends PassiveSkill {
     }
 
     public void addBloodUnionEffect(Hero hero) {
-        if (!(hero.hasEffect("BloodUnionEffect"))) {
+        if (!(hero.hasEffect(bloodUnionEffectName))) {
             int bloodUnionResetPeriod = SkillConfigManager.getUseSetting(hero, this, SkillSetting.PERIOD, 25000, false);
             int maxBloodUnion = SkillConfigManager.getUseSetting(hero, this, "max-blood-union", 4, false);
             hero.addEffect(new BloodUnionEffect(this, bloodUnionResetPeriod, maxBloodUnion));
@@ -80,9 +72,8 @@ public class SkillBloodUnion extends PassiveSkill {
     }
 
     public void removeBloodUnionEffect(Hero hero) {
-        if (hero.hasEffect("BloodUnionEffect")) {
-            hero.removeEffect(hero.getEffect("BloodUnionEffect"));
+        if (hero.hasEffect(bloodUnionEffectName)) {
+            hero.removeEffect(hero.getEffect(bloodUnionEffectName));
         }
-
     }
 }

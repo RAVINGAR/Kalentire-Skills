@@ -12,10 +12,11 @@ import com.herocraftonline.heroes.attributes.AttributeType;
 import com.herocraftonline.heroes.characters.Hero;
 import com.herocraftonline.heroes.characters.effects.common.CombustEffect;
 import com.herocraftonline.heroes.characters.skill.*;
-import com.herocraftonline.heroes.util.CompatSound;
 
 import org.bukkit.Bukkit;
 import org.bukkit.Effect;
+import org.bukkit.Particle;
+import org.bukkit.Sound;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.*;
 import org.bukkit.event.EventHandler;
@@ -89,7 +90,7 @@ public class SkillFireball extends ActiveSkill {
 
         broadcastExecuteText(hero);
 
-        player.getWorld().spigot().playEffect(player.getLocation(), Effect.BLAZE_SHOOT);
+        player.getWorld().playEffect(player.getLocation(), Effect.BLAZE_SHOOT, 1);
 
         return SkillResult.NORMAL;
     }
@@ -139,8 +140,9 @@ public class SkillFireball extends ActiveSkill {
                 addSpellTarget(targetLE, hero);
                 damageEntity(targetLE, hero.getPlayer(), fireballAttributes.getDamage(hero), DamageCause.MAGIC);
 
-                targetLE.getWorld().spigot().playEffect(targetLE.getLocation().add(0, 0.5F, 0), Effect.FLAME, 0, 0, 0.2F, 0.2F, 0.2F, 0.1F, 50, 16);
-                targetLE.getWorld().playSound(targetLE.getLocation(), CompatSound.BLOCK_FIRE_AMBIENT.value(), 7.0F, 1.0F);
+                //before particle:  targetLE.getWorld().playEffect(targetLE.getLocation().add(0, 0.5F, 0), Effect.FLAME, 0, 0, 0.2F, 0.2F, 0.2F, 0.1F, 50, 16);
+                targetLE.getWorld().spawnParticle(Particle.FLAME, targetLE.getLocation().add(0, 0.5F, 0),50,0.2F,0.2F,0.2F,0.1F);
+                targetLE.getWorld().playSound(targetLE.getLocation(), Sound.BLOCK_FIRE_AMBIENT, 7.0F, 1.0F);
             }
         }
     }

@@ -21,14 +21,16 @@
 <!--    <property name="top-package" value="reborn"/>-->
     <property name="top-package" value="remastered"/>
 
-    <!-- Classes of skills to only build when running "build-reborn-classes" Ant task, for specific skills only see below. -->
+    <!-- Classes of skills to only build when running "build-classes-and-skills" Ant task, for specific skills only see below. -->
     <!--<property name="classes" value="arcanist,chainwarden,chronomancer,defender,disciple,dragoon,druid,enderbeast,hellspawn,necromancer,ninja,pathfinder,professions,pyromancer,shared" />-->
     <!--<property name="classes" value="arcanist" />-->
+    <property name="classes" value="bard,beguiler,berserker,bloodmage,cleric,dragoon,druid,extortioner,hydromancer,monk,necromancer,ninja,paladin,pyromancer,ranger,runeblade,samurai,shadowknight,shaman,shared,wizard" />
 
     <!--Can be used to only build specific skills e.g. ninja\SkillSneak-->
-    <property name="classes" value="" /> <!-- If uncommented, no specified class packages of skills to build-->
-<!--    <property name="skills" value="arcanist\SkillBolt,necromancer\SkillWeb" />-->
-    <property name="skills" value="other\SkillEnchant" />
+<!--    <property name="classes" value="" /> &lt;!&ndash; If uncommented, no specified class packages of skills to build&ndash;&gt;-->
+    <property name="skills" value="" /> <!-- If uncommented, no specified skills to build-->
+    <!--    <property name="skills" value="arcanist\SkillBolt,necromancer\SkillWeb" />-->
+<!--    <property name="skills" value="other\SkillEnchant" />-->
 
     <!-- End of Only "build-classes-and-skills" Ant task related properties -->
 
@@ -57,7 +59,9 @@
         <artifact:pom id="skillPom" file="pom.xml" />
         <artifact:dependencies filesetId="mavenDependencies" pomRefId="skillPom" />
         <copy todir="${dir.maven.dependencies}">
+            <!--suppress AntResolveInspection -->
             <fileset refid="mavenDependencies" />
+            <!--suppress AntResolveInspection -->
             <mapper classpathref="maven-ant-tasks.classpath"
                     classname="org.apache.maven.artifact.ant.VersionMapper"
                     from="${dependency.versions}" to="flatten" />
@@ -91,7 +95,8 @@
             <sequential>
                 <mkdir dir="${dir.dist}/${dir.dist.path}" />
                 <mkdir dir="${dir.bin}/${dir.dist.path}/${top-package}/@{package}" />
-                <javac srcdir="src/com/herocraftonline/heroes/characters/skill/@{top-package}/@{package}" debug="on" destdir="bin" classpathref="classpath" includeantruntime="false" encoding="utf-8" fork="yes" />
+                <javac srcdir="src/com/herocraftonline/heroes/characters/skill/${top-package}/@{package}" debug="on" destdir="bin" classpathref="classpath" includeantruntime="false" encoding="utf-8" fork="yes"
+                       excludes="**/ref/** **/legacy/**" /> <!-- Exclude these subdirectories from build (comma or space separated) -->
                 <antcall target="jar-skills-reborn">
                     <param name="top-package" value="${top-package}"/>
                     <param name="package" value="@{package}"/>
@@ -174,7 +179,9 @@
         <artifact:pom id="skillPom" file="pom.xml" />
         <artifact:dependencies filesetId="mavenDependencies" pomRefId="skillPom" />
         <copy todir="${dir.maven.dependencies}">
+            <!--suppress AntResolveInspection -->
             <fileset refid="mavenDependencies" />
+            <!--suppress AntResolveInspection -->
             <mapper classpathref="maven-ant-tasks.classpath"
                     classname="org.apache.maven.artifact.ant.VersionMapper"
                     from="${dependency.versions}" to="flatten" />

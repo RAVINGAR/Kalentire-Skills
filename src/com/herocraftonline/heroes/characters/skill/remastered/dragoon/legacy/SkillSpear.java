@@ -1,4 +1,4 @@
-package com.herocraftonline.heroes.characters.skill.remastered.dragoon;
+package com.herocraftonline.heroes.characters.skill.remastered.dragoon.legacy;
 
 import com.google.common.collect.Lists;
 import com.herocraftonline.heroes.Heroes;
@@ -67,7 +67,7 @@ public class SkillSpear extends ActiveSkill {
         SpearProjectile missile = new SpearProjectile(plugin, this, hero);
         missile.fireMissile();
 
-        player.getWorld().playSound(player.getLocation(), Sound.ITEM_TRIDENT_RIPTIDE_3, 1.0F, 0.7F);
+//        player.getWorld().playSound(player.getLocation(), Sound.ITEM_TRIDENT_RIPTIDE_3, 1.0F, 0.7F);
 
         return SkillResult.NORMAL;
     }
