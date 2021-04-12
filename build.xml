@@ -100,6 +100,7 @@
                 <antcall target="jar-skills-reborn">
                     <param name="top-package" value="${top-package}"/>
                     <param name="package" value="@{package}"/>
+                    <param name="jar-version" value="${jar-version}"/>
                 </antcall>
                 <delete dir="${dir.bin}" includes="**/*.class" excludes="**/*.jar" />
             </sequential>
@@ -113,6 +114,7 @@
                 <antcall target="jar-skillpath-reborn">
                     <param name="top-package" value="${top-package}"/>
                     <param name="skillpath" value="@{skillpath}"/>
+                    <param name="jar-version" value="${jar-version}"/>
                 </antcall>
                 <delete dir="${dir.bin}" includes="**/*.class" excludes="**/*.jar" />
             </sequential>
