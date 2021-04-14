@@ -114,7 +114,7 @@ public class SkillBarrier extends ActiveSkill {
         List<Location> circle = circle(player.getLocation(), 36, 1.5);
         for (int i = 0; i < circle.size(); i++) {
 			//player.getWorld().spigot().playEffect(circle(player.getLocation(), 36, 1.5).get(i), org.bukkit.Effect.TILE_BREAK, Material.STONE.getId(), 0, 0.2F, 1.5F, 0.2F, 0, 4, 16);
-            player.getWorld().spawnParticle(Particle.BLOCK_CRACK, circle.get(i), 4, 0.2, 1.5, 0.2, 0);
+            player.getWorld().spawnParticle(Particle.BLOCK_CRACK, circle.get(i), 4, 0.2, 1.5, 0.2, 0, Bukkit.createBlockData(Material.STONE));
 		}
 
 		player.getWorld().playEffect(player.getLocation(), org.bukkit.Effect.SMOKE, 3);
@@ -170,9 +170,7 @@ public class SkillBarrier extends ActiveSkill {
 					// Make them have invuln ticks so attackers dont get machine-gunned from attacking the buffed player.
 					defenderPlayer.setNoDamageTicks(defenderPlayer.getMaximumNoDamageTicks());
 
-					double damageMultiplier = SkillConfigManager.getUseSetting(defenderHero, skill, "damage-multiplier", 0.4, false);
-					double damageMultiplierIncrease = SkillConfigManager.getUseSetting(defenderHero, skill, "damage-multiplier-increase-per-intellect", 0.00875, false);
-					damageMultiplier += defenderHero.getAttributeValue(AttributeType.INTELLECT) * damageMultiplierIncrease;
+					double damageMultiplier = SkillConfigManager.getScaledUseSettingDouble(defenderHero, skill, "damage-multiplier", false);
 
 					Material item = NMSHandler.getInterface().getItemInMainHand(defenderPlayer.getInventory()).getType();
 					double damage = plugin.getDamageManager().getHighestItemDamage(defenderHero, item) * damageMultiplier;

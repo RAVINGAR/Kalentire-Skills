@@ -22,6 +22,7 @@ import org.bukkit.util.Vector;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.logging.Level;
 
 public class SkillTsunami extends ActiveSkill {
 
@@ -29,8 +30,8 @@ public class SkillTsunami extends ActiveSkill {
         super(plugin, "Tsunami");
         setDescription("You launch a Tsunami forward for $1 seconds, dealing $2 damage to $3enemies it hits.");
         setUsage("/skill tsunami");
-        setArgumentRange(0, 0);
         setIdentifiers("skill tsunami");
+        setArgumentRange(0, 0);
         setTypes(SkillType.DAMAGING, SkillType.ABILITY_PROPERTY_MAGICAL, SkillType.ABILITY_PROPERTY_WATER, SkillType.AGGRESSIVE);
     }
 
@@ -40,10 +41,8 @@ public class SkillTsunami extends ActiveSkill {
 
         node.set(SkillSetting.DAMAGE.node(), 200.0);
         node.set(SkillSetting.DAMAGE_INCREASE_PER_INTELLECT.node(), 1.0);
-
         node.set(SkillSetting.DURATION.node(), 10);
         node.set(SkillSetting.DURATION_INCREASE_PER_WISDOM.node(), 1);
-
         node.set("knockup", true);
         node.set("knockup-velocity", 1.0);
         node.set("knockup-multiplier", 2.0);
@@ -53,18 +52,13 @@ public class SkillTsunami extends ActiveSkill {
 
     @Override
     public String getDescription(Hero hero) {
-        int duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, 10, false);
-        int durationIncrease = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION_INCREASE_PER_WISDOM, 1, false);
-        duration += durationIncrease * hero.getAttributeValue(AttributeType.WISDOM);
-        String formattedDuration = Util.decFormat.format(duration / 20);
-
-        double damage = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE, 200.0, false);
-        double damageIncrease = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE_INCREASE_PER_INTELLECT, 1.0, false);
-        damage += damageIncrease * hero.getAttributeValue(AttributeType.INTELLECT);
-
+        int duration = SkillConfigManager.getScaledUseSettingInt(hero, this, SkillSetting.DURATION, false);
+        double damage = SkillConfigManager.getScaledUseSettingDouble(hero, this, SkillSetting.DAMAGE,  false);
         boolean knockup = SkillConfigManager.getUseSetting(hero, this, "knockup", true);
 
-        return getDescription().replace("$1", formattedDuration).replace("$2", damage + "").replace("$3", knockup ? "and knocking up " : "");
+        return getDescription().replace("$1", Util.decFormat.format(duration / 20))
+                .replace("$2", Util.decFormat.format(damage))
+                .replace("$3", knockup ? "and knocking up " : "");
     }
 
     @Override
@@ -74,13 +68,8 @@ public class SkillTsunami extends ActiveSkill {
         broadcastExecuteText(hero);
 
         // Get configs
-        int duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, 10, false);
-        int durationIncrease = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION_INCREASE_PER_WISDOM, 1, false);
-        duration += durationIncrease * hero.getAttributeValue(AttributeType.WISDOM);
-
-        double damage = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE, 200.0, false);
-        double damageIncrease = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE_INCREASE_PER_INTELLECT, 1.0, false);
-        damage += damageIncrease * hero.getAttributeValue(AttributeType.INTELLECT);
+        int duration = SkillConfigManager.getScaledUseSettingInt(hero, this, SkillSetting.DURATION, 10, false);
+        double damage = SkillConfigManager.getScaledUseSettingDouble(hero, this, SkillSetting.DAMAGE, 200.0, false);
 
         boolean knockup = SkillConfigManager.getUseSetting(hero, this, "knockup", true);
         double knockupVelocity = SkillConfigManager.getUseSetting(hero, this, "knockup-velocity", 1.0, false);
@@ -180,6 +169,18 @@ public class SkillTsunami extends ActiveSkill {
                 Bukkit.getScheduler().runTaskLater(plugin, new Runnable() {
                     @Override
                     public void run() {
+                        //FIXME remove this debug
+                        // couldn't get any messages, must be a issue getting to this.
+//                        String entitiesString = "none";
+//                        if (nearbyEntities.size() > 0) {
+//                            StringBuilder entitiesStringBuilder = new StringBuilder();
+//                            for (Entity entity : nearbyEntities) {
+//                                entitiesStringBuilder.append(entity.getName()).append(", ");
+//                            }
+//                            entitiesString = entitiesStringBuilder.toString();
+//                        }
+//                        Heroes.log(Level.INFO, entitiesString);
+
                         for (Entity ent : nearbyEntities) {
                             if (ent instanceof LivingEntity && ent != casterPlayer && !hitTargets.contains(ent)) {
                                 LivingEntity lEnt = (LivingEntity) ent;

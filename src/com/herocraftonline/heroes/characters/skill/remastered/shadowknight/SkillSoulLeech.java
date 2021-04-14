@@ -9,9 +9,12 @@ import com.herocraftonline.heroes.characters.Hero;
 import com.herocraftonline.heroes.characters.Monster;
 import com.herocraftonline.heroes.characters.effects.EffectType;
 import com.herocraftonline.heroes.characters.effects.PeriodicDamageEffect;
+import com.herocraftonline.heroes.characters.effects.common.SoundEffect;
 import com.herocraftonline.heroes.characters.skill.*;
 import com.herocraftonline.heroes.chat.ChatComponents;
 import com.herocraftonline.heroes.util.Util;
+import org.bukkit.Location;
+import org.bukkit.Sound;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
@@ -25,8 +28,8 @@ public class SkillSoulLeech extends TargettedSkill {
         super(plugin, "SoulLeech");
         setDescription("Leech the soul of your target, dealing $1 damage over $2 second(s). After expiring, the effect will restore your health for $3% of the damage dealt.");
         setUsage("/skill soulleech");
-        setArgumentRange(0, 0);
         setIdentifiers("skill soulleech");
+        setArgumentRange(0, 0);
         setTypes(SkillType.ABILITY_PROPERTY_MAGICAL, SkillType.ABILITY_PROPERTY_DARK, SkillType.SILENCEABLE, SkillType.DEBUFFING, SkillType.DAMAGING, SkillType.AGGRESSIVE);
     }
 
@@ -36,10 +39,7 @@ public class SkillSoulLeech extends TargettedSkill {
         int duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, 20000, false);
         int period = SkillConfigManager.getUseSetting(hero, this, SkillSetting.PERIOD, 2000, false);
 
-        double damage = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE_TICK, 14.0, false);
-        double damageIncrease = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE_TICK_INCREASE_PER_INTELLECT, 0.0375, false);
-        damage += damageIncrease * hero.getAttributeValue(AttributeType.INTELLECT);
-
+        double damage = SkillConfigManager.getScaledUseSettingDouble(hero, this, SkillSetting.DAMAGE_TICK, false);
         double healMult = SkillConfigManager.getUseSetting(hero, this, "heal-mult", 0.72, false);
 
         String formattedDuration = Util.decFormat.format(duration / 1000.0);
@@ -62,6 +62,8 @@ public class SkillSoulLeech extends TargettedSkill {
         node.set(SkillSetting.APPLY_TEXT.node(), ChatComponents.GENERIC_SKILL + "%target% is having their soul leeched by %hero%");
         node.set(SkillSetting.EXPIRE_TEXT.node(), ChatComponents.GENERIC_SKILL + "%target%'s soul is no longer being leeched.");
         node.set(SkillSetting.DELAY.node(), 1000);
+        node.set("volume", 0.8F);
+        node.set("pitch", 1.0F);
 
         return node;
     }
@@ -87,27 +89,32 @@ public class SkillSoulLeech extends TargettedSkill {
 
         double healMult = SkillConfigManager.getUseSetting(hero, this, "heal-mult", 0.72, false);
 
+        float soundVolume = (float) SkillConfigManager.getUseSetting(hero, this, "volume", 0.8F, false);
+        float soundPitch = (float) SkillConfigManager.getUseSetting(hero, this, "pitch", 1.0F, false);
+
         broadcastExecuteText(hero, target);
 
         CharacterTemplate targetCT = plugin.getCharacterManager().getCharacter(target);
-        targetCT.addEffect(new SoulLeechEffect(this, player, period, duration, damage, healMult));
+        targetCT.addEffect(new SoulLeechEffect(this, player, period, duration, damage, healMult, soundVolume, soundPitch));
 
         return SkillResult.NORMAL;
     }
 
     public class SoulLeechEffect extends PeriodicDamageEffect {
-
+        private final float soundVolume;
+        private final float soundPitch;
         private double healMult;
         private double totalDamage = 0;
 
-        public SoulLeechEffect(Skill skill, Player applier, long period, long duration, double tickDamage, double healMult) {
+        public SoulLeechEffect(Skill skill, Player applier, long period, long duration, double tickDamage, double healMult, float soundVolume, float soundPitch) {
             super(skill, "SoulLeeched", applier, period, duration, tickDamage, applyText, expireText);
-
             types.add(EffectType.HARMFUL);
             types.add(EffectType.DARK);
             types.add(EffectType.DISPELLABLE);
 
             this.healMult = healMult;
+            this.soundVolume = soundVolume;
+            this.soundPitch = soundPitch;
         }
 
         @Override
@@ -128,6 +135,7 @@ public class SkillSoulLeech extends TargettedSkill {
             super.tickMonster(monster);
 
             totalDamage += tickDamage;
+            playSound(monster.getEntity().getLocation());
         }
 
         @Override
@@ -135,6 +143,7 @@ public class SkillSoulLeech extends TargettedSkill {
             super.tickHero(hero);
 
             totalDamage += tickDamage;
+            playSound(hero.getPlayer().getLocation());
         }
 
         private void healApplier() {
@@ -144,6 +153,12 @@ public class SkillSoulLeech extends TargettedSkill {
             plugin.getServer().getPluginManager().callEvent(hrhEvent);
             if (!hrhEvent.isCancelled()) {
                 hero.heal(hrhEvent.getDelta());
+            }
+        }
+
+        private void playSound(Location location) {
+            if (soundVolume > 0) {
+                location.getWorld().playSound(location, Sound.ENTITY_BAT_DEATH, soundVolume, soundPitch);
             }
         }
     }

@@ -27,36 +27,31 @@ import org.bukkit.util.Vector;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.logging.Level;
 
-public class SkillFlood extends ActiveSkill
-{
+public class SkillFlood extends ActiveSkill {
 	private boolean ncpEnabled = false;
 	
-	public SkillFlood(Heroes plugin)
-	{
+	public SkillFlood(Heroes plugin) {
 		super(plugin, "Flood");
-		setDescription("You let loose a flood up to $1 blocks in front of you, striking all enemies in its path for $2 damage and washing them away. Targets hit are soaked for 5 second(s).");
+		setDescription("You let loose a flood up to $1 blocks in front of you, striking all enemies in its path for " +
+				"$2 damage and washing them away. Targets hit are soaked for 5 second(s).");
 		setUsage("/skill flood");
-		setArgumentRange(0, 0);
 		setIdentifiers("skill flood");
+		setArgumentRange(0, 0);
 		setTypes(SkillType.SILENCEABLE, SkillType.FORCE, SkillType.ABILITY_PROPERTY_WATER, SkillType.DAMAGING);
 		if (Bukkit.getServer().getPluginManager().getPlugin("NoCheatPlus") != null) ncpEnabled = true;
 		Bukkit.getServer().getPluginManager().registerEvents(new SaturatedListener(this), plugin);
 	}
 
-	public String getDescription(Hero hero)
-	{
-		int distance = SkillConfigManager.getUseSetting(hero, this, SkillSetting.MAX_DISTANCE, 8, false);
-		double dmg = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE, 50, false);
-		double damageIncrease = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE_INCREASE_PER_INTELLECT, 0.7, false)
-				* hero.getAttributeValue(AttributeType.INTELLECT);
-		final double damage = dmg + damageIncrease;
-
-		return getDescription().replace("$1", distance + "").replace("$2", damage + "");
+	public String getDescription(Hero hero) {
+		int distance = SkillConfigManager.getScaledUseSettingInt(hero, this, SkillSetting.MAX_DISTANCE, false);
+		double damage = SkillConfigManager.getScaledUseSettingDouble(hero, this, SkillSetting.DAMAGE, false);
+		return getDescription().replace("$1", distance + "")
+				.replace("$2", Util.decFormat.format(damage));
 	}	
 
-	public ConfigurationSection getDefaultConfig() 
-	{
+	public ConfigurationSection getDefaultConfig() {
 		ConfigurationSection node = super.getDefaultConfig();
 
 		node.set(SkillSetting.MAX_DISTANCE.node(), 8);
@@ -64,22 +59,21 @@ public class SkillFlood extends ActiveSkill
 		node.set(SkillSetting.DAMAGE_INCREASE_PER_INTELLECT.node(), 0.7);
 		node.set("wave-delay", 2);
 		node.set(SkillSetting.RADIUS.node(), 4);
-		node.set("horizontal-power", Double.valueOf(0.5));
-		node.set("horizontal-power-increase", Double.valueOf(0.05));
-		node.set("vertical-power", Double.valueOf(0.15));
-		node.set("vertical-power-increase", Double.valueOf(0.0045));
-		node.set("ncp-exemption-duration", Integer.valueOf(1500));
+		node.set("horizontal-power", 0.5);
+		node.set("horizontal-power-increase-per-level", 0.05);
+		node.set("vertical-power", 0.15);
+		node.set("vertical-power-increase-per-level", 0.0045);
+		node.set("ncp-exemption-duration", 1500);
 
 		return node;
 	}
 
-	public SkillResult use(final Hero hero, String[] args)
-	{
+	public SkillResult use(final Hero hero, String[] args) {
 		final Player player = hero.getPlayer();
 
 		final Skill skill = this;
 
-		int distance = SkillConfigManager.getUseSetting(hero, this, SkillSetting.MAX_DISTANCE, 8, false);
+		int distance = SkillConfigManager.getScaledUseSettingInt(hero, this, SkillSetting.MAX_DISTANCE, false);
 
 		Block tempBlock;
 		BlockIterator iter = null;
@@ -92,24 +86,12 @@ public class SkillFlood extends ActiveSkill
 
 		broadcastExecuteText(hero);
 
-		double dmg = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE, 50, false);
-		double damageIncrease = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE_INCREASE_PER_INTELLECT, 0.7, false)
-				* hero.getAttributeValue(AttributeType.INTELLECT);
-		final double damage = dmg + damageIncrease;
-
-		final int radius = SkillConfigManager.getUseSetting(hero, this, SkillSetting.RADIUS, 4, false);
+		final double damage = SkillConfigManager.getScaledUseSettingDouble(hero, this, SkillSetting.DAMAGE, false);
+		final int radius = SkillConfigManager.getScaledUseSettingInt(hero, this, SkillSetting.RADIUS, false);
 		final int radiusSquared = radius * radius;
-		
-		double horizontalPower = SkillConfigManager.getUseSetting(hero, skill, "horizontal-power", Double.valueOf(0.5), false);
-		double hPowerIncrease = SkillConfigManager.getUseSetting(hero, skill, "horizontal-power-increase", Double.valueOf(0.05), false);
-		horizontalPower += (hPowerIncrease * hero.getLevel());
 
-		double verticalPower = SkillConfigManager.getUseSetting(hero, skill, "vertical-power", Double.valueOf(0.15), false);
-		double vPowerIncrease = SkillConfigManager.getUseSetting(hero, skill, "vertical-power-increase", Double.valueOf(0.0045), false);
-		verticalPower += (vPowerIncrease * hero.getLevel());
-		
-		final double hPower = horizontalPower;
-		final double vPower = verticalPower;
+		final double hPower = SkillConfigManager.getScaledUseSettingDouble(hero, skill, "horizontal-power", false);
+		final double vPower = SkillConfigManager.getScaledUseSettingDouble(hero, skill, "vertical-power", false);
 
 		int delay = SkillConfigManager.getUseSetting(hero, this, "wave-delay", 2, false);
 
@@ -118,17 +100,14 @@ public class SkillFlood extends ActiveSkill
 
 		int numBlocks = 0;
 
-		for (float f = 0.1F; f < 2.0F; f += 0.1F)
-		{
+		for (float f = 0.1F; f < 2.0F; f += 0.1F) {
 			player.getWorld().playSound(player.getLocation(), Sound.ENTITY_GENERIC_SPLASH, 0.4F, f);
 		}
 
-		while (iter.hasNext()) 
-		{        	
+		while (iter.hasNext()) {
 			tempBlock = iter.next();
 			Material tempBlockType = tempBlock.getType();
-			if (Util.transparentBlocks.contains(tempBlockType)) 
-			{
+			if (Util.transparentBlocks.contains(tempBlockType)) {
 				final Location targetLocation = tempBlock.getLocation().clone().add(new Vector(.5, 0, .5));
 
 				Bukkit.getScheduler().scheduleSyncDelayedTask(plugin, new Runnable()
@@ -140,8 +119,20 @@ public class SkillFlood extends ActiveSkill
 						targetLocation.getWorld().spawnParticle(Particle.WATER_SPLASH, targetLocation.add(0, 1, 0), 150, radius / 2f, radius / 2f, radius / 2f, 0, true);
 						//targetLocation.getWorld().spigot().playEffect(targetLocation.add(0, 1.0, 0), Effect.TILE_BREAK, Material.WATER.getId(), 0, (float) radius / 2, (float) radius / 2, (float) radius / 2, 0.0F, 100, 32);
 						//targetLocation.getWorld().spawnParticle(Particle.BLOCK_CRACK, targetLocation.add(0, 1, 0), 100, radius / 2f, radius / 2f, radius / 2f, 0, Bukkit.createBlockData(Material.WATER), true);
-						for (Entity entity : nearbyEntities) 
-						{
+
+						//FIXME remove this debug
+						// couldn't get any messages, must be a issue getting to this.
+//						String entitiesString = "none";
+//						if (nearbyEntities.size() > 0) {
+//							StringBuilder entitiesStringBuilder = new StringBuilder();
+//							for (Entity entity : nearbyEntities) {
+//								entitiesStringBuilder.append(entity.getName()).append(", ");
+//							}
+//							entitiesString = entitiesStringBuilder.toString();
+//						}
+//						Heroes.log(Level.INFO, entitiesString);
+
+						for (Entity entity : nearbyEntities) {
 							if (!(entity instanceof LivingEntity) || hitEnemies.contains(entity) || entity.getLocation().distanceSquared(targetLocation) > radiusSquared)
 								continue;
 
@@ -160,8 +151,7 @@ public class SkillFlood extends ActiveSkill
 							addSpellTarget(target, hero);
 							damageEntity(target, player, damage, DamageCause.MAGIC);
 							
-							if (target.getFireTicks() > 0)
-							{
+							if (target.getFireTicks() > 0) {
 								//FIXME This effect is a sound but why is it played like a particle.
 								//target.getWorld().spigot().playEffect(target.getLocation(), Effect.EXTINGUISH, 0, 0, 0.5F, 1.0F, 0.5F, 0.2F, 25, 16);
 								target.getWorld().playSound(target.getLocation(), Sound.BLOCK_FIRE_EXTINGUISH, 1.0F, 1.0F);
@@ -181,14 +171,11 @@ public class SkillFlood extends ActiveSkill
 							xDir = xDir / magnitude * hPower;
 							zDir = zDir / magnitude * hPower;
 
-							if (ncpEnabled)             
-							{
-								if (target instanceof Player) 
-								{
+							if (ncpEnabled)	{
+								if (target instanceof Player) {
 									Player targetPlayer = (Player) target;
 									Hero targetHero = plugin.getCharacterManager().getHero(targetPlayer);
-									if (!targetPlayer.isOp()) 
-									{
+									if (!targetPlayer.isOp()) {
 										long ncpDuration = SkillConfigManager.getUseSetting(hero, skill, "ncp-exemption-duration", 500, false);
 										NCPExemptionEffect ncpExemptEffect = new NCPExemptionEffect(skill, targetPlayer, ncpDuration);
 										targetHero.addEffect(ncpExemptEffect);
@@ -211,8 +198,7 @@ public class SkillFlood extends ActiveSkill
 		return SkillResult.NORMAL;
 	}
 	
-	private class NCPExemptionEffect extends ExpirableEffect 
-	{
+	private class NCPExemptionEffect extends ExpirableEffect {
 
 		public NCPExemptionEffect(Skill skill, Player applier, long duration) {
 			super(skill, "NCPExemptionEffect_MOVING", applier, duration);
@@ -235,21 +221,16 @@ public class SkillFlood extends ActiveSkill
 		}
 	}
 	
-	public class SaturatedEffect extends ExpirableEffect
-	{
-		public SaturatedEffect(Skill skill, Player applier, long duration)
-		{
+	public class SaturatedEffect extends ExpirableEffect {
+		public SaturatedEffect(Skill skill, Player applier, long duration) {
 			super(skill, "Saturated", applier, duration);
 		}
 		
-		public void applyToHero(Hero hero)
-		{
+		public void applyToHero(Hero hero) {
 			super.applyToHero(hero);
 			final Hero h = hero;
-			new BukkitRunnable()
-			{
-				public void run()
-				{
+			new BukkitRunnable() {
+				public void run() {
 					if (!h.hasEffect("Saturated") || h.getPlayer().isDead()) cancel();
 					//h.getPlayer().getWorld().spigot().playEffect(h.getPlayer().getLocation(), Effect.SPLASH, 0, 0, 0.3F, 1.0F, 0.3F, 0.0F, 25, 16);
 					h.getPlayer().getWorld().spawnParticle(Particle.WATER_SPLASH, h.getPlayer().getLocation(), 25, 0.3, 1, 0.3, 0);
@@ -257,14 +238,11 @@ public class SkillFlood extends ActiveSkill
 			}.runTaskTimer(plugin, 0, 8);
 		}
 		
-		public void applyToMonster(Monster monster)
-		{
+		public void applyToMonster(Monster monster)	{
 			super.applyToMonster(monster);
 			final Monster m = monster;
-			new BukkitRunnable()
-			{
-				public void run()
-				{
+			new BukkitRunnable() {
+				public void run() {
 					if (!m.hasEffect("Saturated") || m.getEntity().isDead()) cancel();
 					//m.getEntity().getWorld().spigot().playEffect(m.getEntity().getLocation(), Effect.SPLASH, 0, 0, 0.3F, 1.0F, 0.3F, 0.0F, 25, 16);
 					m.getEntity().getWorld().spawnParticle(Particle.WATER_SPLASH, m.getEntity().getLocation(), 25, 0.3, 1, 0.3, 0);
@@ -273,18 +251,15 @@ public class SkillFlood extends ActiveSkill
 		}
 	}
 	
-	public class SaturatedListener implements Listener
-	{
+	public class SaturatedListener implements Listener {
 		@SuppressWarnings("unused")
 		private Skill skill;
-		public SaturatedListener(Skill skill)
-		{
+		public SaturatedListener(Skill skill) {
 			this.skill = skill;
 		}
 		
 		@EventHandler
-		public void entFireDamage(EntityDamageEvent event)
-		{
+		public void entFireDamage(EntityDamageEvent event) {
 			if (!(event.getEntity() instanceof LivingEntity) || (event.getCause() != DamageCause.FIRE_TICK && event.getCause() != DamageCause.FIRE)) return;
 			CharacterTemplate entCT = plugin.getCharacterManager().getCharacter((LivingEntity) event.getEntity());
 			if (!entCT.hasEffect("Saturated")) return;
