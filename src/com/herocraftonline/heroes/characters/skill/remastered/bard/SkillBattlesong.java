@@ -104,10 +104,11 @@ public class SkillBattlesong extends ActiveSkill {
 
         broadcastExecuteText(hero);
 
-        //FIXME Is it a particle or a sound
-//        player.getWorld().playEffect(player.getLocation().add(0, 2.5, 0), org.bukkit.Effect.NOTE, 3);
-//        player.getWorld().playEffect(player.getLocation().add(0, 2.5, 0), org.bukkit.Effect.NOTE, 3);
-//        player.getWorld().playEffect(player.getLocation().add(0, 2.5, 0), org.bukkit.Effect.NOTE, 3);
+        for (int i = 0; i < 3; i++) {
+            // spawn 1 NOTE particle with data of 3, no random offset
+            player.getWorld().spawnParticle(Particle.NOTE, player.getLocation().add(0, 2.5, 0),  1, 0,0,0, 3);
+//            player.getWorld().playEffect(player.getLocation().add(0, 2.5, 0), org.bukkit.Effect.NOTE, 3);
+        }
 
         return SkillResult.NORMAL;
     }
@@ -169,33 +170,27 @@ public class SkillBattlesong extends ActiveSkill {
 
         @Override
         public void tickHero(Hero hero) {
-            Player player = hero.getPlayer();
-
-            if (hero.hasParty()) {
-                int radiusSquared = radius * radius;
-                Location playerLocation = player.getLocation();
-                // Loop through the player's party members and heal as necessary
-                for (Hero member : hero.getParty().getMembers()) {
-                    Location memberLocation = member.getPlayer().getLocation();
-
-                    // Ensure the party member is close enough
-                    if (memberLocation.getWorld().equals(playerLocation.getWorld())
-                            && memberLocation.distanceSquared(playerLocation) <= radiusSquared) {
-                        if (hero.getStamina() < hero.getMaxStamina()) {
-                            tryRegainStamina(member);
-                        }
-                        if (hero.getMana() < hero.getMaxMana()) {
-                            tryRegainMana(member);
-                        }
-                    }
-                }
-            }
-            else {
-                if (hero.getStamina() < hero.getMaxStamina()) {
+            if (!hero.hasParty()) {
+                if (hero.getStamina() < hero.getMaxStamina())
                     tryRegainStamina(hero);
-                }
-                if (hero.getMana() < hero.getMaxMana()) {
+                if (hero.getMana() < hero.getMaxMana())
                     tryRegainMana(hero);
+                return;
+            }
+
+            int radiusSquared = radius * radius;
+            Location healerLocation = hero.getPlayer().getLocation();
+            // Loop through the player's party members and heal as necessary
+            for (Hero member : hero.getParty().getMembers()) {
+                Location memberLocation = member.getPlayer().getLocation();
+
+                // Ensure the party member is close enough
+                if (memberLocation.getWorld().equals(healerLocation.getWorld())
+                        && memberLocation.distanceSquared(healerLocation) <= radiusSquared) {
+                    if (hero.getStamina() < hero.getMaxStamina())
+                        tryRegainStamina(member);
+                    if (hero.getMana() < hero.getMaxMana())
+                        tryRegainMana(member);
                 }
             }
         }

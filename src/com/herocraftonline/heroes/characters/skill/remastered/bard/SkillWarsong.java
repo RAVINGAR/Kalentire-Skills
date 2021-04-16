@@ -27,6 +27,7 @@ import org.bukkit.scheduler.BukkitRunnable;
 
 public class SkillWarsong extends ActiveSkill {
 
+    private final String warsongEffectName = "Warsong";
     private Song skillSong;
 
     private String applyText;
@@ -35,9 +36,9 @@ public class SkillWarsong extends ActiveSkill {
     public SkillWarsong(Heroes plugin) {
         super(plugin, "Warsong");
         setDescription("Increase the melee and bow damage of party members within $1 blocks by $2% for $3 second(s).");
-        setArgumentRange(0, 0);
         setUsage("/skill warsong");
         setIdentifiers("skill warsong");
+        setArgumentRange(0, 0);
         setTypes(SkillType.BUFFING, SkillType.AREA_OF_EFFECT, SkillType.ABILITY_PROPERTY_SONG);
 
         skillSong = new Song(
@@ -99,8 +100,8 @@ public class SkillWarsong extends ActiveSkill {
         broadcastExecuteText(hero);
 
         if (!hero.hasParty()) {
-            if (hero.hasEffect("Warsong")) {
-                if (((WarsongEffect) hero.getEffect("Warsong")).getDamageBonus() > mEffect.getDamageBonus()) {
+            if (hero.hasEffect(warsongEffectName)) {
+                if (((WarsongEffect) hero.getEffect(warsongEffectName)).getDamageBonus() > mEffect.getDamageBonus()) {
                     player.sendMessage("You have a more powerful effect already!");
                     return SkillResult.CANCELLED;
                 }
@@ -120,8 +121,8 @@ public class SkillWarsong extends ActiveSkill {
                 if (pPlayer.getLocation().distanceSquared(loc) > radiusSquared)
                     continue;
 
-                if (pHero.hasEffect("Warsong")) {
-                    if (((WarsongEffect) pHero.getEffect("Warsong")).getDamageBonus() > mEffect.getDamageBonus()) {
+                if (pHero.hasEffect(warsongEffectName)) {
+                    if (((WarsongEffect) pHero.getEffect(warsongEffectName)).getDamageBonus() > mEffect.getDamageBonus()) {
                         continue;
                     }
                 }
@@ -130,10 +131,11 @@ public class SkillWarsong extends ActiveSkill {
             }
         }
 
-        //FIXME Is it a particle or a sound
-//        player.getWorld().playEffect(player.getLocation().add(0, 2.5, 0), org.bukkit.Effect.NOTE, 3);
-//        player.getWorld().playEffect(player.getLocation().add(0, 2.5, 0), org.bukkit.Effect.NOTE, 3);
-//        player.getWorld().playEffect(player.getLocation().add(0, 2.5, 0), org.bukkit.Effect.NOTE, 3);
+        for (int i = 0; i < 3; i++) {
+            // spawn 1 NOTE particle with data of 3, no random offset
+            player.getWorld().spawnParticle(Particle.NOTE, player.getLocation().add(0, 2.5, 0),  1, 0,0,0, 3);
+//            player.getWorld().playEffect(player.getLocation().add(0, 2.5, 0), org.bukkit.Effect.NOTE, 3);
+        }
 
         return SkillResult.NORMAL;
     }
@@ -147,8 +149,8 @@ public class SkillWarsong extends ActiveSkill {
             }
 
             CharacterTemplate character = event.getDamager();
-            if (character.hasEffect("Warsong")) {
-                double damageBonus = ((WarsongEffect) character.getEffect("Warsong")).damageBonus;
+            if (character.hasEffect(warsongEffectName)) {
+                double damageBonus = ((WarsongEffect) character.getEffect(warsongEffectName)).damageBonus;
                 event.setDamage((event.getDamage() * damageBonus));
             }
         }
@@ -158,7 +160,7 @@ public class SkillWarsong extends ActiveSkill {
         private final double damageBonus;
 
         public WarsongEffect(Skill skill, Player applier, long duration, double damageBonus) {
-            super(skill, "Warsong", applier, duration, applyText, expireText);
+            super(skill, warsongEffectName, applier, duration, applyText, expireText);
 
             types.add(EffectType.DISPELLABLE);
             types.add(EffectType.BENEFICIAL);
