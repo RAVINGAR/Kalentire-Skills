@@ -29,12 +29,12 @@ import org.bukkit.event.player.PlayerTeleportEvent.TeleportCause;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.util.Vector;
 
-public class SkillEnderPearls extends PassiveSkill {
+public class SkillArcaneKnowledge extends PassiveSkill {
     private final String cooldownEffectName = "EnderPearlUsageCooldownEffect";
 
-    public SkillEnderPearls(Heroes plugin) {
-        super(plugin, "EnderPearls");
-        setDescription("You can throw ender pearls! $1");
+    public SkillArcaneKnowledge(Heroes plugin) {
+        super(plugin, "ArcaneKnowledge");
+        setDescription("Your arcane knowledge allows use of ender pearls!$1$2");
         setArgumentRange(0, 0);
         setTypes(SkillType.ABILITY_PROPERTY_MAGICAL, SkillType.ABILITY_PROPERTY_ENDER, SkillType.ABILITY_PROPERTY_PROJECTILE, SkillType.TELEPORTING);
 
@@ -49,10 +49,18 @@ public class SkillEnderPearls extends PassiveSkill {
         String combatCooldownString = "";
         if (hasCombatCooldown) {
             String formattedCooldown = Util.decFormat.format(cdDuration / 1000.0);
-            combatCooldownString = "If you are in combat when throwing an ender pearl, you will not be able to throw another for " + formattedCooldown + " second(s).";
+            combatCooldownString = " If you are in combat when throwing an ender pearl, you will not be able to throw another for " + formattedCooldown + " second(s).";
         }
 
-        return getDescription().replace("$1", combatCooldownString);
+        String utilitySkillString = "";
+        String utilitySkillName = SkillConfigManager.getUseSetting(hero, this, "utility-skill-name", "Port");
+        if (!utilitySkillName.isEmpty()) {
+            utilitySkillString = " You also gain access to an additional utility skill:" + ChatColor.LIGHT_PURPLE + utilitySkillName;
+        }
+
+        return getDescription()
+                .replace("$1", combatCooldownString)
+                .replace("$2", utilitySkillString);
     }
 
     @Override
@@ -64,6 +72,7 @@ public class SkillEnderPearls extends PassiveSkill {
         config.set("velocity-multiplier", 0.85);
         config.set("cooldown-during-combat", true);
         config.set("combat-toss-cooldown", 60000);
+        config.set("utility-skill-name", "Port");
         return config;
     }
 
