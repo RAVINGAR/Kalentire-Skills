@@ -181,16 +181,20 @@ public class SkillBattlesong extends ActiveSkill {
                     // Ensure the party member is close enough
                     if (memberLocation.getWorld().equals(playerLocation.getWorld())
                             && memberLocation.distanceSquared(playerLocation) <= radiusSquared) {
-                        if (hero.getStamina() < hero.getMaxMana()) {
+                        if (hero.getStamina() < hero.getMaxStamina()) {
                             tryRegainStamina(member);
+                        }
+                        if (hero.getMana() < hero.getMaxMana()) {
                             tryRegainMana(member);
                         }
                     }
                 }
             }
             else {
-                if (hero.getStamina() < hero.getMaxMana()) {
+                if (hero.getStamina() < hero.getMaxStamina()) {
                     tryRegainStamina(hero);
+                }
+                if (hero.getMana() < hero.getMaxMana()) {
                     tryRegainMana(hero);
                 }
             }
