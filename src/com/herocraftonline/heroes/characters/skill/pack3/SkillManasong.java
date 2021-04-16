@@ -189,38 +189,34 @@ public class SkillManasong extends ActiveSkill {
                     Location memberLocation = member.getPlayer().getLocation();
 
                     // Ensure the party member is close enough
-                    if (memberLocation.getWorld().equals(playerLocation.getWorld())) {
-                        if (memberLocation.distanceSquared(playerLocation) <= radiusSquared) {
-                            if (member.getMana() < member.getMaxMana()) {
-                                HeroRegainManaEvent hrmEvent = new HeroRegainManaEvent(member, manaRestore, skill);
-                                plugin.getServer().getPluginManager().callEvent(hrmEvent);
-                                if (!hrmEvent.isCancelled()) {
-                                    member.setMana(hrmEvent.getDelta() + member.getMana());
-                                    //member.getPlayer().getWorld().spigot().playEffect(member.getPlayer().getLocation(), Effect.SPLASH, 0, 0, 0.5F, 0.5F, 0.5F, 0, 20, 16);
-                                    member.getPlayer().getWorld().spawnParticle(Particle.WATER_SPLASH, member.getPlayer().getLocation(), 20, 0.5, 0.5, 0.5, 0);
-
-                                    if (member.isVerboseMana())
-                                        player.sendMessage(ChatComponents.Bars.mana(member.getMana(), member.getMaxMana(), false));
-                                }
-                            }
+                    if (memberLocation.getWorld().equals(playerLocation.getWorld())
+                            && memberLocation.distanceSquared(playerLocation) <= radiusSquared) {
+                        if (hero.getMana() < hero.getMaxMana()) {
+                            tryRegainMana(member);
                         }
                     }
                 }
             }
             else {
                 if (hero.getMana() < hero.getMaxMana()) {
-                    HeroRegainManaEvent hrmEvent = new HeroRegainManaEvent(hero, manaRestore, skill);
-                    plugin.getServer().getPluginManager().callEvent(hrmEvent);
-                    if (!hrmEvent.isCancelled()) {
-                        hero.setMana(hrmEvent.getDelta() + hero.getMana());
-                        //player.getWorld().spigot().playEffect(player.getLocation(), Effect.SPLASH, 0, 0, 0.5F, 0.5F, 0.5F, 0, 20, 16);
-                        player.getWorld().spawnParticle(Particle.WATER_SPLASH, player.getLocation(), 20, 0.5, 0.5, 0.5, 0);
-
-                        if (hero.isVerboseMana())
-                            player.sendMessage(ChatComponents.Bars.mana(hero.getMana(), hero.getMaxMana(), false));
-                    }
+                    tryRegainMana(hero);
                 }
             }
+        }
+
+        public void tryRegainMana(Hero hero) {
+            HeroRegainManaEvent hrmEvent = new HeroRegainManaEvent(hero, manaRestore, skill);
+            plugin.getServer().getPluginManager().callEvent(hrmEvent);
+            if (hrmEvent.isCancelled())
+                return;
+
+            hero.setMana(hrmEvent.getDelta() + hero.getMana());
+            final Player player = hero.getPlayer();
+            //player.getWorld().spigot().playEffect(player.getLocation(), Effect.SPLASH, 0, 0, 0.5F, 0.5F, 0.5F, 0, 20, 16);
+            player.getWorld().spawnParticle(Particle.WATER_SPLASH, player.getLocation(), 20, 0.5, 0.5, 0.5, 0);
+
+            if (hero.isVerboseMana())
+                player.sendMessage(ChatComponents.Bars.mana(hero.getMana(), hero.getMaxMana(), false));
         }
 
         @Override

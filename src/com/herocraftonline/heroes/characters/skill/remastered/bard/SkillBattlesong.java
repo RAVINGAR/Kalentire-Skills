@@ -2,8 +2,8 @@ package com.herocraftonline.heroes.characters.skill.remastered.bard;
 
 import com.herocraftonline.heroes.Heroes;
 import com.herocraftonline.heroes.api.SkillResult;
+import com.herocraftonline.heroes.api.events.HeroRegainManaEvent;
 import com.herocraftonline.heroes.api.events.HeroRegainStaminaEvent;
-import com.herocraftonline.heroes.attributes.AttributeType;
 import com.herocraftonline.heroes.characters.Hero;
 import com.herocraftonline.heroes.characters.Monster;
 import com.herocraftonline.heroes.characters.effects.EffectType;
@@ -23,18 +23,19 @@ import org.bukkit.scheduler.BukkitRunnable;
 
 public class SkillBattlesong extends ActiveSkill {
 
-    private Song skillSong;
+    private final Song skillSong;
 
     private String applyText;
     private String expireText;
 
     public SkillBattlesong(Heroes plugin) {
         super(plugin, "Battlesong");
-        setDescription("Play a song of battle for $1 second(s). While active, you regenerate $2 stamina for party members within $3 blocks every $4 second(s).");
+        setDescription("Play a song of battle for $1 second(s). While active, you regenerate $2 stamina and $3 for " +
+                "party members within $4 blocks every $5 second(s).");
         setArgumentRange(0, 0);
         setUsage("/skill battlesong");
         setIdentifiers("skill battlesong");
-        setTypes(SkillType.STAMINA_INCREASING, SkillType.BUFFING, SkillType.AREA_OF_EFFECT, SkillType.ABILITY_PROPERTY_SONG);
+        setTypes(SkillType.STAMINA_INCREASING, SkillType.MANA_INCREASING, SkillType.BUFFING, SkillType.AREA_OF_EFFECT, SkillType.ABILITY_PROPERTY_SONG);
 
         skillSong = new Song(
                 new Note(Sound.BLOCK_NOTE_BLOCK_BASS, 0.8F, 1.0F, 0),
@@ -48,32 +49,33 @@ public class SkillBattlesong extends ActiveSkill {
     public String getDescription(Hero hero) {
         int period = SkillConfigManager.getUseSetting(hero, this, SkillSetting.PERIOD, 1500, false);
         int duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, 3000, false);
-        int radius = SkillConfigManager.getUseSetting(hero, this, SkillSetting.RADIUS, 6, false);
+        int radius = SkillConfigManager.getScaledUseSettingInt(hero, this, SkillSetting.RADIUS, false);
 
-        int staminaRestoreTick = SkillConfigManager.getUseSetting(hero, this, "stamina-restore-tick", 12, false);
-        double staminaRestoreTickIncrease = SkillConfigManager.getUseSetting(hero, this, "stamina-restore-tick-increase-per-charisma", 0.15, false);
-        staminaRestoreTick += (int) (staminaRestoreTickIncrease * hero.getAttributeValue(AttributeType.CHARISMA));
+        int staminaRestoreTick = SkillConfigManager.getScaledUseSettingInt(hero, this, "stamina-restore-tick",  false);
+        int manaRestoreTick = SkillConfigManager.getScaledUseSettingInt(hero, this, "mana-restore-tick", false);
 
-        String formattedPeriod = Util.decFormat.format(period / 1000.0);
-        String formattedDuration = Util.decFormat.format(duration / 1000.0);
-
-        return getDescription().replace("$1", formattedDuration).replace("$2", staminaRestoreTick + "").replace("$3", radius + "").replace("$4", formattedPeriod);
+        return getDescription()
+                .replace("$1", Util.decFormat.format(duration / 1000.0))
+                .replace("$2", staminaRestoreTick + "")
+                .replace("$3", manaRestoreTick + "")
+                .replace("$4", radius + "")
+                .replace("$5", Util.decFormat.format(period / 1000.0));
     }
 
     @Override
     public ConfigurationSection getDefaultConfig() {
-        ConfigurationSection node = super.getDefaultConfig();
-
-        node.set(SkillSetting.RADIUS.node(), 12);
-        node.set("stamina-restore-tick", 7);
-        node.set("stamina-restore-tick-increase-per-charisma", 0.275);
-        node.set(SkillSetting.PERIOD.node(), 1500);
-        node.set(SkillSetting.DURATION.node(), 3000);
-        node.set(SkillSetting.APPLY_TEXT.node(), ChatComponents.GENERIC_SKILL + "You are filled with ");
-        node.set(SkillSetting.EXPIRE_TEXT.node(), ChatComponents.GENERIC_SKILL + "You feel strength leave your body!");
-        node.set(SkillSetting.DELAY.node(), 1000);
-
-        return node;
+        ConfigurationSection config = super.getDefaultConfig();
+        config.set(SkillSetting.RADIUS.node(), 12);
+        config.set("stamina-restore-tick", 7);
+        config.set("mana-restore-tick", 7);
+        config.set("stamina-restore-tick-increase-per-charisma", 0.275);
+        config.set("mana-restore-tick-increase-per-charisma", 0.275);
+        config.set(SkillSetting.PERIOD.node(), 1500);
+        config.set(SkillSetting.DURATION.node(), 3000);
+        config.set(SkillSetting.APPLY_TEXT.node(), ChatComponents.GENERIC_SKILL + "You are filled with ");
+        config.set(SkillSetting.EXPIRE_TEXT.node(), ChatComponents.GENERIC_SKILL + "You feel strength leave your body!");
+        config.set(SkillSetting.DELAY.node(), 1000);
+        return config;
     }
 
     @Override
@@ -86,7 +88,6 @@ public class SkillBattlesong extends ActiveSkill {
 
     @Override
     public SkillResult use(Hero hero, String[] args) {
-
         Player player = hero.getPlayer();
 
         hero.addEffect(new SoundEffect(this, "BattlesongSong", 100, skillSong));
@@ -95,11 +96,10 @@ public class SkillBattlesong extends ActiveSkill {
         int duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, 3000, false);
         int radius = SkillConfigManager.getUseSetting(hero, this, SkillSetting.RADIUS, 6, false);
 
-        int staminaRestoreTick = SkillConfigManager.getUseSetting(hero, this, "stamina-restore-tick", 12, false);
-        double staminaRestoreTickIncrease = SkillConfigManager.getUseSetting(hero, this, "stamina-restore-tick-increase-per-charisma", 0.15, false);
-        staminaRestoreTick += (int) Math.floor((staminaRestoreTickIncrease * hero.getAttributeValue(AttributeType.CHARISMA)));
+        int staminaRestoreTick = SkillConfigManager.getScaledUseSettingInt(hero, this, "stamina-restore-tick", false);
+        int manaRestoreTick = SkillConfigManager.getScaledUseSettingInt(hero, this, "mana-restore-tick",  false);
 
-        BattlesongEffect mEffect = new BattlesongEffect(this, hero.getPlayer(), period, duration, radius, staminaRestoreTick);
+        BattlesongEffect mEffect = new BattlesongEffect(this, player, period, duration, radius, staminaRestoreTick, manaRestoreTick);
         hero.addEffect(mEffect);
 
         broadcastExecuteText(hero);
@@ -113,19 +113,21 @@ public class SkillBattlesong extends ActiveSkill {
     }
 
     public class BattlesongEffect extends PeriodicExpirableEffect {
-
         private final int radius;
         private final int staminaRestore;
+        private final int manaRestore;
 
-        public BattlesongEffect(Skill skill, Player applier, int period, int duration, int radius, int staminaRestore) {
+        public BattlesongEffect(Skill skill, Player applier, int period, int duration, int radius,
+                                int staminaRestore, int manaRestore) {
             super(skill, "Battlesong", applier, period, duration, null, null);
-
             types.add(EffectType.BENEFICIAL);
             types.add(EffectType.MAGIC);
             types.add(EffectType.STAMINA_INCREASING);
+            types.add(EffectType.MANA_INCREASING);
 
             this.radius = radius;
             this.staminaRestore = staminaRestore;
+            this.manaRestore = manaRestore;
         }
 
         @Override
@@ -135,23 +137,18 @@ public class SkillBattlesong extends ActiveSkill {
             Player player = hero.getPlayer();
             final Player p = player;
 
-            if (player == this.getApplier())
-            {
+            if (player == this.getApplier()) {
                 new BukkitRunnable() {
-
                     private double time = 0;
 
                     @Override
-                    public void run()
-                    {
+                    public void run() {
                         Location location = p.getLocation();
-                        if (time < 0.8)
-                        {
+                        if (time < 0.8) {
                             //p.getWorld().spigot().playEffect(location, Effect.NOTE, 0, 0, 6.3F, 1.0F, 6.3F, 0.0F, 1, 16);
                             p.getWorld().spawnParticle(Particle.NOTE, location, 1, 6.3, 1, 6.3, 0);
                         }
-                        else
-                        {
+                        else {
                             cancel();
                         }
                         time += 0.01;
@@ -167,7 +164,6 @@ public class SkillBattlesong extends ActiveSkill {
             super.removeFromHero(hero);
 
             Player player = hero.getPlayer();
-
             player.sendMessage("    " + expireText.replace("%hero%", player.getName()));
         }
 
@@ -183,29 +179,51 @@ public class SkillBattlesong extends ActiveSkill {
                     Location memberLocation = member.getPlayer().getLocation();
 
                     // Ensure the party member is close enough
-                    if (memberLocation.getWorld().equals(playerLocation.getWorld())) {
-                        if (memberLocation.distanceSquared(playerLocation) <= radiusSquared) {
-                            HeroRegainStaminaEvent hrsEvent = new HeroRegainStaminaEvent(member, staminaRestore, skill);
-                            plugin.getServer().getPluginManager().callEvent(hrsEvent);
-                            if (!hrsEvent.isCancelled()) {
-                                //member.getPlayer().getWorld().spigot().playEffect(member.getPlayer().getLocation(), org.bukkit.Effect.VILLAGER_THUNDERCLOUD, 0, 0, 0.5F, 1.0F, 0.5F, 0.3F, 10, 16);
-                                member.getPlayer().getWorld().spawnParticle(Particle.VILLAGER_ANGRY, member.getPlayer().getLocation(), 10, 0.5, 1, 0.5, 0.3);
-                                member.setStamina(hrsEvent.getDelta() + member.getStamina());
-                            }
+                    if (memberLocation.getWorld().equals(playerLocation.getWorld())
+                            && memberLocation.distanceSquared(playerLocation) <= radiusSquared) {
+                        if (hero.getStamina() < hero.getMaxMana()) {
+                            tryRegainStamina(member);
+                            tryRegainMana(member);
                         }
                     }
                 }
             }
             else {
-                HeroRegainStaminaEvent hrsEvent = new HeroRegainStaminaEvent(hero, staminaRestore, skill);
-                plugin.getServer().getPluginManager().callEvent(hrsEvent);
-                if (!hrsEvent.isCancelled()) {
-                    //hero.getPlayer().getWorld().spigot().playEffect(hero.getPlayer().getLocation(), org.bukkit.Effect.VILLAGER_THUNDERCLOUD, 0, 0, 0.5F, 1.0F, 0.5F, 0.3F, 10, 16);
-                    hero.getPlayer().getWorld().spawnParticle(Particle.VILLAGER_ANGRY, hero.getPlayer().getLocation(), 10, 0.5, 1, 0.5, 0.3);
-
-                    hero.setStamina(hrsEvent.getDelta() + hero.getStamina());
+                if (hero.getStamina() < hero.getMaxMana()) {
+                    tryRegainStamina(hero);
+                    tryRegainMana(hero);
                 }
             }
+        }
+
+        public void tryRegainStamina(Hero hero) {
+            HeroRegainStaminaEvent hrsEvent = new HeroRegainStaminaEvent(hero, staminaRestore, skill);
+            plugin.getServer().getPluginManager().callEvent(hrsEvent);
+            if (hrsEvent.isCancelled())
+                return;
+
+            final Player player = hero.getPlayer();
+            hero.setStamina(hrsEvent.getDelta() + hero.getStamina());
+            //player.getWorld().spigot().playEffect(player.getLocation(), org.bukkit.Effect.VILLAGER_THUNDERCLOUD, 0, 0, 0.5F, 1.0F, 0.5F, 0.3F, 10, 16);
+            player.getWorld().spawnParticle(Particle.VILLAGER_ANGRY, player.getLocation(), 10, 0.5, 1, 0.5, 0.3);
+
+            if (hero.isVerboseStamina())
+                player.sendMessage(ChatComponents.Bars.stamina(hero.getStamina(), hero.getMaxStamina(), false));
+        }
+
+        public void tryRegainMana(Hero hero) {
+            HeroRegainManaEvent hrmEvent = new HeroRegainManaEvent(hero, manaRestore, skill);
+            plugin.getServer().getPluginManager().callEvent(hrmEvent);
+            if (hrmEvent.isCancelled())
+                return;
+
+            final Player player = hero.getPlayer();
+            hero.setMana(hrmEvent.getDelta() + hero.getMana());
+            //player.getWorld().spigot().playEffect(player.getLocation(), Effect.SPLASH, 0, 0, 0.5F, 0.5F, 0.5F, 0, 20, 16);
+            player.getWorld().spawnParticle(Particle.WATER_SPLASH, player.getLocation(), 20, 0.5, 0.5, 0.5, 0);
+
+            if (hero.isVerboseMana())
+                player.sendMessage(ChatComponents.Bars.mana(hero.getMana(), hero.getMaxMana(), false));
         }
 
         @Override
