@@ -148,8 +148,7 @@ public class SkillBattlesong extends ActiveSkill {
                         if (time < 0.8) {
                             //p.getWorld().spigot().playEffect(location, Effect.NOTE, 0, 0, 6.3F, 1.0F, 6.3F, 0.0F, 1, 16);
                             p.getWorld().spawnParticle(Particle.NOTE, location, 1, 6.3, 1, 6.3, 0);
-                        }
-                        else {
+                        } else {
                             cancel();
                         }
                         time += 0.01;
@@ -187,42 +186,28 @@ public class SkillBattlesong extends ActiveSkill {
                 // Ensure the party member is close enough
                 if (memberLocation.getWorld().equals(healerLocation.getWorld())
                         && memberLocation.distanceSquared(healerLocation) <= radiusSquared) {
-                    if (hero.getStamina() < hero.getMaxStamina())
+                    if (member.getStamina() < member.getMaxStamina())
                         tryRegainStamina(member);
-                    if (hero.getMana() < hero.getMaxMana())
+                    if (member.getMana() < member.getMaxMana())
                         tryRegainMana(member);
                 }
             }
         }
 
         public void tryRegainStamina(Hero hero) {
-            HeroRegainStaminaEvent hrsEvent = new HeroRegainStaminaEvent(hero, staminaRestore, skill);
-            plugin.getServer().getPluginManager().callEvent(hrsEvent);
-            if (hrsEvent.isCancelled())
-                return;
-
-            final Player player = hero.getPlayer();
-            hero.setStamina(hrsEvent.getDelta() + hero.getStamina());
-            //player.getWorld().spigot().playEffect(player.getLocation(), org.bukkit.Effect.VILLAGER_THUNDERCLOUD, 0, 0, 0.5F, 1.0F, 0.5F, 0.3F, 10, 16);
-            player.getWorld().spawnParticle(Particle.VILLAGER_ANGRY, player.getLocation(), 10, 0.5, 1, 0.5, 0.3);
-
-            if (hero.isVerboseStamina())
-                player.sendMessage(ChatComponents.Bars.stamina(hero.getStamina(), hero.getMaxStamina(), false));
+            if (hero.tryRestoreStamina(skill, staminaRestore)) {
+                final Player player = hero.getPlayer();
+                //player.getWorld().spigot().playEffect(player.getLocation(), org.bukkit.Effect.VILLAGER_THUNDERCLOUD, 0, 0, 0.5F, 1.0F, 0.5F, 0.3F, 10, 16);
+                player.getWorld().spawnParticle(Particle.VILLAGER_ANGRY, player.getLocation(), 10, 0.5, 1, 0.5, 0.3);
+            }
         }
 
         public void tryRegainMana(Hero hero) {
-            HeroRegainManaEvent hrmEvent = new HeroRegainManaEvent(hero, manaRestore, skill);
-            plugin.getServer().getPluginManager().callEvent(hrmEvent);
-            if (hrmEvent.isCancelled())
-                return;
-
-            final Player player = hero.getPlayer();
-            hero.setMana(hrmEvent.getDelta() + hero.getMana());
-            //player.getWorld().spigot().playEffect(player.getLocation(), Effect.SPLASH, 0, 0, 0.5F, 0.5F, 0.5F, 0, 20, 16);
-            player.getWorld().spawnParticle(Particle.WATER_SPLASH, player.getLocation(), 20, 0.5, 0.5, 0.5, 0);
-
-            if (hero.isVerboseMana())
-                player.sendMessage(ChatComponents.Bars.mana(hero.getMana(), hero.getMaxMana(), false));
+            if (hero.tryRestoreMana(skill, manaRestore)) {
+                final Player player = hero.getPlayer();
+                //player.getWorld().spigot().playEffect(player.getLocation(), Effect.SPLASH, 0, 0, 0.5F, 0.5F, 0.5F, 0, 20, 16);
+                player.getWorld().spawnParticle(Particle.WATER_SPLASH, player.getLocation(), 20, 0.5, 0.5, 0.5, 0);
+            }
         }
 
         @Override

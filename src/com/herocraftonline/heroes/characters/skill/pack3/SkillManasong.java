@@ -191,7 +191,7 @@ public class SkillManasong extends ActiveSkill {
                     // Ensure the party member is close enough
                     if (memberLocation.getWorld().equals(playerLocation.getWorld())
                             && memberLocation.distanceSquared(playerLocation) <= radiusSquared) {
-                        if (hero.getMana() < hero.getMaxMana()) {
+                        if (member.getMana() < member.getMaxMana()) {
                             tryRegainMana(member);
                         }
                     }
