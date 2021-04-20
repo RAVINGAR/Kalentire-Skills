@@ -12,6 +12,7 @@ import com.herocraftonline.heroes.characters.effects.common.DisarmEffect;
 import com.herocraftonline.heroes.characters.skill.*;
 import com.herocraftonline.heroes.chat.ChatComponents;
 import com.herocraftonline.heroes.nms.NMSHandler;
+import com.herocraftonline.heroes.util.GeometryUtil;
 import com.herocraftonline.heroes.util.Util;
 import org.bukkit.*;
 import org.bukkit.configuration.ConfigurationSection;
@@ -36,7 +37,8 @@ public class SkillBarrier extends ActiveSkill {
 	public SkillBarrier(Heroes plugin) {
 		super(plugin, "Barrier");
         setDescription("Create a protective barrier around yourself for $1 second(s). " +
-                "The barrier allows you to retaliate against all incoming melee attacks, disarming them for $2 seconds, and dealing $3% of your weapon damage to them.");
+                "The barrier allows you to retaliate against all incoming melee attacks, disarming them for $2 seconds," +
+				" and dealing $3% of your weapon damage to them.");
 		setUsage("/skill barrier");
         setIdentifiers("skill barrier");
 		setArgumentRange(0, 0);
@@ -48,16 +50,13 @@ public class SkillBarrier extends ActiveSkill {
 	@Override
 	public String getDescription(Hero hero) {
         int duration = SkillConfigManager.getScaledUseSettingInt(hero, this, SkillSetting.DURATION, false);
-
 		int disarmDuration = SkillConfigManager.getUseSetting(hero, this, "disarm-duration", 3000, false);
-
         double damageMultiplier = SkillConfigManager.getScaledUseSettingDouble(hero, this, "damage-multiplier", false);
 
-		String formattedDuration = Util.decFormat.format(duration / 1000.0);
-		String formattedDisarmDuration = Util.decFormat.format(disarmDuration / 1000.0);
-		String formattedDamageMultiplier = Util.decFormat.format(damageMultiplier * 100);
-
-		return getDescription().replace("$1", formattedDuration).replace("$2", formattedDisarmDuration).replace("$3", formattedDamageMultiplier);
+		return getDescription()
+				.replace("$1", Util.decFormat.format(duration / 1000.0))
+				.replace("$2", Util.decFormat.format(disarmDuration / 1000.0))
+				.replace("$3", Util.decFormat.format(damageMultiplier * 100));
 	}
 
 	@Override
@@ -82,22 +81,6 @@ public class SkillBarrier extends ActiveSkill {
 		expireText = SkillConfigManager.getRaw(this, SkillSetting.EXPIRE_TEXT, ChatComponents.GENERIC_SKILL + "%hero%'s Barrier has faded.").replace("%hero%", "$1");
 	}
 
-    public ArrayList<Location> circle(Location centerPoint, int particleAmount, double circleRadius) {
-		World world = centerPoint.getWorld();
-
-		double increment = (2 * Math.PI) / particleAmount;
-
-		ArrayList<Location> locations = new ArrayList<Location>();
-
-        for (int i = 0; i < particleAmount; i++) {
-			double angle = i * increment;
-			double x = centerPoint.getX() + (circleRadius * Math.cos(angle));
-			double z = centerPoint.getZ() + (circleRadius * Math.sin(angle));
-			locations.add(new Location(world, x, centerPoint.getY(), z));
-		}
-		return locations;
-	}
-
 	@Override
 	public SkillResult use(Hero hero, String[] args) {
 		Player player = hero.getPlayer();
@@ -111,7 +94,7 @@ public class SkillBarrier extends ActiveSkill {
 
 		hero.addEffect(new BarrierEffect(this, player, duration, slowAmplifier, disarmDuration));
 
-        List<Location> circle = circle(player.getLocation(), 36, 1.5);
+        List<Location> circle = GeometryUtil.circle(player.getLocation(), 36, 1.5);
         for (int i = 0; i < circle.size(); i++) {
 			//player.getWorld().spigot().playEffect(circle(player.getLocation(), 36, 1.5).get(i), org.bukkit.Effect.TILE_BREAK, Material.STONE.getId(), 0, 0.2F, 1.5F, 0.2F, 0, 4, 16);
             player.getWorld().spawnParticle(Particle.BLOCK_CRACK, circle.get(i), 4, 0.2, 1.5, 0.2, 0, Bukkit.createBlockData(Material.STONE));
@@ -173,7 +156,12 @@ public class SkillBarrier extends ActiveSkill {
 					double damageMultiplier = SkillConfigManager.getScaledUseSettingDouble(defenderHero, skill, "damage-multiplier", false);
 
 					Material item = NMSHandler.getInterface().getItemInMainHand(defenderPlayer.getInventory()).getType();
-					double damage = plugin.getDamageManager().getHighestItemDamage(defenderHero, item) * damageMultiplier;
+					Double itemDamage = plugin.getDamageManager().getHighestItemDamage(defenderHero, item);
+					if (itemDamage == null) {
+						itemDamage = Util.getDefaultDamage(item);
+					}
+
+					double damage = itemDamage * damageMultiplier; // FIXME received null here, is this fix now using default damage?
 					addSpellTarget(damagerPlayer, defenderHero);
 					damageEntity(damagerPlayer, defenderPlayer, damage, DamageCause.ENTITY_ATTACK);
 
@@ -199,7 +187,6 @@ public class SkillBarrier extends ActiveSkill {
 	}
 
 	public class BarrierEffect extends ExpirableEffect {
-
 		private long disarmDuration;
 
 		public BarrierEffect(Skill skill, Player applier, long duration, int slowAmplifier, long disarmDuration) {

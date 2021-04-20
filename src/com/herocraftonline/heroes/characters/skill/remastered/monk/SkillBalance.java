@@ -27,24 +27,25 @@ public class SkillBalance extends ActiveSkill {
         setUsage("/skill balance");
         setIdentifiers("skill balance");
         setArgumentRange(0, 0);
-        setTypes(SkillType.SILENCEABLE, SkillType.AREA_OF_EFFECT, SkillType.ABILITY_PROPERTY_MAGICAL, SkillType.ABILITY_PROPERTY_DARK, SkillType.ABILITY_PROPERTY_LIGHT);
+        setTypes(SkillType.SILENCEABLE, SkillType.AREA_OF_EFFECT, SkillType.ABILITY_PROPERTY_MAGICAL,
+                SkillType.ABILITY_PROPERTY_DARK, SkillType.ABILITY_PROPERTY_LIGHT);
     }
 
     @Override
-    public String getDescription(Hero h) {
-        int range = SkillConfigManager.getUseSetting(h, this, "maxrange", 7, false);
+    public String getDescription(Hero hero) {
+        double radius = SkillConfigManager.getScaledUseSettingDouble(hero, this, SkillSetting.RADIUS,  false);
 
-        return getDescription().replace("$1", range + "");
+        return getDescription().replace("$1", radius + "");
     }
 
     @Override
     public ConfigurationSection getDefaultConfig() {
-        ConfigurationSection node = super.getDefaultConfig();
-
-        node.set(SkillSetting.RADIUS.node(), 7);
-        node.set(SkillSetting.RADIUS_INCREASE_PER_WISDOM.node(), 0.005);
-
-        return node;
+        ConfigurationSection config = super.getDefaultConfig();
+        config.set(SkillSetting.RADIUS.node(), 7.0);
+        config.set(SkillSetting.RADIUS_INCREASE_PER_WISDOM.node(), 0.005);
+        config.set("bonus-health-multiplier", 1.01);
+        config.set("bonus-health-radius", 2.0);
+        return config;
     }
 
     @Override
@@ -66,16 +67,18 @@ public class SkillBalance extends ActiveSkill {
         double maxHealthTotal = 0;
         double currentHealthTotal = 0;
         Iterator<Hero> partyMembers = heroParty.getMembers().iterator();
-        Location playerLocation = player.getLocation();
+        Location healerLocation = player.getLocation();
 
         double radius = SkillConfigManager.getScaledUseSettingDouble(hero, this, SkillSetting.RADIUS, false);
         double radiusSquared = radius * radius;
+        double bonusHealthRadius = SkillConfigManager.getScaledUseSettingDouble(hero, this, "bonus-health-radius", false);
+        double bonusHealthRadiusSquared = bonusHealthRadius * bonusHealthRadius;
 
-        boolean skipRangeCheck = (radius == 0);                        //0 for no maximum range
+        boolean skipRangeCheck = (radius <= 0); //0 or less for no maximum range
         while (partyMembers.hasNext()) {
             Hero member = partyMembers.next();
             Location memberLocation = member.getPlayer().getLocation();
-            if (skipRangeCheck || (memberLocation.getWorld().equals(playerLocation.getWorld()) && memberLocation.distanceSquared(playerLocation) < radiusSquared)) {
+            if (skipRangeCheck || isInRange(healerLocation, memberLocation, radiusSquared)) {
                 maxHealthTotal += member.getPlayer().getMaxHealth();
                 currentHealthTotal += member.getPlayer().getHealth();
             }
@@ -88,17 +91,34 @@ public class SkillBalance extends ActiveSkill {
 
         double healthMultiplier = currentHealthTotal * Math.pow(maxHealthTotal, -1);
 
+        double bonusHealthMultiplier = SkillConfigManager.getScaledUseSettingDouble(hero, this, "bonus-health-multiplier", false);
+        boolean useBonusMultiplier = bonusHealthMultiplier > 1;
+        if (useBonusMultiplier) {
+            bonusHealthMultiplier *= healthMultiplier;
+        }
+
         Iterator<Hero> applyHealthIterator = heroParty.getMembers().iterator();
         while (applyHealthIterator.hasNext()) {
             Hero applyHero = applyHealthIterator.next();
             Location applyHeroLocation = applyHero.getPlayer().getLocation();
 
-            if (skipRangeCheck || (applyHeroLocation.getWorld().equals(playerLocation.getWorld()) && applyHeroLocation.distanceSquared(playerLocation) < radiusSquared)) {
-                applyHero.getPlayer().setHealth((applyHero.getPlayer().getMaxHealth() * healthMultiplier));
+            if (skipRangeCheck || isInRange(healerLocation, applyHeroLocation, radiusSquared)) {
+                double multiplier = healthMultiplier;
+                boolean usedBonusMultiplier = false;
+                if (useBonusMultiplier && isInRange(healerLocation, applyHeroLocation, bonusHealthRadiusSquared)) {
+                    multiplier = bonusHealthMultiplier;
+                    usedBonusMultiplier = true;
+                }
+
+                applyHero.getPlayer().setHealth((applyHero.getPlayer().getMaxHealth() * multiplier));
                 if (applyHero.getName().equals(hero.getName())) {
                     player.sendMessage(ChatColor.GRAY + "You used Balance!");
                 } else {
-                    applyHero.getPlayer().sendMessage(ChatColor.GRAY + hero.getName() + " balanced your health with that of your party!");
+                    String allyMessage = ChatColor.GRAY + hero.getName() + " balanced your health with that of your party!";
+                    if (usedBonusMultiplier) {
+                        allyMessage += " With a some bonus health for your short distance!";
+                    }
+                    applyHero.getPlayer().sendMessage(allyMessage);
                 }
                 List<Location> circle = GeometryUtil.circle(applyHero.getPlayer().getLocation().add(0, 0.5, 0), 36, 1.5);
                 for (Location location : circle) {
@@ -107,7 +127,12 @@ public class SkillBalance extends ActiveSkill {
         		}
             }
         }
-        player.getWorld().playSound(playerLocation, Sound.ENTITY_PLAYER_LEVELUP, 0.9F, 1.0F);
+        player.getWorld().playSound(healerLocation, Sound.ENTITY_PLAYER_LEVELUP, 0.9F, 1.0F);
         return SkillResult.NORMAL;
+    }
+
+    public boolean isInRange(Location healerLocation, Location allyLocation, double radiusSquared) {
+        return allyLocation.getWorld().equals(healerLocation.getWorld())
+                && allyLocation.distanceSquared(healerLocation) < radiusSquared;
     }
 }
