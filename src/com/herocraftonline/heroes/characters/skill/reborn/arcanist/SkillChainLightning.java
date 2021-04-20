@@ -16,8 +16,8 @@ import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.entity.EntityDamageEvent.DamageCause;
 import org.bukkit.util.Vector;
-import org.jetbrains.annotations.NotNull;
 
+import javax.annotation.Nonnull;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
@@ -164,7 +164,7 @@ public class SkillChainLightning extends TargettedSkill {
             effectManager.start(bottom);
         }
 
-        @NotNull
+        @Nonnull
         private LineEffect getBaseLightningEffect(double randomX, double randomZ) {
             LineEffect lightning = new LineEffect(effectManager);
             lightning.offset = new Vector(0, -0.5, 0);
