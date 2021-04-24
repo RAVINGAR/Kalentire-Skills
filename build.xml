@@ -50,10 +50,9 @@
         </classpath>
     </taskdef>
 
-    <target name="build-classes-and-skills">
-        <!--Create Maven Dependencies Storage Folder-->
-        <mkdir dir="${dir.maven.dependencies}" />
-
+    <!-- This task is Not Intended to be used directly, and only in other tasks instead
+    (to group its messages when in tree view).  -->
+    <target name="populate-maven-deps">
         <!--Populate Maven Dependencies -->
         <!--See https://maven.apache.org/ant-tasks/examples/dependencies.html -->
         <artifact:pom id="skillPom" file="pom.xml" />
@@ -66,6 +65,14 @@
                     classname="org.apache.maven.artifact.ant.VersionMapper"
                     from="${dependency.versions}" to="flatten" />
         </copy>
+    </target>
+
+    <target name="build-classes-and-skills">
+        <!--Create Maven Dependencies Storage Folder-->
+        <mkdir dir="${dir.maven.dependencies}" />
+
+        <!--Populate Maven Dependencies -->
+        <antcall target="populate-maven-deps"/>
 
         <!--Pre-Cleanup-->
         <delete dir="${dir.bin}"/>
@@ -177,17 +184,8 @@
         <mkdir dir="${dir.maven.dependencies}" />
 
         <!--Populate Maven Dependencies -->
-        <!--See https://maven.apache.org/ant-tasks/examples/dependencies.html -->
-        <artifact:pom id="skillPom" file="pom.xml" />
-        <artifact:dependencies filesetId="mavenDependencies" pomRefId="skillPom" />
-        <copy todir="${dir.maven.dependencies}">
-            <!--suppress AntResolveInspection -->
-            <fileset refid="mavenDependencies" />
-            <!--suppress AntResolveInspection -->
-            <mapper classpathref="maven-ant-tasks.classpath"
-                    classname="org.apache.maven.artifact.ant.VersionMapper"
-                    from="${dependency.versions}" to="flatten" />
-        </copy>
+        <antcall target="populate-maven-deps"/>
+
         <!--Make directories required for the build-->
         <mkdir dir="${dir.dist}" />
         <mkdir dir="${dir.bin}" />
