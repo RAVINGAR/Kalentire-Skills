@@ -20,11 +20,11 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 
-public class SkillCurse extends PassiveSkill {
+public class SkillIllusionist extends PassiveSkill {
     private String missText;
 
-    public SkillCurse(Heroes plugin) {
-        super(plugin, "Curse");
+    public SkillIllusionist(Heroes plugin) {
+        super(plugin, "Illusionist");
         setDescription("Enemies have a $1% chance for their melee attacks to miss the you completely.");
         setArgumentRange(0, 0);
         setTypes(SkillType.ABILITY_PROPERTY_DARK, SkillType.AGGRESSIVE, SkillType.DEBUFFING);
@@ -57,13 +57,13 @@ public class SkillCurse extends PassiveSkill {
     public void apply(Hero hero) {
         // Note we don't want the default passive effect, we're making our own with a custom constructor
         double missChance = SkillConfigManager.getScaledUseSettingDouble(hero, this, "miss-chance", false);
-        hero.addEffect(new CurseEffect(this, hero.getPlayer(), missChance));
+        hero.addEffect(new IllusionistEffect(this, hero.getPlayer(), missChance));
     }
 
-    public class CurseEffect extends PassiveEffect {
+    public class IllusionistEffect extends PassiveEffect {
         private final double missChance;
 
-        protected CurseEffect(Skill skill, Player applier, double missChance) {
+        protected IllusionistEffect(Skill skill, Player applier, double missChance) {
             super(skill, applier, new EffectType[] {EffectType.DARK, EffectType.MAGIC});
             this.missChance = missChance;
         }
@@ -94,7 +94,7 @@ public class SkillCurse extends PassiveSkill {
 
             final Hero defender = plugin.getCharacterManager().getHero((Player) defenderEntity);
             if (skill.hasPassive(defender)) {
-                CurseEffect cEffect = (CurseEffect) defender.getEffect(skill.getName());
+                IllusionistEffect cEffect = (IllusionistEffect) defender.getEffect(skill.getName());
                 if (cEffect != null && Util.nextRand() < cEffect.getMissChance()) {
                     event.setCancelled(true);
                     //attackerEntity.getWorld().spigot().playEffect(attacker.getEntity().getLocation(), Effect.WITCH_MAGIC, 0, 0, 0.5F, 1.0F, 0.5F, 0.5F, 35, 16);
