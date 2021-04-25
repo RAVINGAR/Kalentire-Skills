@@ -53,6 +53,9 @@
     <!-- This task is Not Intended to be used directly, and only in other tasks instead
     (to group its messages when in tree view).  -->
     <target name="populate-maven-deps">
+        <!--Create Maven Dependencies Storage Folder-->
+        <mkdir dir="${dir.maven.dependencies}" />
+
         <!--Populate Maven Dependencies -->
         <!--See https://maven.apache.org/ant-tasks/examples/dependencies.html -->
         <artifact:pom id="skillPom" file="pom.xml" />
@@ -68,9 +71,6 @@
     </target>
 
     <target name="build-classes-and-skills">
-        <!--Create Maven Dependencies Storage Folder-->
-        <mkdir dir="${dir.maven.dependencies}" />
-
         <!--Populate Maven Dependencies -->
         <antcall target="populate-maven-deps"/>
 
@@ -180,9 +180,6 @@
     </target>
 
     <target name="build-packs">
-        <!--Create Maven Dependencies Storage Folder-->
-        <mkdir dir="${dir.maven.dependencies}" />
-
         <!--Populate Maven Dependencies -->
         <antcall target="populate-maven-deps"/>
 
@@ -194,7 +191,9 @@
             <sequential>
                 <mkdir dir="${dir.dist}/${dir.dist.path}" />
                 <mkdir dir="${dir.bin}/${dir.dist.path}/@{package}" />
-                <javac srcdir="src/com/herocraftonline/heroes/characters/skill" excludes="**/unusedskills/**" debug="on" destdir="bin" classpathref="classpath" includeantruntime="false" encoding="utf-8" fork="yes" />
+                <echo message="Building Pack: @{package}"/>
+                <javac srcdir="src/com/herocraftonline/heroes/characters/skill/@{package}" excludes="**/unusedskills/**"
+                       debug="on" destdir="bin" classpathref="classpath" includeantruntime="false" encoding="utf-8" fork="yes" />
                 <antcall target="jar-skills-packs">
                     <param name="package" value="@{package}"/>
                 </antcall>
@@ -210,8 +209,10 @@
     </target>
 
     <target name="jar-skills-packs">
-        <foreach target="jar-skill" param="file" parallel="false">
-            <fileset dir="${dir.bin}/${dir.bin.path}/${package}" includes="Skill*.class" excludes="Skill*$*.class" />
+        <foreach target="jar-skill-packs" param="file" parallel="false">
+            <path>
+                <fileset dir="${dir.bin}/${dir.bin.path}/${package}" includes="Skill*.class" excludes="Skill*$*.class" />
+            </path>
         </foreach>
         <delete file="${dir.bin}/skill.info" />
     </target>
