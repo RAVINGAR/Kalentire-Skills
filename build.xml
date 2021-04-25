@@ -70,14 +70,9 @@
         </copy>
     </target>
 
-    <target name="build-classes-and-skills">
-        <!--Populate Maven Dependencies -->
-        <antcall target="populate-maven-deps"/>
-
-        <!--Pre-Cleanup-->
-        <delete dir="${dir.bin}"/>
-        <delete dir="${dir.dist}/${ant.project.name}" />
-
+    <!-- Call with "antcallback" from ant-contrib, to return the "jar-version" property
+    (will need to specify it to return also) -->
+    <target name="get-jar-version">
         <!--Get git hash, timestamp and hence jar version for build-->
         <exec executable="git" outputproperty="git-hash">
             <arg value="rev-parse" />
@@ -89,6 +84,19 @@
         </tstamp>
         <echo message="Git hash: ${git-hash}" />
         <property name="jar-version" value="${jar-version-prefix} ${git-hash} GMT ${jar-time-stamp}"/>
+        <echo message="Jar build version: ${jar-version}" />
+    </target>
+
+    <target name="build-classes-and-skills">
+        <!--Populate Maven Dependencies -->
+        <antcall target="populate-maven-deps"/>
+
+        <!--Pre-Cleanup-->
+        <delete dir="${dir.bin}"/>
+        <delete dir="${dir.dist}/${ant.project.name}" />
+
+        <!--Get git hash, timestamp and hence jar version for build-->
+        <antcallback target="get-jar-version" return="jar-version"/>
         <echo message="Jar build version: ${jar-version}" />
 
         <!--Make directories required for the build-->
@@ -183,6 +191,14 @@
         <!--Populate Maven Dependencies -->
         <antcall target="populate-maven-deps"/>
 
+        <!--Pre-Cleanup-->
+        <delete dir="${dir.bin}"/>
+        <delete dir="${dir.dist}/${ant.project.name}" />
+
+        <!--Get git hash, timestamp and hence jar version for build-->
+        <antcallback target="get-jar-version" return="jar-version"/>
+        <echo message="Jar build version: ${jar-version}" />
+
         <!--Make directories required for the build-->
         <mkdir dir="${dir.dist}" />
         <mkdir dir="${dir.bin}" />
@@ -196,6 +212,7 @@
                        debug="on" destdir="bin" classpathref="classpath" includeantruntime="false" encoding="utf-8" fork="yes" />
                 <antcall target="jar-skills-packs">
                     <param name="package" value="@{package}"/>
+                    <param name="jar-version" value="${jar-version}"/>
                 </antcall>
                 <delete dir="${dir.bin}" includes="**/*.class" excludes="**/*.jar" />
                 <antcall target="zip">
@@ -224,7 +241,8 @@
         <echo message="${dirname}" />
         <basename file="${dirname}" property="package" />
         <echo message="${package}" />
-        <echo file="${dir.bin}/skill.info" message="main-class: com.herocraftonline.heroes.characters.skill.${package}.${classname}" />
+        <!--Note: using comma to separate main class and skill version, as its more universal then newlines-->
+        <echo file="${dir.bin}/skill.info" message="main-class: com.herocraftonline.heroes.characters.skill.${package}.${classname},version: ${jar-version}" />
         <jar jarfile="${dir.dist}/${dir.dist.path}/${classname}.jar" basedir="${dir.bin}" includes="${dir.bin.path}/${package}/${classname}*.class skill.info">
             <manifest>
                 <attribute name="Class-Path" value="../../Heroes.jar" />
