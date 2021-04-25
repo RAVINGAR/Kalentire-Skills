@@ -35,6 +35,7 @@ public class SkillChaoticVisions extends ActiveSkill {
     }
 
     public String getDescription(Hero hero) {
+        // fixme this distance isn't correct anymore, may need to use velocity/duration after testing
         int distance = SkillConfigManager.getScaledUseSettingInt(hero, this, SkillSetting.MAX_DISTANCE, false);
         double damage = SkillConfigManager.getScaledUseSettingDouble(hero, this, SkillSetting.DAMAGE, false);
 

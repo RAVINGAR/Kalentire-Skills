@@ -1,58 +1,72 @@
 package com.herocraftonline.heroes.characters.skill.remastered.cleric;
 
 import com.herocraftonline.heroes.Heroes;
-import com.herocraftonline.heroes.characters.CharacterTemplate;
+import com.herocraftonline.heroes.api.SkillResult;
 import com.herocraftonline.heroes.characters.Hero;
-import com.herocraftonline.heroes.characters.effects.Effect;
-import com.herocraftonline.heroes.characters.effects.EffectType;
-import com.herocraftonline.heroes.characters.skill.SkillSetting;
-import com.herocraftonline.heroes.characters.skill.SkillType;
-import com.herocraftonline.heroes.characters.skill.skills.SkillBaseHeal;
+import com.herocraftonline.heroes.characters.skill.*;
+import com.herocraftonline.heroes.characters.skill.tools.BasicHealMissile;
+import com.herocraftonline.heroes.characters.skill.tools.BasicMissile;
+import com.herocraftonline.heroes.util.Util;
+import org.bukkit.Particle;
 import org.bukkit.Sound;
-import org.bukkit.World;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.LivingEntity;
+import org.bukkit.entity.Player;
 
-public class SkillChant extends SkillBaseHeal {
+public class SkillChant extends ActiveSkill {
 
     public SkillChant(Heroes plugin) {
         super(plugin, "Chant");
-        setDescription("Chants your target, restoring $1 health and removing bleed effects. You are only healed for $2 health from this ability.");
-        setUsage("/skill Chant <target>");
-        setArgumentRange(0, 1);
-        setIdentifiers("skill Chant");
-        setTypes(SkillType.ABILITY_PROPERTY_LIGHT, SkillType.DISPELLING, SkillType.HEALING, SkillType.SILENCEABLE);
+        setDescription("Chant towards your target, restoring $1 health to party member(s) hit.");
+        setUsage("/skill chant");
+        setArgumentRange(0, 0);
+        setIdentifiers("skill chant");
+        setTypes(SkillType.ABILITY_PROPERTY_LIGHT, SkillType.HEALING, SkillType.SILENCEABLE, SkillType.AREA_OF_EFFECT);
+    }
+
+    @Override
+    public String getDescription(Hero hero) {
+        double healing = SkillConfigManager.getScaledUseSettingDouble(hero, this, SkillSetting.HEALING, false);
+        return this.getDescription().replace("$1", Util.decFormat.format(healing));
     }
 
     @Override
     public ConfigurationSection getDefaultConfig() {
-        ConfigurationSection node = super.getDefaultConfig();
+        ConfigurationSection config = super.getDefaultConfig();
+        config.set(SkillSetting.HEALING.node(), 65);
+        config.set(SkillSetting.HEALING_INCREASE_PER_WISDOM.node(), 1.5);
+//        config.set(SkillSetting.RADIUS.node(), 1.5);
 
-        node.set(SkillSetting.MAX_DISTANCE.node(), 8);
-        node.set(SkillSetting.HEALING.node(), 65);
-        node.set(SkillSetting.HEALING_INCREASE_PER_WISDOM.node(), 1.5);
-
-        return node;
+        config.set(BasicMissile.PROJECTILE_SIZE_NODE, 1.5);
+        config.set(BasicMissile.PROJECTILE_VELOCITY_NODE, 20.0);
+        config.set(BasicMissile.PROJECTILE_DURATION_TICKS_NODE, 10.0);
+        config.set(BasicMissile.PROJECTILE_GRAVITY_NODE, 0.0);
+        return config;
     }
 
-    @Override
-    protected void applySoundEffects(World world, LivingEntity target) {
-        world.playSound(target.getLocation(), Sound.ENTITY_CHICKEN_EGG, 0.5F, 0.01F);
+    public SkillResult use(final Hero hero, String[] args) {
+        final Player player = hero.getPlayer();
+        broadcastExecuteText(hero);
+
+        player.getWorld().playSound(player.getLocation(), Sound.BLOCK_BELL_RESONATE, 0.7F, 1);
+        ChantHealingProjectile missile = new ChantHealingProjectile(plugin, this, hero);
+        missile.fireMissile();
+
+        return SkillResult.NORMAL;
     }
 
-    @Override
-    protected void applyParticleEffects(World world, LivingEntity target) {
-        // Original skill had no particle effects, placeholder to keep it the same
-    }
+    // Note Basic damage Missile internals take care of damage and entity detect radius
+    class ChantHealingProjectile extends BasicHealMissile {
+        ChantHealingProjectile(Heroes plugin, Skill skill, Hero hero) {
+            super(plugin, skill, hero);
+        }
 
-    @Override
-    protected void removeEffects(Hero healer, CharacterTemplate targetCT) {
-        for (Effect effect : targetCT.getEffects()) {
-            if (effect.isType(EffectType.DISPELLABLE) && effect.isType(EffectType.HARMFUL)) {
-                if (effect.isType(EffectType.BLEED)) {
-                    targetCT.removeEffect(effect);
-                }
-            }
+        @Override
+        protected void onValidTargetFound(LivingEntity target) {
+            super.onValidTargetFound(target);
+            target.getWorld().spawnParticle(Particle.HEART, target.getLocation().add(0, 0.5, 0), 1);
+            target.getWorld().spawnParticle(Particle.VILLAGER_HAPPY, target.getLocation().add(0, 0.5, 0), 3);
+            target.getWorld().playSound(target.getLocation(), Sound.ENTITY_CHICKEN_EGG, 0.5F, 0.01F);
         }
     }
 }
