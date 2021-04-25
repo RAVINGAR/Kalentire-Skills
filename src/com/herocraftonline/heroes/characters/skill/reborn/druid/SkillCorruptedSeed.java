@@ -20,8 +20,8 @@ import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.util.Vector;
-import org.jetbrains.annotations.NotNull;
 
+import javax.annotation.Nonnull;
 import java.util.List;
 
 public class SkillCorruptedSeed extends TargettedSkill {
@@ -163,7 +163,7 @@ public class SkillCorruptedSeed extends TargettedSkill {
             }
         }
 
-        @NotNull
+        @Nonnull
         private void particleExplodeEffect(LivingEntity target, Color color) {
             EffectManager em = new EffectManager(plugin);
             SphereEffect visualEffect = new SphereEffect(em);
@@ -192,7 +192,7 @@ public class SkillCorruptedSeed extends TargettedSkill {
             em.disposeOnTermination();
         }
 
-        @NotNull
+        @Nonnull
         private void particleExplodeGreenEffect(LivingEntity target, Color color) {
             EffectManager em = new EffectManager(plugin);
             SphereEffect visualEffect = new SphereEffect(em);

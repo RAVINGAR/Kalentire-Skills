@@ -17,7 +17,8 @@ import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.entity.EntityDamageEvent.DamageCause;
-import org.jetbrains.annotations.NotNull;
+
+import javax.annotation.Nonnull;
 
 public class SkillTimeDifferential extends TargettedSkill {
 
@@ -119,7 +120,7 @@ public class SkillTimeDifferential extends TargettedSkill {
         em.disposeOnTermination();
     }
 
-    @NotNull
+    @Nonnull
     private SphereEffect buildBaseVisualEffect(EffectManager em, LivingEntity target, int delaySeconds) {
         SphereEffect visualEffect = new SphereEffect(em);
 

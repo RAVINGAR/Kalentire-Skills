@@ -16,8 +16,6 @@ import com.herocraftonline.heroes.util.MathUtils;
 import com.herocraftonline.heroes.util.Util;
 import de.slikey.effectlib.EffectManager;
 import de.slikey.effectlib.effect.*;
-import de.slikey.effectlib.util.DynamicLocation;
-import fr.neatmonster.nocheatplus.checks.moving.Velocity;
 import org.bukkit.*;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Entity;

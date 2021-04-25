@@ -29,8 +29,8 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.entity.EntityDamageEvent.DamageCause;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.util.Vector;
-import org.jetbrains.annotations.NotNull;
 
+import javax.annotation.Nonnull;
 import java.util.*;
 
 public class SkillHook extends ActiveSkill {
@@ -550,7 +550,7 @@ public class SkillHook extends ActiveSkill {
         return effect;
     }
 
-    @NotNull
+    @Nonnull
     private static LineEffect getBaseHookVisual(EffectManager effectManager) {
         LineEffect effect = new LineEffect(effectManager);
         effect.particle = Particle.CRIT_MAGIC;

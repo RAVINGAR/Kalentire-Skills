@@ -24,7 +24,8 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.util.Vector;
-import org.jetbrains.annotations.NotNull;
+
+import javax.annotation.Nonnull;
 
 public class SkillSpear extends ActiveSkill {
 
@@ -220,7 +221,7 @@ public class SkillSpear extends ActiveSkill {
         return effect;
     }
 
-    @NotNull
+    @Nonnull
     private LineEffect getBaseSpearVisual(EffectManager effectManager) {
         LineEffect effect = new LineEffect(effectManager);
         effect.particle = Particle.CRIT;
