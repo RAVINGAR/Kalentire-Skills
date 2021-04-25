@@ -157,7 +157,8 @@ public class SkillBreed extends PassiveSkill {
                 switch (material) {
                     case CARROT:
                     case GOLDEN_CARROT:
-                    case DANDELION_YELLOW:
+//                    case DANDELION_YELLOW:
+                    case DANDELION:
                         isBreedAttempt = true;
                         break;
                     default:

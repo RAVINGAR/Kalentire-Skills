@@ -107,7 +107,8 @@ public class SkillSoulSpike extends SkillBaseSpike {
 				target.setVelocity(target.getVelocity().add(knockUpVector));
 			}
 
-			target.getWorld().playSound(target.getLocation(), Sound.ENTITY_ZOMBIE_PIGMAN_HURT, 0.2f, 0.00001f);
+//			target.getWorld().playSound(target.getLocation(), Sound.ENTITY_ZOMBIE_PIGMAN_HURT, 0.2f, 0.00001f);
+			target.getWorld().playSound(target.getLocation(), Sound.ENTITY_ZOMBIFIED_PIGLIN_HURT, 0.2f, 0.00001f);
 
 			return SkillResult.NORMAL;
 		} else {

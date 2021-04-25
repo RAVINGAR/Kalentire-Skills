@@ -123,14 +123,16 @@ public class SkillHerbalism extends PassiveSkill {
 			Material mat = null;
 			switch (block.getType()) {
 			//FIXME MC Flatening makes this a pain
-//			case CROPS:
-//				mat = Material.WHEAT;
-//				extraDrops = 3;
-//				break;
-//				case SUGAR_CANE:
-//				mat = Material.SUGAR_CANE;
-//				extraDrops = 2;
-//				break;
+			// could use strings instead to be version compat
+			//case CROPS:
+			case WHEAT_SEEDS:
+				mat = Material.WHEAT;
+				extraDrops = 3;
+				break;
+			case SUGAR_CANE:
+				mat = Material.SUGAR_CANE;
+				extraDrops = 2;
+				break;
 			case MELON:
 				mat = Material.MELON;
 				extraDrops = 7;
@@ -138,11 +140,12 @@ public class SkillHerbalism extends PassiveSkill {
 			//case SAPLING:
 			//case LEAVES:
 			case DANDELION:
-			case DANDELION_YELLOW:
+			//case DANDELION_YELLOW:
 			case BROWN_MUSHROOM:
 			case RED_MUSHROOM:
 			case CACTUS:
 			//case LONG_GRASS:
+			case TALL_GRASS:
 			case PUMPKIN:
 			case DEAD_BUSH:
 				break;

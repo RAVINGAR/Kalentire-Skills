@@ -91,7 +91,7 @@ public class SkillNightmare extends SkillBaseSpike {
 			String expireText = SkillConfigManager.getRaw(this, SkillSetting.EXPIRE_TEXT.node(), ChatComponents.GENERIC_SKILL + "%target% has awoken from a nightmare!").replace("%target%", "$1");
 			NightmareEffect effect = new NightmareEffect(player, period, duration, tickDamage);
 			effect.setApplyText(applyText);
-			effect.setExpireText(expireText);
+			effect.setRemoveText(expireText);
 			targetCT.addEffect(effect);
 
 			double spikeHeight = SkillConfigManager.getUseSetting(hero, this, SPIKE_HEIGHT_NODE, 3d, false);
@@ -102,7 +102,8 @@ public class SkillNightmare extends SkillBaseSpike {
 				target.setVelocity(target.getVelocity().add(knockUpVector));
 			}
 
-			target.getWorld().playSound(target.getLocation(), Sound.ENTITY_ZOMBIE_PIGMAN_HURT, 0.2f, 0.00001f);
+//			target.getWorld().playSound(target.getLocation(), Sound.ENTITY_ZOMBIE_PIGMAN_HURT, 0.2f, 0.00001f);
+			target.getWorld().playSound(target.getLocation(), Sound.ENTITY_ZOMBIFIED_PIGLIN_HURT, 0.2f, 0.00001f);
 			target.getWorld().playSound(target.getLocation(), Sound.ENTITY_GHAST_WARN, 0.2f, 0.00001f);
 
 			return SkillResult.NORMAL;
@@ -132,6 +133,7 @@ public class SkillNightmare extends SkillBaseSpike {
 		public void applyToHero(Hero hero) {
 			super.applyToHero(hero);
 			Player player = hero.getPlayer();
+			// hmm might have double up of messages (since its sent to this player in super)
 			broadcast(player.getLocation(), "    " + getApplyText(), player.getName());
 		}
 
@@ -139,7 +141,8 @@ public class SkillNightmare extends SkillBaseSpike {
 		public void removeFromHero(Hero hero) {
 			super.removeFromHero(hero);
 			Player player = hero.getPlayer();
-			broadcast(player.getLocation(), "    " + getExpireText(), player.getName());
+			// hmm might have double up of messages (since its sent to this player in super)
+			broadcast(player.getLocation(), "    " + getRemoveText(), player.getName());
 		}
 	}
 }

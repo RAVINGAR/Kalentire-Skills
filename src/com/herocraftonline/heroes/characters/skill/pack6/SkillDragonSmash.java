@@ -147,13 +147,16 @@ public class SkillDragonSmash extends ActiveSkill implements Listener {
                 for (Block b : getBlocksInRadius(loc.clone().add(0, -1, 0), i, true)) {
                     if (b.getLocation().getBlockY() == loc.getBlockY() - 1) {
                         //TODO potentially make this section a Util.transparentBlocks
+                        if (!b.getType().isSolid() || !b.getRelative(BlockFace.UP).isEmpty())
+                            continue; // maybe this might cover the checks below
                         if (b.getType() != Material.AIR
                                 //FIXME Will deal with this later, also may want to use nms physics for this as there is an easy method (will look into later).
                                 //&& b.getType() != Material.SIGN_POST
                                 && b.getType() != Material.CHEST
                                 //&& b.getType() != Material.STONE_PLATE
                                 //&& b.getType() != Material.WOOD_PLATE
-                                && b.getType() != Material.WALL_SIGN
+                                //&& b.getType() != Material.WALL_SIGN
+                                && !b.getType().toString().endsWith("SIGN")
                                 //&& b.getType() != Material.WALL_BANNER
                                 //&& b.getType() != Material.STANDING_BANNER
                                 //&& b.getType() != Material.CROPS
@@ -218,7 +221,6 @@ public class SkillDragonSmash extends ActiveSkill implements Listener {
     // Safety measure, likely unnecessary
     @EventHandler(priority = EventPriority.MONITOR)
     public void onPluginDisable(PluginDisableEvent e) {
-
         if(e.getPlugin() != plugin) {
             return;
         }
