@@ -4,10 +4,9 @@ import com.herocraftonline.heroes.Heroes;
 import com.herocraftonline.heroes.api.SkillResult;
 import com.herocraftonline.heroes.attributes.AttributeType;
 import com.herocraftonline.heroes.characters.Hero;
-import com.herocraftonline.heroes.characters.skill.ActiveSkill;
-import com.herocraftonline.heroes.characters.skill.SkillConfigManager;
-import com.herocraftonline.heroes.characters.skill.SkillSetting;
-import com.herocraftonline.heroes.characters.skill.SkillType;
+import com.herocraftonline.heroes.characters.skill.*;
+import com.herocraftonline.heroes.characters.skill.tools.BasicDamageMissile;
+import com.herocraftonline.heroes.characters.skill.tools.BasicMissile;
 import com.herocraftonline.heroes.util.Util;
 import org.bukkit.*;
 import org.bukkit.block.Block;
@@ -46,29 +45,45 @@ public class SkillChaoticVisions extends ActiveSkill {
 
     public ConfigurationSection getDefaultConfig() {
         ConfigurationSection config = super.getDefaultConfig();
-        config.set(SkillSetting.MAX_DISTANCE.node(), 10);
-        config.set(SkillSetting.DAMAGE.node(), 80);
+        config.set(SkillSetting.DAMAGE.node(), 80.0);
         config.set(SkillSetting.DAMAGE_INCREASE_PER_INTELLECT.node(), 1.125);
         config.set(SkillSetting.RADIUS.node(), 2);
-        config.set("spear-move-delay", 2);
+
+        // may need tweaking copied from Bonespear
+        config.set(BasicMissile.PROJECTILE_SIZE_NODE, 2.0);
+        config.set(BasicMissile.PROJECTILE_VELOCITY_NODE, 20.0);
+        config.set(BasicMissile.PROJECTILE_DURATION_TICKS_NODE, 20);
+        config.set(BasicMissile.PROJECTILE_GRAVITY_NODE, 0.0);
+        config.set(BasicDamageMissile.PROJECTILE_PIERCES_ON_HIT_NODE, true);
+        config.set(BasicDamageMissile.PROJECTILE_KNOCKS_BACK_ON_HIT_NODE, true);
+        config.set(BasicDamageMissile.PROJECTILE_CUSTOM_KNOCKBACK_FORCE_NODE, 1.0);
+        config.set(BasicDamageMissile.PROJECTILE_CUSTOM_KNOCKBACK_Y_MULTIPLIER_NODE, 0.5);
         return config;
     }
 
     public SkillResult use(final Hero hero, String[] args) {
         final Player player = hero.getPlayer();
 
-        int distance = SkillConfigManager.getScaledUseSettingInt(hero, this, SkillSetting.MAX_DISTANCE, false);
-        final double damage = SkillConfigManager.getScaledUseSettingDouble(hero, this, SkillSetting.DAMAGE, false);
-
-        int radius = SkillConfigManager.getScaledUseSettingInt(hero, this, SkillSetting.RADIUS, false);
-        final int radiusSquared = radius * radius;
-
-        int delay = SkillConfigManager.getScaledUseSettingInt(hero, this, "spear-move-delay",  false);
-
         broadcastExecuteText(hero);
-        //TODO use new missile code
+
+        //Use new missile code
+        player.getWorld().playSound(player.getLocation(), Sound.BLOCK_PORTAL_TRAVEL, 0.7F, 1);
+        ChaoticSpearProjectile missile = new ChaoticSpearProjectile(plugin, this, hero);
+        missile.fireMissile();
 
         return SkillResult.NORMAL;
+    }
+
+    // Note Basic damage Missile internals take care of damage and entity detect radius
+    class ChaoticSpearProjectile extends BasicDamageMissile {
+        ChaoticSpearProjectile(Heroes plugin, Skill skill, Hero hero) {
+            super(plugin, skill, hero, Particle.SPELL_WITCH, Color.PURPLE, DamageCause.MAGIC);
+        }
+
+        @Override
+        protected void onValidTargetFound(LivingEntity target, Vector origin, Vector force) {
+            super.onValidTargetFound(target, origin, force); // use default
+        }
     }
 
 /* Old use code, using BlockIterator though only makes sound and no damage.
