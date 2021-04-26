@@ -108,9 +108,8 @@ public class SkillInfernoFlash extends ActiveSkill {
         }
         while (iter.hasNext()) {
             currentBlock = iter.next();
-            //currentBlock.getWorld().spigot().playEffect(currentBlock.getLocation(), Effect.MOBSPAWNER_FLAMES, 0, 0, 0.0F, 0.5F, 0.0F, 0.0F, 1, 16);
-            //FIXME See if this is correct
-            player.getWorld().spawnParticle(Particle.FLAME, currentBlock.getLocation(), 1, 0, 0.5, 0, 0);
+            currentBlock.getWorld().spigot().playEffect(currentBlock.getLocation(), Effect.MOBSPAWNER_FLAMES, 0, 0, 0.0F, 0.5F, 0.0F, 0.0F, 1, 16);
+            //player.getWorld().spawnParticle(Particle.FLAME, currentBlock.getLocation(), 1, 0, 0.5, 0, 0);
             Material currentBlockType = currentBlock.getType();
 
             if (Util.transparentBlocks.contains(currentBlockType)) {
@@ -145,14 +144,15 @@ public class SkillInfernoFlash extends ActiveSkill {
             ArrayList<Location> locations = circle(player.getLocation(), 72, 1.5);
             for (int i = 0; i < locations.size(); i++)
     		{
-    			//player.getWorld().spigot().playEffect(locations.get(i), org.bukkit.Effect.FLAME, 0, 0, 0, 1.2F, 0, 0, 6, 16);
-                player.getWorld().spawnParticle(Particle.FLAME, locations.get(i), 6, 0, 1.2, 0, 0);
+    			player.getWorld().spigot().playEffect(locations.get(i), org.bukkit.Effect.FLAME, 0, 0, 0, 1.2F, 0, 0, 6, 16);
+                //player.getWorld().spawnParticle(Particle.FLAME, locations.get(i), 6, 0, 1.2, 0, 0);
     		}
-            //teleport.getWorld().spigot().playEffect(teleport, Effect.FLAME, 0, 0, 0.5F, 0.5F, 0.5F, 0.5F, 45, 16);
-            player.getWorld().spawnParticle(Particle.FLAME, teleport, 45, 0.5, 0.5, 0.5, 0.5);
+            teleport.getWorld().spigot().playEffect(teleport, Effect.FLAME, 0, 0, 0.5F, 0.5F, 0.5F, 0.5F, 45, 16);
+            //player.getWorld().spawnParticle(Particle.FLAME, teleport, 45, 0.5, 0.5, 0.5, 0.5);
             player.teleport(teleport);
             player.getWorld().playEffect(loc, Effect.ENDER_SIGNAL, 3);
-            player.getWorld().playSound(loc, Sound.ENTITY_ENDERMAN_TELEPORT, 0.8F, 1.0F);
+            player.getWorld().playSound(loc, Sound.ENTITY_ENDERMEN_TELEPORT, 0.8F, 1.0F);
+            //player.getWorld().playSound(loc, Sound.ENTITY_ENDERMAN_TELEPORT, 0.8F, 1.0F);
 
             return SkillResult.NORMAL;
         }

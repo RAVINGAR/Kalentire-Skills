@@ -30,7 +30,7 @@ import com.herocraftonline.heroes.util.Util;
 
 public class SkillBloodBond extends ActiveSkill {
 
-    private static final Particle.DustOptions skillEffectDustOptions = new Particle.DustOptions(Color.RED, 1);
+    //private static final Particle.DustOptions skillEffectDustOptions = new Particle.DustOptions(Color.RED, 1);
 
     public SkillBloodBond(Heroes plugin) {
         super(plugin, "BloodBond");
@@ -108,9 +108,9 @@ public class SkillBloodBond extends ActiveSkill {
         List<Location> circle = circle(hero.getPlayer().getLocation(), 36, 1.5);
         for (int i = 0; i < circle.size(); i++)
 		{
-			//hero.getPlayer().getWorld().spigot().playEffect(circle.get(i), org.bukkit.Effect.COLOURED_DUST, 0, 0, 0.2F, 1.5F, 0.2F, 0, 4, 16);
-            hero.getPlayer().getWorld().spawnParticle(Particle.REDSTONE, circle.get(i), 4, 0.2F, 1.5F, 0.2F, 0, skillEffectDustOptions);
-		}
+            //hero.getPlayer().getWorld().spawnParticle(Particle.REDSTONE, circle.get(i), 4, 0.2F, 1.5F, 0.2F, 0, skillEffectDustOptions);
+            hero.getPlayer().getWorld().spigot().playEffect(circle.get(i), org.bukkit.Effect.COLOURED_DUST, 0, 0, 0.2F, 1.5F, 0.2F, 0, 4, 16);
+        }
         return SkillResult.NORMAL;
     }
 
@@ -159,8 +159,8 @@ public class SkillBloodBond extends ActiveSkill {
             List<Location> circle = circle(hero.getPlayer().getLocation(), 36, 1.5);
             for (int i = 0; i < circle.size(); i++)
     		{
-            	//hero.getPlayer().getWorld().spigot().playEffect(circle.get(i), org.bukkit.Effect.COLOURED_DUST, 0, 0, 0.2F, 1.5F, 0.2F, 0, 4, 16);
-                hero.getPlayer().getWorld().spawnParticle(Particle.REDSTONE, circle.get(i), 4, 0.2F, 1.5F, 0.2F, 0, skillEffectDustOptions);
+                //hero.getPlayer().getWorld().spawnParticle(Particle.REDSTONE, circle.get(i), 4, 0.2F, 1.5F, 0.2F, 0, skillEffectDustOptions);
+                hero.getPlayer().getWorld().spigot().playEffect(circle.get(i), org.bukkit.Effect.COLOURED_DUST, 0, 0, 0.2F, 1.5F, 0.2F, 0, 4, 16);
     		}
 
             // Check if the hero has a party

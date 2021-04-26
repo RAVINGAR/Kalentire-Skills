@@ -101,10 +101,10 @@ public class SkillFireblast extends ActiveSkill {
             Location blastLocation = targetBlock.getLocation().clone();
             blastLocation.add(new Vector(.5, 0, .5));
 
-            //player.getWorld().spigot().playEffect(blastLocation, Effect.LAVA_POP, 0, 0, 1, 1, 1, 1, 75, 16);
-            player.getWorld().spawnParticle(Particle.LAVA, blastLocation, 75, 1, 1, 1, 1);
-            //player.getWorld().spigot().playEffect(blastLocation, Effect.EXPLOSION_LARGE, 0, 0, 1, 1, 1, 1, 10, 16);
-            player.getWorld().spawnParticle(Particle.EXPLOSION_LARGE, blastLocation, 10, 1,1,1,1);
+            player.getWorld().spigot().playEffect(blastLocation, Effect.LAVA_POP, 0, 0, 1, 1, 1, 1, 75, 16);
+            //player.getWorld().spawnParticle(Particle.LAVA, blastLocation, 75, 1, 1, 1, 1);
+            player.getWorld().spigot().playEffect(blastLocation, Effect.EXPLOSION_LARGE, 0, 0, 1, 1, 1, 1, 10, 16);
+            //player.getWorld().spawnParticle(Particle.EXPLOSION_LARGE, blastLocation, 10, 1,1,1,1);
             player.getWorld().playSound(blastLocation, Sound.ENTITY_GENERIC_EXPLODE, 6.0F, 1);
             player.getWorld().playSound(blastLocation, Sound.BLOCK_FIRE_AMBIENT, 8.0F, 1);
 

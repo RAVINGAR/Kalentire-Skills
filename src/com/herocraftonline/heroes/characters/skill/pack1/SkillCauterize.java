@@ -66,8 +66,8 @@ public class SkillCauterize extends TargettedSkill {
         }
 
         player.getWorld().playSound(player.getLocation(), Sound.ENTITY_GENERIC_BURN, 1.6F, 1.3F);
-        //player.getWorld().spigot().playEffect(target.getLocation(), org.bukkit.Effect.SMOKE, 0, 0, 0.3F, 0.6F, 0.3F, 0.0F, 25, 16);
-        player.getWorld().spawnParticle(Particle.SMOKE_NORMAL, target.getLocation(), 25, 0.3, 0.3, 0.3, 0);
+        player.getWorld().spigot().playEffect(target.getLocation(), org.bukkit.Effect.SMOKE, 0, 0, 0.3F, 0.6F, 0.3F, 0.0F, 25, 16);
+        //player.getWorld().spawnParticle(Particle.SMOKE_NORMAL, target.getLocation(), 25, 0.3, 0.3, 0.3, 0);
 
         return SkillResult.NORMAL;
     }

@@ -119,9 +119,9 @@ public class SkillDragonsBreath extends ActiveSkill {
                     public void run() {
                         try {
                             for (Location location : locations) {
-                            	//player.getWorld().spigot().playEffect(location, Effect.MOBSPAWNER_FLAMES, 1, 1, 0F, 0.3F, 0F, 0.2F, 3, 10);
+                            	player.getWorld().spigot().playEffect(location, Effect.MOBSPAWNER_FLAMES, 1, 1, 0F, 0.3F, 0F, 0.2F, 3, 10);
                                 //FIXME See if this is correct
-                                player.getWorld().spawnParticle(Particle.FLAME, location, 3, 0, 0.3, 0, 0.2);
+                                //player.getWorld().spawnParticle(Particle.FLAME, location, 3, 0, 0.3, 0, 0.2);
                             }
                         } catch (Exception e) {
                             e.printStackTrace();

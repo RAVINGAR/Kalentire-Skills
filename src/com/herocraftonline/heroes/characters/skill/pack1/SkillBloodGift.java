@@ -104,8 +104,8 @@ public class SkillBloodGift extends TargettedSkill {
         targetHero.heal(hrhEvent.getDelta());
 
         player.getWorld().playSound(player.getLocation(), Sound.ENTITY_BLAZE_AMBIENT, 0.5F, 1.0F);
-        //target.getWorld().spigot().playEffect(target.getLocation(), Effect.HEART, 1, 1, 0F, 1F, 0F, 50F, 30, 10);
-        target.getWorld().spawnParticle(Particle.HEART, target.getLocation(), 30, 0F, 1F, 0F, 50);
+        target.getWorld().spigot().playEffect(target.getLocation(), Effect.HEART, 1, 1, 0F, 1F, 0F, 50F, 30, 10);
+        //target.getWorld().spawnParticle(Particle.HEART, target.getLocation(), 30, 0F, 1F, 0F, 50);
         return SkillResult.NORMAL;
     }
 }

@@ -119,8 +119,8 @@ public class SkillToss extends TargettedSkill {
         }, (long) (delay * 20));
 
         // Play sound        
-        //target.getWorld().spigot().playEffect(target.getLocation().add(0, 0.5, 0), Effect.CLOUD, 0, 0, 0, 0, 0, 1, 100, 16);
-        target.getWorld().spawnParticle(Particle.CLOUD, target.getLocation().add(0, 0.5, 0), 100, 0, 0, 0, 1);
+        target.getWorld().spigot().playEffect(target.getLocation().add(0, 0.5, 0), Effect.CLOUD, 0, 0, 0, 0, 0, 1, 100, 16);
+        //target.getWorld().spawnParticle(Particle.CLOUD, target.getLocation().add(0, 0.5, 0), 100, 0, 0, 0, 1);
 
         return SkillResult.NORMAL;
     }

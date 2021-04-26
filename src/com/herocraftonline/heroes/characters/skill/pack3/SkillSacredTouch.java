@@ -56,14 +56,14 @@ public class SkillSacredTouch extends SkillBaseHeal {
     }
 
     protected void applyParticleEffects(World world, LivingEntity target) {
-//        world.spigot().playEffect(target.getLocation().add(0, 0.5, 0), // location
-//                org.bukkit.Effect.FIREWORKS_SPARK, // effect
-//                0, // id
-//                0, // data
-//                1, 1, 1, // offset
-//                1.0f, // speed
-//                25, // particle count
-//                1); // radius
-        world.spawnParticle(Particle.FIREWORKS_SPARK, target.getLocation().add(0, 0.5, 0), 25, 1, 1, 1, 1);
+        world.spigot().playEffect(target.getLocation().add(0, 0.5, 0), // location
+                org.bukkit.Effect.FIREWORKS_SPARK, // effect
+                0, // id
+                0, // data
+                1, 1, 1, // offset
+                1.0f, // speed
+                25, // particle count
+                1); // radius
+        //world.spawnParticle(Particle.FIREWORKS_SPARK, target.getLocation().add(0, 0.5, 0), 25, 1, 1, 1, 1);
     }
 }

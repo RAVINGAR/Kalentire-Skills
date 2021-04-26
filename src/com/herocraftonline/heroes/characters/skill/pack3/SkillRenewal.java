@@ -39,15 +39,15 @@ public class SkillRenewal extends SkillBaseHeal {
     }
 
     protected void applyParticleEffects(World world, LivingEntity target) {
-//        world.spigot().playEffect(target.getLocation(), // location
-//                org.bukkit.Effect.HAPPY_VILLAGER, // effect
-//                0, // id
-//                0, // data
-//                1, 1, 1, // offset
-//                1.0f, // speed
-//                25, // particle count
-//                1); // radius
-        world.spawnParticle(Particle.VILLAGER_HAPPY, target.getLocation(), 25, 1, 1, 1, 1);
+        world.spigot().playEffect(target.getLocation(), // location
+                org.bukkit.Effect.HAPPY_VILLAGER, // effect
+                0, // id
+                0, // data
+                1, 1, 1, // offset
+                1.0f, // speed
+                25, // particle count
+                1); // radius
+        //world.spawnParticle(Particle.VILLAGER_HAPPY, target.getLocation(), 25, 1, 1, 1, 1);
     }
 
     @Override

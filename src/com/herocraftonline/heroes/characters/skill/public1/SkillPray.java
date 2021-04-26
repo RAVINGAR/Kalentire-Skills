@@ -8,7 +8,6 @@ import com.herocraftonline.heroes.characters.skill.SkillType;
 import com.herocraftonline.heroes.characters.skill.skills.SkillBaseHeal;
 import org.bukkit.Particle;
 import org.bukkit.Sound;
-import org.bukkit.Sound;
 import org.bukkit.World;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.LivingEntity;
@@ -42,13 +41,22 @@ public class SkillPray extends SkillBaseHeal {
     }
 
     protected void applyParticleEffects(World world, LivingEntity target) {
-        world.spawnParticle(Particle.VILLAGER_HAPPY, // particle
-                target.getLocation().add(0, 0.5, 0), // location
-                25, // particle count
+        world.spigot().playEffect(target.getLocation().add(0, 0.5, 0), // location
+                org.bukkit.Effect.HAPPY_VILLAGER, // effect
+                0, // id
+                0, // data
                 1, 1, 1, // offset
-                1, // extra (typically speed)
-                null // data
-                 );
+                1.0f, // speed
+                25, // particle count
+                1); // radius
+
+//        world.spawnParticle(Particle.VILLAGER_HAPPY, // particle
+//                target.getLocation().add(0, 0.5, 0), // location
+//                25, // particle count
+//                1, 1, 1, // offset
+//                1, // extra (typically speed)
+//                null // data
+//                 );
         // SpawnParticle does not use an 'id' value like PlayEffect.
     }
 }

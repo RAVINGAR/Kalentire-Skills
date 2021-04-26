@@ -136,8 +136,8 @@ public class SkillFireball extends ActiveSkill {
                 addSpellTarget(targetLE, hero);
                 damageEntity(targetLE, hero.getPlayer(), damage, DamageCause.MAGIC);
 
-                //targetLE.getWorld().spigot().playEffect(targetLE.getLocation().add(0, 0.5F, 0), Effect.FLAME, 0, 0, 0.2F, 0.2F, 0.2F, 0.1F, 50, 16);
-                targetLE.getWorld().spawnParticle(Particle.FLAME, targetLE.getLocation().add(0, 0.5, 0), 60, 0.2, 0.2, 0.2, 0.1);
+                targetLE.getWorld().spigot().playEffect(targetLE.getLocation().add(0, 0.5F, 0), Effect.FLAME, 0, 0, 0.2F, 0.2F, 0.2F, 0.1F, 50, 16);
+                //targetLE.getWorld().spawnParticle(Particle.FLAME, targetLE.getLocation().add(0, 0.5, 0), 60, 0.2, 0.2, 0.2, 0.1);
                 targetLE.getWorld().playSound(targetLE.getLocation(), Sound.BLOCK_FIRE_AMBIENT, 7.0F, 1.0F);
             }
         }

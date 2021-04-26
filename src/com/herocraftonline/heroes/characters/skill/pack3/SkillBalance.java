@@ -128,8 +128,8 @@ public class SkillBalance extends ActiveSkill {
                 List<Location> circle = circle(applyHero.getPlayer().getLocation().add(0, 0.5, 0), 36, 1.5);
                 for (int i = 0; i < circle.size(); i++)
         		{
-        			//applyHero.getPlayer().getWorld().spigot().playEffect(circle(applyHero.getPlayer().getLocation().add(0, 0.5, 0), 36, radius / 2).get(i), org.bukkit.Effect.INSTANT_SPELL, 0, 0, 0, 0, 0, 0, 16, 16);
-        		    applyHero.getPlayer().getWorld().spawnParticle(Particle.SPELL_INSTANT, circle.get(i), 16, 0, 0, 0, 0);
+        			applyHero.getPlayer().getWorld().spigot().playEffect(circle(applyHero.getPlayer().getLocation().add(0, 0.5, 0), 36, radius / 2).get(i), org.bukkit.Effect.INSTANT_SPELL, 0, 0, 0, 0, 0, 0, 16, 16);
+        		    //applyHero.getPlayer().getWorld().spawnParticle(Particle.SPELL_INSTANT, circle.get(i), 16, 0, 0, 0, 0);
         		}
             }
         }

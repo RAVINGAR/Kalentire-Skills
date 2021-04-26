@@ -101,13 +101,12 @@ public class SkillGreatCombustion extends ActiveSkill {
             Location targetLocation = targetBlock.getLocation().clone();
             targetLocation.add(new Vector(.5, .5, .5));
 
-            //player.getWorld().spigot().playEffect(targetBlock.getLocation().add(0, 1.0, 0), Effect.LAVA_POP, 0, 0, 0, 0, 0, 1, 135, 16);
-            player.getWorld().spawnParticle(Particle.LAVA, targetBlock.getLocation().add(0, 1, 0), 135, 0, 0, 0, 1);
-            //player.getWorld().spigot().playEffect(targetBlock.getLocation().add(0, 0.5, 0), Effect.MOBSPAWNER_FLAMES, 0, 0, 0, 0, 0, 0, 8, 16);
-            //FIXME See if this is correct
-            player.getWorld().spawnParticle(Particle.FLAME, targetBlock.getLocation().add(0, 0.5, 0), 8, 0, 0, 0, 0);
-            //player.getWorld().spigot().playEffect(targetBlock.getLocation().add(0, 0.5, 0), Effect.EXPLOSION_LARGE, 0, 0, 0, 0, 0, 0, 3, 16);
-            player.getWorld().spawnParticle(Particle.EXPLOSION_LARGE, targetBlock.getLocation().add(0, 0.5, 0), 3, 0, 0, 0, 0);
+            player.getWorld().spigot().playEffect(targetBlock.getLocation().add(0, 1.0, 0), Effect.LAVA_POP, 0, 0, 0, 0, 0, 1, 135, 16);
+            //player.getWorld().spawnParticle(Particle.LAVA, targetBlock.getLocation().add(0, 1, 0), 135, 0, 0, 0, 1);
+            player.getWorld().spigot().playEffect(targetBlock.getLocation().add(0, 0.5, 0), Effect.MOBSPAWNER_FLAMES, 0, 0, 0, 0, 0, 0, 8, 16);
+            //player.getWorld().spawnParticle(Particle.FLAME, targetBlock.getLocation().add(0, 0.5, 0), 8, 0, 0, 0, 0);
+            player.getWorld().spigot().playEffect(targetBlock.getLocation().add(0, 0.5, 0), Effect.EXPLOSION_LARGE, 0, 0, 0, 0, 0, 0, 3, 16);
+            //player.getWorld().spawnParticle(Particle.EXPLOSION_LARGE, targetBlock.getLocation().add(0, 0.5, 0), 3, 0, 0, 0, 0);
             player.getWorld().playSound(targetBlock.getLocation(), Sound.ENTITY_GENERIC_EXPLODE, 6.0F, 1);
 
             double damage = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE, 90, false);

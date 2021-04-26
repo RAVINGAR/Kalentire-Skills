@@ -40,10 +40,10 @@ public class SkillWarsong extends ActiveSkill {
         setTypes(SkillType.BUFFING, SkillType.AREA_OF_EFFECT, SkillType.ABILITY_PROPERTY_SONG);
 
         skillSong = new Song(
-                new Note(Sound.BLOCK_NOTE_BLOCK_BASEDRUM, 0.8F, 2.0F, 0),
-                new Note(Sound.BLOCK_NOTE_BLOCK_PLING, 0.8F, 2.0F, 1),
-                new Note(Sound.BLOCK_NOTE_BLOCK_SNARE, 0.8F, 1.0F, 2),
-                new Note(Sound.BLOCK_NOTE_BLOCK_BASS, 0.8F, 1.0F, 3)
+                new Note(Sound.BLOCK_NOTE_BASEDRUM, 0.8F, 2.0F, 0),
+                new Note(Sound.BLOCK_NOTE_PLING, 0.8F, 2.0F, 1),
+                new Note(Sound.BLOCK_NOTE_SNARE, 0.8F, 1.0F, 2),
+                new Note(Sound.BLOCK_NOTE_BASS, 0.8F, 1.0F, 3)
         );
 
         Bukkit.getServer().getPluginManager().registerEvents(new SkillHeroListener(), plugin);
@@ -140,9 +140,9 @@ public class SkillWarsong extends ActiveSkill {
         }
 
         //FIXME Is it a particle or a sound
-//        player.getWorld().playEffect(player.getLocation().add(0, 2.5, 0), org.bukkit.Effect.NOTE, 3);
-//        player.getWorld().playEffect(player.getLocation().add(0, 2.5, 0), org.bukkit.Effect.NOTE, 3);
-//        player.getWorld().playEffect(player.getLocation().add(0, 2.5, 0), org.bukkit.Effect.NOTE, 3);
+        player.getWorld().playEffect(player.getLocation().add(0, 2.5, 0), org.bukkit.Effect.NOTE, 3);
+        player.getWorld().playEffect(player.getLocation().add(0, 2.5, 0), org.bukkit.Effect.NOTE, 3);
+        player.getWorld().playEffect(player.getLocation().add(0, 2.5, 0), org.bukkit.Effect.NOTE, 3);
 
         return SkillResult.NORMAL;
     }
@@ -200,8 +200,8 @@ public class SkillWarsong extends ActiveSkill {
                         Location location = p.getLocation();
                         if (time < 0.75)
                         {
-                            //p.getWorld().spigot().playEffect(location, Effect.NOTE, 0, 0, 6.3F, 1.0F, 6.3F, 0.0F, 1, 16);
-                            p.getWorld().spawnParticle(Particle.NOTE, location, 1, 6.3, 1, 6.3, 0);
+                            p.getWorld().spigot().playEffect(location, Effect.NOTE, 0, 0, 6.3F, 1.0F, 6.3F, 0.0F, 1, 16);
+                            //p.getWorld().spawnParticle(Particle.NOTE, location, 1, 6.3, 1, 6.3, 0);
                         }
                         else
                         {

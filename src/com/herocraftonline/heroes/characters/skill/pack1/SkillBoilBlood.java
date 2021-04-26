@@ -140,10 +140,10 @@ public class SkillBoilBlood extends ActiveSkill {
 
             LivingEntity target = (LivingEntity) entity;
             
-            //player.getWorld().spigot().playEffect(target.getLocation(), Effect.LARGE_SMOKE, 0, 0, 0, 0, 0, 0.2F, 50, 16);
-            player.getWorld().spawnParticle(Particle.SMOKE_LARGE, target.getLocation(), 50, 0, 0, 0, 0.2);
-            //player.getWorld().spigot().playEffect(target.getEyeLocation(), Effect.TILE_BREAK, Material.NETHER_WARTS.getId(), 0, 0, 0.1F, 0, 0.1F, 16, 16);
-            player.getWorld().spawnParticle(Particle.BLOCK_CRACK, target.getEyeLocation(), 16, 0, 0.1, 0, 0.1, Bukkit.createBlockData(Material.NETHER_WART_BLOCK));
+            player.getWorld().spigot().playEffect(target.getLocation(), Effect.LARGE_SMOKE, 0, 0, 0, 0, 0, 0.2F, 50, 16);
+            //player.getWorld().spawnParticle(Particle.SMOKE_LARGE, target.getLocation(), 50, 0, 0, 0, 0.2);
+            player.getWorld().spigot().playEffect(target.getEyeLocation(), Effect.TILE_BREAK, Material.NETHER_WARTS.getId(), 0, 0, 0.1F, 0, 0.1F, 16, 16);
+            //player.getWorld().spawnParticle(Particle.BLOCK_CRACK, target.getEyeLocation(), 16, 0, 0.1, 0, 0.1, Bukkit.createBlockData(Material.NETHER_WART_BLOCK));
             player.getWorld().playSound(target.getLocation(), Sound.BLOCK_LAVA_AMBIENT, 10.0F, 16);
 
             addSpellTarget(target, hero);

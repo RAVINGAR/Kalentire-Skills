@@ -125,8 +125,8 @@ public class SkillRejuvenate extends TargettedSkill {
         {
         	super.tickHero(hero);
         	Player player = hero.getPlayer();
-        	//player.getWorld().spigot().playEffect(player.getLocation(), Effect.HAPPY_VILLAGER, 0, 0, 0.5F, 1.0F, 0.5F, 0.1F, 25, 16);
-            player.getWorld().spawnParticle(Particle.VILLAGER_HAPPY, player.getLocation(), 25, 0.5, 1, 0.5, 0.1);
+        	player.getWorld().spigot().playEffect(player.getLocation(), Effect.HAPPY_VILLAGER, 0, 0, 0.5F, 1.0F, 0.5F, 0.1F, 25, 16);
+            //player.getWorld().spawnParticle(Particle.VILLAGER_HAPPY, player.getLocation(), 25, 0.5, 1, 0.5, 0.1);
         }
     }
 }

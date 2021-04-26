@@ -11,7 +11,8 @@
     <property name="dir.maven.dependencies" value ="maven" />
     <property name="jar-version-prefix" value="Herocraft Legacy" />
     <!-- Skill packs to only build when running "build-packs" Ant task -->
-    <property name="skill-packs" value="public1,pack1,pack2,pack3,pack4,pack5,pack6,pack7,pack8,skills" />
+<!--    <property name="skill-packs" value="public1,pack1,pack2,pack3,pack4,pack5,pack6,pack7,pack8,skills" />-->
+    <property name="skill-packs" value="public1,pack1,pack2,skills" />
 
     <!-- Only "build-classes-and-skills" Ant task related properties -->
 

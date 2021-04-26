@@ -97,8 +97,8 @@ public class SkillFlameshield extends ActiveSkill {
         ArrayList<Location> locations = circle(player.getLocation(), 72, 1.5);
         for (int i = 0; i < locations.size(); i++)
 		{
-			//player.getWorld().spigot().playEffect(locations.get(i), org.bukkit.Effect.FLAME, 0, 0, 0, 1.2F, 0, 0, 6, 16);
-            player.getWorld().spawnParticle(Particle.FLAME, locations.get(i), 6, 0, 1.2, 0, 0);
+			player.getWorld().spigot().playEffect(locations.get(i), org.bukkit.Effect.FLAME, 0, 0, 0, 1.2F, 0, 0, 6, 16);
+            //player.getWorld().spawnParticle(Particle.FLAME, locations.get(i), 6, 0, 1.2, 0, 0);
 		}
 
         player.getWorld().playSound(player.getLocation(), Sound.BLOCK_FIRE_AMBIENT, 0.4F, 1.0F);

@@ -89,8 +89,9 @@ public class SkillRecover extends TargettedSkill
         }
 
         tHero.heal(healAmount);
-		
-		tHero.getPlayer().getWorld().playSound(tHero.getPlayer().getLocation(), Sound.ENTITY_FIREWORK_ROCKET_LAUNCH, 1.0F, 1.0F);
+
+		//tHero.getPlayer().getWorld().playSound(tHero.getPlayer().getLocation(), Sound.ENTITY_FIREWORK_ROCKET_LAUNCH, 1.0F, 1.0F);
+		tHero.getPlayer().getWorld().playSound(tHero.getPlayer().getLocation(), Sound.ENTITY_FIREWORK_LAUNCH, 1.0F, 1.0F);
 		tHero.getPlayer().getWorld().playSound(tHero.getPlayer().getLocation(), Sound.ENTITY_EXPERIENCE_ORB_PICKUP, 1.0F, 0.8F);
 		for (Location l : GeometryUtil.helix(tHero.getPlayer().getLocation(), 20, 1.5, 2.5, 0.05)) {
 			//l.getWorld().spigot().playEffect(l, Effect.FIREWORKS_SPARK, 0, 0, 0.0f, 0.0f, 0.0f, 0.0f, 1, 128);

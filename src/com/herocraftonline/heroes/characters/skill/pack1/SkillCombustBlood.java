@@ -101,13 +101,13 @@ public class SkillCombustBlood extends TargettedSkill {
 
         broadcastExecuteText(hero, target);
 
-        //player.getWorld().spigot().playEffect(target.getLocation(), Effect.LAVA_POP, 0, 0, 0, 0, 0, 1, 75, 16);
-        player.getWorld().spawnParticle(Particle.LAVA, target.getLocation(), 75, 0, 0, 0, 1);
-        //player.getWorld().spigot().playEffect(target.getEyeLocation(), Effect.EXPLOSION_LARGE, 0, 0, 0, 0, 0, 0, 10, 16);
-        player.getWorld().spawnParticle(Particle.EXPLOSION_LARGE, target.getEyeLocation(), 10, 0, 0, 0, 0);
+        player.getWorld().spigot().playEffect(target.getLocation(), Effect.LAVA_POP, 0, 0, 0, 0, 0, 1, 75, 16);
+        //player.getWorld().spawnParticle(Particle.LAVA, target.getLocation(), 75, 0, 0, 0, 1);
+        player.getWorld().spigot().playEffect(target.getEyeLocation(), Effect.EXPLOSION_LARGE, 0, 0, 0, 0, 0, 0, 10, 16);
+        //player.getWorld().spawnParticle(Particle.EXPLOSION_LARGE, target.getEyeLocation(), 10, 0, 0, 0, 0);
         //FIXME Explore replacement for `TILE_BREAK`
-        //player.getWorld().spigot().playEffect(target.getEyeLocation(), Effect.TILE_BREAK, Material.NETHER_WARTS.getId(), 0, 0, 0.1F, 0, 0.1F, 16, 16);
-        player.getWorld().spawnParticle(Particle.BLOCK_CRACK, target.getEyeLocation(), 16, 0, 0.1, 0, 0.1, Bukkit.createBlockData(Material.NETHER_WART_BLOCK));
+        player.getWorld().spigot().playEffect(target.getEyeLocation(), Effect.TILE_BREAK, Material.NETHER_WARTS.getId(), 0, 0, 0.1F, 0, 0.1F, 16, 16);
+        //player.getWorld().spawnParticle(Particle.BLOCK_CRACK, target.getEyeLocation(), 16, 0, 0.1, 0, 0.1, Bukkit.createBlockData(Material.NETHER_WART_BLOCK));
         player.getWorld().playSound(target.getLocation(), Sound.ENTITY_GENERIC_EXPLODE, 10.0F, 16);
         player.getWorld().playSound(target.getLocation(), Sound.BLOCK_FIRE_AMBIENT, 10.0F, 16);
 
@@ -142,10 +142,7 @@ public class SkillCombustBlood extends TargettedSkill {
             int bloodUnionIncrease = SkillConfigManager.getUseSetting(hero, this, "blood-union-increase", 1, false);
             BloodUnionEffect buEffect = (BloodUnionEffect) hero.getEffect("BloodUnionEffect");
 
-            if (target instanceof Player)
-                buEffect.addBloodUnion(bloodUnionIncrease, true);
-            else
-                buEffect.addBloodUnion(bloodUnionIncrease, false);
+            buEffect.addBloodUnion(bloodUnionIncrease, (target instanceof Player));
         }
 
         return SkillResult.NORMAL;

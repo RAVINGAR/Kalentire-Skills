@@ -45,8 +45,8 @@ public class SkillManasong extends ActiveSkill {
         setTypes(SkillType.MANA_INCREASING, SkillType.BUFFING, SkillType.AREA_OF_EFFECT, SkillType.ABILITY_PROPERTY_SONG);
 
         skillSong = new Song(
-                new Note(Sound.BLOCK_NOTE_BLOCK_HARP, 0.8F, 1.0F, 0),
-                new Note(Sound.BLOCK_NOTE_BLOCK_BASS, 0.8F, 1.0F, 1)
+                new Note(Sound.BLOCK_NOTE_HARP, 0.8F, 1.0F, 0),
+                new Note(Sound.BLOCK_NOTE_BASS, 0.8F, 1.0F, 1)
         );
     }
 
@@ -152,8 +152,8 @@ public class SkillManasong extends ActiveSkill {
                         Location location = p.getLocation();
                         if (time < 0.8)
                         {
-                            //p.getWorld().spigot().playEffect(location, Effect.NOTE, 0, 0, 6.3F, 1.0F, 6.3F, 0.0F, 1, 16);
-                            p.getWorld().spawnParticle(Particle.NOTE, location, 1, 6.3, 1, 6.3, 1);
+                            p.getWorld().spigot().playEffect(location, Effect.NOTE, 0, 0, 6.3F, 1.0F, 6.3F, 0.0F, 1, 16);
+                            //p.getWorld().spawnParticle(Particle.NOTE, location, 1, 6.3, 1, 6.3, 1);
                         }
                         else
                         {
@@ -196,8 +196,8 @@ public class SkillManasong extends ActiveSkill {
                                 plugin.getServer().getPluginManager().callEvent(hrmEvent);
                                 if (!hrmEvent.isCancelled()) {
                                     member.setMana(hrmEvent.getDelta() + member.getMana());
-                                    //member.getPlayer().getWorld().spigot().playEffect(member.getPlayer().getLocation(), Effect.SPLASH, 0, 0, 0.5F, 0.5F, 0.5F, 0, 20, 16);
-                                    member.getPlayer().getWorld().spawnParticle(Particle.WATER_SPLASH, member.getPlayer().getLocation(), 20, 0.5, 0.5, 0.5, 0);
+                                    member.getPlayer().getWorld().spigot().playEffect(member.getPlayer().getLocation(), Effect.SPLASH, 0, 0, 0.5F, 0.5F, 0.5F, 0, 20, 16);
+                                    //member.getPlayer().getWorld().spawnParticle(Particle.WATER_SPLASH, member.getPlayer().getLocation(), 20, 0.5, 0.5, 0.5, 0);
 
                                     if (member.isVerboseMana())
                                         player.sendMessage(ChatComponents.Bars.mana(member.getMana(), member.getMaxMana(), false));
@@ -213,8 +213,8 @@ public class SkillManasong extends ActiveSkill {
                     plugin.getServer().getPluginManager().callEvent(hrmEvent);
                     if (!hrmEvent.isCancelled()) {
                         hero.setMana(hrmEvent.getDelta() + hero.getMana());
-                        //player.getWorld().spigot().playEffect(player.getLocation(), Effect.SPLASH, 0, 0, 0.5F, 0.5F, 0.5F, 0, 20, 16);
-                        player.getWorld().spawnParticle(Particle.WATER_SPLASH, player.getLocation(), 20, 0.5, 0.5, 0.5, 0);
+                        player.getWorld().spigot().playEffect(player.getLocation(), Effect.SPLASH, 0, 0, 0.5F, 0.5F, 0.5F, 0, 20, 16);
+                        //player.getWorld().spawnParticle(Particle.WATER_SPLASH, player.getLocation(), 20, 0.5, 0.5, 0.5, 0);
 
                         if (hero.isVerboseMana())
                             player.sendMessage(ChatComponents.Bars.mana(hero.getMana(), hero.getMaxMana(), false));

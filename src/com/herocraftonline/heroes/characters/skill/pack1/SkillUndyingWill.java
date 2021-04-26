@@ -101,8 +101,8 @@ public class SkillUndyingWill extends ActiveSkill {
                     if (event.getDamage() > currentHealth) {
                         if (currentHealth != 1.0)
                             player.setHealth(1.0);
-                        //player.getWorld().spigot().playEffect(player.getLocation(), Effect.COLOURED_DUST, 0, 0, 0.5F, 1.0F, 0.5F, 0.0F, 25, 16);
-                        player.getWorld().spawnParticle(Particle.REDSTONE, player.getLocation(), 25, 0.5, 1, 0.5, 0, new Particle.DustOptions(Color.RED, 1));
+                        player.getWorld().spigot().playEffect(player.getLocation(), Effect.COLOURED_DUST, 0, 0, 0.5F, 1.0F, 0.5F, 0.0F, 25, 16);
+                        //player.getWorld().spawnParticle(Particle.REDSTONE, player.getLocation(), 25, 0.5, 1, 0.5, 0, new Particle.DustOptions(Color.RED, 1));
                         player.getWorld().playSound(player.getLocation(), Sound.ENTITY_ITEM_BREAK, 0.5F, 0.8F);
 
                         event.setDamage(0.0);

@@ -122,7 +122,8 @@ public class SkillBlizzard extends ActiveSkill {
             return SkillResult.INVALID_TARGET;
 
         broadcastExecuteText(hero);
-        player.getWorld().playSound(player.getLocation(), Sound.ENTITY_LIGHTNING_BOLT_THUNDER, 0.2F, 1.0F);
+        player.getWorld().playSound(player.getLocation(), Sound.ENTITY_LIGHTNING_THUNDER, 0.2F, 1.0F);
+        //player.getWorld().playSound(player.getLocation(), Sound.ENTITY_LIGHTNING_BOLT_THUNDER, 0.2F, 1.0F);
 
         // Create a cicle of icebolt launch locations, based on skill radius.
         List<Location> possibleLaunchLocations = Util.getCircleLocationList(tBlock.getLocation().add(new Vector(.5, .5, .5)), radius, 1, true, true, stormHeight);

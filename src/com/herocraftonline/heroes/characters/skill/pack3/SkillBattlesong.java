@@ -39,10 +39,10 @@ public class SkillBattlesong extends ActiveSkill {
         setTypes(SkillType.STAMINA_INCREASING, SkillType.BUFFING, SkillType.AREA_OF_EFFECT, SkillType.ABILITY_PROPERTY_SONG);
 
         skillSong = new Song(
-                new Note(Sound.BLOCK_NOTE_BLOCK_BASS, 0.8F, 1.0F, 0),
-                new Note(Sound.BLOCK_NOTE_BLOCK_BASS, 1.0F, 0.7F, 1),
-                new Note(Sound.BLOCK_NOTE_BLOCK_BASS, 1.2F, 0.4F, 2),
-                new Note(Sound.BLOCK_NOTE_BLOCK_BASS, 0.8F, 0.2F, 3)
+                new Note(Sound.BLOCK_NOTE_BASS, 0.8F, 1.0F, 0),
+                new Note(Sound.BLOCK_NOTE_BASS, 1.0F, 0.7F, 1),
+                new Note(Sound.BLOCK_NOTE_BASS, 1.2F, 0.4F, 2),
+                new Note(Sound.BLOCK_NOTE_BASS, 0.8F, 0.2F, 3)
         );
     }
 
@@ -149,8 +149,8 @@ public class SkillBattlesong extends ActiveSkill {
                         Location location = p.getLocation();
                         if (time < 0.8)
                         {
-                            //p.getWorld().spigot().playEffect(location, Effect.NOTE, 0, 0, 6.3F, 1.0F, 6.3F, 0.0F, 1, 16);
-                            p.getWorld().spawnParticle(Particle.NOTE, location, 1, 6.3, 1, 6.3, 0);
+                            p.getWorld().spigot().playEffect(location, Effect.NOTE, 0, 0, 6.3F, 1.0F, 6.3F, 0.0F, 1, 16);
+                            //p.getWorld().spawnParticle(Particle.NOTE, location, 1, 6.3, 1, 6.3, 0);
                         }
                         else
                         {
@@ -190,8 +190,8 @@ public class SkillBattlesong extends ActiveSkill {
                             HeroRegainStaminaEvent hrsEvent = new HeroRegainStaminaEvent(member, staminaRestore, skill);
                             plugin.getServer().getPluginManager().callEvent(hrsEvent);
                             if (!hrsEvent.isCancelled()) {
-                                //member.getPlayer().getWorld().spigot().playEffect(member.getPlayer().getLocation(), org.bukkit.Effect.VILLAGER_THUNDERCLOUD, 0, 0, 0.5F, 1.0F, 0.5F, 0.3F, 10, 16);
-                                member.getPlayer().getWorld().spawnParticle(Particle.VILLAGER_ANGRY, member.getPlayer().getLocation(), 10, 0.5, 1, 0.5, 0.3);
+                                member.getPlayer().getWorld().spigot().playEffect(member.getPlayer().getLocation(), org.bukkit.Effect.VILLAGER_THUNDERCLOUD, 0, 0, 0.5F, 1.0F, 0.5F, 0.3F, 10, 16);
+                                //member.getPlayer().getWorld().spawnParticle(Particle.VILLAGER_ANGRY, member.getPlayer().getLocation(), 10, 0.5, 1, 0.5, 0.3);
                                 member.setStamina(hrsEvent.getDelta() + member.getStamina());
                             }
                         }
@@ -202,8 +202,8 @@ public class SkillBattlesong extends ActiveSkill {
                 HeroRegainStaminaEvent hrsEvent = new HeroRegainStaminaEvent(hero, staminaRestore, skill);
                 plugin.getServer().getPluginManager().callEvent(hrsEvent);
                 if (!hrsEvent.isCancelled()) {
-                    //hero.getPlayer().getWorld().spigot().playEffect(hero.getPlayer().getLocation(), org.bukkit.Effect.VILLAGER_THUNDERCLOUD, 0, 0, 0.5F, 1.0F, 0.5F, 0.3F, 10, 16);
-                    hero.getPlayer().getWorld().spawnParticle(Particle.VILLAGER_ANGRY, hero.getPlayer().getLocation(), 10, 0.5, 1, 0.5, 0.3);
+                    hero.getPlayer().getWorld().spigot().playEffect(hero.getPlayer().getLocation(), org.bukkit.Effect.VILLAGER_THUNDERCLOUD, 0, 0, 0.5F, 1.0F, 0.5F, 0.3F, 10, 16);
+                    //hero.getPlayer().getWorld().spawnParticle(Particle.VILLAGER_ANGRY, hero.getPlayer().getLocation(), 10, 0.5, 1, 0.5, 0.3);
 
                     hero.setStamina(hrsEvent.getDelta() + hero.getStamina());
                 }

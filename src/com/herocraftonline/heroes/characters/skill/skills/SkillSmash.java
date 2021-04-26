@@ -61,7 +61,7 @@ public class SkillSmash extends TargettedSkill {
         addSpellTarget(target, hero);
         damageEntity(target, player, damage, DamageCause.ENTITY_ATTACK);
 
-        player.getWorld().playSound(player.getLocation(), Sound.BLOCK_NOTE_BLOCK_PLING, 0.4F, 0.6F);
+        player.getWorld().playSound(player.getLocation(), Sound.BLOCK_NOTE_PLING, 0.4F, 0.6F);
         broadcastExecuteText(hero, target);
 
         return SkillResult.NORMAL;

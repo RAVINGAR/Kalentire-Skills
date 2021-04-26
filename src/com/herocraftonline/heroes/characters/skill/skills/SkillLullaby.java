@@ -139,8 +139,7 @@ public class SkillLullaby extends ActiveSkill
 					Location loc = noteLocs.get(index).clone().setDirection(new Vector(0, 1, 0));
 					//loc.getWorld().spigot().playEffect(loc, Effect.NOTE, 0, 0, 2.2F, 1.2F, 2.2F, 0.5F, 10, 25);
 					loc.getWorld().spawnParticle(Particle.NOTE, loc, 10, 2.2, 1.2, 2.2, 0.5, true);
-					//loc.getWorld().playSound(loc, Sound.BLOCK_NOTE_PLING, 1.2F, 1.5F);
-					loc.getWorld().playSound(loc, Sound.BLOCK_NOTE_BLOCK_PLING, 1.2f, 1.5f);
+					loc.getWorld().playSound(loc, Sound.BLOCK_NOTE_PLING, 1.2f, 1.5f);
 					ticks++;
 				}
 				else

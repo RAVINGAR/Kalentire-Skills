@@ -155,8 +155,8 @@ public class SkillConflux extends ActiveSkill {
             ArrayList<Location> particleLocations = circle(player.getLocation(), 45, r / 2);
             for (int i = 0; i < particleLocations.size(); i++)
             {
-                //player.getWorld().spigot().playEffect(particleLocations.get(i), Effect.MAGIC_CRIT, 0, 0, 0, 0.1F, 0, 0.1F, 1, 16);
-                player.getWorld().spawnParticle(Particle.CRIT_MAGIC, particleLocations.get(i), 1, 0, 0.1, 0, 0.1);
+                player.getWorld().spigot().playEffect(particleLocations.get(i), Effect.MAGIC_CRIT, 0, 0, 0, 0.1F, 0, 0.1F, 1, 16);
+                //player.getWorld().spawnParticle(Particle.CRIT_MAGIC, particleLocations.get(i), 1, 0, 0.1, 0, 0.1);
             }
         }
 

@@ -79,7 +79,8 @@ public class SkillBlind extends TargettedSkill {
 
         //player.getWorld().spigot().playEffect(target.getLocation(), org.bukkit.Effect.SPELL, 0, 0, 0, 0, 0, 0, 16, 16);
         player.getWorld().spawnParticle(Particle.SPELL, target.getLocation(), 10, 0, 0, 0, 0);
-        player.getWorld().playSound(player.getLocation(), Sound.ENTITY_ENDERMAN_AMBIENT, 0.8F, 1.0F);
+        player.getWorld().playSound(player.getLocation(), Sound.ENTITY_ENDERMEN_AMBIENT, 0.8F, 1.0F);
+        //player.getWorld().playSound(player.getLocation(), Sound.ENTITY_ENDERMAN_AMBIENT, 0.8F, 1.0F);
 
         return SkillResult.NORMAL;
     }

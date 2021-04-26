@@ -107,8 +107,8 @@ public class SkillRupture extends TargettedSkill {
 
         plugin.getCharacterManager().getCharacter(target).addEffect(new RuptureBleedEffect(this, player, period, duration, damagePerDistance, distancePerDamage));
 
-        //player.getWorld().spigot().playEffect(target.getLocation().add(0, 0.5, 0), org.bukkit.Effect.CRIT, 0, 0, 0, 0, 0, 1, 25, 16);
-        player.getWorld().spawnParticle(Particle.CRIT, target.getLocation(), 25, 0, 0, 0, 1);
+        player.getWorld().spigot().playEffect(target.getLocation().add(0, 0.5, 0), org.bukkit.Effect.CRIT, 0, 0, 0, 0, 0, 1, 25, 16);
+        //player.getWorld().spawnParticle(Particle.CRIT, target.getLocation(), 25, 0, 0, 0, 1);
         player.getWorld().playSound(player.getLocation(), Sound.BLOCK_CHEST_OPEN, 1.2F, 0.4F);
 
         return SkillResult.NORMAL;

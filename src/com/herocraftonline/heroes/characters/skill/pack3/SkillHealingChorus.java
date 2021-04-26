@@ -146,8 +146,8 @@ public class SkillHealingChorus extends ActiveSkill {
                         Location location = p.getLocation();
                         if (time < 0.5)
                         {
-                            //p.getWorld().spigot().playEffect(location, Effect.NOTE, 0, 0, 6.3F, 1.0F, 6.3F, 0.0F, 1, 16);
-                            p.getWorld().spawnParticle(Particle.NOTE, location, 1, 6.3, 1, 6.3, 1);
+                            p.getWorld().spigot().playEffect(location, Effect.NOTE, 0, 0, 6.3F, 1.0F, 6.3F, 0.0F, 1, 16);
+                            //p.getWorld().spawnParticle(Particle.NOTE, location, 1, 6.3, 1, 6.3, 1);
                         }
                         else
                         {

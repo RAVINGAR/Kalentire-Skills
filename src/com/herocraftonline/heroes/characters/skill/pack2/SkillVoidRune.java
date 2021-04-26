@@ -190,8 +190,8 @@ public class SkillVoidRune extends ActiveSkill {
                     // Damage and silence the target
                     addSpellTarget(targEnt, hero);
                     damageEntity((LivingEntity) targEnt, player, damage, DamageCause.MAGIC, false);
-                    //targEnt.getWorld().spigot().playEffect(targEnt.getLocation(), Effect.PORTAL, 0, 0, 0, 0, 0, 0.5F, 35, 16);
-                    targEnt.getWorld().spawnParticle(Particle.PORTAL, targEnt.getLocation(), 35, 0, 0, 0, 0.5);
+                    targEnt.getWorld().spigot().playEffect(targEnt.getLocation(), Effect.PORTAL, 0, 0, 0, 0, 0, 0.5F, 35, 16);
+                    //targEnt.getWorld().spawnParticle(Particle.PORTAL, targEnt.getLocation(), 35, 0, 0, 0, 0.5);
                     
                     VoidRuneSilenceEffect voidRuneSilenceEffect = new VoidRuneSilenceEffect(skill, player, duration, applyText, expireText);
 

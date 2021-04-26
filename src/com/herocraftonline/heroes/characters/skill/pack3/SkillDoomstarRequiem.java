@@ -153,8 +153,8 @@ public class SkillDoomstarRequiem extends ActiveSkill{
         }
 
         //player.getWorld().playSound(player.getLocation(), Sound.HURT, 1.3F, 0.5F);
-        //player.getWorld().playEffect(player.getLocation(), Effect.EXPLOSION, 3);
-        player.getWorld().spawnParticle(Particle.EXPLOSION_LARGE, player.getLocation(), 1, 0, 0, 0, 1);
+        player.getWorld().playEffect(player.getLocation(), Effect.EXPLOSION, 3);
+        //player.getWorld().spawnParticle(Particle.EXPLOSION_LARGE, player.getLocation(), 1, 0, 0, 0, 1);
         player.getWorld().playSound(player.getLocation(), Sound.ENTITY_GENERIC_EXPLODE, 0.5F, 1.0F);
         player.getWorld().playSound(player.getLocation(), Sound.ENTITY_EXPERIENCE_ORB_PICKUP, 0.8F, 1.0F);
         player.getWorld().playSound(player.getLocation(), Sound.ENTITY_EXPERIENCE_ORB_PICKUP, 0.8F, 1.0F);
@@ -164,8 +164,8 @@ public class SkillDoomstarRequiem extends ActiveSkill{
 			ArrayList<Location> particleLocations = circle(player.getLocation(), 72, r / 2);
 			for (int i = 0; i < particleLocations.size(); i++)
 			{
-				//player.getWorld().spigot().playEffect(particleLocations.get(i).add(0, 0.1, 0), Effect.TILE_BREAK, player.getLocation().getBlock().getRelative(BlockFace.DOWN).getType().getId(), 0, 0, 0.3F, 0, 0.1F, 2, 16);
-                player.getWorld().spawnParticle(Particle.BLOCK_CRACK, particleLocations.get(i), 2, 0, 0.3, 0, 0.1, player.getLocation().getBlock().getRelative(BlockFace.DOWN).getBlockData());
+				player.getWorld().spigot().playEffect(particleLocations.get(i).add(0, 0.1, 0), Effect.TILE_BREAK, player.getLocation().getBlock().getRelative(BlockFace.DOWN).getType().getId(), 0, 0, 0.3F, 0, 0.1F, 2, 16);
+                //player.getWorld().spawnParticle(Particle.BLOCK_CRACK, particleLocations.get(i), 2, 0, 0.3, 0, 0.1, player.getLocation().getBlock().getRelative(BlockFace.DOWN).getBlockData());
 			}
 		}
 

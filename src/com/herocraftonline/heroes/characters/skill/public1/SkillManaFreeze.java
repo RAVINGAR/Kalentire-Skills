@@ -98,12 +98,12 @@ public class SkillManaFreeze extends TargettedSkill {
 		ArrayList<Location> particleLocations = circle(targetHero.getPlayer().getLocation().add(0, 0.5, 0), 36, 1.5);
 		for (int i = 0; i < particleLocations.size(); i++)
 		{
-			//targetHero.getPlayer().getWorld().spigot().playEffect(particleLocations.get(i), Effect.TILE_BREAK, org.bukkit.Material.ICE.getId(), 0, 0, 0.1F, 0, 0.1F, 1, 16);
-            targetHero.getPlayer().getWorld().spawnParticle(Particle.BLOCK_CRACK, particleLocations.get(i), 1, 0, 0.1, 0, 0.1);
+			targetHero.getPlayer().getWorld().spigot().playEffect(particleLocations.get(i), Effect.TILE_BREAK, org.bukkit.Material.ICE.getId(), 0, 0, 0.1F, 0, 0.1F, 1, 16);
+            //targetHero.getPlayer().getWorld().spawnParticle(Particle.BLOCK_CRACK, particleLocations.get(i), 1, 0, 0.1, 0, 0.1);
 		}
 		
-		//targetHero.getPlayer().getWorld().spigot().playEffect(targetHero.getPlayer().getLocation(), Effect.WITCH_MAGIC, 0, 0, 0.5F, 1.0F, 0.5F, 0.1F, 35, 16);
-        targetHero.getPlayer().getWorld().spawnParticle(Particle.SPELL_WITCH, targetHero.getPlayer().getLocation(), 35, 0.5, 1, 0.5, 0.1);
+		targetHero.getPlayer().getWorld().spigot().playEffect(targetHero.getPlayer().getLocation(), Effect.WITCH_MAGIC, 0, 0, 0.5F, 1.0F, 0.5F, 0.1F, 35, 16);
+        //targetHero.getPlayer().getWorld().spawnParticle(Particle.SPELL_WITCH, targetHero.getPlayer().getLocation(), 35, 0.5, 1, 0.5, 0.1);
 		
 
         return SkillResult.NORMAL;

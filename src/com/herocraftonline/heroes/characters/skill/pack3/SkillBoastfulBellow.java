@@ -70,7 +70,8 @@ public class SkillBoastfulBellow extends TargettedSkill {
         addSpellTarget(target, hero);
         damageEntity(target, player, damage, DamageCause.MAGIC);
 
-        player.getWorld().playSound(player.getLocation(), Sound.ENTITY_ENDER_DRAGON_GROWL, 1.5F, .5F);
+        player.getWorld().playSound(player.getLocation(), Sound.ENTITY_ENDERDRAGON_GROWL, 1.5F, .5F);
+        //player.getWorld().playSound(player.getLocation(), Sound.ENTITY_ENDER_DRAGON_GROWL, 1.5F, .5F);
 
         long currentTime = System.currentTimeMillis();
         List<Entity> entities = target.getNearbyEntities(radius, radius, radius);
@@ -97,12 +98,12 @@ public class SkillBoastfulBellow extends TargettedSkill {
             }
         }
 
-        //player.getWorld().spigot().playEffect(target.getLocation().add(0, 0.5, 0), org.bukkit.Effect.MAGIC_CRIT, 0, 0, 0, 0, 0, 1, 25, 16);
-        player.getWorld().spawnParticle(Particle.CRIT_MAGIC, target.getLocation().add(0, 0.5, 0), 25, 0, 0, 0, 1);
-        //target.getWorld().spigot().playEffect(target.getLocation(), Effect.NOTE, 1, 1, 0F, 1F, 0F, 50F, 30, 10);
-        target.getWorld().spawnParticle(Particle.NOTE, target.getLocation(), 30, 0, 1, 0, 50);
-        //target.getWorld().spigot().playEffect(target.getLocation(), Effect.EXPLOSION_HUGE, 0, 0, 0F, 0F, 0F, 0F, 1, 12);
-        target.getWorld().spawnParticle(Particle.EXPLOSION_HUGE, target.getLocation(), 1, 0, 0, 0, 0);
+        player.getWorld().spigot().playEffect(target.getLocation().add(0, 0.5, 0), org.bukkit.Effect.MAGIC_CRIT, 0, 0, 0, 0, 0, 1, 25, 16);
+        //player.getWorld().spawnParticle(Particle.CRIT_MAGIC, target.getLocation().add(0, 0.5, 0), 25, 0, 0, 0, 1);
+        target.getWorld().spigot().playEffect(target.getLocation(), Effect.NOTE, 1, 1, 0F, 1F, 0F, 50F, 30, 10);
+        //target.getWorld().spawnParticle(Particle.NOTE, target.getLocation(), 30, 0, 1, 0, 50);
+        target.getWorld().spigot().playEffect(target.getLocation(), Effect.EXPLOSION_HUGE, 0, 0, 0F, 0F, 0F, 0F, 1, 12);
+        //target.getWorld().spawnParticle(Particle.EXPLOSION_HUGE, target.getLocation(), 1, 0, 0, 0, 0);
 
         return SkillResult.NORMAL;
     }

@@ -128,8 +128,8 @@ public class SkillFireRune extends ActiveSkill {
         List<Location> circle = circle(player.getLocation(), 36, 1.5);
         for (int i = 0; i < circle.size(); i++)
 		{
-        	//player.getWorld().spigot().playEffect(circle(player.getLocation().add(0, 1, 0), 36, 1.5).get(i), org.bukkit.Effect.FLAME, 0, 0, 0.0F, 0.0F, 0.0F, 0.0F, 1, 16);
-            player.getWorld().spawnParticle(Particle.FLAME, circle.get(i), 1, 0, 0, 0, 0);
+        	player.getWorld().spigot().playEffect(circle(player.getLocation().add(0, 1, 0), 36, 1.5).get(i), org.bukkit.Effect.FLAME, 0, 0, 0.0F, 0.0F, 0.0F, 0.0F, 1, 16);
+            //player.getWorld().spawnParticle(Particle.FLAME, circle.get(i), 1, 0, 0, 0, 0);
 		}
 
         return SkillResult.NORMAL;
@@ -179,8 +179,8 @@ public class SkillFireRune extends ActiveSkill {
                     addSpellTarget((LivingEntity) targEnt, hero);
                     damageEntity((LivingEntity) targEnt, hero.getPlayer(), damage, DamageCause.MAGIC, false);
                     
-                    //targEnt.getWorld().spigot().playEffect(targEnt.getLocation().add(0, 0.5, 0), Effect.FLAME, 0, 0, 0, 0, 0, 1.5F, 45, 16);
-                    targEnt.getWorld().spawnParticle(Particle.FLAME, targEnt.getLocation(), 45, 0, 0, 0, 1.5);
+                    targEnt.getWorld().spigot().playEffect(targEnt.getLocation().add(0, 0.5, 0), Effect.FLAME, 0, 0, 0, 0, 0, 1.5F, 45, 16);
+                    //targEnt.getWorld().spawnParticle(Particle.FLAME, targEnt.getLocation(), 45, 0, 0, 0, 1.5);
 
                     // Announce that the player has been hit with the skill
                     broadcast(targEnt.getLocation(), "    " + applyText.replace("%target%", CustomNameManager.getName(targCT)));

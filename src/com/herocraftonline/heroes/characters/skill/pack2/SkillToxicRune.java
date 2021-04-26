@@ -142,8 +142,8 @@ public class SkillToxicRune extends ActiveSkill {
         List<Location> circle = circle(player.getLocation(), 36, 1.5);
         for (int i = 0; i < circle.size(); i++)
 		{
-        	//player.getWorld().spigot().playEffect(circle(player.getLocation().add(0, 1, 0), 36, 1.5).get(i), org.bukkit.Effect.HAPPY_VILLAGER, 0, 0, 0.0F, 0.0F, 0.0F, 0.0F, 1, 16);
-            player.getWorld().spawnParticle(Particle.VILLAGER_HAPPY, circle.get(i), 0, 0, 0, 0);
+        	player.getWorld().spigot().playEffect(circle(player.getLocation().add(0, 1, 0), 36, 1.5).get(i), org.bukkit.Effect.HAPPY_VILLAGER, 0, 0, 0.0F, 0.0F, 0.0F, 0.0F, 1, 16);
+            //player.getWorld().spawnParticle(Particle.VILLAGER_HAPPY, circle.get(i), 0, 0, 0, 0);
 		}
 
         return SkillResult.NORMAL;
@@ -205,8 +205,8 @@ public class SkillToxicRune extends ActiveSkill {
                     // Play Effects
                     Util.playClientEffect(player, "enchantmenttable", new Vector(0, 0, 0), 1F, 10, true);
                     player.getWorld().playSound(player.getLocation(), Sound.ENTITY_GENERIC_BURN, 0.5F, 1.0F);
-                    //targCT.getEntity().getWorld().spigot().playEffect(targCT.getEntity().getLocation().add(0, 1, 0), org.bukkit.Effect.HAPPY_VILLAGER, 0, 0, 0.5F, 0.0F, 0.5F, 0.2F, 35, 16);
-                    targCT.getEntity().getWorld().spawnParticle(Particle.VILLAGER_HAPPY, targCT.getEntity().getLocation(), 35, 0.5, 0, 0.5, 0.2);
+                    targCT.getEntity().getWorld().spigot().playEffect(targCT.getEntity().getLocation().add(0, 1, 0), org.bukkit.Effect.HAPPY_VILLAGER, 0, 0, 0.5F, 0.0F, 0.5F, 0.2F, 35, 16);
+                    //targCT.getEntity().getWorld().spawnParticle(Particle.VILLAGER_HAPPY, targCT.getEntity().getLocation(), 35, 0.5, 0, 0.5, 0.2);
                 }
             }, (long) (0.1 * 20));
 
