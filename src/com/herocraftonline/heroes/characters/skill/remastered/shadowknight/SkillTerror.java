@@ -29,41 +29,36 @@ public class SkillTerror extends TargettedSkill {
         setUsage("/skill terror");
         setArgumentRange(0, 0);
         setIdentifiers("skill terror");
-        setTypes(SkillType.ABILITY_PROPERTY_DARK, SkillType.DAMAGING, SkillType.BLINDING, SkillType.DISABLING, SkillType.SILENCEABLE, SkillType.AGGRESSIVE);
+        setTypes(SkillType.ABILITY_PROPERTY_DARK, SkillType.DAMAGING, SkillType.BLINDING, SkillType.DISABLING,
+                SkillType.SILENCEABLE, SkillType.AGGRESSIVE);
     }
 
     @Override
     public String getDescription(Hero hero) {
-
-        int duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION.node(), 4000, false);
-        int durationIncrease = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION_INCREASE_PER_CHARISMA, 50, false);
-        duration += hero.getAttributeValue(AttributeType.CHARISMA) * durationIncrease;
-
-        String formattedDuration = Util.decFormat.format(duration / 1000.0);
-
-        return getDescription().replace("$1", formattedDuration);
+        int duration = SkillConfigManager.getScaledUseSettingInt(hero, this, SkillSetting.DURATION, false);
+        return getDescription().replace("$1", Util.decFormat.format(duration / 1000.0));
     }
 
     @Override
     public ConfigurationSection getDefaultConfig() {
-        ConfigurationSection node = super.getDefaultConfig();
-
-        node.set(SkillSetting.MAX_DISTANCE.node(), 7);
-        node.set("amplifier", 2);
-        node.set(SkillSetting.DURATION.node(), 4000);
-        node.set(SkillSetting.DURATION_INCREASE_PER_CHARISMA.node(), 75);
-        node.set(SkillSetting.APPLY_TEXT.node(), ChatComponents.GENERIC_SKILL + "%target% has been overcome with fear!");
-        node.set(SkillSetting.EXPIRE_TEXT.node(), ChatComponents.GENERIC_SKILL + "%target% has overcome his fear!");
-
-        return node;
+        ConfigurationSection config = super.getDefaultConfig();
+        config.set(SkillSetting.MAX_DISTANCE.node(), 7);
+        config.set("amplifier", 2);
+        config.set(SkillSetting.DURATION.node(), 4000);
+        config.set(SkillSetting.DURATION_INCREASE_PER_CHARISMA.node(), 75);
+        config.set(SkillSetting.APPLY_TEXT.node(), ChatComponents.GENERIC_SKILL + "%target% has been overcome with fear!");
+        config.set(SkillSetting.EXPIRE_TEXT.node(), ChatComponents.GENERIC_SKILL + "%target% has overcome his fear!");
+        return config;
     }
 
     @Override
     public void init() {
         super.init();
 
-        applyText = SkillConfigManager.getRaw(this, SkillSetting.APPLY_TEXT.node(), ChatComponents.GENERIC_SKILL + "%target% is terrified!").replace("%target%", "$1");
-        expireText = SkillConfigManager.getRaw(this, SkillSetting.EXPIRE_TEXT.node(), ChatComponents.GENERIC_SKILL + "%target% has overcome his fear!").replace("%target%", "$1");
+        applyText = SkillConfigManager.getRaw(this, SkillSetting.APPLY_TEXT.node(),
+                ChatComponents.GENERIC_SKILL + "%target% is terrified!").replace("%target%", "$1");
+        expireText = SkillConfigManager.getRaw(this, SkillSetting.EXPIRE_TEXT.node(),
+                ChatComponents.GENERIC_SKILL + "%target% has overcome his fear!").replace("%target%", "$1");
     }
 
     @Override
@@ -71,10 +66,7 @@ public class SkillTerror extends TargettedSkill {
         Player player = hero.getPlayer();
 
         int amplifier = SkillConfigManager.getUseSetting(hero, this, "amplifier", 2, false);
-
-        int duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION.node(), 4000, false);
-        int durationIncrease = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION_INCREASE_PER_CHARISMA, 50, false);
-        duration += hero.getAttributeValue(AttributeType.CHARISMA) * durationIncrease;
+        int duration = SkillConfigManager.getScaledUseSettingInt(hero, this, SkillSetting.DURATION, false);
 
         broadcastExecuteText(hero, target);
 
@@ -103,7 +95,7 @@ public class SkillTerror extends TargettedSkill {
             types.add(EffectType.DISABLE);
             types.add(EffectType.DISPELLABLE);
 
-            addPotionEffect(new PotionEffect(PotionEffectType.SLOW, (int) ((duration / 1000) * 20), amplifier), false);
+            addPotionEffect(new PotionEffect(PotionEffectType.SLOW, (int) ((duration / 1000) * 20), amplifier));
         }
     }
 }
