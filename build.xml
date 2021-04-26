@@ -123,6 +123,7 @@
         </if>
         <for list="${skills}" param="skillpath">
             <sequential>
+                <echo message="@{skillpath}"/>
                 <antcall target="jar-skillpath-reborn">
                     <param name="top-package" value="${top-package}"/>
                     <param name="skillpath" value="@{skillpath}"/>
