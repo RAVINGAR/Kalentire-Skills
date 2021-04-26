@@ -41,7 +41,9 @@ public class SkillShield extends PassiveSkill {
 
 		//shieldNames.add("Worn Shield of Ironpass"); // I always put ArrayList components in the class constructor itself :P
 		shieldItems.add(Material.IRON_DOOR);
-		shieldItems.add(Material.OAK_DOOR);
+		shieldItems.add(Material.WOOD_DOOR);
+		shieldItems.add(Material.WOODEN_DOOR);
+		//shieldItems.add(Material.OAK_DOOR);
 		shieldItems.add(Material.BIRCH_DOOR);
 		shieldItems.add(Material.SPRUCE_DOOR);
 		shieldItems.add(Material.JUNGLE_DOOR);
@@ -49,12 +51,13 @@ public class SkillShield extends PassiveSkill {
 		shieldItems.add(Material.DARK_OAK_DOOR);
 
 		shieldItems.add(Material.IRON_TRAPDOOR);
-		shieldItems.add(Material.OAK_TRAPDOOR);
-		shieldItems.add(Material.BIRCH_TRAPDOOR);
-		shieldItems.add(Material.SPRUCE_TRAPDOOR);
-		shieldItems.add(Material.JUNGLE_TRAPDOOR);
-		shieldItems.add(Material.ACACIA_TRAPDOOR);
-		shieldItems.add(Material.DARK_OAK_TRAPDOOR);
+		shieldItems.add(Material.TRAP_DOOR);
+//		shieldItems.add(Material.OAK_TRAPDOOR);
+//		shieldItems.add(Material.BIRCH_TRAPDOOR);
+//		shieldItems.add(Material.SPRUCE_TRAPDOOR);
+//		shieldItems.add(Material.JUNGLE_TRAPDOOR);
+//		shieldItems.add(Material.ACACIA_TRAPDOOR);
+//		shieldItems.add(Material.DARK_OAK_TRAPDOOR);
 	}
 
 	@Override
@@ -103,7 +106,9 @@ public class SkillShield extends PassiveSkill {
 					case IRON_DOOR:
 						multiplier = SkillConfigManager.getUseSetting(hero, skill, "iron-door", 0.75, true);
 						break;
-					case OAK_DOOR:
+					case WOOD_DOOR:
+					case WOODEN_DOOR:
+					//case OAK_DOOR:
 					case BIRCH_DOOR:
 					case SPRUCE_DOOR:
 					case JUNGLE_DOOR:
@@ -114,12 +119,13 @@ public class SkillShield extends PassiveSkill {
 					case IRON_TRAPDOOR:
 						multiplier = SkillConfigManager.getUseSetting(hero, skill, "iron-trapdoor", 0.90, true);
 						break;
-					case OAK_TRAPDOOR:
-					case BIRCH_TRAPDOOR:
-					case SPRUCE_TRAPDOOR:
-					case JUNGLE_TRAPDOOR:
-					case ACACIA_TRAPDOOR:
-					case DARK_OAK_TRAPDOOR:
+					case TRAP_DOOR:
+//					case OAK_TRAPDOOR:
+//					case BIRCH_TRAPDOOR:
+//					case SPRUCE_TRAPDOOR:
+//					case JUNGLE_TRAPDOOR:
+//					case ACACIA_TRAPDOOR:
+//					case DARK_OAK_TRAPDOOR:
 						multiplier = SkillConfigManager.getUseSetting(hero, skill, "wooden-trapdoor", 0.95, true);
 						break;
 				}

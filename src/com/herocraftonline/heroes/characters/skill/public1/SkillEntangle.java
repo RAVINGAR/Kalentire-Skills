@@ -109,13 +109,14 @@ public class SkillEntangle extends TargettedSkill {
 		CharacterTemplate targetCT = plugin.getCharacterManager().getCharacter(target);
 		targetCT.addEffect(rootEffect);
 
-		player.getWorld().playSound(player.getLocation(), Sound.ENTITY_ZOMBIE_BREAK_WOODEN_DOOR, 0.8F, 1.0F);
+		player.getWorld().playSound(player.getLocation(), Sound.ENTITY_ZOMBIE_BREAK_DOOR_WOOD, 0.8F, 1.0F);
+		//player.getWorld().playSound(player.getLocation(), Sound.ENTITY_ZOMBIE_BREAK_WOODEN_DOOR, 0.8F, 1.0F);
 
 		ArrayList<Location> particleLocations = circle(player.getLocation(), 36, 1.5);
 		for (int i = 0; i < particleLocations.size(); i++)
 		{
-			//player.getWorld().spigot().playEffect(particleLocations.get(i), Effect.TILE_BREAK, Material.WOOD.getId(), 0, 0, 0.1F, 0, 0.0F, 1, 16);
-			player.getWorld().spawnParticle(Particle.BLOCK_CRACK, particleLocations.get(i), 1, 0, 0.1, 0, 0, Bukkit.createBlockData(Material.OAK_WOOD));
+			player.getWorld().spigot().playEffect(particleLocations.get(i), Effect.TILE_BREAK, Material.WOOD.getId(), 0, 0, 0.1F, 0, 0.0F, 1, 16);
+			//player.getWorld().spawnParticle(Particle.BLOCK_CRACK, particleLocations.get(i), 1, 0, 0.1, 0, 0, Bukkit.createBlockData(Material.OAK_WOOD));
 		}
 
 		return SkillResult.NORMAL;

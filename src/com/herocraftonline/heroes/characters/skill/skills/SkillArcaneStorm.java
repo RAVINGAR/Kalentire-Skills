@@ -18,14 +18,13 @@ import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
-import org.bukkit.Sound;
 import org.bukkit.event.entity.EntityDamageEvent;
 
 public class SkillArcaneStorm extends SkillBaseSphere {
 
 	public SkillArcaneStorm(Heroes plugin) {
 		super(plugin, "ArcaneStorm");
-		setDescription("Call upon the forces of the arcane to damage and knock back enemies within $1 blocks for $2 every $3 seconds for $4 seconds.");
+		setDescription("Call upon the forces of the arcane to damage and knock back enemies within $1 blocks for $2 every $3 seconds for $4 second(s).");
 		setUsage("/skill arcanestorm");
 		setIdentifiers("skill arcanestorm");
 		setArgumentRange(0, 0);
@@ -81,7 +80,8 @@ public class SkillArcaneStorm extends SkillBaseSphere {
 				public void sphereTickAction(Hero hero, AreaSphereEffect effect) {
 					renderSphere(hero.getPlayer().getEyeLocation(), radius, Particle.SPELL_MOB, Color.AQUA);
 					hero.getPlayer().getWorld().playSound(hero.getPlayer().getLocation(), Sound.ENTITY_GENERIC_BURN, 0.5f, 0.000001f);
-					hero.getPlayer().getWorld().playSound(hero.getPlayer().getLocation(), Sound.ENTITY_ENDERMAN_TELEPORT, 0.5f, 0.000001f);
+//					hero.getPlayer().getWorld().playSound(hero.getPlayer().getLocation(), Sound.ENTITY_ENDERMAN_TELEPORT, 0.5f, 0.000001f);
+					hero.getPlayer().getWorld().playSound(hero.getPlayer().getLocation(), Sound.ENTITY_ENDERMEN_TELEPORT, 0.5f, 0.000001f);
 				}
 
 				@Override

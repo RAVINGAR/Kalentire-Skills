@@ -34,10 +34,20 @@ public class SkillFishing extends PassiveSkill {
         Bukkit.getServer().getPluginManager().registerEvents(new SkillPlayerListener(this), plugin);
     }
 
+    @Override
+    public String getDescription(Hero hero) {
+        double chance = SkillConfigManager.getUseSetting(hero, this, "chance-per-level", .001, false);
+        int level = hero.getHeroLevel(this);
+        if (level < 1)
+            level = 1;
+        return getDescription().replace("$1", Util.stringDouble(chance * level * 100));
+    }
 
     @Override
     public ConfigurationSection getDefaultConfig() {
         final ConfigurationSection node = super.getDefaultConfig();
+        node.set(SkillSetting.APPLY_TEXT.node(), "");
+        node.set(SkillSetting.UNAPPLY_TEXT.node(), "");
         node.set("chance-per-level", .001);
         node.set("leather-level", 5);
         node.set("enable-leather", false);
@@ -54,7 +64,7 @@ public class SkillFishing extends PassiveSkill {
 
         @EventHandler(priority = EventPriority.MONITOR)
         public void onPlayerFish(PlayerFishEvent event) {
-            if (event.isCancelled() || (event.getState() != State.CAUGHT_FISH) || !(event.getCaught() instanceof Item)) {
+            if (event.isCancelled() || event.getState() != State.CAUGHT_FISH || !(event.getCaught() instanceof Item)) {
                 return;
             }
             final Item getCaught = (Item) event.getCaught();
@@ -67,7 +77,8 @@ public class SkillFishing extends PassiveSkill {
                 if ((hero.getHeroLevel() >= leatherlvl) && SkillConfigManager.getUseSetting(hero, this.skill, "enable-leather", false)) { //if fishing leather is enabled and have the level
 
                     if (getCaught != null) { //If not null
-                        switch (Util.nextInt(12)) {
+                        //switch (Util.nextInt(12)) { // use when considering the other varieties of fish below
+                        switch (Util.nextInt(8)) {
                             case 0:
                                 getCaught.setItemStack(new ItemStack(Material.LEATHER_BOOTS, 1));
                                 player.sendMessage(ChatColor.GRAY + "You found leather boots!");
@@ -99,13 +110,18 @@ public class SkillFishing extends PassiveSkill {
                                 getCaught.getItemStack().setDurability((short) (Math.random() * 29));
                                 break;
                             case 6:
-                                getCaught.setItemStack(new ItemStack(Material.COD, 2));
-                                player.sendMessage("You found 2 Cod!");
+                                getCaught.setItemStack(new ItemStack(Material.RAW_FISH, 2));
+                                player.sendMessage("You found 2 Fishes!");
+                                //getCaught.setItemStack(new ItemStack(Material.COD, 2));
+                                //player.sendMessage("You found 2 Cod!");
                                 break;
                             case 7:
-                                getCaught.setItemStack(new ItemStack(Material.COD, 1));
-                                player.sendMessage("You found 1 Cod!");
+                                getCaught.setItemStack(new ItemStack(Material.RAW_FISH, 1));
+                                player.sendMessage("You found 1 Fish!");
+                                //getCaught.setItemStack(new ItemStack(Material.COD, 1));
+                                //.sendMessage("You found 1 Cod!");
                                 break;
+                            /*
                             case 8:
                                 getCaught.setItemStack(new ItemStack(Material.SALMON, 2));
                                 player.sendMessage("You found 2 Salmon!");
@@ -122,18 +138,25 @@ public class SkillFishing extends PassiveSkill {
                                 getCaught.setItemStack(new ItemStack(Material.PUFFERFISH, 1));
                                 player.sendMessage("You found 1 Puffer Fish!");
                                 break;
+                             */
                         }
                     }
                 } else {
-                    switch(Util.nextInt(6)){
+                    //switch(Util.nextInt(6)){ // use when considering the other varieties of fish below
+                    switch(Util.nextInt(2)){
                         case 0:
-                            getCaught.setItemStack(new ItemStack(Material.COD, 2));
-                            player.sendMessage("You found 2 Cod!");
+                            getCaught.setItemStack(new ItemStack(Material.RAW_FISH, 2));
+                            player.sendMessage("You found 2 Fishes!");
+                            //getCaught.setItemStack(new ItemStack(Material.COD, 2));
+                            //player.sendMessage("You found 2 Cod!");
                             break;
                         case 1:
-                            getCaught.setItemStack(new ItemStack(Material.COD, 1));
-                            player.sendMessage("You found 1 Cod!");
+                            getCaught.setItemStack(new ItemStack(Material.RAW_FISH, 1));
+                            player.sendMessage("You found 1 Fish!");
+                            //getCaught.setItemStack(new ItemStack(Material.COD, 1));
+                            //player.sendMessage("You found 1 Cod!");
                             break;
+                        /*
                         case 2:
                             getCaught.setItemStack(new ItemStack(Material.SALMON, 2));
                             player.sendMessage("You found 2 Salmon!");
@@ -150,19 +173,10 @@ public class SkillFishing extends PassiveSkill {
                             getCaught.setItemStack(new ItemStack(Material.PUFFERFISH, 1));
                             player.sendMessage("You found 1 Puffer Fish!");
                             break;
+                        */
                     }
                 }
             }
         }
-    }
-
-    @Override
-    public String getDescription(Hero hero) {
-        final double chance = SkillConfigManager.getUseSetting(hero, this, "chance-per-level", .001, false);
-        int level = hero.getHeroLevel(this);
-        if (level < 1) {
-            level = 1;
-        }
-        return this.getDescription().replace("$1", Util.stringDouble(chance * level * 100));
     }
 }

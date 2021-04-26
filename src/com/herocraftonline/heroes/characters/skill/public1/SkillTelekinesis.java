@@ -47,8 +47,10 @@ public class SkillTelekinesis extends ActiveSkill {
         final HashSet<Material> transparent = new HashSet<Material>();
         transparent.add(Material.AIR);
         transparent.add(Material.WATER);
-        transparent.add(Material.REDSTONE_TORCH);
-        transparent.add(Material.REDSTONE_WALL_TORCH);
+        transparent.add(Material.REDSTONE_TORCH_ON);
+        transparent.add(Material.REDSTONE_TORCH_OFF);
+        //transparent.add(Material.REDSTONE_TORCH);
+        //transparent.add(Material.REDSTONE_WALL_TORCH);
         transparent.add(Material.REDSTONE_WIRE);
         transparent.add(Material.TORCH);
         transparent.add(Material.SNOW);
@@ -56,12 +58,14 @@ public class SkillTelekinesis extends ActiveSkill {
 
         switch (block.getType()) {
             case STONE_BUTTON:
-            case OAK_BUTTON:
-            case BIRCH_BUTTON:
-            case ACACIA_BUTTON:
-            case DARK_OAK_BUTTON:
-            case JUNGLE_BUTTON:
-            case SPRUCE_BUTTON: {
+            case WOOD_BUTTON:
+            //case OAK_BUTTON:
+            //case BIRCH_BUTTON:
+            //case ACACIA_BUTTON:
+            //case DARK_OAK_BUTTON:
+            //case JUNGLE_BUTTON:
+            //case SPRUCE_BUTTON:
+            {
                 Button button = (Button) block;
                 button.setPowered(true);
                 break;

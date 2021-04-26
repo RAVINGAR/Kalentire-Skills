@@ -6,6 +6,7 @@ import com.herocraftonline.heroes.api.events.WeaponDamageEvent;
 import com.herocraftonline.heroes.attributes.AttributeType;
 import com.herocraftonline.heroes.characters.CustomNameManager;
 import com.herocraftonline.heroes.characters.Hero;
+import com.herocraftonline.heroes.characters.effects.EffectType;
 import com.herocraftonline.heroes.characters.skill.*;
 import com.herocraftonline.heroes.nms.NMSHandler;
 import com.herocraftonline.heroes.util.Util;
@@ -114,11 +115,11 @@ public class SkillBackstab extends ActiveSkill {
                 continue;
             }
 
-            int baseDamage = 0;
+            double baseDamage = 0.0;
             if (plugin.getDamageManager().getHighestItemDamage(hero, weapon) == null){
                 Heroes.log(Level.WARNING, "SkillBackstab: " + weaponName + " has no damage set.");
             } else {
-                baseDamage = plugin.getDamageManager().getHighestItemDamage(hero, weapon).intValue();
+                baseDamage = plugin.getDamageManager().getHighestItemDamage(hero, weapon);
             }
 
             backstabDamage = baseDamage * backstabDamageModifier;
@@ -170,7 +171,7 @@ public class SkillBackstab extends ActiveSkill {
 
                 // Sneak for ambush, nosneak for backstab.
                 boolean allowVanillaSneaking = SkillConfigManager.getUseSetting(hero, skill, "allow-vanilla-sneaking", false);
-                if (hero.hasEffect("Sneak") || (allowVanillaSneaking && player.isSneaking())) {
+                if (hero.hasEffectType(EffectType.SNEAK) || (allowVanillaSneaking && player.isSneaking())) {
                     chance = SkillConfigManager.getUseSetting(hero, skill, "ambush-chance", -1.0, false);
 
                     damageModifier = SkillConfigManager.getUseSetting(hero, skill, "ambush-bonus", 0.85, false);
@@ -197,9 +198,10 @@ public class SkillBackstab extends ActiveSkill {
 
                 if (backstabbed) {
                     Entity target = event.getEntity();
-                    //target.getWorld().spigot().playEffect(target.getLocation().add(0, 0.5, 0), Effect.COLOURED_DUST, 0, 0, 0.2F, 0.0F, 0.2F, 0.0F, 30, 16);
-                    target.getWorld().spawnParticle(Particle.REDSTONE, target.getLocation().add(0, 0.5, 0), 30, 0.2, 0, 0.2, new Particle.DustOptions(Color.RED, 1));
-                    target.getWorld().playSound(target.getLocation(), Sound.ENTITY_ENDER_DRAGON_HURT, 1.0F, 0.6F);
+                    target.getWorld().spigot().playEffect(target.getLocation().add(0, 0.5, 0), Effect.COLOURED_DUST, 0, 0, 0.2F, 0.0F, 0.2F, 0.0F, 30, 16);
+                    //target.getWorld().spawnParticle(Particle.REDSTONE, target.getLocation().add(0, 0.5, 0), 30, 0.2, 0, 0.2, new Particle.DustOptions(Color.RED, 1));
+                    //target.getWorld().playSound(target.getLocation(), Sound.ENTITY_ENDERMAN_HURT, 1.0F, 0.6F);
+                    target.getWorld().playSound(target.getLocation(), Sound.ENTITY_ENDERMEN_HURT, 1.0F, 0.6F);
                     if (target instanceof Monster)
                         broadcast(player.getLocation(), backstabText.replace("%hero%", player.getName()).replace("%target%", CustomNameManager.getName(target)));
                     else if (target instanceof Player)

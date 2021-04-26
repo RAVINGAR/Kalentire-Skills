@@ -9,13 +9,7 @@ import com.herocraftonline.heroes.characters.skill.SkillType;
 import com.herocraftonline.heroes.util.Util;
 import com.herocraftonline.townships.users.TownshipsUser;
 import com.herocraftonline.townships.users.UserManager;
-import com.sk89q.worldedit.bukkit.BukkitAdapter;
-import com.sk89q.worldguard.LocalPlayer;
-import com.sk89q.worldguard.WorldGuard;
 import com.sk89q.worldguard.bukkit.WorldGuardPlugin;
-import com.sk89q.worldguard.protection.flags.Flags;
-import com.sk89q.worldguard.protection.regions.RegionContainer;
-import com.sk89q.worldguard.protection.regions.RegionQuery;
 import org.apache.commons.lang.StringUtils;
 import org.bukkit.*;
 import org.bukkit.configuration.ConfigurationSection;
@@ -149,11 +143,7 @@ public class SkillMark extends ActiveSkill {
 
             // Validate WorldGuard
             if (worldguard && !ignoreRegionPlugins) {
-                LocalPlayer wgPlayer = wgp.wrapPlayer(player);
-                RegionContainer container = WorldGuard.getInstance().getPlatform().getRegionContainer();
-                com.sk89q.worldedit.util.Location wgTeleportLoc = BukkitAdapter.adapt(loc);
-                RegionQuery query = container.createQuery();
-                if (!query.testState(wgTeleportLoc, wgPlayer, Flags.BUILD)) {
+                if (!wgp.canBuild(player, loc)) {
                     player.sendMessage("You cannot Mark in a Region you have no access to!");
                     return SkillResult.FAIL;
                 }
@@ -172,8 +162,8 @@ public class SkillMark extends ActiveSkill {
 
             //plugin.getCharacterManager().saveHero(hero, false); (remove this as its now being saved with skillsettings.
             hero.getPlayer().getWorld().playSound(hero.getPlayer().getLocation(), Sound.ENTITY_WITHER_SPAWN, 0.5F, 1.0F);
-            //hero.getPlayer().getWorld().spigot().playEffect(player.getLocation(), Effect.COLOURED_DUST, 0, 0, 0.2F, 1.0F, 0.2F, 0.0F, 50, 12);
-            hero.getPlayer().getWorld().spawnParticle(Particle.REDSTONE, player.getLocation(), 50, 0.2, 1, 0.2, 0, new Particle.DustOptions(Color.FUCHSIA, 1));
+            hero.getPlayer().getWorld().spigot().playEffect(player.getLocation(), Effect.COLOURED_DUST, 0, 0, 0.2F, 1.0F, 0.2F, 0.0F, 50, 12);
+            //hero.getPlayer().getWorld().spawnParticle(Particle.REDSTONE, player.getLocation(), 50, 0.2, 1, 0.2, 0, new Particle.DustOptions(Color.FUCHSIA, 1));
             return SkillResult.NORMAL;
         }
     }

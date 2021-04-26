@@ -8,7 +8,6 @@ import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.Player;
-import org.bukkit.Sound;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.EnchantmentStorageMeta;
 
@@ -89,10 +88,10 @@ public class SkillEnchantingBook extends ActiveSkill {
 	public static boolean isSword(ItemStack is) {
 		switch (is.getType()) {
 		case DIAMOND_SWORD:
-		case GOLDEN_SWORD:
+		case GOLD_SWORD:
 		case IRON_SWORD:
 		case STONE_SWORD:
-		case WOODEN_SWORD:
+		case WOOD_SWORD:
 			return true;
 
 		default:
@@ -109,10 +108,10 @@ public class SkillEnchantingBook extends ActiveSkill {
 	public static boolean isHoe(ItemStack is) {
 		switch (is.getType()) {
 		case DIAMOND_HOE:
-		case GOLDEN_HOE:
+		case GOLD_HOE:
 		case IRON_HOE:
 		case STONE_HOE:
-		case WOODEN_HOE:
+		case WOOD_HOE:
 			return true;
 			
 		default:
@@ -128,11 +127,11 @@ public class SkillEnchantingBook extends ActiveSkill {
 	 */
 	public static boolean isShovel(ItemStack is) {
 		switch (is.getType()) {
-		case DIAMOND_SHOVEL:
-		case GOLDEN_SHOVEL:
-		case IRON_SHOVEL:
-		case STONE_SHOVEL:
-		case WOODEN_SHOVEL:
+		case DIAMOND_SPADE:
+		case GOLD_SPADE:
+		case IRON_SPADE:
+		case STONE_SPADE:
+		case WOOD_SPADE:
 			return true;
 
 		default:
@@ -149,10 +148,10 @@ public class SkillEnchantingBook extends ActiveSkill {
 	public static boolean isAxe(ItemStack is) {
 		switch (is.getType()) {
 		case DIAMOND_AXE:
-		case GOLDEN_AXE:
+		case GOLD_AXE:
 		case IRON_AXE:
 		case STONE_AXE:
-		case WOODEN_AXE:
+		case WOOD_AXE:
 			return true;
 
 		default:
@@ -169,10 +168,10 @@ public class SkillEnchantingBook extends ActiveSkill {
 	public static boolean isPickaxe(ItemStack is) {
 		switch (is.getType()) {
 		case DIAMOND_PICKAXE:
-		case GOLDEN_PICKAXE:
+		case GOLD_PICKAXE:
 		case IRON_PICKAXE:
 		case STONE_PICKAXE:
-		case WOODEN_PICKAXE:
+		case WOOD_PICKAXE:
 			return true;
 
 		default:
@@ -189,7 +188,7 @@ public class SkillEnchantingBook extends ActiveSkill {
 	public static boolean isHelmet(ItemStack is) {
 		switch (is.getType()) {
 		case DIAMOND_HELMET:
-		case GOLDEN_HELMET:
+		case GOLD_HELMET:
 		case IRON_HELMET:
 		case LEATHER_HELMET:
 			return true;
@@ -208,7 +207,7 @@ public class SkillEnchantingBook extends ActiveSkill {
 	public static boolean isChestplate(ItemStack is) {
 		switch (is.getType()) {
 		case DIAMOND_CHESTPLATE:
-		case GOLDEN_CHESTPLATE:
+		case GOLD_CHESTPLATE:
 		case IRON_CHESTPLATE:
 		case LEATHER_CHESTPLATE:
 			return true;
@@ -227,7 +226,7 @@ public class SkillEnchantingBook extends ActiveSkill {
 	public static boolean isPants(ItemStack is) {
 		switch (is.getType()) {
 		case DIAMOND_LEGGINGS:
-		case GOLDEN_LEGGINGS:
+		case GOLD_LEGGINGS:
 		case IRON_LEGGINGS:
 		case LEATHER_LEGGINGS:
 			return true;
@@ -246,7 +245,7 @@ public class SkillEnchantingBook extends ActiveSkill {
 	public static boolean isBoots(ItemStack is) {
 		switch (is.getType()) {
 		case DIAMOND_BOOTS:
-		case GOLDEN_BOOTS:
+		case GOLD_BOOTS:
 		case IRON_BOOTS:
 		case LEATHER_BOOTS:
 			return true;
@@ -293,10 +292,10 @@ public class SkillEnchantingBook extends ActiveSkill {
 	 */
 	public static boolean isGoldArmor(ItemStack is) {
 		switch (is.getType()) {
-		case GOLDEN_BOOTS:
-		case GOLDEN_CHESTPLATE:
-		case GOLDEN_HELMET:
-		case GOLDEN_LEGGINGS:
+		case GOLD_BOOTS:
+		case GOLD_CHESTPLATE:
+		case GOLD_HELMET:
+		case GOLD_LEGGINGS:
 			return true;
 
 		default:
@@ -363,7 +362,7 @@ public class SkillEnchantingBook extends ActiveSkill {
 		case STONE_AXE:
 		case STONE_HOE:
 		case STONE_PICKAXE:
-		case STONE_SHOVEL:
+		case STONE_SPADE:
 		case STONE_SWORD:
 			return true;
 
@@ -380,11 +379,11 @@ public class SkillEnchantingBook extends ActiveSkill {
 	 */
 	public static boolean isWoodTool(ItemStack is) {
 		switch (is.getType()) {
-		case WOODEN_AXE:
-		case WOODEN_HOE:
-		case WOODEN_PICKAXE:
-		case WOODEN_SHOVEL:
-		case WOODEN_SWORD:
+		case WOOD_AXE:
+		case WOOD_HOE:
+		case WOOD_PICKAXE:
+		case WOOD_SPADE:
+		case WOOD_SWORD:
 			return true;
 
 		default:
@@ -418,11 +417,11 @@ public class SkillEnchantingBook extends ActiveSkill {
 	 */
 	public static boolean isGoldTool(ItemStack is) {
 		switch (is.getType()) {
-		case GOLDEN_AXE:
-		case GOLDEN_HOE:
-		case GOLDEN_PICKAXE:
-		case GOLDEN_SHOVEL:
-		case GOLDEN_SWORD:
+		case GOLD_AXE:
+		case GOLD_HOE:
+		case GOLD_PICKAXE:
+		case GOLD_SPADE:
+		case GOLD_SWORD:
 			return true;
 
 		default:
@@ -441,7 +440,7 @@ public class SkillEnchantingBook extends ActiveSkill {
 		case IRON_AXE:
 		case IRON_HOE:
 		case IRON_PICKAXE:
-		case IRON_SHOVEL:
+		case IRON_SPADE:
 		case IRON_SWORD:
 		case SHEARS:
 			return true;
@@ -462,7 +461,7 @@ public class SkillEnchantingBook extends ActiveSkill {
 		case DIAMOND_AXE:
 		case DIAMOND_HOE:
 		case DIAMOND_PICKAXE:
-		case DIAMOND_SHOVEL:
+		case DIAMOND_SPADE:
 		case DIAMOND_SWORD:
 			return true;
 

@@ -84,21 +84,21 @@ public class SkillSmite extends TargettedSkill {
 
         player.getWorld().playEffect(target.getLocation(), org.bukkit.Effect.BLAZE_SHOOT, 1);
 
-//        player.getWorld().spigot().playEffect(target.getLocation().add(0, 0.5, 0), // location
-//                org.bukkit.Effect.VILLAGER_THUNDERCLOUD, // effect
-//                0, 0, // id,data: for block effect
-//                0.5F, 0.5F, 0.5F, // offset
-//                1.0f, // speed
-//                50, // particle count
-//                SkillConfigManager.getUseSetting(hero, this, SkillSetting.MAX_DISTANCE, 6, false) + 1); // radius: player observable distance
-        int max_distance = SkillConfigManager.getUseSetting(hero, this, SkillSetting.MAX_DISTANCE, 6, false);
-        player.getWorld().spawnParticle(Particle.VILLAGER_ANGRY,
-                target.getLocation().add(0, 0.5, 0), //location
+        player.getWorld().spigot().playEffect(target.getLocation().add(0, 0.5, 0), // location
+                org.bukkit.Effect.VILLAGER_THUNDERCLOUD, // effect
+                0, 0, // id,data: for block effect
+                0.5F, 0.5F, 0.5F, // offset
+                1.0f, // speed
                 50, // particle count
-                0.5, 0.5, 0.5, // offsets x,y,z respectively
-                1, // extra data - normally speed
-                null, // particle specific data (only non-null for specific particles)
-                16 < (max_distance + 1)); // force render to players in an extended range
+                SkillConfigManager.getUseSetting(hero, this, SkillSetting.MAX_DISTANCE, 6, false) + 1); // radius: player observable distance
+        int max_distance = SkillConfigManager.getUseSetting(hero, this, SkillSetting.MAX_DISTANCE, 6, false);
+//        player.getWorld().spawnParticle(Particle.VILLAGER_ANGRY,
+//                target.getLocation().add(0, 0.5, 0), //location
+//                50, // particle count
+//                0.5, 0.5, 0.5, // offsets x,y,z respectively
+//                1, // extra data - normally speed
+//                null, // particle specific data (only non-null for specific particles)
+//                16 < (max_distance + 1)); // force render to players in an extended range
 
         return SkillResult.NORMAL;
     }

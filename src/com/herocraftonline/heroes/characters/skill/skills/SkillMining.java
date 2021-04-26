@@ -83,7 +83,7 @@ public class SkillMining extends PassiveSkill {
                 dropMaterial = Material.REDSTONE;
                 break;
             case LAPIS_ORE:
-                dropMaterial = Material.INK_SAC;
+                dropMaterial = Material.INK_SACK;
                 break;
             case STONE:
                 isStone = true;
@@ -104,7 +104,7 @@ public class SkillMining extends PassiveSkill {
             if (chance > SkillConfigManager.getUseSetting(hero, skill, SkillSetting.CHANCE_PER_LEVEL, .001, false) * hero.getHeroLevel(skill)) {
                 return;
             }
-            if (dropMaterial == Material.INK_SAC) {
+            if (dropMaterial == Material.INK_SACK) {
                 block.getWorld().dropItemNaturally(block.getLocation(), new ItemStack(dropMaterial, 1, (short) 0, (byte) 4));
             } else {
                 block.getWorld().dropItemNaturally(block.getLocation(), new ItemStack(dropMaterial, 1));

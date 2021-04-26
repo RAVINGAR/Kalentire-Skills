@@ -1,5 +1,6 @@
 package com.herocraftonline.heroes.characters.skill.skills;
 
+import com.herocraftonline.heroes.characters.skill.*;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
@@ -13,10 +14,6 @@ import org.bukkit.inventory.ItemStack;
 import com.herocraftonline.heroes.Heroes;
 import com.herocraftonline.heroes.characters.Hero;
 import com.herocraftonline.heroes.characters.effects.EffectType;
-import com.herocraftonline.heroes.characters.skill.PassiveSkill;
-import com.herocraftonline.heroes.characters.skill.Skill;
-import com.herocraftonline.heroes.characters.skill.SkillConfigManager;
-import com.herocraftonline.heroes.characters.skill.SkillSetting;
 import com.herocraftonline.heroes.listeners.HBlockListener;
 import com.herocraftonline.heroes.util.Util;
 
@@ -24,9 +21,9 @@ public class SkillWoodcutting extends PassiveSkill {
 
     public SkillWoodcutting(Heroes plugin) {
         super(plugin, "Woodcutting");
-        setDescription("You have a $1% chance to get extra materials when logging.");
-        setEffectTypes(EffectType.BENEFICIAL);
-
+        this.setDescription("You have a $1% chance to get extra materials when logging.");
+        this.setEffectTypes(EffectType.BENEFICIAL);
+        this.setTypes(SkillType.KNOWLEDGE, SkillType.ABILITY_PROPERTY_EARTH, SkillType.BUFFING);
         Bukkit.getServer().getPluginManager().registerEvents(new SkillBlockListener(this), plugin);
     }
 
@@ -49,8 +46,7 @@ public class SkillWoodcutting extends PassiveSkill {
     /**
 	 * Something messes up just using getData(), need to turn the extra leaves into a player-usable version.
 	 */
-	public byte transmuteLogs(Material mat, byte data)
-	{
+	public byte transmuteLogs(Material mat, byte data) {
 	    //FIXME Data usage
 //		if (mat == Material.LOG)
 //		{
@@ -100,7 +96,7 @@ public class SkillWoodcutting extends PassiveSkill {
 
     public class SkillBlockListener implements Listener {
 
-        private Skill skill;
+        private final Skill skill;
 
         SkillBlockListener(Skill skill) {
             this.skill = skill;
@@ -113,26 +109,28 @@ public class SkillWoodcutting extends PassiveSkill {
                 return;
             }
 
-            Block block = event.getBlock();
+            final Block block = event.getBlock();
             if (HBlockListener.placedBlocks.containsKey(block.getLocation())) {
                 return;
             }
 
-            int extraDrops;
+            int extraDrops = 0;
             switch (block.getType()) {
-                case ACACIA_LOG:
-                case BIRCH_LOG:
-                case DARK_OAK_LOG:
-                case JUNGLE_LOG:
-                case OAK_LOG:
-                case SPRUCE_LOG:
+                case LOG:
+                case LOG_2:
+                //case OAK_LOG:
+                //case ACACIA_LOG:
+                //case BIRCH_LOG:
+                //case DARK_OAK_LOG:
+                //case JUNGLE_LOG:
+                //case SPRUCE_LOG:
                     break;
                 default:
                     return;
             }
 
-            Hero hero = plugin.getCharacterManager().getHero(event.getPlayer());
-            if (!hero.hasEffect("Woodcutting") || Util.nextRand() > SkillConfigManager.getUseSetting(hero, skill, SkillSetting.CHANCE_PER_LEVEL, .001, false) * hero.getHeroLevel(skill)) {
+            final Hero hero = plugin.getCharacterManager().getHero(event.getPlayer());
+            if (!hero.hasEffect("Woodcutting") || (Util.nextRand() > (SkillConfigManager.getUseSetting(hero, skill, SkillSetting.CHANCE_PER_LEVEL, .001, false) * hero.getHeroLevel(skill)))) {
                 return;
             }
 
