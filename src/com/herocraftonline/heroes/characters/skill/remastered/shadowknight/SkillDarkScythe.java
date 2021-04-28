@@ -23,6 +23,8 @@ import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.entity.EntityDamageEvent.DamageCause;
 import org.bukkit.inventory.ItemStack;
 
+import java.util.List;
+
 public class SkillDarkScythe extends ActiveSkill {
 
     private String applyText;
@@ -30,7 +32,8 @@ public class SkillDarkScythe extends ActiveSkill {
 
     public SkillDarkScythe(Heroes plugin) {
         super(plugin, "Darkscythe");
-        setDescription("Exhumes suffering from your blade for $1 second(s). While active, your attacks cause great pain to your enemies, dealing an extra $2 damage.");
+        setDescription("Exhumes suffering from your blade for $1 second(s). While active, your attacks cause " +
+                "great pain to your enemies, dealing an extra $2 damage.");
         setUsage("/skill darkscythe");
         setArgumentRange(0, 0);
         setIdentifiers("skill darkscythe");
@@ -41,48 +44,41 @@ public class SkillDarkScythe extends ActiveSkill {
 
     @Override
     public String getDescription(Hero hero) {
+        int duration = SkillConfigManager.getUseSettingInt(hero, this, SkillSetting.DURATION, false);
+        double damage = SkillConfigManager.getScaledUseSettingDouble(hero, this, SkillSetting.DAMAGE, false);
 
-        int duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, 10000, false);
-
-        double damage = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE, 5, false);
-        double damageIncrease = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE_INCREASE_PER_INTELLECT, 2.0, false);
-        damage += damageIncrease * hero.getAttributeValue(AttributeType.INTELLECT);
-
-        String formattedDamage = Util.decFormat.format(damage);
-        String formattedDuration = Util.decFormat.format(duration / 1000.0);
-
-        return getDescription().replace("$1", formattedDuration).replace("$2", formattedDamage);
+        return getDescription()
+                .replace("$1", Util.decFormat.format(duration / 1000.0))
+                .replace("$2", Util.decFormat.format(damage));
     }
 
     @Override
     public ConfigurationSection getDefaultConfig() {
-        ConfigurationSection node = super.getDefaultConfig();
-
-        node.set("weapons", Util.axes);
-        node.set(SkillSetting.DURATION.node(), 10000);
-        node.set(SkillSetting.DAMAGE.node(), 5);
-        node.set(SkillSetting.DAMAGE_INCREASE_PER_INTELLECT.node(), (double) 2);
-        node.set(SkillSetting.APPLY_TEXT.node(), ChatComponents.GENERIC_SKILL + "%hero% has coated his weapons with suffering.");
-        node.set(SkillSetting.EXPIRE_TEXT.node(), ChatComponents.GENERIC_SKILL + "%hero%'s weapons are no longer enhanced.");
-
-        return node;
+        ConfigurationSection config = super.getDefaultConfig();
+        config.set("weapons", Util.axes);
+        config.set(SkillSetting.DURATION.node(), 10000);
+        config.set(SkillSetting.DAMAGE.node(), 5);
+        config.set(SkillSetting.DAMAGE_INCREASE_PER_INTELLECT.node(), (double) 2);
+        config.set(SkillSetting.APPLY_TEXT.node(), ChatComponents.GENERIC_SKILL + "%hero% has coated his weapons with suffering.");
+        config.set(SkillSetting.EXPIRE_TEXT.node(), ChatComponents.GENERIC_SKILL + "%hero%'s weapons are no longer enhanced.");
+        return config;
     }
 
     public void init() {
         super.init();
 
-        applyText = SkillConfigManager.getRaw(this, SkillSetting.APPLY_TEXT, ChatComponents.GENERIC_SKILL + "%hero% has coated his weapons with suffering.").replace("%hero%", "$1");
-        expireText = SkillConfigManager.getRaw(this, SkillSetting.EXPIRE_TEXT, ChatComponents.GENERIC_SKILL + "%hero%'s weapons are no longer enhanced.").replace("%hero%", "$1");
+        applyText = SkillConfigManager.getRaw(this, SkillSetting.APPLY_TEXT,
+                ChatComponents.GENERIC_SKILL + "%hero% has coated his weapons with suffering.").replace("%hero%", "$1");
+        expireText = SkillConfigManager.getRaw(this, SkillSetting.EXPIRE_TEXT,
+                ChatComponents.GENERIC_SKILL + "%hero%'s weapons are no longer enhanced.").replace("%hero%", "$1");
     }
 
     @Override
     public SkillResult use(Hero hero, String[] args) {
-
-        int duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, 10000, false);
+        int duration = SkillConfigManager.getUseSettingInt(hero, this, SkillSetting.DURATION, false);
         hero.addEffect(new DarkscytheEffect(this, hero.getPlayer(), duration));
 
         broadcastExecuteText(hero);
-
         return SkillResult.NORMAL;
     }
 
@@ -95,14 +91,13 @@ public class SkillDarkScythe extends ActiveSkill {
 
         @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
         public void onEntityDamage(EntityDamageEvent event) {
-            if ((!(event instanceof EntityDamageByEntityEvent)) || (!(event.getEntity() instanceof LivingEntity))) {
+            if ((!(event instanceof EntityDamageByEntityEvent)) || (!(event.getEntity() instanceof LivingEntity)))
                 return;
-            }
 
             EntityDamageByEntityEvent subEvent = (EntityDamageByEntityEvent) event;
 
-            // Check for both arrow shots and left click attacks. Determine player based on which we're dealing with
-            boolean arrow = false;
+            // Check for both isArrow shots and left click attacks. Determine player based on which we're dealing with
+            boolean isArrow = false;
             Player player;
             Entity damagingEntity = ((EntityDamageByEntityEvent) event).getDamager();
             if (damagingEntity instanceof Arrow) {
@@ -110,21 +105,17 @@ public class SkillDarkScythe extends ActiveSkill {
                     return;
 
                 player = (Player) ((Projectile) damagingEntity).getShooter();
-                arrow = true;
+                isArrow = true;
             }
             else {
                 if (event.getCause() != DamageCause.ENTITY_ATTACK)
                     return;
 
                 LivingEntity target = (LivingEntity) event.getEntity();
-                if (!(plugin.getDamageManager().isSpellTarget(target))) {
-                    if (!(subEvent.getDamager() instanceof Player))
-                        return;
-
-                    player = (Player) subEvent.getDamager();
-                }
-                else
+                if (plugin.getDamageManager().isSpellTarget(target) || !(subEvent.getDamager() instanceof Player))
                     return;
+
+                player = (Player) subEvent.getDamager();
             }
 
             Hero hero = plugin.getCharacterManager().getHero(player);
@@ -134,24 +125,19 @@ public class SkillDarkScythe extends ActiveSkill {
             LivingEntity target = (LivingEntity) event.getEntity();
 
             ItemStack item = NMSHandler.getInterface().getItemInMainHand(player.getInventory());
-            if (!SkillConfigManager.getUseSetting(hero, skill, "weapons", Util.axes).contains(item.getType().name())) {
-                if (arrow)
-                    dealDarkscytheDamage(hero, target);
-            }
-            else
+            final List<String> allowedWeapons = SkillConfigManager.getUseSetting(hero, skill, "weapons", Util.axes);
+            if (allowedWeapons.contains(item.getType().name()) || isArrow) {
                 dealDarkscytheDamage(hero, target);
-
+            }
         }
 
         private void dealDarkscytheDamage(final Hero hero, final LivingEntity target) {
             Bukkit.getServer().getScheduler().scheduleSyncDelayedTask(plugin, new Runnable() {
                 public void run() {
-                    if (!(damageCheck(hero.getPlayer(), target)))
+                    if (!damageCheck(hero.getPlayer(), target))
                         return;
 
-                    double damage = SkillConfigManager.getUseSetting(hero, skill, SkillSetting.DAMAGE, 5, false);
-                    double damageIncrease = SkillConfigManager.getUseSetting(hero, skill, SkillSetting.DAMAGE_INCREASE_PER_INTELLECT, 2.0, false);
-                    damage += damageIncrease * hero.getAttributeValue(AttributeType.INTELLECT);
+                    double damage = SkillConfigManager.getScaledUseSettingDouble(hero, skill, SkillSetting.DAMAGE, false);
 
                     // Damage the target
                     addSpellTarget(target, hero);

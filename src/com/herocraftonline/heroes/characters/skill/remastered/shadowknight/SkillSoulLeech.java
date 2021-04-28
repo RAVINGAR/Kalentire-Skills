@@ -26,68 +26,68 @@ public class SkillSoulLeech extends TargettedSkill {
 
     public SkillSoulLeech(Heroes plugin) {
         super(plugin, "SoulLeech");
-        setDescription("Leech the soul of your target, dealing $1 damage over $2 second(s). After expiring, the effect will restore your health for $3% of the damage dealt.");
+        setDescription("Leech the soul of your target, dealing $1 damage over $2 second(s). After expiring, the " +
+                "effect will restore your health for $3% of the damage dealt.");
         setUsage("/skill soulleech");
         setIdentifiers("skill soulleech");
         setArgumentRange(0, 0);
-        setTypes(SkillType.ABILITY_PROPERTY_MAGICAL, SkillType.ABILITY_PROPERTY_DARK, SkillType.SILENCEABLE, SkillType.DEBUFFING, SkillType.DAMAGING, SkillType.AGGRESSIVE);
+        setTypes(SkillType.ABILITY_PROPERTY_MAGICAL, SkillType.ABILITY_PROPERTY_DARK, SkillType.SILENCEABLE,
+                SkillType.DEBUFFING, SkillType.DAMAGING, SkillType.AGGRESSIVE);
     }
 
     @Override
     public String getDescription(Hero hero) {
-
-        int duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, 20000, false);
-        int period = SkillConfigManager.getUseSetting(hero, this, SkillSetting.PERIOD, 2000, false);
+        int duration = SkillConfigManager.getUseSettingInt(hero, this, SkillSetting.DURATION, false);
+        int period = SkillConfigManager.getUseSettingInt(hero, this, SkillSetting.PERIOD, false);
 
         double damage = SkillConfigManager.getScaledUseSettingDouble(hero, this, SkillSetting.DAMAGE_TICK, false);
-        double healMult = SkillConfigManager.getUseSetting(hero, this, "heal-mult", 0.72, false);
+        double healMult = SkillConfigManager.getUseSettingDouble(hero, this, "heal-mult", false);
 
-        String formattedDuration = Util.decFormat.format(duration / 1000.0);
-        String formattedDamage = Util.decFormat.format(damage * (duration / period));
-        String formattedHeal = Util.decFormat.format(healMult * 100.0);
-
-        return getDescription().replace("$1", formattedDamage).replace("$2", formattedDuration).replace("$3", formattedHeal);
+        return getDescription()
+                .replace("$1", Util.decFormat.format(damage * ((double)duration / period)))
+                .replace("$2", Util.decFormat.format(duration / 1000.0))
+                .replace("$3", Util.decFormat.format(healMult * 100.0));
     }
 
     @Override
     public ConfigurationSection getDefaultConfig() {
-        ConfigurationSection node = super.getDefaultConfig();
+        ConfigurationSection config = super.getDefaultConfig();
 
-        node.set(SkillSetting.MAX_DISTANCE.node(), 8);
-        node.set(SkillSetting.DAMAGE_TICK.node(), 14);
-        node.set(SkillSetting.DAMAGE_TICK_INCREASE_PER_INTELLECT.node(), 0.0375);
-        node.set(SkillSetting.DURATION.node(), 20000);
-        node.set(SkillSetting.PERIOD.node(), 2000);
-        node.set("heal-mult", 0.72);
-        node.set(SkillSetting.APPLY_TEXT.node(), ChatComponents.GENERIC_SKILL + "%target% is having their soul leeched by %hero%");
-        node.set(SkillSetting.EXPIRE_TEXT.node(), ChatComponents.GENERIC_SKILL + "%target%'s soul is no longer being leeched.");
-        node.set(SkillSetting.DELAY.node(), 1000);
-        node.set("volume", 0.8F);
-        node.set("pitch", 1.0F);
+        config.set(SkillSetting.MAX_DISTANCE.node(), 8);
+        config.set(SkillSetting.DAMAGE_TICK.node(), 14.0);
+        config.set(SkillSetting.DAMAGE_TICK_INCREASE_PER_INTELLECT.node(), 0.0375);
+        config.set(SkillSetting.DURATION.node(), 20000);
+        config.set(SkillSetting.PERIOD.node(), 2000);
+        config.set("heal-mult", 0.72);
+        config.set(SkillSetting.APPLY_TEXT.node(), ChatComponents.GENERIC_SKILL + "%target% is having their soul leeched by %hero%");
+        config.set(SkillSetting.EXPIRE_TEXT.node(), ChatComponents.GENERIC_SKILL + "%target%'s soul is no longer being leeched.");
+        config.set(SkillSetting.DELAY.node(), 1000);
+        config.set("volume", 0.8F);
+        config.set("pitch", 1.0F);
 
-        return node;
+        return config;
     }
 
     @Override
     public void init() {
         super.init();
 
-        applyText = SkillConfigManager.getRaw(this, SkillSetting.APPLY_TEXT, ChatComponents.GENERIC_SKILL + "%target% is having their soul leeched by %hero%").replace("%target%", "$1").replace("%hero%", "$2");
-        expireText = SkillConfigManager.getRaw(this, SkillSetting.EXPIRE_TEXT, ChatComponents.GENERIC_SKILL + "%target%'s soul is no longer being leeched.").replace("%target%", "$1");
+        applyText = SkillConfigManager.getRaw(this, SkillSetting.APPLY_TEXT,
+                ChatComponents.GENERIC_SKILL + "%target% is having their soul leeched by %hero%")
+                .replace("%target%", "$1").replace("%hero%", "$2");
+        expireText = SkillConfigManager.getRaw(this, SkillSetting.EXPIRE_TEXT,
+                ChatComponents.GENERIC_SKILL + "%target%'s soul is no longer being leeched.").replace("%target%", "$1");
     }
 
     @Override
     public SkillResult use(Hero hero, LivingEntity target, String[] args) {
         Player player = hero.getPlayer();
 
-        int duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, 20000, false);
-        int period = SkillConfigManager.getUseSetting(hero, this, SkillSetting.PERIOD, 2000, false);
+        int duration = SkillConfigManager.getUseSettingInt(hero, this, SkillSetting.DURATION, false);
+        int period = SkillConfigManager.getUseSettingInt(hero, this, SkillSetting.PERIOD, false);
 
-        double damage = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE_TICK, 14.0, false);
-        double damageIncrease = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE_TICK_INCREASE_PER_INTELLECT, 0.0375, false);
-        damage += damageIncrease * hero.getAttributeValue(AttributeType.INTELLECT);
-
-        double healMult = SkillConfigManager.getUseSetting(hero, this, "heal-mult", 0.72, false);
+        double damage = SkillConfigManager.getScaledUseSettingDouble(hero, this, SkillSetting.DAMAGE_TICK, false);
+        double healMult = SkillConfigManager.getUseSettingDouble(hero, this, "heal-mult", false);
 
         float soundVolume = (float) SkillConfigManager.getUseSetting(hero, this, "volume", 0.8F, false);
         float soundPitch = (float) SkillConfigManager.getUseSetting(hero, this, "pitch", 1.0F, false);
@@ -106,7 +106,8 @@ public class SkillSoulLeech extends TargettedSkill {
         private double healMult;
         private double totalDamage = 0;
 
-        public SoulLeechEffect(Skill skill, Player applier, long period, long duration, double tickDamage, double healMult, float soundVolume, float soundPitch) {
+        public SoulLeechEffect(Skill skill, Player applier, long period, long duration, double tickDamage,
+                               double healMult, float soundVolume, float soundPitch) {
             super(skill, "SoulLeeched", applier, period, duration, tickDamage, applyText, expireText);
             types.add(EffectType.HARMFUL);
             types.add(EffectType.DARK);
@@ -120,7 +121,6 @@ public class SkillSoulLeech extends TargettedSkill {
         @Override
         public void removeFromMonster(Monster monster) {
             super.removeFromMonster(monster);
-
             healApplier();
         }
 
