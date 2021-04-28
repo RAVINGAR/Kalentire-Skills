@@ -1,4 +1,4 @@
-package com.herocraftonline.heroes.characters.skill.remastered.ninja.legacy;
+package com.herocraftonline.heroes.characters.skill.remastered.shared.legacy;
 
 import com.herocraftonline.heroes.Heroes;
 import com.herocraftonline.heroes.api.SkillResult;
