@@ -9,10 +9,7 @@ import com.herocraftonline.heroes.characters.skill.SkillConfigManager;
 import com.herocraftonline.heroes.characters.skill.SkillSetting;
 import com.herocraftonline.heroes.characters.skill.SkillType;
 import com.herocraftonline.heroes.util.Util;
-import org.bukkit.Bukkit;
-import org.bukkit.Location;
-import org.bukkit.Particle;
-import org.bukkit.Sound;
+import org.bukkit.*;
 import org.bukkit.block.Block;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Entity;
@@ -22,6 +19,7 @@ import org.bukkit.event.entity.EntityDamageEvent.DamageCause;
 import org.bukkit.util.BlockIterator;
 import org.bukkit.util.Vector;
 
+import javax.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -37,113 +35,69 @@ public class SkillDragonsBreath extends ActiveSkill {
     }
 
     public String getDescription(Hero hero) {
+        int distance = SkillConfigManager.getUseSettingInt(hero, this, SkillSetting.MAX_DISTANCE, false);
+        double damage = SkillConfigManager.getScaledUseSettingDouble(hero, this, SkillSetting.DAMAGE, false);
 
-        int distance = SkillConfigManager.getUseSetting(hero, this, SkillSetting.MAX_DISTANCE, 6, false);
-
-        int damage = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE, 90, false);
-        double damageIncrease = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE_INCREASE_PER_INTELLECT, 1.2, false);
-        damage += (int) (damageIncrease * hero.getAttributeValue(AttributeType.INTELLECT));
-
-        return getDescription().replace("$1", distance + "").replace("$2", damage + "");
+        return getDescription()
+                .replace("$1", distance + "")
+                .replace("$2", Util.decFormat.format(damage));
     }
 
     public ConfigurationSection getDefaultConfig() {
-        ConfigurationSection node = super.getDefaultConfig();
-
-        node.set(SkillSetting.MAX_DISTANCE.node(), 6);
-        node.set(SkillSetting.DAMAGE.node(), 80);
-        node.set(SkillSetting.DAMAGE_INCREASE_PER_INTELLECT.node(), 1.125);
-        node.set(SkillSetting.RADIUS.node(), 3);
-        node.set("breath-travel-delay", 1);
-
-        return node;
+        ConfigurationSection config = super.getDefaultConfig();
+        config.set(SkillSetting.MAX_DISTANCE.node(), 6);
+        config.set(SkillSetting.DAMAGE.node(), 80);
+        config.set(SkillSetting.DAMAGE_INCREASE_PER_INTELLECT.node(), 1.125);
+        config.set(SkillSetting.RADIUS.node(), 3D);
+        config.set("breath-travel-delay", 1);
+        return config;
     }
 
     public SkillResult use(final Hero hero, String[] args) {
         final Player player = hero.getPlayer();
 
         int distance = SkillConfigManager.getUseSetting(hero, this, SkillSetting.MAX_DISTANCE, 10, false);
-
-        Block tempBlock;
-        BlockIterator iter;
-        try {
-            iter = new BlockIterator(player, distance);
-        }
-        catch (IllegalStateException e) {
+        BlockIterator blockIterator = getLineBlockIterator(player, distance);
+        if (blockIterator == null)
             return SkillResult.INVALID_TARGET_NO_MSG;
-        }
 
         broadcastExecuteText(hero);
 
         boolean isXDirection = is_X_Direction(player);
 
-        double tempDamage = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE, 90, false);
-        double damageIncrease = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE_INCREASE_PER_INTELLECT, 1.2, false);
-        tempDamage += damageIncrease * hero.getAttributeValue(AttributeType.INTELLECT);
-        final double damage = tempDamage;
+        double damage = SkillConfigManager.getScaledUseSettingDouble(hero, this, SkillSetting.DAMAGE,  false);
 
-        int radius = SkillConfigManager.getUseSetting(hero, this, SkillSetting.RADIUS, 2, false);
-        final int radiusSquared = radius * radius;
+        double radius = SkillConfigManager.getUseSettingDouble(hero, this, SkillSetting.RADIUS,  false);
+        final double radiusSquared = radius * radius;
 
-        int delay = SkillConfigManager.getUseSetting(hero, this, "breath-travel-delay", 1, false);
+        int delay = SkillConfigManager.getUseSettingInt(hero, this, "breath-travel-delay", false);
 
         final List<Entity> nearbyEntities = player.getNearbyEntities(distance * 2, distance, distance * 2);
         final List<Entity> hitEnemies = new ArrayList<>();
 
-        int numBlocks = 0;
-        
         //player.getWorld().spigot().playEffect(player.getLocation(), Effect.BLAZE_SHOOT);
         player.getWorld().playSound(player.getLocation(), Sound.ENTITY_BLAZE_SHOOT, 1, 1);
-        
-        while (iter.hasNext()) {
-            tempBlock = iter.next();
 
-            if (Util.transparentBlocks.contains(tempBlock.getType())) {
-                final List<Location> locations = new ArrayList<>();
-                if (isXDirection) {
-                    for (int xDir = -1; xDir < 1 + 1; xDir++) {
-                        Block radiusBlocks = tempBlock.getRelative(xDir, 0, 0);
+        // Iterate through each block in direction (line)
+        int numBlocks = 0;
+        Block tempMiddleRowBlock;
+        while (blockIterator.hasNext()) {
+            tempMiddleRowBlock = blockIterator.next();
 
-                        if (Util.transparentBlocks.contains(radiusBlocks.getType())) {
-                            locations.add(radiusBlocks.getLocation().clone().add(new Vector(.5, 0, .5)));
-                        }
-                    }
-                }
-                else {
-                    for (int zDir = -1; zDir < 1 + 1; zDir++) {
-                        Block radiusBlocks = tempBlock.getRelative(0, 0, zDir);
+            if (Util.transparentBlocks.contains(tempMiddleRowBlock.getType())) {
+                final List<Location> locations = getNewRowBlockLocations(isXDirection, tempMiddleRowBlock);
 
-                        if (Util.transparentBlocks.contains(radiusBlocks.getType())) {
-                            locations.add(radiusBlocks.getLocation().clone().add(new Vector(.5, 0, .5)));
-                        }
-                    }
-                }
-
+                // Delay particles and damage for each new block "row"
                 Bukkit.getScheduler().scheduleSyncDelayedTask(plugin, new Runnable() {
                     public void run() {
-                        try {
-                            for (Location location : locations) {
-                            	//player.getWorld().spigot().playEffect(location, Effect.MOBSPAWNER_FLAMES, 1, 1, 0F, 0.3F, 0F, 0.2F, 3, 10);
-                                //FIXME See if this is correct
-                                player.getWorld().spawnParticle(Particle.FLAME, location, 3, 0, 0.3, 0, 0.2);
-                            }
-                        } catch (Exception e) {
-                            e.printStackTrace();
-                        }
+                        doParticlesAtLocations(player.getWorld(), locations);
 
                         for (Entity entity : nearbyEntities) {
                             if (!(entity instanceof LivingEntity) || hitEnemies.contains(entity))
-                                continue;
+                                continue; // Skip invalid entities, and entities already hit
 
-                            boolean exitLoop = true;
-                            for (Location location : locations) {
-                                if (entity.getLocation().distanceSquared(location) <= radiusSquared) {
-                                    exitLoop = false;
-                                    break;
-                                }
-                            }
-
-                            if (exitLoop)
+                            // Check if entity is in range and should be effected
+                            if (!isEntityInRangeOfAnyLocation(entity, radiusSquared, locations))
                                 continue;
                             
                             // Check to see if the entity can be damaged
@@ -164,12 +118,73 @@ public class SkillDragonsBreath extends ActiveSkill {
                 numBlocks++;
             }
             else
-                break;
+                break; // Stop on 'solid' block (we've hit a wall?)
         }
 
         return SkillResult.NORMAL;
     }
 
+    public boolean isEntityInRangeOfAnyLocation(Entity entity, double radiusSquared, List<Location> locations) {
+        boolean inRange = false;
+        for (Location location : locations) {
+            if (entity.getLocation().distanceSquared(location) <= radiusSquared) {
+                inRange = true;
+                break;
+            }
+        }
+        return inRange;
+    }
+
+    public void doParticlesAtLocations(World world, List<Location> locations) {
+        try {
+            for (Location location : locations) {
+                //player.getWorld().spigot().playEffect(location, Effect.MOBSPAWNER_FLAMES, 1, 1, 0F, 0.3F, 0F, 0.2F, 3, 10);
+                //FIXME See if this is correct
+                world.spawnParticle(Particle.FLAME, location, 3, 0, 0.3, 0, 0.2);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    public List<Location> getNewRowBlockLocations(boolean isXDirection, Block middleLocationBlock) {
+        // Get left, right and middle block, based on whether its x or z direction
+        final List<Location> locations = new ArrayList<>();
+        if (isXDirection) {
+            for (int xDir = -1; xDir < 1 + 1; xDir++) {
+                Block radiusBlocks = middleLocationBlock.getRelative(xDir, 0, 0);
+
+                if (Util.transparentBlocks.contains(radiusBlocks.getType())) {
+                    locations.add(radiusBlocks.getLocation().clone().add(new Vector(.5, 0, .5)));
+                }
+            }
+        }
+        else { // Z Direction
+            for (int zDir = -1; zDir < 1 + 1; zDir++) {
+                Block radiusBlocks = middleLocationBlock.getRelative(0, 0, zDir);
+
+                if (Util.transparentBlocks.contains(radiusBlocks.getType())) {
+                    locations.add(radiusBlocks.getLocation().clone().add(new Vector(.5, 0, .5)));
+                }
+            }
+        }
+        return locations;
+    }
+
+    @Nullable
+    public BlockIterator getLineBlockIterator(Player player, int distance) {
+        BlockIterator blockIterator;
+        try {
+            blockIterator = new BlockIterator(player, distance);
+        } catch (IllegalStateException e) {
+            return null;
+        }
+        return blockIterator;
+    }
+
+    /**
+     * @return true if X direction, otherwise false for Z direction
+     */
     private boolean is_X_Direction(Player player) {
         Vector u = player.getLocation().getDirection();
         u = new Vector(u.getX(), 0.0D, u.getZ()).normalize();
