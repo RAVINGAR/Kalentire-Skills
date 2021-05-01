@@ -46,7 +46,7 @@ public class SkillDragonsBreath extends ActiveSkill {
     public ConfigurationSection getDefaultConfig() {
         ConfigurationSection config = super.getDefaultConfig();
         config.set(SkillSetting.MAX_DISTANCE.node(), 6);
-        config.set(SkillSetting.DAMAGE.node(), 80);
+        config.set(SkillSetting.DAMAGE.node(), 80.0);
         config.set(SkillSetting.DAMAGE_INCREASE_PER_INTELLECT.node(), 1.125);
         config.set(SkillSetting.RADIUS.node(), 3D);
         config.set("breath-travel-delay", 1);

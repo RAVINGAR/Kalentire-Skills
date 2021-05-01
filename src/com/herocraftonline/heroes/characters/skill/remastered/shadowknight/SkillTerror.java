@@ -27,6 +27,8 @@ import java.util.List;
 
 public class SkillTerror extends ActiveSkill {
 
+    private static final Particle.DustOptions skillEffectDustOptions = new Particle.DustOptions(Color.GRAY, 1);
+
     private String applyText;
     private String expireText;
 
@@ -202,7 +204,9 @@ public class SkillTerror extends ActiveSkill {
         try {
             for (Location location : locations) {
                 // FIXME do we want to use smoke?
-                world.spawnParticle(Particle.SMOKE_NORMAL, location, 3, 0, 0.3, 0, 0.2);
+                //world.spawnParticle(Particle.SMOKE_NORMAL, location, 3, 0, 0.3, 0, 0.2);
+                world.spawnParticle(Particle.REDSTONE, location, 3, 0, 0, 0, 0, skillEffectDustOptions);
+                // just for ref: world.spawnParticle(Particle.REDSTONE, location, 4, 0.2F, 1.5F, 0.2F, 0, skillEffectDustOptions);
             }
         } catch (Exception e) {
             e.printStackTrace();

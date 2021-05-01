@@ -51,27 +51,27 @@ public class SkillBecomeDeath extends ActiveSkill {
     public String getDescription(Hero hero) {
         int duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, 120000, false);
 
-        return getDescription().replace("$1", duration / 1000 + "");
+        return getDescription().replace("$1", (duration / 1000) + "");
     }
 
     @Override
     public ConfigurationSection getDefaultConfig() {
-        ConfigurationSection node = super.getDefaultConfig();
-
-        node.set(SkillSetting.USE_TEXT.node(), "");
-        node.set(SkillSetting.DURATION.node(), 120000);
-        node.set(SkillSetting.APPLY_TEXT.node(), ChatComponents.GENERIC_SKILL + "%hero% shrouds themself in death!");
-        node.set(SkillSetting.EXPIRE_TEXT.node(), ChatComponents.GENERIC_SKILL + "%hero% no longer appears as an undead!");
-
-        return node;
+        ConfigurationSection config = super.getDefaultConfig();
+        config.set(SkillSetting.USE_TEXT.node(), "");
+        config.set(SkillSetting.DURATION.node(), 120000);
+        config.set(SkillSetting.APPLY_TEXT.node(), ChatComponents.GENERIC_SKILL + "%hero% shrouds themself in death!");
+        config.set(SkillSetting.EXPIRE_TEXT.node(), ChatComponents.GENERIC_SKILL + "%hero% no longer appears as an undead!");
+        return config;
     }
 
     @Override
     public void init() {
         super.init();
 
-        applyText = SkillConfigManager.getRaw(this, SkillSetting.APPLY_TEXT, ChatComponents.GENERIC_SKILL + "%hero% shrouds themself in death!").replace("%hero%", "$1");
-        expireText = SkillConfigManager.getRaw(this, SkillSetting.EXPIRE_TEXT, ChatComponents.GENERIC_SKILL + "%hero% no longer appears as an undead!").replace("%hero%", "$1");
+        applyText = SkillConfigManager.getRaw(this, SkillSetting.APPLY_TEXT,
+                ChatComponents.GENERIC_SKILL + "%hero% shrouds themself in death!").replace("%hero%", "$1");
+        expireText = SkillConfigManager.getRaw(this, SkillSetting.EXPIRE_TEXT,
+                ChatComponents.GENERIC_SKILL + "%hero% no longer appears as an undead!").replace("%hero%", "$1");
     }
 
     @Override
@@ -92,31 +92,28 @@ public class SkillBecomeDeath extends ActiveSkill {
 
         @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
         public void onEntityTarget(EntityTargetEvent event) {
-            if (!(event.getEntity() instanceof LivingEntity) || !(event.getTarget() instanceof Player)) {
+            if (!(event.getEntity() instanceof LivingEntity) || !(event.getTarget() instanceof Player))
                 return;
-            }
 
-            if (!(Util.isUndead(plugin, (LivingEntity) event.getEntity()))) {
+            if (!(Util.isUndead(plugin, (LivingEntity) event.getEntity())))
                 return;
-            }
 
             Hero hero = plugin.getCharacterManager().getHero((Player) event.getTarget());
-            if (hero.hasEffect("BecomeDeath")) {
-                BecomeDeathEffect bdEffect = (BecomeDeathEffect) hero.getEffect("BecomeDeath");
-                if (!bdEffect.hasAttackedMobs())
-                    event.setCancelled(true);
-            }
+            if (!hero.hasEffect("BecomeDeath"))
+                return;
+
+            BecomeDeathEffect bdEffect = (BecomeDeathEffect) hero.getEffect("BecomeDeath");
+            if (!bdEffect.hasAttackedMobs())
+                event.setCancelled(true);
         }
 
         @EventHandler(priority = EventPriority.MONITOR)
         public void onEntityDamage(EntityDamageEvent event) {
-            if (event.isCancelled() || event.getDamage() == 0 || !(event.getEntity() instanceof LivingEntity)) {
+            if (event.isCancelled() || event.getDamage() == 0 || !(event.getEntity() instanceof LivingEntity))
                 return;
-            }
 
-            if (!Util.isUndead(plugin, (LivingEntity) event.getEntity()) || !(event instanceof EntityDamageByEntityEvent)) {
+            if (!Util.isUndead(plugin, (LivingEntity) event.getEntity()) || !(event instanceof EntityDamageByEntityEvent))
                 return;
-            }
 
             EntityDamageByEntityEvent subEvent = (EntityDamageByEntityEvent) event;
             if (subEvent.getDamager() instanceof Player) {

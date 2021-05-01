@@ -177,6 +177,7 @@ public class SkillPiggify extends TargettedSkill {
             types.add(EffectType.DISABLE);
             types.add(EffectType.MAGIC);
 
+            // TODO remove negative jump, otherwise they may be able to be launched to the moon on damage
             addPotionEffect(new PotionEffect(PotionEffectType.SLOW, duration / 1000 * 20, 127), false);      // Max slowness
             addPotionEffect(new PotionEffect(PotionEffectType.JUMP, duration / 1000 * 20, 128), false);      // Max negative jump boost
         }

@@ -24,7 +24,7 @@ public class SkillDread extends PassiveSkill {
     private String debuffExpireText;
 
     public SkillDread(Heroes plugin) {
-        super(plugin, "SkillDread");
+        super(plugin, "Dread");
         setDescription("$1% chance on attack to apply a debuff on target which reduces their damage output by $2% for " +
                 "$3 second(s)");
         setArgumentRange(0, 0);
