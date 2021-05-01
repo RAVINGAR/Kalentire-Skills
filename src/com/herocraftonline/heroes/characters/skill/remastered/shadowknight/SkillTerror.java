@@ -22,6 +22,7 @@ import org.bukkit.util.Vector;
 
 import javax.annotation.Nullable;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 public class SkillTerror extends ActiveSkill {
@@ -180,12 +181,8 @@ public class SkillTerror extends ActiveSkill {
         public TerrorEffect(Skill skill, Player applier, long duration, int slowAmplifier) {
             super(skill, "Terror", applier, duration, slowAmplifier, applyText, expireText);
 
-            types.add(EffectType.DARK);
-            types.add(EffectType.SLOW);
-            types.add(EffectType.BLIND);
-            types.add(EffectType.DISABLE);
-            types.add(EffectType.DISPELLABLE);
-            types.add(EffectType.HARMFUL);
+            Collections.addAll(types, EffectType.DARK, EffectType.SLOW, EffectType.BLIND, EffectType.DISABLE,
+                    EffectType.DISPELLABLE, EffectType.HARMFUL);
 
             addPotionEffect(new PotionEffect(PotionEffectType.BLINDNESS, (int)(20L * duration / 1000L), 0));
         }
