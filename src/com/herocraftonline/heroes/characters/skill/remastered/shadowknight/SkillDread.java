@@ -18,6 +18,10 @@ import org.bukkit.event.Listener;
 
 import java.util.Collections;
 
+/**
+ * Created By MysticMight 2021
+ */
+
 public class SkillDread extends PassiveSkill {
     private static final String dreadDebuffEffectName = "DreadDebuff";
     private String debuffApplyText;
@@ -27,7 +31,6 @@ public class SkillDread extends PassiveSkill {
         super(plugin, "Dread");
         setDescription("$1% chance on attack to apply a debuff on target which reduces their damage output by $2% for " +
                 "$3 second(s)");
-        setArgumentRange(0, 0);
         setTypes(SkillType.ABILITY_PROPERTY_PHYSICAL, SkillType.DEBUFFING);
         Bukkit.getServer().getPluginManager().registerEvents(new SkillHeroListener(this), plugin);
     }
