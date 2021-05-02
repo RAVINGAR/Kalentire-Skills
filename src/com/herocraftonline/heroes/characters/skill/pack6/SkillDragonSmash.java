@@ -122,9 +122,9 @@ public class SkillDragonSmash extends ActiveSkill implements Listener {
     }
 
     private void playBoomEffect(final Hero hero) {
-
         final Player player = hero.getPlayer();
         final Location loc = player.getLocation();
+        final World world = player.getWorld();
         final SkillDragonSmash skill = this;
         final double targetVelocity = SkillConfigManager.getUseSetting(hero, this, "target-launch", 0.5, false);
         final int radius = SkillConfigManager.getUseSetting(hero, this, SkillSetting.RADIUS, 5, false);
@@ -135,7 +135,7 @@ public class SkillDragonSmash extends ActiveSkill implements Listener {
         double damageIncrease = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE_INCREASE_PER_STRENGTH, 1, false);
         final double damage = tempDamage + (damageIncrease * hero.getAttributeValue(AttributeType.STRENGTH));
 
-        loc.getWorld().playSound(loc, Sound.ENTITY_GENERIC_EXPLODE, 2, 1);
+        world.playSound(loc, Sound.ENTITY_GENERIC_EXPLODE, 2, 1);
         new BukkitRunnable() {
             int i = 1;
 
@@ -152,24 +152,27 @@ public class SkillDragonSmash extends ActiveSkill implements Listener {
                         if (b.getType() != Material.AIR
                                 //FIXME Will deal with this later, also may want to use nms physics for this as there is an easy method (will look into later).
                                 //&& b.getType() != Material.SIGN_POST
-                                && b.getType() != Material.CHEST
-                                //&& b.getType() != Material.STONE_PLATE
-                                //&& b.getType() != Material.WOOD_PLATE
                                 //&& b.getType() != Material.WALL_SIGN
                                 && !b.getType().toString().endsWith("SIGN")
+                                && b.getType() != Material.CHEST
                                 //&& b.getType() != Material.WALL_BANNER
                                 //&& b.getType() != Material.STANDING_BANNER
+                                && !b.getType().toString().endsWith("BANNER")
+                                // all of these commented out (e.g. plate or seed types) are already in
+                                // Util.transparentBlocks (used below)
+                                //&& b.getType() != Material.STONE_PLATE
+                                //&& b.getType() != Material.WOOD_PLATE
                                 //&& b.getType() != Material.CROPS
                                 //&& b.getType() != Material.LONG_GRASS
                                 //&& b.getType() != Material.SAPLING
-                                && b.getType() != Material.DEAD_BUSH
                                 //&& b.getType() != Material.RED_ROSE
+//                                && b.getType() != Material.DOUBLE_PLANT
+                                && b.getType() != Material.DEAD_BUSH
                                 && b.getType() != Material.RED_MUSHROOM
                                 && b.getType() != Material.BROWN_MUSHROOM
                                 && b.getType() != Material.TORCH
                                 && b.getType() != Material.LADDER
                                 && b.getType() != Material.VINE
-//                                && b.getType() != Material.DOUBLE_PLANT
 //                                && b.getType() != Material.PORTAL
                                 && b.getType() != Material.CACTUS
                                 && b.getType() != Material.WATER
@@ -177,10 +180,12 @@ public class SkillDragonSmash extends ActiveSkill implements Listener {
                                 && b.getType() != Material.LAVA
 //                                && b.getType() != Material.STATIONARY_LAVA
                                 && b.getType().isSolid() // Was an NMS call for 1.8 Spigot, this may not be as accurate
-                                && b.getType().getId() != 43
-                                && b.getType().getId() != 44
+                                //&& b.getType().getId() != 43 // double slab/step
+                                //&& b.getType().getId() != 44 // half slab
+                                && !b.getType().toString().endsWith("SLAB")
                                 && Util.transparentBlocks.contains(b.getRelative(BlockFace.UP).getType())) {
-                            FallingBlock fb = loc.getWorld().spawnFallingBlock(b.getLocation().clone().add(0, 1.1f, 0), b.getType(), b.getData());
+                            //FallingBlock fb = loc.getWorld().spawnFallingBlock(b.getLocation().clone().add(0, 1.1f, 0), b.getType(), b.getData());
+                            FallingBlock fb = world.spawnFallingBlock(b.getLocation().clone().add(0, 1.1f, 0), b.getBlockData());
                             fb.setVelocity(new Vector(0, 0.3f, 0));
                             fb.setDropItem(false);
                             fallingBlocks.add(fb);
@@ -207,10 +212,13 @@ public class SkillDragonSmash extends ActiveSkill implements Listener {
 
     @EventHandler
     public void onBlockChangeState(EntityChangeBlockEvent event) {
-        if (fallingBlocks.contains(event.getEntity())) {
+        if (!(event.getEntity() instanceof FallingBlock))
+            return;
+
+        FallingBlock fb = (FallingBlock) event.getEntity();
+        if (fallingBlocks.contains(fb)) {
             event.setCancelled(true);
-            fallingBlocks.remove(event.getEntity());
-            FallingBlock fb = (FallingBlock) event.getEntity();
+            fallingBlocks.remove(fb);
             //fb.getWorld().spigot().playEffect(fb.getLocation(), Effect.TILE_BREAK, fb.getBlockId(), fb.getBlockData(), 0, 0, 0, 0.4f, 50, 128);
             fb.getWorld().spawnParticle(Particle.BLOCK_CRACK, fb.getLocation(), 50, 0, 0, 0, 0.4, fb.getBlockData());
             fb.getWorld().playSound(fb.getLocation(), Sound.BLOCK_STONE_STEP, 1, 1);
