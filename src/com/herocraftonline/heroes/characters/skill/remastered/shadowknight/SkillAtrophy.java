@@ -8,7 +8,11 @@ import com.herocraftonline.heroes.characters.Hero;
 import com.herocraftonline.heroes.characters.Monster;
 import com.herocraftonline.heroes.characters.effects.EffectType;
 import com.herocraftonline.heroes.characters.effects.PeriodicDamageEffect;
-import com.herocraftonline.heroes.characters.skill.*;
+import com.herocraftonline.heroes.characters.skill.Skill;
+import com.herocraftonline.heroes.characters.skill.SkillConfigManager;
+import com.herocraftonline.heroes.characters.skill.SkillSetting;
+import com.herocraftonline.heroes.characters.skill.SkillType;
+import com.herocraftonline.heroes.characters.skill.skills.SkillBaseConeShot;
 import com.herocraftonline.heroes.chat.ChatComponents;
 import com.herocraftonline.heroes.util.Util;
 import org.bukkit.*;
@@ -17,18 +21,18 @@ import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitRunnable;
 
-public class SkillAtrophy extends TargettedSkill {
+public class SkillAtrophy extends SkillBaseConeShot {
     private String applyText;
     private String expireText;
 
     public SkillAtrophy(Heroes plugin) {
         super(plugin, "Atrophy");
-        setDescription("You begin to decay your targets muscles dealing $1 disease damage over $2 second(s).");
+        setDescription("Spread a disease to your target(s), dealing $1 disease damage to each over $2 second(s).");
         setUsage("/skill atrophy");
         setArgumentRange(0, 0);
         setIdentifiers("skill atrophy");
         setTypes(SkillType.ABILITY_PROPERTY_MAGICAL, SkillType.ABILITY_PROPERTY_DISEASE, SkillType.SILENCEABLE,
-                SkillType.DAMAGING, SkillType.AGGRESSIVE);
+                SkillType.DAMAGING, SkillType.MULTI_GRESSIVE, SkillType.AREA_OF_EFFECT);
     }
 
     @Override
@@ -45,7 +49,9 @@ public class SkillAtrophy extends TargettedSkill {
     @Override
     public ConfigurationSection getDefaultConfig() {
         ConfigurationSection config = super.getDefaultConfig();
-        config.set(SkillSetting.MAX_DISTANCE.node(), 7);
+        config.set(SkillSetting.MAX_DISTANCE.node(), 4.0);
+        config.set(SkillSetting.RADIUS.node(), 2D);
+        config.set("cone-travel-delay", 1);
         config.set(SkillSetting.DURATION.node(), 20000);
         config.set(SkillSetting.PERIOD.node(), 2500);
         config.set(SkillSetting.DAMAGE_TICK.node(), 17d);
@@ -66,22 +72,28 @@ public class SkillAtrophy extends TargettedSkill {
     }
 
     @Override
-    public SkillResult use(Hero hero, LivingEntity target, String[] args) {
-        Player player = hero.getPlayer();
-
-        broadcastExecuteText(hero, target);
-
-        int duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, 20000, false);
-        int period = SkillConfigManager.getUseSetting(hero, this, SkillSetting.PERIOD, 2500, true);
-
+    protected void effectTarget(Hero hero, Skill skill, CharacterTemplate target) {
+        int duration = SkillConfigManager.getUseSettingInt(hero, skill, SkillSetting.DURATION, false);
+        int period = SkillConfigManager.getUseSettingInt(hero, skill, SkillSetting.PERIOD, true);
         double tickDamage = SkillConfigManager.getScaledUseSettingDouble(hero, this, SkillSetting.DAMAGE_TICK, false);
 
-        final CharacterTemplate targetCharacter = plugin.getCharacterManager().getCharacter(target);
-        targetCharacter.addEffect(new AtrophyEffect(this, player, duration, period, tickDamage));
+        final Player applier = hero.getPlayer();
+        target.addEffect(new AtrophyEffect(this, applier, duration, period, tickDamage));
 
-        target.getWorld().playSound(target.getLocation(), Sound.ENTITY_ZOMBIE_HURT, 0.8F, 2.0F);
+        final LivingEntity tEntity = target.getEntity();
+        tEntity.getWorld().playSound(tEntity.getLocation(), Sound.ENTITY_ZOMBIE_HURT, 0.8F, 2.0F);
+    }
 
-        return SkillResult.NORMAL;
+    @Override
+    protected void spawnParticleEffects(World world, Location location) {
+        //FIXME this what we want? just using the effect's disease effect for now
+        //world.spigot().playEffect(location, Effect.TILE_BREAK, Material.SLIME_BLOCK.getId(), 0, 0.5F, 0.5F, 0.5F, 0.1f, 10, 16);
+        world.spawnParticle(Particle.BLOCK_CRACK, location, 10, 0.5, 0.5, 0.5, 0.1, Bukkit.createBlockData(Material.SLIME_BLOCK));
+    }
+
+    @Override
+    protected void applySoundEffects(World world, Location location) {
+        world.playSound(location, Sound.ENTITY_ZOMBIE_AMBIENT, 0.8F, 2.0F);
     }
 
     public class AtrophyEffect extends PeriodicDamageEffect {
@@ -126,7 +138,6 @@ public class SkillAtrophy extends TargettedSkill {
             new BukkitRunnable() {
                 private double time = 0;
 
-                @SuppressWarnings("deprecation")
                 @Override
                 public void run() {
                     Location location = entity.getLocation().add(0, 0.5, 0);
