@@ -109,7 +109,7 @@ public class SkillAtrophy extends SkillBaseConeShot {
         @Override
         public void applyToMonster(Monster monster) {
             super.applyToMonster(monster);
-            playDiseaseParticleEffectOnTarget(monster.getEntity());
+            playDiseaseParticleEffectOnTarget(monster);
             broadcast(monster.getEntity().getLocation(), applyText, CustomNameManager.getName(monster), applier.getDisplayName());
         }
 
@@ -117,7 +117,7 @@ public class SkillAtrophy extends SkillBaseConeShot {
         public void applyToHero(Hero hero) {
             super.applyToHero(hero);
             Player player = hero.getPlayer();
-            playDiseaseParticleEffectOnTarget(player);
+            playDiseaseParticleEffectOnTarget(hero);
             broadcast(player.getLocation(), applyText, player.getDisplayName(), applier.getDisplayName());
         }
 
@@ -134,12 +134,16 @@ public class SkillAtrophy extends SkillBaseConeShot {
             broadcast(player.getLocation(), expireText, player.getDisplayName(), applier.getDisplayName());
         }
 
-        public void playDiseaseParticleEffectOnTarget(LivingEntity entity) {
+        public void playDiseaseParticleEffectOnTarget(CharacterTemplate character) {
+            final LivingEntity entity = character.getEntity();
             new BukkitRunnable() {
                 private double time = 0;
 
                 @Override
                 public void run() {
+                    if (!character.hasEffect("Atrophy") || entity.isDead())
+                        cancel();
+
                     Location location = entity.getLocation().add(0, 0.5, 0);
                     if (time < 1.0) {
                         //entity.getWorld().spigot().playEffect(location, Effect.TILE_BREAK, Material.SLIME_BLOCK.getId(), 0, 0.5F, 0.5F, 0.5F, 0.1f, 10, 16);

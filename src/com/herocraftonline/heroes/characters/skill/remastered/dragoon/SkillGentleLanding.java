@@ -5,6 +5,7 @@ import com.herocraftonline.heroes.api.events.CharacterDamageEvent;
 import com.herocraftonline.heroes.characters.Hero;
 import com.herocraftonline.heroes.characters.effects.EffectType;
 import com.herocraftonline.heroes.characters.skill.*;
+import com.herocraftonline.heroes.chat.ChatComponents;
 import com.herocraftonline.heroes.util.Util;
 import org.bukkit.Bukkit;
 import org.bukkit.configuration.ConfigurationSection;
@@ -19,6 +20,7 @@ import org.bukkit.event.entity.EntityDamageEvent.DamageCause;
  */
 
 public class SkillGentleLanding extends PassiveSkill {
+    private String damageText;
 
     public SkillGentleLanding(Heroes plugin) {
         super(plugin, "GentleLanding");
@@ -38,8 +40,15 @@ public class SkillGentleLanding extends PassiveSkill {
         ConfigurationSection config = super.getDefaultConfig();
         config.set(SkillSetting.APPLY_TEXT.node(), "");
         config.set(SkillSetting.UNAPPLY_TEXT.node(), "");
+        config.set("damage-text", ChatComponents.GENERIC_SKILL + "Your fall damage was reduced by $1!");
         config.set("damage-multiplier", 0.9);
         return config;
+    }
+
+    @Override
+    public void init() {
+        super.init();
+        damageText = "    " + SkillConfigManager.getRaw(this, "damage-text", ChatComponents.GENERIC_SKILL + "Your fall damage was reduced by $1!");
     }
 
     public class SkillHeroListener implements Listener {
@@ -65,6 +74,13 @@ public class SkillGentleLanding extends PassiveSkill {
                 return; // Handle only for those with this passive
 
             double fallDamageMultiplier = SkillConfigManager.getUseSettingDouble(hero, skill, "damage-multiplier", false);
+
+            double reducedDamage = event.getDamage() * (1 - fallDamageMultiplier);
+            if (!hero.isSuppressing(skill)) {
+                String damageText = SkillGentleLanding.this.damageText.replace("$1", Util.decFormat.format(reducedDamage));
+                hero.getPlayer().sendMessage(damageText);
+            }
+
             event.setDamage(fallDamageMultiplier * event.getDamage());
         }
     }

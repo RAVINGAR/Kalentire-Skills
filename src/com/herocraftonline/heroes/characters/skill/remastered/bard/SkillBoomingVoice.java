@@ -58,7 +58,7 @@ public class SkillBoomingVoice extends PassiveSkill {
         config.set(SkillSetting.HEALING_TICK_INCREASE_PER_CHARISMA.node(), 0.0);
         config.set("tick-healing-per-level", 0.0);
         config.set(SkillSetting.PERIOD.node(), 1000);
-        config.set("supported-song-buff-effects", new String[] {"Accelerando", "Battlesong", "MelodicBinding", "WarsongSong"});
+        config.set("supported-song-buff-effects", new String[] {"Accelerando", "Battlesong", "MelodicBinding", "Warsong"});
         return config;
     }
 
@@ -116,19 +116,22 @@ public class SkillBoomingVoice extends PassiveSkill {
         public SkillHeroListener(PassiveSkill skill) {
             this.skill = skill;
         }
+
         @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
         public void onSongBuffEffectApplied(EffectAddEvent event) {
             if (!(event.getCharacter() instanceof Hero))
                 return;
 
             final Hero hero = (Hero) event.getCharacter();
-            if (hero.hasEffect(skill.getName()))
+            if (!hero.hasEffect(skill.getName()))
                 return; // Handle only for those with this passive booming voice effect
 
             final Effect effectApplied = event.getEffect();
             final Skill effectSkill = effectApplied.getSkill();
-            if (effectSkill != null && !effectSkill.isType(SkillType.ABILITY_PROPERTY_SONG))
+            if (effectSkill != null && !effectSkill.isType(SkillType.ABILITY_PROPERTY_SONG)) {
+                //hero.getPlayer().sendMessage("Not supported effect skill for BoomingVoice: " + effectApplied.getName());//fixme remove temp debug
                 return; // Not necessary but will reduce effects needed to be checked for, more quickly
+            }
 
             final String appliedEffectName = effectApplied.getName();
             if (appliedEffectName.equals(skill.getName()) || appliedEffectName.equals(boomingVoiceHealingEffectName))
@@ -137,8 +140,10 @@ public class SkillBoomingVoice extends PassiveSkill {
             // Check if the effect is a supported effect
             final BoomingVoiceEffect passiveEffect = (BoomingVoiceEffect) hero.getEffect(skill.getName());
             assert passiveEffect != null;
-            if (!passiveEffect.isSupportedEffectName(appliedEffectName))
+            if (!passiveEffect.isSupportedEffectName(appliedEffectName)) {
+                //hero.getPlayer().sendMessage("Not supported effect for BoomingVoice: " + appliedEffectName);//fixme remove temp debug
                 return;
+            }
 
             if (effectApplied instanceof ExpirableEffect) {
                 final ExpirableEffect appliedExpireableEffect = (ExpirableEffect) effectApplied;

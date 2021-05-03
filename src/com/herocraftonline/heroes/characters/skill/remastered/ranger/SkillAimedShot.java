@@ -46,15 +46,14 @@ public class SkillAimedShot extends TargettedSkill {
     }
 
     public String getDescription(Hero hero) {
-
-        double gracePeriod = SkillConfigManager.getUseSetting(hero, this, "grace-period", 4000, false) / 1000;
+        int gracePeriod = SkillConfigManager.getUseSetting(hero, this, "grace-period", 4000, false);
         double damage = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE, 250, false);
         double damageIncrease = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE_INCREASE_PER_DEXTERITY, 3.1, false);
         damage += hero.getAttributeValue(AttributeType.DEXTERITY) * damageIncrease;
 
-        String formattedDamage = Util.decFormat.format(damage);
-
-        return getDescription().replace("$1", gracePeriod + "").replace("$2", formattedDamage);
+        return getDescription()
+                .replace("$1", Util.decFormat.format(gracePeriod/1000.0))
+                .replace("$2", Util.decFormat.format(damage));
     }
 
     public ConfigurationSection getDefaultConfig() {

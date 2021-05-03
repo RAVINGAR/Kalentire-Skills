@@ -73,7 +73,7 @@ public class SkillMark extends ActiveSkill {
         config.set(SkillSetting.NO_COMBAT_USE.node(), true);
         config.set(SkillSetting.COOLDOWN.node(), 3180000);
         config.set(SkillSetting.DELAY.node(), 5000);
-        config.set(SkillSetting.REAGENT.node(), 265);
+        config.set(SkillSetting.REAGENT.node(), "IRON_INGOT");
         config.set(SkillSetting.REAGENT_COST.node(), 1);
         return config;
     }
