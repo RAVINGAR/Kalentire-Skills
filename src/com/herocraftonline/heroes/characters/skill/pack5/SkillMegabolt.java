@@ -53,7 +53,7 @@ public class SkillMegabolt extends TargettedSkill {
         node.set(SkillSetting.DAMAGE.node(), 100);
         node.set(SkillSetting.DAMAGE_INCREASE_PER_INTELLECT.node(), 1.75);
         node.set(SkillSetting.RADIUS.node(), 5);
-        node.set(SkillSetting.REAGENT.node(), 289);
+        node.set(SkillSetting.REAGENT.node(), "GUNPOWDER");
         node.set(SkillSetting.REAGENT_COST.node(), 2);
         node.set("lightning-volume", 0.0F);
 

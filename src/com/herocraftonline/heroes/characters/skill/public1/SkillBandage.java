@@ -33,7 +33,7 @@ public class SkillBandage extends TargettedSkill {
         section.set(SkillSetting.HEALTH.node(), 5);
         section.set(SkillSetting.HEALTH_INCREASE.node(), 0);
         section.set(SkillSetting.MAX_DISTANCE.node(), 5);
-        section.set(SkillSetting.REAGENT.node(), 339);
+        section.set(SkillSetting.REAGENT.node(), "PAPER");
         section.set(SkillSetting.REAGENT_COST.node(), 1);
         return section;
     }

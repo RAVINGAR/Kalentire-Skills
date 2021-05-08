@@ -50,7 +50,7 @@ public class SkillFauxBomb extends ActiveSkill {
         node.set(SkillSetting.RADIUS.node(), 5);
         node.set("fuse-time", 6000);
         node.set("velocity", 1.0D);
-        node.set(SkillSetting.REAGENT.node(), 367);
+        node.set(SkillSetting.REAGENT.node(), "ROTTEN_FLESH");
         node.set(SkillSetting.REAGENT_COST.node(), 0);
 
         return node;

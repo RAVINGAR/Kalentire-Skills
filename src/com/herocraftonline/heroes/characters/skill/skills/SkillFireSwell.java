@@ -74,7 +74,7 @@ public class SkillFireSwell extends ActiveSkill {
         node.set("velocity-multiplier", 1.0);
         node.set(SkillSetting.DAMAGE.node(), 90);
         node.set(SkillSetting.DAMAGE_INCREASE_PER_INTELLECT.node(), 1.5);
-        node.set(SkillSetting.REAGENT.node(), 289);
+        node.set(SkillSetting.REAGENT.node(), "GUNPOWDER");
         node.set(SkillSetting.REAGENT_COST.node(), 1);
 
         return node;

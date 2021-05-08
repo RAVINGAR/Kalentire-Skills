@@ -53,7 +53,7 @@ public class SkillInvuln extends ActiveSkill {
 		node.set(SkillSetting.DURATION.node(), 6000);
 		node.set(SkillSetting.APPLY_TEXT.node(), ChatComponents.GENERIC_SKILL + "%hero% has become invulnerable!");
 		node.set(SkillSetting.EXPIRE_TEXT.node(), ChatComponents.GENERIC_SKILL + "%hero% is once again vulnerable!");
-		node.set(SkillSetting.REAGENT.node(), 81);
+		node.set(SkillSetting.REAGENT.node(), "CACTUS");
 		node.set(SkillSetting.REAGENT_COST.node(), 1);
 
 		return node;

@@ -62,7 +62,7 @@ public class SkillFirewave extends ActiveSkill {
         node.set("fireballs-per-intellect", 0.325);
         node.set(SkillSetting.DAMAGE.node(), 95);
         node.set(SkillSetting.DAMAGE_INCREASE_PER_INTELLECT.node(), 1.25);
-        node.set(SkillSetting.REAGENT.node(), 289);
+        node.set(SkillSetting.REAGENT.node(), "GUNPOWDER");
         node.set(SkillSetting.REAGENT_COST.node(), 1);
 
 		return node;

@@ -45,7 +45,7 @@ public class SkillBolt extends TargettedSkill {
         config.set(SkillSetting.DAMAGE_INCREASE_PER_INTELLECT.node(), 0.0);
         config.set(SkillSetting.MAX_DISTANCE.node(), 12);
         config.set(SkillSetting.MAX_DISTANCE_INCREASE_PER_INTELLECT.node(), 0.0);
-        config.set(SkillSetting.REAGENT.node(), 289);
+        config.set(SkillSetting.REAGENT.node(), "GUNPOWDER");
         config.set(SkillSetting.REAGENT_COST.node(), 1);
         config.set("lightning-volume", 0.5F);
         return config;

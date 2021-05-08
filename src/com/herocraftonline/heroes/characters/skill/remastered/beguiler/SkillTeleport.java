@@ -34,7 +34,7 @@ public class SkillTeleport extends ActiveSkill {
         ConfigurationSection node = super.getDefaultConfig();
 
         node.set(SkillSetting.COOLDOWN.node(), 180000);
-        node.set(SkillSetting.REAGENT.node(), 264);
+        node.set(SkillSetting.REAGENT.node(), "DIAMOND");
         node.set(SkillSetting.REAGENT_COST.node(), 1);
 
         return node;

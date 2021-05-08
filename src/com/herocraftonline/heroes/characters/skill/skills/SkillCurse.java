@@ -57,7 +57,7 @@ public class SkillCurse extends TargettedSkill {
         node.set("miss-text", ChatComponents.GENERIC_SKILL + "%target% misses an attack!");
         node.set(SkillSetting.APPLY_TEXT.node(), ChatComponents.GENERIC_SKILL + "%target% has been cursed!");
         node.set(SkillSetting.EXPIRE_TEXT.node(), ChatComponents.GENERIC_SKILL + "%target% has recovered from the curse!");
-        node.set(SkillSetting.REAGENT.node(), 318);
+        node.set(SkillSetting.REAGENT.node(), "FLINT");
         node.set(SkillSetting.REAGENT_COST.node(), 1);
 
         return node;
