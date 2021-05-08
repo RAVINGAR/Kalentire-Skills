@@ -38,7 +38,7 @@ public class SkillBackflip extends ActiveSkill {
     public String getDescription(Hero hero) {
 
         String throwShurikenDescription = "";
-        boolean throwShuriken = SkillConfigManager.getUseSetting(hero, this, "thow-shurikens", true);
+        boolean throwShuriken = SkillConfigManager.getUseSetting(hero, this, "throw-shurikens", true);
         if (throwShuriken)
             throwShurikenDescription = "If you are able to throw shurikens, you will do that as well. ";
 
@@ -57,7 +57,7 @@ public class SkillBackflip extends ActiveSkill {
         config.set("horizontal-power", 0.5);
         config.set("horizontal-power-increase-per-dexterity", 0.0125);
         config.set("vertical-power", 0.5);
-        config.set("thow-shurikens", true);
+        config.set("throw-shurikens", true);
         config.set("vertical-power-increase-per-dexterity", 0.00625);
         config.set("ncp-exemption-duration", 2000);
         return config;
@@ -121,7 +121,7 @@ public class SkillBackflip extends ActiveSkill {
         backflip(hero, player, velocity);
 
         // If they can use shuriken, let's make them throw a few after they backflip
-        boolean throwShuriken = SkillConfigManager.getUseSetting(hero, this, "thow-shurikens", true);
+        boolean throwShuriken = SkillConfigManager.getUseSetting(hero, this, "throw-shurikens", true);
         if (throwShuriken) {
             if (hero.canUseSkill("Shurikens")) {
                 SkillShurikens shurikenSkill = (SkillShurikens) plugin.getSkillManager().getSkill("Shurikens");

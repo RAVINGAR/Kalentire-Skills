@@ -19,11 +19,11 @@ import org.bukkit.event.entity.EntityDamageEvent.DamageCause;
  * Created By MysticMight 2021
  */
 
-public class SkillGentleLanding extends PassiveSkill {
+public class SkillDragonsGift extends PassiveSkill {
     private String damageText;
 
-    public SkillGentleLanding(Heroes plugin) {
-        super(plugin, "GentleLanding");
+    public SkillDragonsGift(Heroes plugin) {
+        super(plugin, "DragonsGift");
         setDescription("You fall gracefully and receive $1% fall damage.");
         setTypes(SkillType.ABILITY_PROPERTY_EARTH, SkillType.BUFFING);
         Bukkit.getServer().getPluginManager().registerEvents(new SkillHeroListener(this), plugin);
@@ -77,7 +77,7 @@ public class SkillGentleLanding extends PassiveSkill {
 
             double reducedDamage = event.getDamage() * (1 - fallDamageMultiplier);
             if (!hero.isSuppressing(skill)) {
-                String damageText = SkillGentleLanding.this.damageText.replace("$1", Util.decFormat.format(reducedDamage));
+                String damageText = SkillDragonsGift.this.damageText.replace("$1", Util.decFormat.format(reducedDamage));
                 hero.getPlayer().sendMessage(damageText);
             }
 
