@@ -21,7 +21,7 @@ public class SkillNaturesBoon extends PassiveSkill {
     private String restoreText;
 
     public SkillNaturesBoon(Heroes plugin) {
-        super(plugin, "Faith");
+        super(plugin, "NaturesBoon");
         setDescription("Healing a target has a $1% chance to restore $2 mana.");
         setTypes(SkillType.BUFFING, SkillType.ABILITY_PROPERTY_LIGHT, SkillType.MANA_INCREASING);
         Bukkit.getServer().getPluginManager().registerEvents(new SkillHeroListener(this), plugin);
