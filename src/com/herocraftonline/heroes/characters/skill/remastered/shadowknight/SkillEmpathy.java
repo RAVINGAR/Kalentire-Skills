@@ -21,7 +21,7 @@ public class SkillEmpathy extends TargettedSkill {
 
     public SkillEmpathy(Heroes plugin) {
         super(plugin, "Empathy");
-        setDescription("You deal up to $1 dark damage equal to $2% of your missing health and slow the target for $3 second(s).");
+        setDescription("You deal up to $1 dark damage equal to $2 base damage and $3% of your missing health and slow the target for $4 second(s).");
         setUsage("/skill empathy");
         setArgumentRange(0, 0);
         setIdentifiers("skill empathy");
@@ -30,35 +30,34 @@ public class SkillEmpathy extends TargettedSkill {
 
     @Override
     public String getDescription(Hero hero) {
-        double maxDamage = SkillConfigManager.getUseSetting(hero, this, "max-damage", 152, false);
-        double maxDamageIncrease = SkillConfigManager.getUseSetting(hero, this, "max-damage-increase-per-intellect", 1.0, false);
-        maxDamage += maxDamageIncrease * hero.getAttributeValue(AttributeType.INTELLECT);
-
-        double modifier = SkillConfigManager.getUseSetting(hero, this, "damage-modifier", 0.5, false);
-        double modifierIncrease = SkillConfigManager.getUseSetting(hero, this, "damage-modifier-increase-per-intellect", 0.0, false);
-        modifier += (modifierIncrease * hero.getAttributeValue(AttributeType.INTELLECT));
+        double baseDamage = SkillConfigManager.getScaledUseSettingDouble(hero, this, "base-damage", false);
+        double maxDamage = SkillConfigManager.getScaledUseSettingDouble(hero, this, "max-damage", false);
+        double modifier = SkillConfigManager.getScaledUseSettingDouble(hero, this, "damage-modifier", 0.5, false);
 
         int slowDuration = SkillConfigManager.getUseSetting(hero, this, "slow-duration", 4000, false);
 
-        String formattedModifier = Util.decFormat.format(modifier * 100.0);
-        String formattedSlowDuration = Util.decFormat.format(slowDuration / 1000.0);
-
-        return getDescription().replace("$1", maxDamage + "").replace("$2", formattedModifier).replace("$3", formattedSlowDuration);
+        return getDescription()
+                .replace("$1", Util.decFormat.format(maxDamage))
+                .replace("$2", Util.decFormat.format(baseDamage))
+                .replace("$3", Util.decFormat.format(modifier * 100.0))
+                .replace("$4", Util.decFormat.format(slowDuration / 1000.0));
     }
 
     @Override
     public ConfigurationSection getDefaultConfig() {
-        ConfigurationSection node = super.getDefaultConfig();
-
-        node.set(SkillSetting.MAX_DISTANCE.node(), 10);
-        node.set("max-damage", 152);
-        node.set("max-damage-increase-per-intellect", 1.0);
-        node.set("damage-modifier", 1.0);
-        node.set("damage-modifier-increase-per-intellect", 0.0);
-        node.set("slow-duration", 4000);
-        node.set("slow-amplifier", 2);
-
-        return node;
+        ConfigurationSection config = super.getDefaultConfig();
+        config.set(SkillSetting.MAX_DISTANCE.node(), 10);
+        config.set("base-damage", 40);
+        config.set("base-damage-per-level", 0.0);
+        config.set("max-damage", 152);
+        config.set("max-damage-increase-per-intellect", 1.0);
+        config.set("max-damage-per-level", 0.0);
+        config.set("damage-modifier", 1.0);
+        config.set("damage-modifier-increase-per-intellect", 0.0);
+        config.set("damage-modifier-per-level", 0.0);
+        config.set("slow-duration", 4000);
+        config.set("slow-amplifier", 2);
+        return config;
     }
 
     @Override
@@ -68,21 +67,18 @@ public class SkillEmpathy extends TargettedSkill {
             return SkillResult.INVALID_TARGET;
         }
 
-        double maxDamage = SkillConfigManager.getUseSetting(hero, this, "max-damage", 152, false);
-        double maxDamageIncrease = SkillConfigManager.getUseSetting(hero, this, "max-damage-increase-per-intellect", 1.0, false);
-        maxDamage += maxDamageIncrease * hero.getAttributeValue(AttributeType.INTELLECT);
+        double baseDamage = SkillConfigManager.getScaledUseSettingDouble(hero, this, "base-damage", false);
+        double maxDamage = SkillConfigManager.getScaledUseSettingDouble(hero, this, "max-damage", false);
+        double modifier = SkillConfigManager.getScaledUseSettingDouble(hero, this, "damage-modifier", 0.5, false);
 
-        double modifier = SkillConfigManager.getUseSetting(hero, this, "damage-modifier", 1.0, false);
-        double modifierIncrease = SkillConfigManager.getUseSetting(hero, this, "damage-modifier-increase-per-intellect", 0.0, false);
-        modifier += modifierIncrease * hero.getAttributeValue(AttributeType.INTELLECT);
-
-        double damage = (player.getMaxHealth() - player.getHealth()) * modifier;
-
+        double damage = baseDamage + (player.getMaxHealth() - player.getHealth()) * modifier;
         if (damage > maxDamage)
             damage = maxDamage;
 
-        addSpellTarget(target, hero);
-        damageEntity(target, player, damage, DamageCause.MAGIC);
+        if (damage > 0) {
+            addSpellTarget(target, hero);
+            damageEntity(target, player, damage, DamageCause.MAGIC);
+        }
 
         int slowDuration = SkillConfigManager.getUseSetting(hero, this, "slow-duration", 4000, false);
         int amplifier = SkillConfigManager.getUseSetting(hero, this, "amplifier", 2, false);

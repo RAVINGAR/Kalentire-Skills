@@ -2,15 +2,12 @@ package com.herocraftonline.heroes.characters.skill.remastered.dragoon;
 
 import com.herocraftonline.heroes.Heroes;
 import com.herocraftonline.heroes.api.SkillResult;
-import com.herocraftonline.heroes.attributes.AttributeType;
 import com.herocraftonline.heroes.characters.Hero;
 import com.herocraftonline.heroes.characters.effects.Effect;
 import com.herocraftonline.heroes.characters.skill.*;
 import com.herocraftonline.heroes.util.GeometryUtil;
 import com.herocraftonline.heroes.util.Util;
-import org.bukkit.Bukkit;
-import org.bukkit.Location;
-import org.bukkit.Sound;
+import org.bukkit.*;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
 import org.bukkit.configuration.ConfigurationSection;
@@ -34,33 +31,32 @@ import java.util.logging.Level;
 
 public class SkillDragonSmash extends ActiveSkill implements Listener {
 
-    private static String midDragonSmashEffectName = "MidDragonSmash";
+    private static String launchedToggleableDragonSmashEffectName = "DragonSmashLaunched";
+    private static String droppingDragonSmashEffectName = "DragonSmashDrop";
     private List<FallingBlock> fallingBlocks = new ArrayList<FallingBlock>();
 
     public SkillDragonSmash(Heroes plugin) {
         super(plugin, "DragonSmash");
+        // TODO change description
         setDescription("Briefly transform and leap into the air, quickly followed by a downwards slam at incredible speeds. " +
                 "Upon hitting the ground, all enemies within a $1 block radius of you will take $2 damage. " +
-                "The damage will be increased by $3 for every block you travel downwards. Can deal a maximum of $4 damage. " +
-                "If you are already transformed when you use this ability, you will leap much higher.");
+                "The damage will be increased by $3 for every block you travel downwards. Can deal a maximum of $4 damage. ");
         setUsage("/skill dragonsmash");
         setArgumentRange(0, 0);
         setIdentifiers("skill dragonsmash");
         setTypes(SkillType.DAMAGING, SkillType.AGGRESSIVE, SkillType.ABILITY_PROPERTY_PHYSICAL, SkillType.VELOCITY_INCREASING);
 
+        setToggleableEffectName(launchedToggleableDragonSmashEffectName);
         Bukkit.getPluginManager().registerEvents(this, plugin);
     }
 
     @Override
     public String getDescription(Hero hero) {
-        double radius = SkillConfigManager.getUseSetting(hero, this, SkillSetting.RADIUS, 5.0, false);
+        double radius = SkillConfigManager.getUseSettingDouble(hero, this, SkillSetting.RADIUS, false);
+        double damage = SkillConfigManager.getScaledUseSettingDouble(hero, this, SkillSetting.DAMAGE, false);
 
-        double damage = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE, 100.0, false);
-        double strDamage = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE_INCREASE_PER_STRENGTH, 0.0, false);
-        damage += strDamage * hero.getAttributeValue(AttributeType.STRENGTH);
-
-        final double damagePerBlockHeight = SkillConfigManager.getUseSetting(hero, this, "damage-per-block-height", 10.0, false);
-        final double maxDamageGain = SkillConfigManager.getUseSetting(hero, this, "maximum-total-damage-increase-for-block", 80.0, false);
+        final double damagePerBlockHeight = SkillConfigManager.getUseSettingDouble(hero, this, "damage-per-block-height", false);
+        final double maxDamageGain = SkillConfigManager.getUseSettingDouble(hero, this, "maximum-total-damage-increase-for-block",  false);
 
         return getDescription()
                 .replace("$1", Util.decFormat.format(radius))
@@ -73,63 +69,112 @@ public class SkillDragonSmash extends ActiveSkill implements Listener {
     public ConfigurationSection getDefaultConfig() {
         ConfigurationSection node = super.getDefaultConfig();
         node.set(SkillSetting.DAMAGE.node(), 60.0);
+        node.set(SkillSetting.DAMAGE_INCREASE_PER_STRENGTH.node(), 1);
         node.set("damage-per-block-height", 10.0);
         node.set("maximum-total-damage-increase-for-blocks", 80);
         node.set(SkillSetting.RADIUS.node(), 5.0);
         node.set("upwards-velocity", 1.25);
         node.set("downwards-velocity", 2.5);
-        node.set("transform-jump-velocity-difference", 0.75);
-        node.set("delay-ticks-before-drop", 10);
+        node.set("stop-jump-delay-ticks", 10);
         node.set("target-horizontal-knockback", 0.0);
         node.set("target-vertical-knockback", 1.0);
         return node;
+    }
+
+//    @Override
+//    public boolean isCoolDownRequired(String[] args) {
+//        //TODO return false when attempting to drop and smash, so we can avoid needing cooldown
+//        //  And require cooldown once drop or smash has completed
+//        return super.isCoolDownRequired(args);
+//    }
+
+    // Run on recast after jump and not yet hit ground -> do Drop
+    @Override
+    protected void onSkillEffectToggle(Hero hero) {
+        super.onSkillEffectToggle(hero); // default just removes the toggleable effect
+        doDrop(hero);
     }
 
     @Override
     public SkillResult use(final Hero hero, String[] args) {
         final Player player = hero.getPlayer();
 
-        if (hero.hasEffect(midDragonSmashEffectName))
-            return SkillResult.INVALID_TARGET_NO_MSG;
-
-        double vTransformPower = SkillConfigManager.getUseSetting(hero, this, "transform-jump-velocity-difference", 1.0, false);
-        if (!hero.hasEffect("EnderBeastTransformed"))
-            vTransformPower = 0.0;  // Negate it if we aren't transformed.
-
-        final double vPowerUp = SkillConfigManager.getUseSetting(hero, this, "upwards-velocity", 1.0, false) + vTransformPower;
-        final double vPowerDown = SkillConfigManager.getUseSetting(hero, this, "downwards-velocity", 1.0, false) + vTransformPower;
-        final int delayTicksBeforeDrop = SkillConfigManager.getUseSetting(hero, this, "delay-ticks-before-drop", 10, false);
+        if (hero.hasEffect(droppingDragonSmashEffectName))
+            return SkillResult.INVALID_TARGET_NO_MSG; // Drop only once
 
         broadcastExecuteText(hero);
+        final int stopJumpDelayTicks = SkillConfigManager.getUseSettingInt(hero, this, "stop-jump-delay-ticks",  false);
 
-        hero.addEffect(new MidDragonSmashEffect(this, player));
+        final double vPowerUp = SkillConfigManager.getUseSetting(hero, this, "upwards-velocity", 1.0, false);
+        hero.addEffect(new LaunchedDragonSmashEffect(this, player));
 
-        player.playSound(player.getLocation(), Sound.ENTITY_ENDER_DRAGON_FLAP, 0.5f, 0.5f);
-        player.playSound(player.getLocation(), Sound.ENTITY_PHANTOM_FLAP, 0.5f, 0.5f);
+        player.playSound(player.getLocation(), Sound.ENTITY_FIREWORK_ROCKET_LAUNCH, 2, 1);
 
         Vector currentVelocity = player.getVelocity();
         player.setVelocity(new Vector(currentVelocity.getX(), currentVelocity.getY() + vPowerUp, currentVelocity.getZ()));
+        runPeriodicCloudEffects(player, stopJumpDelayTicks);
 
-        BukkitScheduler scheduler = Bukkit.getServer().getScheduler();
-        scheduler.runTaskLater(plugin, new Runnable() {
+        Bukkit.getServer().getScheduler().runTaskLater(plugin, new Runnable() {
             @Override
             public void run() {
-                player.setFallDistance(-512);
-                player.setVelocity(new Vector(0, -vPowerDown, 0));
+                // Only negate velocity (to stop jump and hence should start falling) and protect from the fall?
+                if (!hero.hasEffect(droppingDragonSmashEffectName)) {
+                    hero.removeEffect(hero.getEffect(launchedToggleableDragonSmashEffectName));
 
-                DragonSmashUpdateTask updateTask = new DragonSmashUpdateTask(scheduler, hero);
-                updateTask.setTaskId(scheduler.scheduleSyncRepeatingTask(plugin, updateTask, 1L, 1L));
+                    player.setFallDistance(-512); // seems to protect from fall damage, since damage would be based off this?
+                    // negate previous jump velocity (should free fall now right?
+                    player.setVelocity(new Vector(0, 0, 0));
+                }
             }
-        }, delayTicksBeforeDrop);
+        }, stopJumpDelayTicks);
         return SkillResult.NORMAL;
     }
 
-    private class MidDragonSmashEffect extends Effect {
-        MidDragonSmashEffect(Skill skill, Player player) {
-            super(skill, midDragonSmashEffectName, player);
+    public void runPeriodicCloudEffects(Player player, int ticksToRunFor) {
+        new BukkitRunnable() {
+            private final int lastTick = ticksToRunFor;
+            private int ticks = 0;
+
+            @Override
+            public void run() {
+                if (ticks >= lastTick) {
+                    cancel();
+                    return;
+                }
+
+                //player.getWorld().spigot().playEffect(player.getLocation(), Effect.CLOUD);
+                player.getWorld().spawnParticle(Particle.CLOUD, player.getLocation(), 1, 0, 0, 0, 1);
+                ticks++;
+            }
+        }.runTaskTimer(plugin, 0, 1L);
+    }
+
+    private class LaunchedDragonSmashEffect extends Effect {
+        LaunchedDragonSmashEffect(Skill skill, Player player) {
+            super(skill, launchedToggleableDragonSmashEffectName, player);
         }
     }
 
+    private class DroppingDragonSmashEffect extends Effect {
+        DroppingDragonSmashEffect(Skill skill, Player player) {
+            super(skill, droppingDragonSmashEffectName, player);
+        }
+    }
+
+    public void doDrop(Hero hero) {
+        final Player player = hero.getPlayer();
+        final double vPowerDown = SkillConfigManager.getUseSetting(hero, this, "downwards-velocity", 1.0, false);
+
+        player.setFallDistance(-512); // seems to protect from fall damage, since damage would be based off this?
+        player.setVelocity(new Vector(0, -vPowerDown, 0)); // drop with speed
+        hero.addEffect(new DroppingDragonSmashEffect(this, player));
+
+        BukkitScheduler scheduler = Bukkit.getServer().getScheduler();
+        DragonSmashUpdateTask updateTask = new DragonSmashUpdateTask(scheduler, hero);
+        updateTask.setTaskId(scheduler.scheduleSyncRepeatingTask(plugin, updateTask, 1L, 1L));
+    }
+
+    // TODO add timeout for the task this has been handled, just in case
     private class DragonSmashUpdateTask implements Runnable {
         private final Hero hero;
         private final BukkitScheduler scheduler;
@@ -205,14 +250,15 @@ public class SkillDragonSmash extends ActiveSkill implements Listener {
             target.setVelocity(velocity);
         }
 
-        loc.getWorld().playSound(loc, Sound.ENTITY_GENERIC_HURT, 1f, 1f);
+        final World world = loc.getWorld();
+        world.playSound(loc, Sound.ENTITY_GENERIC_HURT, 1f, 1f);
         new BukkitRunnable() {
             int i = 1;
 
             @Override
             public void run() {
                 if (i > radius) {
-                    hero.removeEffect(hero.getEffect(midDragonSmashEffectName));
+                    hero.removeEffect(hero.getEffect(droppingDragonSmashEffectName));
                     this.cancel();
                     return;
                 }
@@ -223,7 +269,8 @@ public class SkillDragonSmash extends ActiveSkill implements Listener {
                     if (!block.getType().isSolid() || !aboveBlock.isEmpty())
                         continue;
 
-                    FallingBlock fb = loc.getWorld().spawnFallingBlock(block.getLocation().clone().add(0, 1.25f, 0), block.getType(), block.getData());
+                    //FallingBlock fb = world.spawnFallingBlock(block.getLocation().clone().add(0, 1.25f, 0), block.getType(), block.getData());
+                    FallingBlock fb = world.spawnFallingBlock(block.getLocation().clone().add(0, 1.25f, 0), block.getBlockData());
                     fb.setVelocity(new Vector(0, 0.3f, 0));
                     fb.setDropItem(false);
                     fallingBlocks.add(fb);
