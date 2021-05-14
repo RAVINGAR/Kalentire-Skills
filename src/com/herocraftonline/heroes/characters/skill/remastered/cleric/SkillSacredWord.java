@@ -18,7 +18,8 @@ public class SkillSacredWord extends SkillBaseHeal {
 
     public SkillSacredWord(Heroes plugin) {
         super(plugin, "SacredWord");
-        setDescription("SacredWord relieves your target, restoring $1 of their health and removing any blind effects that they may have. You are only healed for $2 health from this ability.");
+        setDescription("SacredWord relieves your target, restoring $1 of their health and removing any blind effects " +
+                "that they may have. You are only healed for $2 health from this ability.");
         setUsage("/skill sacredword <target>");
         setArgumentRange(0, 1);
         setIdentifiers("skill sacredword");
@@ -27,13 +28,13 @@ public class SkillSacredWord extends SkillBaseHeal {
 
     @Override
     public ConfigurationSection getDefaultConfig() {
-        ConfigurationSection node = super.getDefaultConfig();
+        ConfigurationSection config = super.getDefaultConfig();
 
-        node.set(SkillSetting.MAX_DISTANCE.node(), 8);
-        node.set(SkillSetting.HEALING.node(), 75);
-        node.set(SkillSetting.HEALING_INCREASE_PER_WISDOM.node(), 1.875);
+        config.set(SkillSetting.MAX_DISTANCE.node(), 8);
+        config.set(SkillSetting.HEALING.node(), 75);
+        config.set(SkillSetting.HEALING_INCREASE_PER_WISDOM.node(), 1.875);
 
-        return node;
+        return config;
     }
 
     @Override
