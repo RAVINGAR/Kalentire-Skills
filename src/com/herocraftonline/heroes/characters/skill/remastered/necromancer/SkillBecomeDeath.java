@@ -27,6 +27,9 @@ import org.bukkit.event.entity.EntityTargetEvent;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 
+import java.util.LinkedHashMap;
+import java.util.Map;
+
 public class SkillBecomeDeath extends ActiveSkill {
 
     private boolean disguiseApiLoaded = false;
@@ -95,7 +98,8 @@ public class SkillBecomeDeath extends ActiveSkill {
             if (!(event.getEntity() instanceof LivingEntity) || !(event.getTarget() instanceof Player))
                 return;
 
-            if (!(Util.isUndead(plugin, (LivingEntity) event.getEntity())))
+            final LivingEntity entity = (LivingEntity) event.getEntity();
+            if (!(Util.isUndead(plugin, entity)))
                 return;
 
             Hero hero = plugin.getCharacterManager().getHero((Player) event.getTarget());
@@ -103,16 +107,19 @@ public class SkillBecomeDeath extends ActiveSkill {
                 return;
 
             BecomeDeathEffect bdEffect = (BecomeDeathEffect) hero.getEffect("BecomeDeath");
-            if (!bdEffect.hasAttackedMobs())
+            assert bdEffect != null;
+            //if (!bdEffect.hasAttackedMobs())
+            if (!bdEffect.hasProvokedMob(entity))
                 event.setCancelled(true);
         }
 
-        @EventHandler(priority = EventPriority.MONITOR)
+        @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
         public void onEntityDamage(EntityDamageEvent event) {
-            if (event.isCancelled() || event.getDamage() == 0 || !(event.getEntity() instanceof LivingEntity))
+            if (event.getDamage() == 0 || !(event.getEntity() instanceof LivingEntity))
                 return;
 
-            if (!Util.isUndead(plugin, (LivingEntity) event.getEntity()) || !(event instanceof EntityDamageByEntityEvent))
+            final LivingEntity entity = (LivingEntity) event.getEntity();
+            if (!Util.isUndead(plugin, entity) || !(event instanceof EntityDamageByEntityEvent))
                 return;
 
             EntityDamageByEntityEvent subEvent = (EntityDamageByEntityEvent) event;
@@ -120,7 +127,9 @@ public class SkillBecomeDeath extends ActiveSkill {
                 Hero hero = plugin.getCharacterManager().getHero((Player) subEvent.getDamager());
                 if (hero.hasEffect("BecomeDeath")) {
                     BecomeDeathEffect bdEffect = (BecomeDeathEffect) hero.getEffect("BecomeDeath");
-                    bdEffect.setAttackedMobs(true);
+                    assert bdEffect != null;
+                    //bdEffect.setAttackedMobs(true);
+                    bdEffect.addProvokedMob(entity);
                 }
             }
             else if (subEvent.getDamager() instanceof Projectile) {
@@ -128,7 +137,9 @@ public class SkillBecomeDeath extends ActiveSkill {
                     Hero hero = plugin.getCharacterManager().getHero((Player) ((Projectile) subEvent.getDamager()).getShooter());
                     if (hero.hasEffect("BecomeDeath")) {
                         BecomeDeathEffect bdEffect = (BecomeDeathEffect) hero.getEffect("BecomeDeath");
-                        bdEffect.setAttackedMobs(true);
+                        assert bdEffect != null;
+                        //bdEffect.setAttackedMobs(true);
+                        bdEffect.addProvokedMob(entity);
                     }
                 }
             }
@@ -136,7 +147,17 @@ public class SkillBecomeDeath extends ActiveSkill {
     }
 
     public class BecomeDeathEffect extends ExpirableEffect {
-        private boolean attackedMobs = false;
+        private static final long cooldownMilliseconds = 5000L;
+        private final Map<LivingEntity, Long> provokedMobs = new LinkedHashMap<LivingEntity, Long>(10) {
+            private static final long serialVersionUID = 2196792527721771866L;
+
+            @Override
+            protected boolean removeEldestEntry(Map.Entry<LivingEntity, Long> eldest) {
+                return (size() > 30 || eldest.getValue() + cooldownMilliseconds <= System.currentTimeMillis());
+            }
+        };
+
+        //private boolean attackedMobs = false;
 
         public BecomeDeathEffect(Skill skill, Player applier, long duration) {
             super(skill, "BecomeDeath", applier, duration, applyText, expireText);
@@ -177,14 +198,23 @@ public class SkillBecomeDeath extends ActiveSkill {
                 if (DisguiseAPI.isDisguised(player))
                     DisguiseAPI.undisguiseToAll(player);
             }
+            provokedMobs.clear();
         }
 
-        public boolean hasAttackedMobs() {
-            return attackedMobs;
+//        public boolean hasAttackedMobs() {
+//            return attackedMobs;
+//        }
+
+//        public void setAttackedMobs(boolean attackedMobs) {
+//            this.attackedMobs = attackedMobs;
+//        }
+
+        public void addProvokedMob(LivingEntity entity) {
+            provokedMobs.put(entity, System.currentTimeMillis());
         }
 
-        public void setAttackedMobs(boolean attackedMobs) {
-            this.attackedMobs = attackedMobs;
+        public boolean hasProvokedMob(LivingEntity entity) {
+            return provokedMobs.containsKey(entity);
         }
     }
 }
