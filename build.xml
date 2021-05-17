@@ -24,13 +24,18 @@
     <!-- Classes of skills to only build when running "build-classes-and-skills" Ant task, for specific skills only see below. -->
     <!--<property name="classes" value="arcanist,chainwarden,chronomancer,defender,disciple,dragoon,druid,enderbeast,hellspawn,necromancer,ninja,pathfinder,professions,pyromancer,shared" />-->
     <!--<property name="classes" value="arcanist" />-->
-    <property name="classes" value="bard,beguiler,berserker,bloodmage,cleric,dragoon,druid,extortioner,hydromancer,monk,necromancer,ninja,paladin,pyromancer,ranger,runeblade,samurai,shadowknight,shaman,shared,wizard" />
+    <!--    <property name="classes" value="bard,beguiler,berserker,bloodmage,cleric,dragoon,druid,extortioner,hydromancer,monk,necromancer,ninja,paladin,pyromancer,ranger,runeblade,samurai,shadowknight,shaman,shared,wizard" />-->
 
     <!--Can be used to only build specific skills e.g. ninja\SkillSneak-->
-<!--    <property name="classes" value="" /> &lt;!&ndash; If uncommented, no specified class packages of skills to build&ndash;&gt;-->
-    <property name="skills" value="" /> <!-- If uncommented, no specified skills to build-->
+    <property name="classes" value="" /> <!-- If uncommented, no specified class packages of skills to build-->
+    <!--    <property name="skills" value="" /> &lt;!&ndash; If uncommented, no specified skills to build&ndash;&gt;-->
     <!--    <property name="skills" value="arcanist\SkillBolt,necromancer\SkillWeb" />-->
-<!--    <property name="skills" value="other\SkillEnchant" />-->
+<!--    <property name="skills" value="other\SkillEnchant,shared\SkillFireball" />-->
+
+    <!--    <property name="skills" value="shadowknight\SkillAtrophy,cleric\SkillFaith,paladin\SkillHolyInspiration,pyromancer\SkillLavaSkin,druid\SkillNaturesBoon,bloodmage\SkillRecklessClot,dragoon\SkillGentleLanding" />-->
+    <!--    <property name="skills" value="shadowknight\SkillAtrophy,dragoon\SkillDragonsGift,bard\SkillBoomingVoice,cleric\SkillFaith,druid\SkillNaturesBoon" />-->
+    <!--    <property name="skills" value="dragoon\SkillDragonSmash,shadowknight\SkillEmpathy,cleric\SkillCleanse,runeblade\SkillDevourMagic,necromancer\SkillBecomeDeath" />-->
+    <property name="skills" value="necromancer\SkillBecomeDeath" />
 
     <!-- End of Only "build-classes-and-skills" Ant task related properties -->
 

@@ -4,7 +4,7 @@
     <groupId>com.herocraftonline.heroes</groupId>
     <artifactId>Heroes-Skills</artifactId>
     <packaging>jar</packaging>
-    <version>1.5.0-REBORN-SNAPSHOT</version>
+    <version>1.5.1-REBORN-SNAPSHOT</version>
     <name>Heroes-Skills</name>
     <url>http://www.herocraftonline.com</url>
 
@@ -57,14 +57,19 @@
     <repositories>
         <!-- For ProtocolLib (dependency of LibsDisguises) -->
         <repository>
-            <id>dmulloy2-repo</id>
-            <url>https://repo.dmulloy2.net/repository/public/</url>
+        <id>dmulloy2-repo-protocol-lib</id>
+        <url>https://repo.dmulloy2.net/repository/public/</url>
         </repository>
         <repository>
             <id>maven-repo</id>
-            <url>http://repo1.maven.org/maven2</url>
+            <url>https://repo1.maven.org/maven2</url>
         </repository>
         <repository>
+            <id>heroes-repo</id>
+            <url>http://nexus.hc.to/content/groups/herocraft/</url>
+        </repository>
+        <repository>
+            <!-- For WorldGuard-->
             <id>sk89q-repo</id>
             <url>http://maven.sk89q.com/repo/</url>
         </repository>
@@ -73,8 +78,9 @@
             <url>http://repo.md-5.net/content/groups/public/</url>
         </repository>
         <repository>
-            <id>heroes-repo</id>
-            <url>http://nexus.hc.to/content/groups/herocraft/</url>
+            <id>lumine-snapshots</id>
+            <name>Lumine Releases</name>
+            <url>https://mvn.lumine.io/repository/maven-public/</url>
         </repository>
         <!-- The following are useful for builds when the jar hasn't yet been added to the nexus (above) -->
         <repository>
@@ -101,7 +107,7 @@
         </dependency>
         <dependency>
             <groupId>org.spigotmc</groupId>
-            <artifactId>spigot</artifactId>
+            <artifactId>spigot-api</artifactId>
             <version>1.16.5-R0.1-SNAPSHOT</version>
         </dependency>
         <dependency>
@@ -138,9 +144,10 @@
 <!--            <scope>provided</scope>-->
         </dependency>
         <dependency>
-            <groupId>net.elseland.xikage</groupId>
+<!--            <groupId>net.elseland.xikage</groupId>-->
+            <groupId>io.lumine.xikage</groupId>
             <artifactId>MythicMobs</artifactId>
-            <version>4.0.1</version>
+            <version>4.10.0</version>
         </dependency>
         <dependency>
             <groupId>com.griefcraft.lwc</groupId>
