@@ -91,8 +91,11 @@ public class SkillDragonSmash extends ActiveSkill implements Listener {
     // Run on recast after jump and not yet hit ground -> do Drop
     @Override
     protected void onSkillEffectToggle(Hero hero) {
-        super.onSkillEffectToggle(hero); // default just removes the toggleable effect
-        doDrop(hero);
+        if (hero.hasEffect(launchedToggleableDragonSmashEffectName)) {
+            doDrop(hero);
+        }
+        super.onSkillEffectToggle(hero); // default just removes the toggleable effect (if they have it)
+
     }
 
     @Override
