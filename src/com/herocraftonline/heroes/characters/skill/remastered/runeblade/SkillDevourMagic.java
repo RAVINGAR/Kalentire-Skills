@@ -21,9 +21,6 @@ public class SkillDevourMagic extends PassiveSkill {
     public SkillDevourMagic(Heroes plugin) {
         super(plugin, "DevourMagic");
         setDescription("You passively devour harmful magic targeted at you, reducing any incoming spell damage by $1% and restoring mana based on the reduced damage at a $2% rate.");
-        setUsage("/skill devourmagic");
-        setArgumentRange(0, 0);
-        setIdentifiers("skill devourmagic");
         setTypes(SkillType.MANA_INCREASING, SkillType.SILENCEABLE, SkillType.BUFFING, SkillType.ABILITY_PROPERTY_DARK);
         // Set types for passive effect
         setEffectTypes(EffectType.BENEFICIAL, EffectType.DARK, EffectType.MAGIC);

@@ -4,6 +4,7 @@ import com.herocraftonline.heroes.Heroes;
 import com.herocraftonline.heroes.api.SkillResult;
 import com.herocraftonline.heroes.characters.Hero;
 import com.herocraftonline.heroes.characters.effects.Effect;
+import com.herocraftonline.heroes.characters.effects.ExpirableEffect;
 import com.herocraftonline.heroes.characters.skill.*;
 import com.herocraftonline.heroes.util.GeometryUtil;
 import com.herocraftonline.heroes.util.Util;
@@ -76,6 +77,7 @@ public class SkillDragonSmash extends ActiveSkill implements Listener {
         node.set("upwards-velocity", 1.25);
         node.set("downwards-velocity", 2.5);
         node.set("stop-jump-delay-ticks", 10);
+        node.set("allow-drop-for-ms", 5000);
         node.set("target-horizontal-knockback", 0.0);
         node.set("target-vertical-knockback", 1.0);
         return node;
@@ -91,6 +93,7 @@ public class SkillDragonSmash extends ActiveSkill implements Listener {
     // Run on recast after jump and not yet hit ground -> do Drop
     @Override
     protected void onSkillEffectToggle(Hero hero) {
+        hero.getPlayer().sendMessage("toggling effect!");//fixme remove debug
         if (hero.hasEffect(launchedToggleableDragonSmashEffectName)) {
             doDrop(hero);
         }
@@ -102,6 +105,8 @@ public class SkillDragonSmash extends ActiveSkill implements Listener {
     public SkillResult use(final Hero hero, String[] args) {
         final Player player = hero.getPlayer();
 
+        player.sendMessage("using dragonsmash!");//fixme remove debug
+
         if (hero.hasEffect(droppingDragonSmashEffectName))
             return SkillResult.INVALID_TARGET_NO_MSG; // Drop only once
 
@@ -109,7 +114,8 @@ public class SkillDragonSmash extends ActiveSkill implements Listener {
         final int stopJumpDelayTicks = SkillConfigManager.getUseSettingInt(hero, this, "stop-jump-delay-ticks",  false);
 
         final double vPowerUp = SkillConfigManager.getUseSetting(hero, this, "upwards-velocity", 1.0, false);
-        hero.addEffect(new LaunchedDragonSmashEffect(this, player));
+        int allowDropForMilliseconds = SkillConfigManager.getUseSetting(hero, this, "allow-drop-for-ms", 5000, false);
+        hero.addEffect(new LaunchedDragonSmashEffect(this, player, allowDropForMilliseconds));
 
         player.playSound(player.getLocation(), Sound.ENTITY_FIREWORK_ROCKET_LAUNCH, 2, 1);
 
@@ -122,11 +128,11 @@ public class SkillDragonSmash extends ActiveSkill implements Listener {
             public void run() {
                 // Only negate velocity (to stop jump and hence should start falling) and protect from the fall?
                 if (!hero.hasEffect(droppingDragonSmashEffectName)) {
-                    hero.removeEffect(hero.getEffect(launchedToggleableDragonSmashEffectName));
+                    //hero.removeEffect(hero.getEffect(launchedToggleableDragonSmashEffectName));
 
-                    player.setFallDistance(-512); // seems to protect from fall damage, since damage would be based off this?
                     // negate previous jump velocity (should free fall now right?
                     player.setVelocity(new Vector(0, 0, 0));
+                    player.setFallDistance(-512); // seems to protect from fall damage, since damage would be based off this?
                 }
             }
         }, stopJumpDelayTicks);
@@ -152,9 +158,9 @@ public class SkillDragonSmash extends ActiveSkill implements Listener {
         }.runTaskTimer(plugin, 0, 1L);
     }
 
-    private class LaunchedDragonSmashEffect extends Effect {
-        LaunchedDragonSmashEffect(Skill skill, Player player) {
-            super(skill, launchedToggleableDragonSmashEffectName, player);
+    private class LaunchedDragonSmashEffect extends ExpirableEffect {
+        LaunchedDragonSmashEffect(Skill skill, Player player, long duration) {
+            super(skill, launchedToggleableDragonSmashEffectName, player, duration);
         }
     }
 
@@ -166,10 +172,22 @@ public class SkillDragonSmash extends ActiveSkill implements Listener {
 
     public void doDrop(Hero hero) {
         final Player player = hero.getPlayer();
-        final double vPowerDown = SkillConfigManager.getUseSetting(hero, this, "downwards-velocity", 1.0, false);
+
+        if (hero.getPlayer().isOnGround()) {
+            // Already on ground, don't let them aoe or drop
+            if (hero.hasEffect(launchedToggleableDragonSmashEffectName)) {
+                hero.removeEffect(hero.getEffect(launchedToggleableDragonSmashEffectName));
+            }
+            return;
+        }
+
+        final double vPowerDown = SkillConfigManager.getUseSettingDouble(hero, this, "downwards-velocity", false);
+        player.sendMessage("Doing drop!");//fixme remove debug
 
         player.setFallDistance(-512); // seems to protect from fall damage, since damage would be based off this?
-        player.setVelocity(new Vector(0, -vPowerDown, 0)); // drop with speed
+        //TODO probably consider using current x and z from velocity
+        final Vector v = player.getVelocity();
+        player.setVelocity(new Vector(v.getX(), -vPowerDown, v.getZ())); // drop with speed
         hero.addEffect(new DroppingDragonSmashEffect(this, player));
 
         BukkitScheduler scheduler = Bukkit.getServer().getScheduler();
@@ -196,11 +214,18 @@ public class SkillDragonSmash extends ActiveSkill implements Listener {
 
         @Override
         public void run() {
-            if (hero.getPlayer().isOnGround()) {
+            final Player player = hero.getPlayer();
+            final boolean dead = player.isDead();
+            // Note death handling as its a good idea and well for cases such as if they fell in the void, this could be running for a while
+            if (dead || player.isOnGround()) {
                 if (taskId != 0 && scheduler.isCurrentlyRunning(taskId)) {
                     scheduler.cancelTask(taskId);
                     taskId = 0;
-                    smash(hero, topYValue);
+                    if (dead) {
+                        hero.removeEffect(hero.getEffect(droppingDragonSmashEffectName));
+                    } else {
+                        smash(hero, topYValue);
+                    }
                 } else {
                     Heroes.log(Level.WARNING, "SkillDragonSmash: Bad Coder alert! Somebody is not cancelling a bukkit task properly. This is gonna cause some big lag eventually.");
                 }
