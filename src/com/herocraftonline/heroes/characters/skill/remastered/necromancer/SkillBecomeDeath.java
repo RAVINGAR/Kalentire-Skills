@@ -126,8 +126,7 @@ public class SkillBecomeDeath extends PassiveSkill {
             types.add(EffectType.BENEFICIAL);
             types.add(EffectType.DARK);
             types.add(EffectType.MAGIC);
-            types.add(EffectType.WATER_BREATHING);
-            //addPotionEffect(new PotionEffect(PotionEffectType.WATER_BREATHING, (int) (duration / 1000) * 20, 0));
+            types.add(EffectType.WATER_BREATHING); // Yeah this works, we don't need a water breathing potion
         }
 
         @Override

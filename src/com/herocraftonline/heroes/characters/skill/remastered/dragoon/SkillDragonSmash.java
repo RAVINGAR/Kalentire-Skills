@@ -5,6 +5,7 @@ import com.herocraftonline.heroes.api.SkillResult;
 import com.herocraftonline.heroes.characters.Hero;
 import com.herocraftonline.heroes.characters.effects.Effect;
 import com.herocraftonline.heroes.characters.effects.ExpirableEffect;
+import com.herocraftonline.heroes.characters.effects.common.SafeFallEffect;
 import com.herocraftonline.heroes.characters.skill.*;
 import com.herocraftonline.heroes.util.GeometryUtil;
 import com.herocraftonline.heroes.util.Util;
@@ -38,10 +39,8 @@ public class SkillDragonSmash extends ActiveSkill implements Listener {
 
     public SkillDragonSmash(Heroes plugin) {
         super(plugin, "DragonSmash");
-        // TODO change description
-        setDescription("Briefly transform and leap into the air, quickly followed by a downwards slam at incredible speeds. " +
-                "Upon hitting the ground, all enemies within a $1 block radius of you will take $2 damage. " +
-                "The damage will be increased by $3 for every block you travel downwards. Can deal a maximum of $4 damage. ");
+        setDescription("Launch high into the air, if recast, crash back to the ground knocking back all " +
+                "enemies within a $1 block radius and dealing $2 damage to each.");
         setUsage("/skill dragonsmash");
         setArgumentRange(0, 0);
         setIdentifiers("skill dragonsmash");
@@ -56,14 +55,9 @@ public class SkillDragonSmash extends ActiveSkill implements Listener {
         double radius = SkillConfigManager.getUseSettingDouble(hero, this, SkillSetting.RADIUS, false);
         double damage = SkillConfigManager.getScaledUseSettingDouble(hero, this, SkillSetting.DAMAGE, false);
 
-        final double damagePerBlockHeight = SkillConfigManager.getUseSettingDouble(hero, this, "damage-per-block-height", false);
-        final double maxDamageGain = SkillConfigManager.getUseSettingDouble(hero, this, "maximum-total-damage-increase-for-block",  false);
-
         return getDescription()
                 .replace("$1", Util.decFormat.format(radius))
-                .replace("$2", Util.decFormat.format(damage))
-                .replace("$3", Util.decFormat.format(damagePerBlockHeight))
-                .replace("$4", Util.decFormat.format(damage + maxDamageGain));
+                .replace("$2", Util.decFormat.format(damage));
     }
 
     @Override
@@ -71,41 +65,29 @@ public class SkillDragonSmash extends ActiveSkill implements Listener {
         ConfigurationSection node = super.getDefaultConfig();
         node.set(SkillSetting.DAMAGE.node(), 60.0);
         node.set(SkillSetting.DAMAGE_INCREASE_PER_STRENGTH.node(), 1);
-        node.set("damage-per-block-height", 10.0);
-        node.set("maximum-total-damage-increase-for-blocks", 80);
         node.set(SkillSetting.RADIUS.node(), 5.0);
         node.set("upwards-velocity", 1.25);
         node.set("downwards-velocity", 2.5);
         node.set("stop-jump-delay-ticks", 10);
         node.set("allow-drop-for-ms", 5000);
-        node.set("target-horizontal-knockback", 0.0);
+        node.set("safefall-duration", 5000);
+        node.set("target-horizontal-knockback", 0.5);
         node.set("target-vertical-knockback", 1.0);
         return node;
     }
 
-//    @Override
-//    public boolean isCoolDownRequired(String[] args) {
-//        //TODO return false when attempting to drop and smash, so we can avoid needing cooldown
-//        //  And require cooldown once drop or smash has completed
-//        return super.isCoolDownRequired(args);
-//    }
-
     // Run on recast after jump and not yet hit ground -> do Drop
     @Override
     protected void onSkillEffectToggle(Hero hero) {
-        hero.getPlayer().sendMessage("toggling effect!");//fixme remove debug
         if (hero.hasEffect(launchedToggleableDragonSmashEffectName)) {
             doDrop(hero);
         }
         super.onSkillEffectToggle(hero); // default just removes the toggleable effect (if they have it)
-
     }
 
     @Override
     public SkillResult use(final Hero hero, String[] args) {
         final Player player = hero.getPlayer();
-
-        player.sendMessage("using dragonsmash!");//fixme remove debug
 
         if (hero.hasEffect(droppingDragonSmashEffectName))
             return SkillResult.INVALID_TARGET_NO_MSG; // Drop only once
@@ -113,12 +95,17 @@ public class SkillDragonSmash extends ActiveSkill implements Listener {
         broadcastExecuteText(hero);
         final int stopJumpDelayTicks = SkillConfigManager.getUseSettingInt(hero, this, "stop-jump-delay-ticks",  false);
 
-        final double vPowerUp = SkillConfigManager.getUseSetting(hero, this, "upwards-velocity", 1.0, false);
-        int allowDropForMilliseconds = SkillConfigManager.getUseSetting(hero, this, "allow-drop-for-ms", 5000, false);
+        final double vPowerUp = SkillConfigManager.getUseSettingDouble(hero, this, "upwards-velocity", false);
+        int allowDropForMilliseconds = SkillConfigManager.getUseSettingInt(hero, this, "allow-drop-for-ms", false);
         hero.addEffect(new LaunchedDragonSmashEffect(this, player, allowDropForMilliseconds));
 
         player.playSound(player.getLocation(), Sound.ENTITY_FIREWORK_ROCKET_LAUNCH, 2, 1);
 
+        // Add SafeFall
+        int safeFallDuration = SkillConfigManager.getUseSettingInt(hero, this,"safefall-duration", false);
+        hero.addEffect(new SafeFallEffect(this,"DragonSmashSafeFall", player, safeFallDuration, null, null));
+
+        // Do Jump
         Vector currentVelocity = player.getVelocity();
         player.setVelocity(new Vector(currentVelocity.getX(), currentVelocity.getY() + vPowerUp, currentVelocity.getZ()));
         runPeriodicCloudEffects(player, stopJumpDelayTicks);
@@ -128,11 +115,13 @@ public class SkillDragonSmash extends ActiveSkill implements Listener {
             public void run() {
                 // Only negate velocity (to stop jump and hence should start falling) and protect from the fall?
                 if (!hero.hasEffect(droppingDragonSmashEffectName)) {
-                    //hero.removeEffect(hero.getEffect(launchedToggleableDragonSmashEffectName));
+                    // seems to protect from fall damage, since damage would be based off this?
+                    // Edit: This does not protect from fall, though wish it worked like that
+                    player.setFallDistance(-512F);
 
-                    // negate previous jump velocity (should free fall now right?
-                    player.setVelocity(new Vector(0, 0, 0));
-                    player.setFallDistance(-512); // seems to protect from fall damage, since damage would be based off this?
+                    // negate previous jump velocity, will free fall now
+                    final Vector v = player.getVelocity();
+                    player.setVelocity(new Vector(v.getX(), 0, v.getZ()));
                 }
             }
         }, stopJumpDelayTicks);
@@ -182,10 +171,11 @@ public class SkillDragonSmash extends ActiveSkill implements Listener {
         }
 
         final double vPowerDown = SkillConfigManager.getUseSettingDouble(hero, this, "downwards-velocity", false);
-        player.sendMessage("Doing drop!");//fixme remove debug
 
-        player.setFallDistance(-512); // seems to protect from fall damage, since damage would be based off this?
-        //TODO probably consider using current x and z from velocity
+        // seems to protect from fall damage, since damage would be based off this?
+        // Edit: This does not protect from fall, though wish it worked like that
+        player.setFallDistance(-512F);
+
         final Vector v = player.getVelocity();
         player.setVelocity(new Vector(v.getX(), -vPowerDown, v.getZ())); // drop with speed
         hero.addEffect(new DroppingDragonSmashEffect(this, player));
@@ -199,13 +189,11 @@ public class SkillDragonSmash extends ActiveSkill implements Listener {
     private class DragonSmashUpdateTask implements Runnable {
         private final Hero hero;
         private final BukkitScheduler scheduler;
-        private final double topYValue;
         private int taskId;
 
         DragonSmashUpdateTask(BukkitScheduler scheduler, Hero hero) {
             this.scheduler = scheduler;
             this.hero = hero;
-            this.topYValue = hero.getPlayer().getLocation().getY();
         }
 
         public void setTaskId(int id) {
@@ -224,7 +212,7 @@ public class SkillDragonSmash extends ActiveSkill implements Listener {
                     if (dead) {
                         hero.removeEffect(hero.getEffect(droppingDragonSmashEffectName));
                     } else {
-                        smash(hero, topYValue);
+                        smash(hero);
                     }
                 } else {
                     Heroes.log(Level.WARNING, "SkillDragonSmash: Bad Coder alert! Somebody is not cancelling a bukkit task properly. This is gonna cause some big lag eventually.");
@@ -233,26 +221,17 @@ public class SkillDragonSmash extends ActiveSkill implements Listener {
         }
     }
 
-    private void smash(final Hero hero, double topYValue) {
+    private void smash(final Hero hero) {
         final Player player = hero.getPlayer();
         final Location loc = player.getLocation().getBlock().getLocation().clone(); // We want the block loc, not the actual player loc.
         final SkillDragonSmash skill = this;
 
-        final double baseDamage = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE, 80.0, false);
-        final double damagePerBlockHeight = SkillConfigManager.getUseSetting(hero, this, "damage-per-block-height", 10.0, false);
-        final double maxDamageGain = SkillConfigManager.getUseSetting(hero, this, "maximum-total-damage-increase-for-block", 80.0, false);
-        final double hPower = SkillConfigManager.getUseSetting(hero, this, "target-horizontal-knockback", 0.5, false);
-        final double vPower = SkillConfigManager.getUseSetting(hero, this, "target-vertical-knockback", 0.5, false);
-        final double radius = SkillConfigManager.getUseSetting(hero, this, SkillSetting.RADIUS, 5.0, false);
+        final double damage = SkillConfigManager.getUseSettingDouble(hero, this, SkillSetting.DAMAGE, false);
+        final double hPower = SkillConfigManager.getUseSettingDouble(hero, this, "target-horizontal-knockback", false);
+        final double vPower = SkillConfigManager.getUseSettingDouble(hero, this, "target-vertical-knockback", false);
+        final double radius = SkillConfigManager.getUseSettingDouble(hero, this, SkillSetting.RADIUS, false);
 
         Location playerLoc = player.getLocation();
-        int yDistance = (int) (topYValue - loc.getY());
-
-        double damageGain = yDistance * damagePerBlockHeight;
-        if (damageGain > maxDamageGain)
-            damageGain = maxDamageGain;
-
-        final double damage = baseDamage + damageGain;
 
         List<Entity> entities = player.getNearbyEntities(radius, radius, radius);
         for (Entity entity : entities) {
@@ -278,7 +257,7 @@ public class SkillDragonSmash extends ActiveSkill implements Listener {
             target.setVelocity(velocity);
         }
 
-        final World world = loc.getWorld();
+        final World world = player.getWorld();
         world.playSound(loc, Sound.ENTITY_GENERIC_HURT, 1f, 1f);
         new BukkitRunnable() {
             int i = 1;
