@@ -82,6 +82,10 @@
             <name>Lumine Releases</name>
             <url>https://mvn.lumine.io/repository/maven-public/</url>
         </repository>
+        <repository>
+            <id>jitpack.io</id>
+            <url>https://jitpack.io</url>
+        </repository>
         <!-- The following are useful for builds when the jar hasn't yet been added to the nexus (above) -->
         <repository>
             <id>spigot-codemc-repo</id>
@@ -176,7 +180,11 @@
             <version>3.16.1-SNAPSHOT</version>
             <scope>provided</scope>
         </dependency>
-
+        <dependency>
+            <groupId>com.github.Xezard</groupId>
+            <artifactId>XGlow</artifactId>
+            <version>1.0.5</version>
+        </dependency>
     </dependencies>
 
     <ciManagement>
