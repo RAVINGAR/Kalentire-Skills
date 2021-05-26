@@ -47,6 +47,8 @@ public class SkillSerratedArrows extends PassiveSkill {
         ConfigurationSection config = super.getDefaultConfig();
         config.set(SkillSetting.DURATION.node(), 5000);
         config.set(SkillSetting.DAMAGE.node(), 95);
+        config.set(SkillSetting.APPLY_TEXT.node(), "");
+        config.set(SkillSetting.UNAPPLY_TEXT.node(), "");
         return config;
     }
 
