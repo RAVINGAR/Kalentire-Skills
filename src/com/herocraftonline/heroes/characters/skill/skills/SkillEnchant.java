@@ -10,7 +10,6 @@ import org.bukkit.Bukkit;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.Player;
-import org.bukkit.Sound;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
@@ -128,7 +127,7 @@ public class SkillEnchant extends PassiveSkill {
                 event.setCancelled(true);
                 return;
             }
-            event.setExpLevelCost(0);
+            event.setExpLevelCost(1);
             ItemStack reagent = getReagentCost(hero);
             if (!hasReagentCost(player, reagent)) {
                 player.sendMessage("You need " + reagent.getAmount() + " " + reagent.getType().name().toLowerCase().replace("_", " ") + " to enchant an item!");
