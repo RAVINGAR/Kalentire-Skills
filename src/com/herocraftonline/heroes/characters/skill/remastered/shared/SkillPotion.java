@@ -1,4 +1,4 @@
-package com.herocraftonline.heroes.characters.skill.public1;
+package com.herocraftonline.heroes.characters.skill.remastered.shared;
 
 import com.herocraftonline.heroes.Heroes;
 import com.herocraftonline.heroes.characters.CharacterTemplate;
