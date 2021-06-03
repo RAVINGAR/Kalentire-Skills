@@ -377,12 +377,19 @@ public class SkillPotion extends PassiveSkill {
 
             // ThrownPotion only includes Splash and Lingering, as of 1.9.
             // Checking Lingering is arbitrary, could check splash instead, but assume the other since there's just two.
-            if (!canUsePotion(player, effects, thrownPotion instanceof LingeringPotion ? 2 : 1)) {
+            //if (!canUsePotion(player, effects, thrownPotion instanceof LingeringPotion ? 2 : 1)) { // previous code
+            if (!canUsePotion(player, effects, potionItem.getType() == Material.LINGERING_POTION ? 2 : 1)) {
                 event.setCancelled(true);
 
+                // User reported duplicating splash potion when on cooldown, so the item probably isn't consumed
+                // when the event is cancelled. Hence the below code is commented out.
+                // Update: Yep confirmed the above is true, the item isn't consumed when it isn't allowed (event is cancelled).
+                // Hence this code is just duplicating potions. Left code purely for reference of this issue, and so
+                // someone doesn't try recreating it. ~ MysticMight
+                //
                 // In Creative, potions aren't consumed on use, so this just spams potion drops
-                if (player.getGameMode() != GameMode.CREATIVE)
-                    player.getWorld().dropItem(player.getLocation(), potionItem);
+//                if (player.getGameMode() != GameMode.CREATIVE)
+//                    player.getWorld().dropItem(player.getLocation(), potionItem);
             }
         }
 

@@ -7,11 +7,12 @@ import com.herocraftonline.heroes.characters.skill.*;
 import com.herocraftonline.heroes.nms.NMSHandler;
 import com.herocraftonline.heroes.util.Util;
 import org.bukkit.Bukkit;
-import org.bukkit.GameMode;
 import org.bukkit.Material;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.*;
-import org.bukkit.event.*;
+import org.bukkit.event.EventHandler;
+import org.bukkit.event.EventPriority;
+import org.bukkit.event.Listener;
 import org.bukkit.event.entity.AreaEffectCloudApplyEvent;
 import org.bukkit.event.entity.EntityRegainHealthEvent;
 import org.bukkit.event.entity.PotionSplashEvent;
@@ -20,11 +21,17 @@ import org.bukkit.event.player.PlayerItemConsumeEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.PlayerInventory;
 import org.bukkit.inventory.meta.PotionMeta;
-import org.bukkit.potion.*;
+import org.bukkit.potion.PotionData;
+import org.bukkit.potion.PotionEffect;
+import org.bukkit.potion.PotionEffectType;
+import org.bukkit.potion.PotionType;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.logging.Level;
 
 public class SkillPotion extends PassiveSkill {
@@ -369,12 +376,19 @@ public class SkillPotion extends PassiveSkill {
 
             // ThrownPotion only includes Splash and Lingering, as of 1.9.
             // Checking Lingering is arbitrary, could check splash instead, but assume the other since there's just two.
-            if (!canUsePotion(player, effects, thrownPotion instanceof LingeringPotion ? 2 : 1)) {
+            //if (!canUsePotion(player, effects, thrownPotion instanceof LingeringPotion ? 2 : 1)) { // previous code
+            if (!canUsePotion(player, effects, potionItem.getType() == Material.LINGERING_POTION ? 2 : 1)) {
                 event.setCancelled(true);
 
+                // User reported duplicating splash potion when on cooldown, so the item probably isn't consumed
+                // when the event is cancelled. Hence the below code is commented out.
+                // Update: Yep confirmed the above is true, the item isn't consumed when it isn't allowed (event is cancelled).
+                // Hence this code is just duplicating potions. Left code purely for reference of this issue, and so
+                // someone doesn't try recreating it. ~ MysticMight
+                //
                 // In Creative, potions aren't consumed on use, so this just spams potion drops
-                if (player.getGameMode() != GameMode.CREATIVE)
-                    player.getWorld().dropItem(player.getLocation(), potionItem);
+//                if (player.getGameMode() != GameMode.CREATIVE)
+//                    player.getWorld().dropItem(player.getLocation(), potionItem);
             }
         }
 
