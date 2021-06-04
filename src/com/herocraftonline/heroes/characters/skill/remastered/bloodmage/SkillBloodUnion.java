@@ -8,6 +8,7 @@ import com.herocraftonline.heroes.characters.skill.PassiveSkill;
 import com.herocraftonline.heroes.characters.skill.Skill;
 import com.herocraftonline.heroes.characters.skill.SkillConfigManager;
 import com.herocraftonline.heroes.characters.skill.SkillSetting;
+import com.herocraftonline.heroes.util.Util;
 import org.bukkit.Bukkit;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.event.EventHandler;
@@ -19,7 +20,10 @@ public class SkillBloodUnion extends PassiveSkill {
 
     public SkillBloodUnion(Heroes plugin) {
         super(plugin, "BloodUnion");
-        setDescription("Your damaging abilities form a Blood Union with your opponents. Blood Union allows you to use certain abilities, and also increases the effectiveness of others. Maximum Blood Union is $1. BloodUnion resets upon switching from monsters to players, and will expire completely if not increased after $2 second(s).");
+        setDescription("Your damaging abilities form a Blood Union with your opponents. Blood Union allows you to use " +
+                "certain abilities, and also increases the effectiveness of others. Maximum Blood Union is $1. " +
+                "BloodUnion resets upon switching from monsters to players, and will expire completely if not " +
+                "increased after $2 second(s).");
 
         Bukkit.getPluginManager().registerEvents(new BloodUnionListener(this), plugin);
     }
@@ -36,10 +40,12 @@ public class SkillBloodUnion extends PassiveSkill {
 
     @Override
     public String getDescription(Hero hero) {
-        double period = SkillConfigManager.getUseSetting(hero, this, SkillSetting.PERIOD, 25000, false) / 1000.0;
+        double period = SkillConfigManager.getUseSetting(hero, this, SkillSetting.PERIOD, 25000, false);
         int maxBloodUnion = SkillConfigManager.getUseSetting(hero, this, "max-blood-union", 4, false);
 
-        return getDescription().replace("$1", maxBloodUnion + "").replace("$2", period + "");
+        return getDescription()
+                .replace("$1", maxBloodUnion + "")
+                .replace("$2", Util.decFormat.format(period / 1000.0));
     }
 
     private class BloodUnionListener implements Listener {
@@ -47,7 +53,6 @@ public class SkillBloodUnion extends PassiveSkill {
 
         public BloodUnionListener(Skill skill) {
             this.skill = skill;
-
         }
 
         @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
@@ -56,15 +61,14 @@ public class SkillBloodUnion extends PassiveSkill {
 
             if (hero.canUseSkill(skill)) {
                 addBloodUnionEffect(hero);
-            }
-            else {
+            } else {
                 removeBloodUnionEffect(hero);
             }
         }
     }
 
     public void addBloodUnionEffect(Hero hero) {
-        if (!(hero.hasEffect(bloodUnionEffectName))) {
+        if (!hero.hasEffect(bloodUnionEffectName)) {
             int bloodUnionResetPeriod = SkillConfigManager.getUseSetting(hero, this, SkillSetting.PERIOD, 25000, false);
             int maxBloodUnion = SkillConfigManager.getUseSetting(hero, this, "max-blood-union", 4, false);
             hero.addEffect(new BloodUnionEffect(this, bloodUnionResetPeriod, maxBloodUnion));

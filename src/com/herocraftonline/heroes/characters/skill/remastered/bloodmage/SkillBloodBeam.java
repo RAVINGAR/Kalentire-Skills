@@ -2,8 +2,9 @@ package com.herocraftonline.heroes.characters.skill.remastered.bloodmage;
 
 import com.herocraftonline.heroes.Heroes;
 import com.herocraftonline.heroes.api.SkillResult;
-import com.herocraftonline.heroes.attributes.AttributeType;
 import com.herocraftonline.heroes.characters.Hero;
+import com.herocraftonline.heroes.characters.effects.BloodUnionEffect;
+import com.herocraftonline.heroes.characters.skill.Skill;
 import com.herocraftonline.heroes.characters.skill.SkillConfigManager;
 import com.herocraftonline.heroes.characters.skill.SkillSetting;
 import com.herocraftonline.heroes.characters.skill.skills.SkillBaseBeam;
@@ -29,34 +30,30 @@ public class SkillBloodBeam extends SkillBaseBeam {
 		setUsage("/skill bloodbeam");
 		setArgumentRange(0, 0);
 		setIdentifiers("skill bloodbeam");
-		setTypes(ABILITY_PROPERTY_MAGICAL, DAMAGING, MULTI_GRESSIVE, AREA_OF_EFFECT, NO_SELF_TARGETTING, UNINTERRUPTIBLE, SILENCEABLE, ABILITY_PROPERTY_PROJECTILE, ABILITY_PROPERTY_BLEED);
+		setTypes(ABILITY_PROPERTY_MAGICAL, DAMAGING, MULTI_GRESSIVE, AREA_OF_EFFECT, NO_SELF_TARGETTING, UNINTERRUPTIBLE,
+				SILENCEABLE, ABILITY_PROPERTY_PROJECTILE, ABILITY_PROPERTY_BLEED);
 	}
 
 	@Override
 	public String getDescription(Hero hero) {
-		double beamDamage = SkillConfigManager.getUseSetting(hero, SkillBloodBeam.this, SkillSetting.DAMAGE, 150d, false);
-		double beamDamageIncrease = SkillConfigManager.getUseSetting(hero, SkillBloodBeam.this, SkillSetting.DAMAGE_INCREASE_PER_INTELLECT, 5d, false);
-		beamDamage += hero.getAttributeValue(AttributeType.INTELLECT) * beamDamageIncrease;
-
-		return getDescription()
-				.replace("$1", Util.decFormat.format(beamDamage));
+		double beamDamage = SkillConfigManager.getScaledUseSettingDouble(hero, this, SkillSetting.DAMAGE, false);
+		return getDescription().replace("$1", Util.decFormat.format(beamDamage));
 	}
 
 	@Override
 	public ConfigurationSection getDefaultConfig() {
-		ConfigurationSection node = super.getDefaultConfig();
+		ConfigurationSection config = super.getDefaultConfig();
+		config.set(BEAM_MAX_LENGTH_NODE, 15);
+		config.set(BEAM_RADIUS_NODE, 2d);
 
-		node.set(BEAM_MAX_LENGTH_NODE, 15);
-		node.set(BEAM_RADIUS_NODE, 2d);
-
-		node.set(SkillSetting.DAMAGE.node(), 150d);
-		node.set(SkillSetting.DAMAGE_INCREASE_PER_INTELLECT.node(), 1d);
-
-		return node;
+		config.set(SkillSetting.DAMAGE.node(), 150d);
+		config.set(SkillSetting.DAMAGE_INCREASE_PER_INTELLECT.node(), 1d);
+		config.set("blood-union-increase", 1);
+		return config;
 	}
 
 	@Override
-	public SkillResult use(Hero hero, String[] strings) {
+	public SkillResult use(Hero hero, String[] args) {
 		final Player player = hero.getPlayer();
 	//public SkillResult use(Hero hero, LivingEntity target, String[] args) {
 
@@ -65,16 +62,29 @@ public class SkillBloodBeam extends SkillBaseBeam {
 		final Beam beam = createObstructedBeam(player.getEyeLocation(), beamMaxLength, beamRadius);
 
 		broadcastExecuteText(hero);
+		final Skill skill = SkillBloodBeam.this;
 
 		castBeam(hero, beam, new TargetHandler() {
+			private boolean alreadyIncreasedBloodUnion = false;
+
 			@Override
 			public void handle(Hero hero, LivingEntity target, Beam.PointData pointData) {
 				if (damageCheck(hero.getPlayer(), target)) {
-					double beamDamage = SkillConfigManager.getUseSetting(hero, SkillBloodBeam.this, SkillSetting.DAMAGE, 150d, false);
-					double beamDamageIncrease = SkillConfigManager.getUseSetting(hero, SkillBloodBeam.this, SkillSetting.DAMAGE_INCREASE_PER_INTELLECT, 1d, false);
-					beamDamage += hero.getAttributeValue(AttributeType.INTELLECT) * beamDamageIncrease;
-
+					double beamDamage = SkillConfigManager.getScaledUseSettingDouble(hero, skill, SkillSetting.DAMAGE, false);
 					damageEntity(target, hero.getPlayer(), beamDamage, EntityDamageEvent.DamageCause.MAGIC, false);
+
+					// Just increase union only once (for the first target only)
+					if (!alreadyIncreasedBloodUnion) {
+						alreadyIncreasedBloodUnion = true;
+
+						// Increase Blood Union
+						if (hero.hasEffect("BloodUnionEffect")) {
+							int bloodUnionIncrease = SkillConfigManager.getUseSetting(hero, skill, "blood-union-increase", 1, false);
+							BloodUnionEffect buEffect = (BloodUnionEffect) hero.getEffect("BloodUnionEffect");
+							assert buEffect != null;
+							buEffect.addBloodUnion(bloodUnionIncrease, target instanceof Player);
+						}
+					}
 				}
 			}
 		});
@@ -82,15 +92,13 @@ public class SkillBloodBeam extends SkillBaseBeam {
 		renderEyeBeam(player, beam, BEAM_PARTICLE, Color.RED, 60, 10, 40, 0.125, 1);
 
 		new BukkitRunnable() {
-
 			private float volume = 0.25f;
 
 			@Override
 			public void run() {
 				if ((volume -= 0.025f) <= 0) {
 					cancel();
-				}
-				else {
+				} else {
 					player.getWorld().playSound(player.getEyeLocation(), Sound.BLOCK_LAVA_POP, volume, 0.5f);
 					player.getWorld().playSound(player.getEyeLocation().add(beam.getTrajectory()), Sound.BLOCK_LAVA_POP, volume, 0.5f);
 					player.getWorld().playSound(beam.midPoint().toLocation(player.getWorld()), Sound.BLOCK_LAVA_POP, volume, 0.5f);
@@ -98,14 +106,6 @@ public class SkillBloodBeam extends SkillBaseBeam {
 			}
 		}.runTaskTimer(plugin, 0, 1);
 
-		/* Increase Blood Union
-		if (hero.hasEffect("BloodUnionEffect")) {
-			int bloodUnionIncrease = SkillConfigManager.getUseSetting(hero, this, "blood-union-increase", 1, false);
-			BloodUnionEffect buEffect = (BloodUnionEffect) hero.getEffect("BloodUnionEffect");
-			assert buEffect != null;
-			buEffect.addBloodUnion(bloodUnionIncrease, true);
-		}
- 		*/
 		return SkillResult.NORMAL;
 	}
 }

@@ -24,68 +24,61 @@ public class SkillSiphonBlood extends TargettedSkill {
 
     public SkillSiphonBlood(Heroes plugin) {
         super(plugin, "SiphonBlood");
-        setDescription("Siphon blood from your target, dealing $1 dark damage and restoring your health for $2% of the damage dealt. Life stolen is increased by $3% per level of Blood Union. Increases Blood Union by $4.");
+        setDescription("Siphon blood from your target, dealing $1 dark damage and restoring your health for $2% of " +
+                "the damage dealt. Life stolen is increased by $3% per level of Blood Union. Increases Blood Union by $4.");
         setUsage("/skill siphonblood");
         setArgumentRange(0, 0);
         setIdentifiers("skill siphonblood");
-        setTypes(SkillType.ABILITY_PROPERTY_MAGICAL, SkillType.DAMAGING, SkillType.SILENCEABLE, SkillType.AGGRESSIVE, SkillType.ABILITY_PROPERTY_DARK);
+        setTypes(SkillType.ABILITY_PROPERTY_MAGICAL, SkillType.DAMAGING, SkillType.SILENCEABLE, SkillType.AGGRESSIVE,
+                SkillType.ABILITY_PROPERTY_DARK);
     }
 
     @Override
     public String getDescription(Hero hero) {
-
         // Damage stuff
-        double damage = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE, 80, false);
-        double damageIncrease = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE_INCREASE_PER_INTELLECT, 1.0, false);
-        damage += damageIncrease * hero.getAttributeValue(AttributeType.INTELLECT);
+        double damage = SkillConfigManager.getScaledUseSettingDouble(hero, this, SkillSetting.DAMAGE, false);
 
         // Heal mult stuff
-        double healMult = SkillConfigManager.getUseSetting(hero, this, "heal-mult", 1.1, false);
-        double healMultIncrease = SkillConfigManager.getUseSetting(hero, this, "blood-union-heal-mult-increase", 0.04, false);
+        double healMult = SkillConfigManager.getUseSettingDouble(hero, this, "heal-mult", false);
+        double healMultIncrease = SkillConfigManager.getUseSettingDouble(hero, this, "blood-union-heal-mult-increase", false);
 
         int bloodUnionIncrease = SkillConfigManager.getUseSetting(hero, this, "blood-union-increase", 1, false);
-
-        String formattedDamage = Util.decFormat.format(damage);
-        String formattedHealMult = Util.decFormat.format(healMult * 100);
-        String formattedHealMultIncrease = Util.decFormat.format(healMultIncrease * 100);
-
-        return getDescription().replace("$1", formattedDamage).replace("$2", formattedHealMult).replace("$3", formattedHealMultIncrease).replace("$4", bloodUnionIncrease + "");
+        return getDescription()
+                .replace("$1", Util.decFormat.format(damage))
+                .replace("$2", Util.decFormat.format(healMult * 100))
+                .replace("$3", Util.decFormat.format(healMultIncrease * 100))
+                .replace("$4", bloodUnionIncrease + "");
     }
 
     @Override
     public ConfigurationSection getDefaultConfig() {
-        ConfigurationSection node = super.getDefaultConfig();
+        ConfigurationSection config = super.getDefaultConfig();
 
-        node.set(SkillSetting.MAX_DISTANCE.node(), 8);
-        node.set(SkillSetting.MAX_DISTANCE_INCREASE_PER_INTELLECT.node(), 0.1);
-        node.set(SkillSetting.DAMAGE.node(), 80);
-        node.set(SkillSetting.DAMAGE_INCREASE_PER_INTELLECT.node(), 1.0);
-        node.set("heal-mult", 1.1);
-        node.set("blood-union-heal-mult-increase", 0.06);
-        node.set("blood-union-increase", 1);
+        config.set(SkillSetting.MAX_DISTANCE.node(), 8);
+        config.set(SkillSetting.MAX_DISTANCE_INCREASE_PER_INTELLECT.node(), 0.1);
+        config.set(SkillSetting.DAMAGE.node(), 80);
+        config.set(SkillSetting.DAMAGE_INCREASE_PER_INTELLECT.node(), 1.0);
+        config.set("heal-mult", 1.1);
+        config.set("blood-union-heal-mult-increase", 0.06);
+        config.set("blood-union-increase", 1);
 
-        return node;
+        return config;
     }
 
     @Override
     public SkillResult use(Hero hero, LivingEntity target, String[] args) {
-
         Player player = hero.getPlayer();
 
         broadcastExecuteText(hero, target);
 
-        // Calculate damage
-        double damage = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE, 98, false);
-        double damageIncrease = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE_INCREASE_PER_INTELLECT, 1.0, false);
-        damage += damageIncrease * hero.getAttributeValue(AttributeType.INTELLECT);
-
-        double healMult = SkillConfigManager.getUseSetting(hero, this, "heal-mult", 1.1, false);
+        double damage = SkillConfigManager.getScaledUseSettingDouble(hero, this, SkillSetting.DAMAGE, false);
+        double healMult = SkillConfigManager.getUseSettingDouble(hero, this, "heal-mult", false);
 
         // Get Blood Union Level
         int bloodUnionLevel = 0;
         if (hero.hasEffect("BloodUnionEffect")) {
             BloodUnionEffect buEffect = (BloodUnionEffect) hero.getEffect("BloodUnionEffect");
-
+            assert buEffect != null;
             bloodUnionLevel = buEffect.getBloodUnionLevel();
         }
 
@@ -94,12 +87,10 @@ public class SkillSiphonBlood extends TargettedSkill {
         damageEntity(target, player, damage, DamageCause.MAGIC);
 
         // Increase health multiplier by blood union level
-        double healIncrease = SkillConfigManager.getUseSetting(hero, this, "blood-union-heal-mult-increase", 0.05, false);
-        healIncrease *= bloodUnionLevel;
-        healMult += healIncrease;
+        double healIncrease = SkillConfigManager.getUseSettingDouble(hero, this, "blood-union-heal-mult-increase", false);
+        healMult += healIncrease * bloodUnionLevel;
 
         HeroRegainHealthEvent hrEvent = new HeroRegainHealthEvent(hero, damage * healMult, this, hero);
-
         plugin.getServer().getPluginManager().callEvent(hrEvent);
         if (!hrEvent.isCancelled()) {
             hero.heal(hrEvent.getDelta());
@@ -109,11 +100,8 @@ public class SkillSiphonBlood extends TargettedSkill {
         if (hero.hasEffect("BloodUnionEffect")) {
             int bloodUnionIncrease = SkillConfigManager.getUseSetting(hero, this, "blood-union-increase", 1, false);
             BloodUnionEffect buEffect = (BloodUnionEffect) hero.getEffect("BloodUnionEffect");
-
-            if (target instanceof Player)
-                buEffect.addBloodUnion(bloodUnionIncrease, true);
-            else
-                buEffect.addBloodUnion(bloodUnionIncrease, false);
+            assert buEffect != null;
+            buEffect.addBloodUnion(bloodUnionIncrease, target instanceof Player);
         }
         
         //player.getWorld().spigot().playEffect(target.getEyeLocation(), Effect.LAVADRIP, 0, 0, 0.3F, 0.3F, 0.3F, 0.1F, 50, 16);
