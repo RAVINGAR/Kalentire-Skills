@@ -67,9 +67,9 @@ public class SkillBloodUnion extends PassiveSkill {
     }
 
     private class BloodUnionListener implements Listener {
-        private Skill skill;
+        private PassiveSkill skill;
 
-        public BloodUnionListener(Skill skill) {
+        public BloodUnionListener(PassiveSkill skill) {
             this.skill = skill;
         }
 
@@ -77,7 +77,7 @@ public class SkillBloodUnion extends PassiveSkill {
         public void onSkillUse(SkillUseEvent event) {
             Hero hero = event.getHero();
 
-            if (hero.canUseSkill(skill)) {
+            if (skill.hasPassive(hero)) {
                 addBloodUnionEffect(hero);
             } else {
                 removeBloodUnionEffect(hero);
@@ -91,7 +91,7 @@ public class SkillBloodUnion extends PassiveSkill {
 
             // Make sure the hero has this skill
             Hero hero = plugin.getCharacterManager().getHero((Player) event.getDamager());
-            if (hero.canUseSkill(skill)) {
+            if (skill.hasPassive(hero)) {
                 healHeroParty(hero, event.getDamage());
             }
         }

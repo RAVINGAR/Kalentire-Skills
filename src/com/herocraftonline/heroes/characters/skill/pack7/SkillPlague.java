@@ -172,14 +172,15 @@ public class SkillPlague extends TargettedSkill {
             if (jumped) {
                 return;
             }
-            Hero applyHero = plugin.getCharacterManager().getHero(getApplier());
+            final Player applier = getApplier();
+            Hero applyHero = plugin.getCharacterManager().getHero(applier);
             int radius = SkillConfigManager.getUseSetting(applyHero, skill, SkillSetting.RADIUS.node(), 4, false);
             for (Entity target : lEntity.getNearbyEntities(radius, radius, radius)) {
                 if (!(target instanceof LivingEntity)) {
                     continue;
                 }
 
-                if (!damageCheck(getApplier(), (LivingEntity) target)) {
+                if (!applier.getWorld().equals(target.getWorld()) || !damageCheck(applier, (LivingEntity) target)) {
                     continue;
                 }
 
