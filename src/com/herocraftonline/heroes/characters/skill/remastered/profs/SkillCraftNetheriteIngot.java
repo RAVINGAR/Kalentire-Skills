@@ -4,6 +4,7 @@ import com.herocraftonline.heroes.Heroes;
 import com.herocraftonline.heroes.characters.Hero;
 import com.herocraftonline.heroes.characters.effects.EffectType;
 import com.herocraftonline.heroes.characters.skill.PassiveSkill;
+import com.herocraftonline.heroes.characters.skill.SkillConfigManager;
 import com.herocraftonline.heroes.characters.skill.SkillSetting;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -14,7 +15,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
-import org.bukkit.event.inventory.PrepareSmithingEvent;
+import org.bukkit.event.inventory.PrepareItemCraftEvent;
 import org.bukkit.inventory.ItemStack;
 
 /**
@@ -53,8 +54,8 @@ public class SkillCraftNetheriteIngot extends PassiveSkill {
 
         // Note Using the prepare event allows no result to appear when attempting to craft
         @EventHandler(priority = EventPriority.NORMAL, ignoreCancelled = true)
-        public void onPrepareUpgradingItem(PrepareSmithingEvent event) {
-            final ItemStack result = event.getResult();
+        public void onPrepareUpgradingItem(PrepareItemCraftEvent event) {
+            final ItemStack result = event.getInventory().getResult();
             if (result == null || result.getType() != Material.NETHERITE_INGOT)
                 return; // Skip handled smithing or not netherite ingots
 
@@ -68,10 +69,14 @@ public class SkillCraftNetheriteIngot extends PassiveSkill {
                         hero.getPlayer().sendMessage(ChatColor.RED + "You must be a Blacksmith to create Netherite Ingots!");
                     } else {
                         // Could have access to the skill (has right class), but doesn't meet level requirements
-                        int level = hero.getHeroLevel(skill);
+                        int level = SkillConfigManager.getLevel(hero, skill, -1);
                         hero.getPlayer().sendMessage(ChatColor.RED + "You must be a level " + level + " Blacksmith to create Netherite Ingots!");
                     }
-                    event.setResult(null); // effectively 'cancel' crafting (doesn't close inventory though), showing it like its not a valid recipe
+                    event.getInventory().setResult(null); // effectively 'cancel' crafting (doesn't close inventory though), showing it like its not a valid recipe
+
+                    // Hopefully this wont cause issues for other plugins that may be using 'event.getRecipe().getResult()'
+                    // which is supposed to be non-null. If this becomes a issue we can try going with a itemstack of
+                    // Material.Air instead. It's not like this currently because I'm not sure on the difference
                 }
             }
         }

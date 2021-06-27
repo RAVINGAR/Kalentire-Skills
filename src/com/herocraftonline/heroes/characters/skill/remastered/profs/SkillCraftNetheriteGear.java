@@ -102,11 +102,31 @@ public class SkillCraftNetheriteGear extends PassiveSkill {
 
                 // Don't allow crafting to players that don't have the level required for it
                 if (level <= 0 || level < levelRequired) {
-                    hero.getPlayer().sendMessage(ChatColor.RED + "You must be level " + level + " to create "
+                    hero.getPlayer().sendMessage(ChatColor.RED + "You must be level " + levelRequired + " to create "
                             + MaterialUtil.getFriendlyName(resultType) + "!");
                     event.setResult(null);
                 }
             }
         }
     }
+//
+//    public HeroClass getClassWithSkill(Hero hero, Skill skill) {
+//        HeroClass heroClass = null;
+//
+//        HeroClass prim = hero.getHeroClass();
+//        HeroClass sec = hero.getSecondaryClass();
+//        HeroClass race = hero.getRaceClass();
+//        if (prim.hasSkill(skill.getName())){
+//            heroClass = prim;
+//        }
+//
+//        if (sec.hasSkill(skill.getName())){
+//            heroClass = sec;
+//        }
+//
+//        if (race.hasSkill(skill.getName())){
+//            heroClass = race;
+//        }
+//        return heroClass;
+//    }
 }
