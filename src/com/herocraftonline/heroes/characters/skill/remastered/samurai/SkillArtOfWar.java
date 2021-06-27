@@ -265,12 +265,18 @@ public class SkillArtOfWar extends ActiveSkill {
             super.apply(character);
 
 //            if (glowApiLoaded) {
-//                final Glow glow = Glow.builder()
-//                        .animatedColor(ChatColor.WHITE)
-//                        .name("ArtOfWarTargetGlow")
-//                        .build();
-//                glow.addHolders(character.getEntity()); // apply glow to target
-//                glow.display(applier); // set applier as a viewer
+//                // Apparently scheduling as sync doesn't work either.. :(
+//                Bukkit.getScheduler().runTaskLater(plugin, new Runnable() {
+//                    @Override
+//                    public void run() {
+//                        final Glow glow = Glow.builder()
+//                                .animatedColor(ChatColor.WHITE)
+//                                .name("ArtOfWarTargetGlow")
+//                                .build();
+//                        glow.addHolders(character.getEntity()); // apply glow to target
+//                        glow.display(applier); // set applier as a viewer
+//                    }
+//                }, 0L);
 //            }
         }
 
@@ -279,9 +285,14 @@ public class SkillArtOfWar extends ActiveSkill {
             super.remove(character);
 
 //            if (glowApiLoaded) {
-//                final Optional<IGlow> glowFromEntity = GlowsManager.getInstance().getGlowByEntity(character.getEntity());
-//                // if has glow, lets turn it off
-//                glowFromEntity.ifPresent(IGlow::destroy);
+//                Bukkit.getScheduler().runTaskLater(plugin, new Runnable() {
+//                    @Override
+//                    public void run() {
+//                        final Optional<IGlow> glowFromEntity = GlowsManager.getInstance().getGlowByEntity(character.getEntity());
+//                        // if has glow, lets turn it off
+//                        glowFromEntity.ifPresent(IGlow::destroy);
+//                    }
+//                }, 0L);
 //            }
         }
     }
