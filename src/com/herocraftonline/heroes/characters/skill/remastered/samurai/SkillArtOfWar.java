@@ -1,7 +1,6 @@
 package com.herocraftonline.heroes.characters.skill.remastered.samurai;
 
 import com.herocraftonline.heroes.Heroes;
-import com.herocraftonline.heroes.api.SkillResult;
 import com.herocraftonline.heroes.api.events.WeaponDamageEvent;
 import com.herocraftonline.heroes.characters.CharacterTemplate;
 import com.herocraftonline.heroes.characters.CustomNameManager;
@@ -9,7 +8,7 @@ import com.herocraftonline.heroes.characters.Hero;
 import com.herocraftonline.heroes.characters.effects.EffectType;
 import com.herocraftonline.heroes.characters.effects.ExpirableEffect;
 import com.herocraftonline.heroes.characters.effects.PeriodicEffect;
-import com.herocraftonline.heroes.characters.skill.ActiveSkill;
+import com.herocraftonline.heroes.characters.skill.PassiveSkill;
 import com.herocraftonline.heroes.characters.skill.Skill;
 import com.herocraftonline.heroes.characters.skill.SkillConfigManager;
 import com.herocraftonline.heroes.characters.skill.SkillSetting;
@@ -39,7 +38,7 @@ import java.util.logging.Level;
  * Created By MysticMight May 23 2021
  */
 
-public class SkillArtOfWar extends ActiveSkill {
+public class SkillArtOfWar extends PassiveSkill {
 
     private static final String highlightedTargetEffectName = "ArtOfWarHighlightedTarget";
     private boolean glowApiLoaded;
@@ -48,16 +47,14 @@ public class SkillArtOfWar extends ActiveSkill {
     public SkillArtOfWar(Heroes plugin) {
         super(plugin, "ArtOfWar");
         setDescription("Every $1 seconds, randomly mark a target in $2 radius for $3% increased melee damage");
-        setUsage("/skill artofwar");
-        setIdentifiers("skill artofwar");
-        setArgumentRange(0, 0);
         setTypes(SkillType.ABILITY_PROPERTY_PHYSICAL, SkillType.BUFFING, SkillType.AREA_OF_EFFECT);
 
-        if (Bukkit.getServer().getPluginManager().getPlugin("XGlow") != null) {
-            glowApiLoaded = true;
-        } else {
-            Heroes.debugLog(Level.INFO, "Skill ArtOfWar: XGlow API isn't loaded, add it or targets won't glow");
-        }
+        glowApiLoaded = false;
+//        if (Bukkit.getServer().getPluginManager().getPlugin("XGlow") != null) {
+//            glowApiLoaded = true;
+//        } else {
+//            Heroes.debugLog(Level.INFO, "Skill ArtOfWar: XGlow API isn't loaded, add it or targets won't glow");
+//        }
         Bukkit.getServer().getPluginManager().registerEvents(new SkillHeroListener(this), plugin);
     }
 
@@ -77,7 +74,7 @@ public class SkillArtOfWar extends ActiveSkill {
     public ConfigurationSection getDefaultConfig() {
         ConfigurationSection config = super.getDefaultConfig();
         //config.set(SkillSetting.DURATION.node(), 120000);
-        config.set(SkillSetting.PERIOD.node(), 5000);
+        config.set(SkillSetting.PERIOD.node(), 15000);
         config.set("horizontal-radius", 8.0);
         config.set("vertical-radius", 2.0);
         config.set("damage-multiplier", 1.05);
@@ -98,43 +95,20 @@ public class SkillArtOfWar extends ActiveSkill {
     }
 
     @Override
-    public SkillResult use(Hero hero, String[] args) {
-        final Player player = hero.getPlayer();
-
+    public void apply(Hero hero) {
+        // Note we don't want the default passive effect, we're making our own with a custom constructor
         double damageMultiplier = SkillConfigManager.getScaledUseSettingDouble(hero, this, "damage-multiplier", false);
         double hRadius = SkillConfigManager.getUseSettingDouble(hero, this, "horizontal-radius", false);
         double vRadius = SkillConfigManager.getUseSettingDouble(hero, this, "vertical-radius", false);
         long period = SkillConfigManager.getUseSettingInt(hero, this, SkillSetting.PERIOD, false);
         boolean preferencePlayers = SkillConfigManager.getUseSetting(hero, this, "preference-players", false);
-
-        final LivingEntity newTarget = getNewTarget(hero, hRadius, vRadius, preferencePlayers);
-        if (newTarget == null) {
-            player.sendMessage("No valid target in range to test glowing.");
-            return SkillResult.INVALID_TARGET_NO_MSG; // No valid target in range to select, wait till next tick
-        }
-
-        player.sendMessage("    " + newTargetText.replace("%target%", CustomNameManager.getCustomName(newTarget)));
-        CharacterTemplate tCharacter = plugin.getCharacterManager().getCharacter(newTarget);
-        tCharacter.addEffect(new HighlightedTargetEffect(this, player, period, damageMultiplier));
-
-        return SkillResult.NORMAL;
+        hero.addEffect(new ArtOfWarPeriodicPassiveEffect(this, hero.getPlayer(), period, damageMultiplier, hRadius, vRadius, preferencePlayers));
     }
 
-//    @Override
-//    public void apply(Hero hero) {
-//        // Note we don't want the default passive effect, we're making our own with a custom constructor
-//        double damageMultiplier = SkillConfigManager.getScaledUseSettingDouble(hero, this, "damage-multiplier", false);
-//        double hRadius = SkillConfigManager.getUseSettingDouble(hero, this, "horizontal-radius", false);
-//        double vRadius = SkillConfigManager.getUseSettingDouble(hero, this, "vertical-radius", false);
-//        long period = SkillConfigManager.getUseSettingInt(hero, this, SkillSetting.PERIOD, false);
-//        boolean preferencePlayers = SkillConfigManager.getUseSetting(hero, this, "preference-players", false);
-//        hero.addEffect(new ArtOfWarPeriodicPassiveEffect(this, hero.getPlayer(), period, damageMultiplier, hRadius, vRadius, preferencePlayers));
-//    }
-
     public class SkillHeroListener implements Listener {
-        private final Skill skill;
+        private final PassiveSkill skill;
 
-        public SkillHeroListener(Skill skill) {
+        public SkillHeroListener(PassiveSkill skill) {
             this.skill = skill;
         }
 
@@ -145,8 +119,8 @@ public class SkillArtOfWar extends ActiveSkill {
 
             // Check attacked mob was the highlighted target
             LivingEntity entity = (LivingEntity) event.getEntity();
-            final CharacterTemplate tCharacter = plugin.getCharacterManager().getCharacter(entity);
-            if (!tCharacter.hasEffect(highlightedTargetEffectName))
+            final CharacterTemplate character = plugin.getCharacterManager().getCharacter(entity);
+            if (!character.hasEffect(highlightedTargetEffectName))
                 return;
 
             // Check attacker has this passive
@@ -154,9 +128,9 @@ public class SkillArtOfWar extends ActiveSkill {
             if (!attackerHero.hasEffect(skill.getName()))
                 return;
 
-            final HighlightedTargetEffect highlightedTargetEffect = (HighlightedTargetEffect) tCharacter.getEffect(highlightedTargetEffectName);
-            assert highlightedTargetEffect != null;
-            event.setDamage(event.getDamage() * highlightedTargetEffect.getDamageMultiplier());
+            final ArtOfWarPeriodicPassiveEffect passiveEffect = (ArtOfWarPeriodicPassiveEffect) attackerHero.getEffect(skill.getName());
+            assert passiveEffect != null;
+            event.setDamage(event.getDamage() * passiveEffect.getDamageMultiplier());
         }
     }
 

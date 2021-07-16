@@ -21,14 +21,14 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.util.Vector;
 
-public class SkillSpear extends ActiveSkill {
+public class SkillCulling extends ActiveSkill {
 
-    public SkillSpear(Heroes plugin) {
-        super(plugin, "Spear");
+    public SkillCulling(Heroes plugin) {
+        super(plugin, "Culling");
         setDescription("Spear your target, pulling him back towards you and dealing $1 physical damage");
-        setUsage("/skill spear");
+        setUsage("/skill culling");
         setArgumentRange(0, 0);
-        setIdentifiers("skill spear");
+        setIdentifiers("skill culling");
         setTypes(SkillType.ABILITY_PROPERTY_PHYSICAL, SkillType.DAMAGING, SkillType.AGGRESSIVE, SkillType.INTERRUPTING);
     }
 
@@ -51,7 +51,7 @@ public class SkillSpear extends ActiveSkill {
         config.set(BasicMissile.PROJECTILE_GRAVITY_NODE, 2.5);
         config.set(BasicMissile.PROJECTILE_DURATION_TICKS_NODE, 12);
         config.set("vertical-power", 0.4);
-        config.set("horizontal-power-multiplier", 1.5);
+        config.set("horizontal-power-multiplier", 1.0);
         config.set("horizontal-power-increase-per-strength", 0.0);
         config.set("pull-delay-ticks", 4);
         config.set("ncp-exemption-duration", 0);
