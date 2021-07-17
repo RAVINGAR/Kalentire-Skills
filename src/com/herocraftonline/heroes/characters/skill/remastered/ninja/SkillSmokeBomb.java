@@ -78,7 +78,8 @@ public class SkillSmokeBomb extends ActiveSkill {
         long duration = SkillConfigManager.getScaledUseSettingInt(hero, this, SkillSetting.DURATION, false);
         escape(hero, player, duration);
 
-        Util.playClientEffect(player, Particle.EXPLOSION_HUGE.toString(), new Vector(0, 0, 0), 1F, 10, true);
+        //Util.playClientEffect(player, Particle.EXPLOSION_HUGE.toString(), new Vector(0, 0, 0), 1F, 10, true);
+        player.getWorld().spawnParticle(Particle.EXPLOSION_HUGE, player.getEyeLocation(), 10, 0.5, 0.3, 0.5, 1F);
         hero.addEffect(new SmokeEffect(this, player, duration));
 
         return SkillResult.NORMAL;

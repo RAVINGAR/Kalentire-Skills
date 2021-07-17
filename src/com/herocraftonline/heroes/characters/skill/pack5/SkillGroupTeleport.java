@@ -1,5 +1,6 @@
 package com.herocraftonline.heroes.characters.skill.pack5;
 
+import org.bukkit.Particle;
 import org.bukkit.Sound;
 import org.bukkit.entity.Player;
 import org.bukkit.Sound;
@@ -47,8 +48,10 @@ public class SkillGroupTeleport extends ActiveSkill {
                     continue;
                 }
                 
-                Util.playClientEffect(partyPlayer, "enchantmenttable", new Vector(0, 0, 0), 1F, 10, true);
-                Util.playClientEffect(partyPlayer, "largeexplode", new Vector(0, 0, 0), 1F, 10, true);
+                //Util.playClientEffect(partyPlayer, "enchantmenttable", new Vector(0, 0, 0), 1F, 10, true);
+                player.getWorld().spawnParticle(Particle.ENCHANTMENT_TABLE, player.getEyeLocation(), 10, 0.5, 0.3, 0.5, 1F);
+                //Util.playClientEffect(partyPlayer, "largeexplode", new Vector(0, 0, 0), 1F, 10, true);
+                player.getWorld().spawnParticle(Particle.EXPLOSION_LARGE, player.getEyeLocation(), 10, 0.5, 0.3, 0.5, 1F);
                 partyPlayer.getWorld().playSound(partyPlayer.getLocation(), Sound.ENTITY_WITHER_DEATH, 0.5F, 1.0F);
 
                 partyPlayer.teleport(player);

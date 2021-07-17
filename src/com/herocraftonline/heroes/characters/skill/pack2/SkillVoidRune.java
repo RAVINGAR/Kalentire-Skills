@@ -127,7 +127,8 @@ public class SkillVoidRune extends ActiveSkill {
         Bukkit.getServer().getPluginManager().callEvent(new RuneActivationEvent(hero, voidRune));
 
         // Play Effects
-        Util.playClientEffect(player, "enchantmenttable", new Vector(0, 0, 0), 1F, 10, true);
+        //Util.playClientEffect(player, "enchantmenttable", new Vector(0, 0, 0), 1F, 10, true);
+        player.getWorld().spawnParticle(Particle.ENCHANTMENT_TABLE, player.getEyeLocation(), 10, 0.5, 0.3, 0.5, 1F);
         player.getWorld().playSound(player.getLocation(), Sound.ENTITY_WITHER_AMBIENT, 0.5F, 1.0F);
 
         List<Location> circle = circle(player.getLocation(), 36, 1.5);
@@ -199,7 +200,8 @@ public class SkillVoidRune extends ActiveSkill {
                     targCT.addEffect(voidRuneSilenceEffect);
 
                     // Play Effects
-                    Util.playClientEffect(player, "enchantmenttable", new Vector(0, 0, 0), 1F, 10, true);
+                    //Util.playClientEffect(player, "enchantmenttable", new Vector(0, 0, 0), 1F, 10, true);
+                    player.getWorld().spawnParticle(Particle.ENCHANTMENT_TABLE, player.getEyeLocation(), 10, 0.5, 0.3, 0.5, 1F);
                     player.getWorld().playSound(player.getLocation(), Sound.ENTITY_GENERIC_BURN, 0.5F, 1.0F);
                 }
             }, (long) (0.1 * 20));

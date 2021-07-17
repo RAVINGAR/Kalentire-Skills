@@ -7,9 +7,7 @@ import com.herocraftonline.heroes.characters.skill.ActiveSkill;
 import com.herocraftonline.heroes.characters.skill.SkillSetting;
 import com.herocraftonline.heroes.characters.skill.SkillType;
 import com.herocraftonline.heroes.util.Util;
-import org.bukkit.ChatColor;
-import org.bukkit.Material;
-import org.bukkit.Sound;
+import org.bukkit.*;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
 import org.bukkit.Sound;
@@ -132,7 +130,8 @@ public class SkillRechargeRunestone extends ActiveSkill {
                             heldItem.setItemMeta(metaData);
 
                             // Play Effects
-                            Util.playClientEffect(player, "enchantmenttable", new Vector(0, 0, 0), 1F, 10, true);
+                            //Util.playClientEffect(player, "enchantmenttable", new Vector(0, 0, 0), 1F, 10, true);
+                            player.getWorld().spawnParticle(Particle.ENCHANTMENT_TABLE, player.getEyeLocation(), 10, 0.5, 0.3, 0.5, 1F);
                             player.getWorld().playSound(player.getLocation(), Sound.ENTITY_WITHER_AMBIENT, 0.5F, 1.0F);
 
                             broadcastExecuteText(hero);

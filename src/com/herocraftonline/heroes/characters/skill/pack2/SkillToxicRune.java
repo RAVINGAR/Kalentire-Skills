@@ -136,7 +136,8 @@ public class SkillToxicRune extends ActiveSkill {
         Bukkit.getServer().getPluginManager().callEvent(new RuneActivationEvent(hero, toxicRune));
 
         // Play Effects
-        Util.playClientEffect(player, "enchantmenttable", new Vector(0, 0, 0), 1F, 10, true);
+        //Util.playClientEffect(player, "enchantmenttable", new Vector(0, 0, 0), 1F, 10, true);
+        player.getWorld().spawnParticle(Particle.ENCHANTMENT_TABLE, player.getEyeLocation(), 10, 0.5, 0.3, 0.5, 1F);
         player.getWorld().playSound(player.getLocation(), Sound.ENTITY_WITHER_AMBIENT, 0.5F, 1.0F);
 
         List<Location> circle = circle(player.getLocation(), 36, 1.5);
@@ -203,7 +204,8 @@ public class SkillToxicRune extends ActiveSkill {
                     targCT.addEffect(pEffect);
 
                     // Play Effects
-                    Util.playClientEffect(player, "enchantmenttable", new Vector(0, 0, 0), 1F, 10, true);
+                    //Util.playClientEffect(player, "enchantmenttable", new Vector(0, 0, 0), 1F, 10, true);
+                    player.getWorld().spawnParticle(Particle.ENCHANTMENT_TABLE, player.getEyeLocation(), 10, 0.5, 0.3, 0.5, 1F);
                     player.getWorld().playSound(player.getLocation(), Sound.ENTITY_GENERIC_BURN, 0.5F, 1.0F);
                     //targCT.getEntity().getWorld().spigot().playEffect(targCT.getEntity().getLocation().add(0, 1, 0), org.bukkit.Effect.HAPPY_VILLAGER, 0, 0, 0.5F, 0.0F, 0.5F, 0.2F, 35, 16);
                     targCT.getEntity().getWorld().spawnParticle(Particle.VILLAGER_HAPPY, targCT.getEntity().getLocation(), 35, 0.5, 0, 0.5, 0.2);

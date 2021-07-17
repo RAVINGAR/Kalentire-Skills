@@ -11,6 +11,7 @@ import com.herocraftonline.heroes.nms.NMSHandler;
 import com.herocraftonline.heroes.util.Util;
 import org.apache.commons.lang.StringUtils;
 import org.bukkit.ChatColor;
+import org.bukkit.Particle;
 import org.bukkit.Sound;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
@@ -119,7 +120,8 @@ public class SkillImbueRunestone extends ActiveSkill {
                 heldItem.setItemMeta(metaData);
 
                 // Play Effects
-                Util.playClientEffect(player, "enchantmenttable", new Vector(0, 0, 0), 1F, 10, true);
+                //Util.playClientEffect(player, "enchantmenttable", new Vector(0, 0, 0), 1F, 10, true);
+                player.getWorld().spawnParticle(Particle.ENCHANTMENT_TABLE, player.getEyeLocation(), 10, 0.5, 0.3, 0.5, 1F);
                 player.getWorld().playSound(player.getLocation(), Sound.ENTITY_WITHER_AMBIENT, 0.5F, 1.0F);
 
                 broadcastExecuteText(hero);
