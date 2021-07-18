@@ -165,7 +165,9 @@ public class SkillArtOfWar extends PassiveSkill {
 
             CharacterTemplate tCharacter = plugin.getCharacterManager().getCharacter(newTarget);
             tCharacter.addEffect(new HighlightedTargetEffect(skill, player, getPeriod(), damageMultiplier));
-            player.sendMessage("    " + newTargetText.replace("%target%", CustomNameManager.getCustomName(newTarget)));
+            if (newTargetText != null && newTargetText.length() > 0 && !hero.isSuppressing(skill)) {
+                player.sendMessage("    " + newTargetText.replace("%target%", CustomNameManager.getCustomName(newTarget)));
+            }
         }
     }
 

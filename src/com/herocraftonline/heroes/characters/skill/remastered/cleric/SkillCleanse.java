@@ -75,13 +75,12 @@ public class SkillCleanse extends TargettedSkill {
 			}
 		}
 
-		// Apply short speed boost (e.g. to get out of stuns etc.)
-		if (speedAmplifier >= 0 && speedDuration > 0) {
-			targetHero.addEffect(new SpeedEffect(this, player, speedDuration, speedAmplifier));
-		}
-
 		// Run sound and announce skill use only if there was something to dispel and a speed to apply
-		if (dispelled && speedAmplifier >= 0) {
+		if (dispelled) {
+			// Apply short speed boost (e.g. to get out of stuns etc.)
+			if (speedAmplifier >= 0 && speedDuration > 0) {
+				targetHero.addEffect(new SpeedEffect(this, player, speedDuration, speedAmplifier));
+			}
 			broadcastExecuteText(hero, target);
 			target.getWorld().playSound(target.getLocation(), Sound.ENTITY_EXPERIENCE_ORB_PICKUP, 0.8F, 1.0F);
 			return SkillResult.NORMAL;
