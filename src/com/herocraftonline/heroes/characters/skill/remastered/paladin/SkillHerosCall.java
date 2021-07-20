@@ -36,8 +36,7 @@ public class SkillHerosCall extends ActiveSkill {
     public SkillHerosCall(Heroes plugin) {
         super(plugin, "HerosCall");
         setDescription("You taunt all nearby enemies in a $1 block radius around you. " +
-                "The effect lasts for $2 second(s). " +
-                "Not very effective if you are in your human form.");
+                "The effect lasts for $2 second(s). ");
         setArgumentRange(0, 0);
         setUsage("/skill heroscall");
         setIdentifiers("skill heroscall");

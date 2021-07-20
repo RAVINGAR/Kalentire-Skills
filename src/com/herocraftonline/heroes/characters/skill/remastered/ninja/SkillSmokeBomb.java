@@ -41,9 +41,8 @@ public class SkillSmokeBomb extends ActiveSkill {
     @Override
     public String getDescription(Hero hero) {
         int duration = SkillConfigManager.getScaledUseSettingInt(hero, this, SkillSetting.DURATION, false);
-        String formattedDuration = Util.decFormat.format(duration / 1000.0);
 
-        return getDescription().replace("$1", formattedDuration);
+        return getDescription().replace("$1", Util.decFormat.format(duration / 1000.0));
     }
 
     @Override
@@ -121,9 +120,9 @@ public class SkillSmokeBomb extends ActiveSkill {
                 // Override the standard invis effect message display so that we actually display a message to nearby players
                 //      even though we have a "silent actions" effect type.
                 if (hero.isInCombat()) {
-                broadcast(player.getLocation(), "    " + applyText, player.getName());
+                    broadcast(player.getLocation(), "    " + applyText, player.getName());
+                }
             }
-        }
         }
 
         @Override
@@ -135,7 +134,7 @@ public class SkillSmokeBomb extends ActiveSkill {
                 // Override the standard invis effect message display so that we actually display a message to nearby players
                 //      even though we have a "silent actions" effect type.
                 if (hero.isInCombat()) {
-                broadcast(player.getLocation(), "    " + expireText, player.getName());
+                    broadcast(player.getLocation(), "    " + expireText, player.getName());
                 } else {
                     Messaging.send(player, "    " + expireText, player.getName());
                 }

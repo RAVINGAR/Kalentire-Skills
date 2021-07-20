@@ -125,8 +125,7 @@ public class SkillExplosiveShot extends ActiveSkill {
                 .replace("%hero%", "$1");
 
         shotText = SkillConfigManager.getRaw(this, "shot-text",
-                ChatComponents.GENERIC_SKILL + "%hero% has unleashed an " + ChatColor.WHITE + ChatColor.BOLD + "Explosive Shot" + ChatColor.RESET + "!")
-                .replace("%hero%", "$1");
+                ChatComponents.GENERIC_SKILL + "%hero% has unleashed an " + ChatColor.WHITE + ChatColor.BOLD + "Explosive Shot" + ChatColor.RESET + "!");
     }
 
     public SkillResult use(Hero hero, String[] args) {
@@ -380,7 +379,7 @@ public class SkillExplosiveShot extends ActiveSkill {
             if (showExpireText) { // This stays only because someone may theoretically touch this value. //TODO Remove when we do breaking changes?
                 if (expireText != null && expireText.length() > 0) {
                     if (hero.hasEffectType(EffectType.SILENT_ACTIONS))
-                        player.sendMessage(expireText.replace("%hero%", player.getDisplayName()));
+                        player.sendMessage(expireText.replace("$1", player.getDisplayName()));
                     else
                         broadcast(player.getLocation(), expireText, player.getDisplayName());
                 }
