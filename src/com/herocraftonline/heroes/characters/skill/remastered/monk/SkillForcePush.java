@@ -134,13 +134,17 @@ public class SkillForcePush extends TargettedSkill {
 
 //        player.getWorld().spigot().playEffect(target.getLocation().add(0, 0.5, 0),
 //                org.bukkit.Effect.WITCH_MAGIC,
-//                0, 0,
-//                0, 0, 0,
-//                1,
-//                150,
+//                0, 0,  // id, data
+//                0, 0, 0, // offset of X,Y,Z
+//                1, // extra (usually speed)
+//                150, // particle Count
 //                SkillConfigManager.getUseSetting(hero, this, SkillSetting.MAX_DISTANCE, 5, false) +
-        player.getWorld().spawnParticle(Particle.SPELL_WITCH, target.getLocation().add(0, 0.5, 0), 150, 0, 0, 0, 1, true);
-
+        player.getWorld().spawnParticle(Particle.SPELL_WITCH, target.getLocation().add(0, 0.5, 0),
+                150, // particle count
+                0, 0, 0, // x,y,z offset
+                1,  // extra (speed usually)
+                null, // Data (null for SPELL_WITCH)
+                true); // force
         return SkillResult.NORMAL;
     }
 }

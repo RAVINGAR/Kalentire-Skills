@@ -139,7 +139,7 @@ public class SkillForcePush extends TargettedSkill {
 //                1,
 //                150,
 //                SkillConfigManager.getUseSetting(hero, this, SkillSetting.MAX_DISTANCE, 5, false) +
-        player.getWorld().spawnParticle(Particle.SPELL_WITCH, target.getLocation().add(0, 0.5, 0), 150, 0, 0, 0, 1, true);
+        player.getWorld().spawnParticle(Particle.SPELL_WITCH, target.getLocation().add(0, 0.5, 0), 150, 0, 0, 0, 1, null, true);
 
         return SkillResult.NORMAL;
     }
