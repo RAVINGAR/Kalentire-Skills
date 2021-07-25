@@ -41,8 +41,8 @@ public class SkillPetrify extends TargettedSkill {
         config.set(SkillSetting.MAX_DISTANCE.node(), 3);
         config.set(SkillSetting.MAX_DISTANCE_INCREASE_PER_INTELLECT.node(), 0.1);
         config.set(SkillSetting.DURATION.node(), 6000);
-        config.set(SkillSetting.APPLY_TEXT.node(), ChatComponents.GENERIC_SKILL + "%target% has stopped regenerating mana!");
-        config.set(SkillSetting.EXPIRE_TEXT.node(), ChatComponents.GENERIC_SKILL + "%target% is once again regenerating mana!");
+        config.set(SkillSetting.APPLY_TEXT.node(), ChatComponents.GENERIC_SKILL + "%target% has stopped regenerating mana and stamina!");
+        config.set(SkillSetting.EXPIRE_TEXT.node(), ChatComponents.GENERIC_SKILL + "%target% is once again regenerating mana and stamina!");
         return config;
     }
 

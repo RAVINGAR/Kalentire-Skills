@@ -72,7 +72,7 @@ public class SkillManaMissile extends PassiveSkill {
         config.set("damage-multiplier", 1.0);
         config.set(BasicMissile.PROJECTILE_SIZE_NODE, 0.3);
         config.set(BasicMissile.PROJECTILE_VELOCITY_NODE, 75.0);
-        config.set(BasicMissile.PROJECTILE_DURATION_TICKS_NODE, 15);
+        config.set(BasicMissile.PROJECTILE_DURATION_TICKS_NODE, 2);
         config.set(BasicMissile.PROJECTILE_GRAVITY_NODE, 0.0);
         config.set(BasicDamageMissile.PROJECTILE_PIERCES_ON_HIT_NODE, true);
         config.set(BasicDamageMissile.PROJECTILE_KNOCKS_BACK_ON_HIT_NODE, false);

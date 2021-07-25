@@ -66,7 +66,7 @@
         </repository>
         <repository>
             <id>heroes-repo</id>
-            <url>http://nexus.hc.to/content/groups/herocraft/</url>
+            <url>https://nexus.hc.to/content/groups/herocraft/</url>
         </repository>
         <repository>
             <!-- For WorldGuard-->
