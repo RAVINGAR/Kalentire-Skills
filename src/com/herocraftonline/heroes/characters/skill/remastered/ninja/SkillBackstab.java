@@ -24,7 +24,7 @@ import org.bukkit.inventory.ItemStack;
 import java.util.List;
 import java.util.logging.Level;
 
-public class SkillBackstab extends ActiveSkill {
+public class SkillBackstab extends ActiveSkill implements Passive {
 
     private String backstabText;
 
@@ -40,7 +40,6 @@ public class SkillBackstab extends ActiveSkill {
     }
 
     public String getDescription(Hero hero) {
-
         double backstabChance = SkillConfigManager.getUseSetting(hero, this, "backstab-chance", -1.0, false);
         double backstabDamageModifier = SkillConfigManager.getUseSetting(hero, this, "backstab-bonus", 0.85, false);
         double backstabDamageModifierIncrease = SkillConfigManager.getUseSetting(hero, this, "backstab-bonus-increase-per-dexterity", 0.85, false);
@@ -48,7 +47,7 @@ public class SkillBackstab extends ActiveSkill {
 
         String backstabString = "deal";
         if (backstabChance > -1)
-            backstabString = "have a " + Util.decFormat.format(backstabChance) + "% chance to deal";
+            backstabString = "have a " + Util.decFormat.format(backstabChance * 100) + "% chance to deal";
 
         double ambushChance = SkillConfigManager.getUseSetting(hero, this, "ambush-chance", -1.0, false);
         double ambushDamageModifier = SkillConfigManager.getUseSetting(hero, this, "ambush-bonus", 0.85, false);
@@ -57,12 +56,13 @@ public class SkillBackstab extends ActiveSkill {
 
         String ambushString = "deal";
         if (ambushChance > -1)
-            ambushString = "have a " + Util.decFormat.format(ambushChance) + "% chance to deal";
+            ambushString = "have a " + Util.decFormat.format(ambushChance * 100) + "% chance to deal";
 
-        String formattedBackstabDamageModifier = Util.decFormat.format(backstabDamageModifier * 100);
-        String formattedAmbushDamageModifier = Util.decFormat.format(ambushDamageModifier * 100);
-
-        return getDescription().replace("$1", backstabString + "").replace("$2", formattedBackstabDamageModifier).replace("$3", ambushString + "").replace("$4", formattedAmbushDamageModifier);
+        return getDescription()
+                .replace("$1", backstabString)
+                .replace("$2", Util.decFormat.format(backstabDamageModifier * 100))
+                .replace("$3", ambushString)
+                .replace("$4", Util.decFormat.format(ambushDamageModifier * 100));
     }
 
     public ConfigurationSection getDefaultConfig() {
@@ -135,6 +135,24 @@ public class SkillBackstab extends ActiveSkill {
                 + ChatColor.WHITE + ", Sneaking Backstab: " + ChatColor.GRAY + Util.decFormat.format(ambushDamage));
     }
 
+    @Override
+    public void tryApplying(Hero hero) {
+        // blank just so we implement Passive, and appear as a skill that does passive effects (though we dont need an effect to do this)
+        // After all our only use as a active is to show bonus attack damage for weapons
+    }
+
+    @Override
+    public void apply(Hero hero) {
+        // blank just so we implement Passive, and appear as a skill that does passive effects (though we dont need an effect to do this)
+        // After all our only use as a active is to show bonus attack damage for weapons
+    }
+
+    @Override
+    public void unapply(Hero hero) {
+        // blank just so we implement Passive, and appear as a skill that does passive effects (though we dont need an effect to do this)
+        // After all our only use as a active is to show bonus attack damage for weapons
+    }
+
     public class SkillHeroesListener implements Listener {
         private final Skill skill;
 
@@ -150,6 +168,7 @@ public class SkillBackstab extends ActiveSkill {
 
             Hero hero = (Hero) event.getDamager();
             Player player = hero.getPlayer();
+            LivingEntity target = (LivingEntity) event.getEntity();
 
             if (hero.canUseSkill(skill)) {
                 ItemStack item = NMSHandler.getInterface().getItemInMainHand(player.getInventory()); // 1.9: Main hand does left click attacks, so main hand only
@@ -158,7 +177,7 @@ public class SkillBackstab extends ActiveSkill {
                     return;
                 }
 
-                if (event.getEntity().getLocation().getDirection().dot(player.getLocation().getDirection()) <= 0.0D) {
+                if (target.getLocation().getDirection().dot(player.getLocation().getDirection()) <= 0.0D) {
                     return;
                 }
 
@@ -193,14 +212,19 @@ public class SkillBackstab extends ActiveSkill {
                 }
 
                 if (backstabbed) {
-                    Entity target = event.getEntity();
                     //target.getWorld().spigot().playEffect(target.getLocation().add(0, 0.5, 0), Effect.COLOURED_DUST, 0, 0, 0.2F, 0.0F, 0.2F, 0.0F, 30, 16);
                     target.getWorld().spawnParticle(Particle.REDSTONE, target.getLocation().add(0, 0.5, 0), 30, 0.2, 0, 0.2, new Particle.DustOptions(Color.RED, 1));
                     target.getWorld().playSound(target.getLocation(), Sound.ENTITY_ENDER_DRAGON_HURT, 1.0F, 0.6F);
-                    if (target instanceof Monster)
-                        broadcast(player.getLocation(), backstabText.replace("%hero%", player.getName()).replace("%target%", CustomNameManager.getName(target)));
-                    else if (target instanceof Player)
-                        broadcast(player.getLocation(), backstabText.replace("%hero%", player.getName()).replace("%target%", target.getName()));
+//                    if (target instanceof Monster)
+//                        broadcast(player.getLocation(), backstabText.replace("%hero%", player.getName()).replace("%target%", CustomNameManager.getName(target)));
+//                    else if (target instanceof Player)
+//                        broadcast(player.getLocation(), backstabText.replace("%hero%", player.getName()).replace("%target%", target.getName()));
+
+                    if (target instanceof Monster || target instanceof Player) { // Check doesn't seem necessary, only seems to not run for some creatures such as Animals.
+                        String targetName = target instanceof Player ? target.getName() : CustomNameManager.getName(target);
+                        broadcast(player.getLocation(), backstabText.replace("%hero%", player.getName())
+                                .replace("%target%", targetName));
+                    }
                 }
             }
         }

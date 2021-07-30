@@ -105,6 +105,7 @@ public class SkillCraftNetheriteGear extends PassiveSkill {
                     hero.getPlayer().sendMessage(ChatColor.RED + "You must be level " + levelRequired + " to create "
                             + MaterialUtil.getFriendlyName(resultType) + "!");
                     event.setResult(null);
+                    //event.getInventory().setResult(null);
                 }
             }
         }
