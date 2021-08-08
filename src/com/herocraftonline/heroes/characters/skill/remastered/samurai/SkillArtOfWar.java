@@ -164,6 +164,11 @@ public class SkillArtOfWar extends PassiveSkill {
                 return; // No valid target in range to select, wait till next tick
 
             CharacterTemplate tCharacter = plugin.getCharacterManager().getCharacter(newTarget);
+            //TODO does this fix if target is selected a second time, damage boost is removed ?
+            if (tCharacter.hasEffect(highlightedTargetEffectName)) {
+                tCharacter.removeEffect(tCharacter.getEffect(highlightedTargetEffectName));
+            }
+
             tCharacter.addEffect(new HighlightedTargetEffect(skill, player, getPeriod(), damageMultiplier));
             if (newTargetText != null && newTargetText.length() > 0 && !hero.isSuppressing(skill)) {
                 player.sendMessage("    " + newTargetText.replace("%target%", CustomNameManager.getCustomName(newTarget)));
