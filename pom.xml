@@ -97,17 +97,17 @@
         <dependency>
             <groupId>com.herocraftonline.heroes</groupId>
             <artifactId>Heroes</artifactId>
-            <version>1.9.9-SNAPSHOT</version>
+            <version>1.9.12-SNAPSHOT</version>
         </dependency>
         <dependency>
             <groupId>com.herocraftonline.heroes</groupId>
             <artifactId>heroes-bukkit-compat-base</artifactId>
-            <version>1.9.9-SNAPSHOT</version>
+            <version>1.9.12-SNAPSHOT</version>
         </dependency>
         <dependency>
             <groupId>com.herocraftonline.heroes</groupId>
             <artifactId>heroes-bukkit-compat-v1_16_R3</artifactId>
-            <version>1.9.9-SNAPSHOT</version>
+            <version>1.9.12-SNAPSHOT</version>
         </dependency>
         <dependency>
             <groupId>org.spigotmc</groupId>
