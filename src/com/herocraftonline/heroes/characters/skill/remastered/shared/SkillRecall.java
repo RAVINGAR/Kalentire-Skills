@@ -112,6 +112,14 @@ public class SkillRecall extends ActiveSkill implements Listener {
                 return SkillResult.FAIL;
             }
 
+            // Quick check to see if this runestone has coordinates in the location string and hence is a teleportation runestone.
+            // (since we're introducing non-teleport types now and don't want them to get confused as otherwise)
+            String[] tempLocationStringParts = loreData.get(0).split(",");
+            if (tempLocationStringParts.length < 3) {
+                player.sendMessage("Not a Valid Teleportation Runestone.");
+                return SkillResult.FAIL;
+            }
+
             // Get the uses on the Runestone and ensure it is greater than 1
             String usesString = loreData.get(1);
             usesString = usesString.toLowerCase();
