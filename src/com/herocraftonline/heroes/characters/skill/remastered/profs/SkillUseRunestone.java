@@ -3,22 +3,21 @@ package com.herocraftonline.heroes.characters.skill.remastered.profs;
 import com.herocraftonline.heroes.Heroes;
 import com.herocraftonline.heroes.api.SkillResult;
 import com.herocraftonline.heroes.characters.Hero;
-import com.herocraftonline.heroes.characters.skill.ActiveSkill;
-import com.herocraftonline.heroes.characters.skill.Skill;
-import com.herocraftonline.heroes.characters.skill.SkillSetting;
-import com.herocraftonline.heroes.characters.skill.SkillType;
+import com.herocraftonline.heroes.characters.skill.*;
 import com.herocraftonline.heroes.nms.NMSHandler;
 import com.herocraftonline.heroes.util.Util;
-import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
-import org.bukkit.event.Listener;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 
 import java.util.List;
+
+/**
+ * Created By MysticMight August 2021 based on SkillRecall runestone mechanics.
+ */
 
 public class SkillUseRunestone extends ActiveSkill {
     public SkillUseRunestone(Heroes plugin) {
@@ -40,6 +39,7 @@ public class SkillUseRunestone extends ActiveSkill {
     public ConfigurationSection getDefaultConfig() {
         ConfigurationSection config = super.getDefaultConfig();
         config.set(SkillSetting.DURATION.node(), 20000);
+        config.set("allowed-wardstone", true);
         return config;
     }
 
@@ -128,8 +128,9 @@ public class SkillUseRunestone extends ActiveSkill {
         // We have at least 1 use available--start grabbing location data from the Runestone.
 
         //TODO our specific new runestone code
-        String locationString = loreData.get(0);
-
+        boolean used = useRuneStone(hero, displayName, loreData);
+        if (!used)
+            return SkillResult.INVALID_TARGET_NO_MSG;
 
         // Remove 1 use from Runestone, but only if the runestone isn't unlimited.
         if (uses != -1 && maxUses != -1) {
@@ -139,6 +140,44 @@ public class SkillUseRunestone extends ActiveSkill {
         }
 
         return SkillResult.NORMAL;
+    }
+
+    /**
+     * Attempts to uses the runestone.
+     * @param hero the hero using the warstone
+     * @param runestoneDisplayName the name of the runestone item (with colour codes removed)
+     * @param loreData the lore data lines of the runestone item
+     * @return if the runestone was used (hence costs should be considered)
+     */
+    private boolean useRuneStone(Hero hero, String runestoneDisplayName, List<String> loreData) {
+        if (runestoneDisplayName.equals("WardStone")) {
+            return useWardStone(hero, loreData);
+        }
+        // Add extra runestone logic here...
+        return false; // runestone not used
+    }
+
+    /**
+     * Attempts to use the WardStone.
+     * @param hero the hero using the warstone
+     * @param loreData the lore data lines of the runestone item
+     * @return if the runestone was used (hence costs should be considered)
+     */
+    private boolean useWardStone(Hero hero, List<String> loreData) {
+        //TODO A runestone used during war that on use, puts up a shield in the immediate area to prevent explosions for a short-ish duration, perhaps 15 minutes
+        final Player player = hero.getPlayer();
+        boolean allowedWardStone = SkillConfigManager.getUseSetting(hero, this, "allowed-wardstone", true);
+        if (!allowedWardStone) {
+            player.sendMessage(ChatColor.RED + "You are not allowed to use WardStones!");
+            return false; // runestone not used
+        }
+
+        SkillWardStone wardStoneSkill = (SkillWardStone) plugin.getSkillManager().getSkill("WardStone");
+        if (wardStoneSkill == null) {
+            player.sendMessage(ChatColor.RED + "There is no valid WardStone skill, contact a admin/dev!");
+            return false; // runestone not used
+        }
+        return wardStoneSkill.tryUseItem(hero, loreData);
     }
 
     private boolean isValidUses(String uses, Player player) {
@@ -155,12 +194,4 @@ public class SkillUseRunestone extends ActiveSkill {
         }
         return s;
     }
-
-//    public class SkillHeroListener implements Listener {
-//        private Skill skill;
-//
-//        public SkillHeroListener(Skill skill) {
-//            this.skill = skill;
-//        }
-//    }
 }
