@@ -23,6 +23,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.entity.EntityExplodeEvent;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.*;
 
@@ -32,7 +33,7 @@ import java.util.*;
 
 // A runestone used during war that on use, puts up a shield in the immediate area to prevent explosions for a short-ish duration, perhaps 15 minutes
 public class SkillWardStone extends SkillBaseRunestone {
-    private Map<RegionCoords, ProtectionInfo> regionCoordsProtectionInfoMap = new HashMap<>(10);
+    private final HashMap<RegionCoords, ProtectionInfo> regionCoordsProtectionInfoMap = new HashMap<>(10);
 
     public SkillWardStone(Heroes plugin) {
         super(plugin, "WardStone");
@@ -48,14 +49,30 @@ public class SkillWardStone extends SkillBaseRunestone {
         displayName = "WardStone";
         displayNameColor = ChatColor.AQUA;
 
+        // Run protection updater roughly every second (20 ticks)
+        final Runnable protectionUpdater = new ProtectionUpdater();
+        plugin.getServer().getScheduler().scheduleSyncRepeatingTask(plugin, protectionUpdater, 0, 20L);
+
         Bukkit.getServer().getPluginManager().registerEvents(new WardStoneListener(this), plugin);
     }
 
     @Override
     public ConfigurationSection getDefaultConfig() {
         ConfigurationSection config = super.getDefaultConfig();
-        config.set(SkillSetting.DURATION.node(), 15000);
+        config.set(SkillSetting.DURATION.node(), 900000); // 15min in milliseconds
         return config;
+    }
+
+    @NotNull
+    @Override
+    protected List<String> getNewRunestoneLore(Hero creatorHero, Location location, String worldName) {
+        final List<String> newRunestoneLore = super.getNewRunestoneLore(creatorHero, location, worldName);
+        int duration = SkillConfigManager.getUseSettingInt(creatorHero, this, SkillSetting.DURATION, false);
+        String label = ChatColor.WHITE + "TNT Chunk Shield for "
+                + ChatColor.GOLD + Util.decFormatCDs.format(duration / 60000)
+                + ChatColor.WHITE + "mins";
+        newRunestoneLore.set(0, label); // replace location lore entry with this info label
+        return newRunestoneLore;
     }
 
     public boolean tryUseItem(Hero hero, List<String> runestoneLoreData) {
@@ -94,9 +111,24 @@ public class SkillWardStone extends SkillBaseRunestone {
         return true; // used
     }
 
-    // TODO Create task to remove protected regions as they expire... (Want to run this every 1s or 20ish ticks I suppose
-    // see https://bukkit.fandom.com/wiki/Scheduler_Programming#Repeating_Example
-    // and https://riptutorial.com/bukkit/example/19345/scheduler-repeating-task
+    public class ProtectionUpdater implements Runnable {
+
+        @Override
+        public void run() {
+            if (regionCoordsProtectionInfoMap.isEmpty())
+                return; // Skip this run
+
+            // shallow copy the map, just so the iteration never changes size as we're going over it
+            // (even though all our operations will likely be synchronous)
+            final HashMap<RegionCoords, ProtectionInfo> protectedRegionsMap = new HashMap<>(regionCoordsProtectionInfoMap);
+            for (Map.Entry<RegionCoords, ProtectionInfo> entry : protectedRegionsMap.entrySet()) {
+                final ProtectionInfo protectionInfo = entry.getValue();
+                if (protectionInfo.getTimeLeftMillis() <= 0) {
+                    regionCoordsProtectionInfoMap.remove(entry.getKey());
+                }
+            }
+        }
+    }
 
     public class WardStoneListener extends RunestoneListener {
         private Skill skill;
@@ -166,8 +198,8 @@ public class SkillWardStone extends SkillBaseRunestone {
             return timeProtectedMilliseconds;
         }
 
-        public long getTimeLeftMillis() {
-            return (timeProtectedMilliseconds + duration) - System.currentTimeMillis();
+        public int getTimeLeftMillis() {
+            return (int)((timeProtectedMilliseconds + duration) - System.currentTimeMillis());
         }
 
         public Player getProtector() {

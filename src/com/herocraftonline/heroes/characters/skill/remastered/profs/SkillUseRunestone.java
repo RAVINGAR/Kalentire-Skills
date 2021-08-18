@@ -154,6 +154,7 @@ public class SkillUseRunestone extends ActiveSkill {
             return useWardStone(hero, loreData);
         }
         // Add extra runestone logic here...
+        hero.getPlayer().sendMessage(ChatColor.RED + "This runestone isn't supported by this skill!");
         return false; // runestone not used
     }
 
