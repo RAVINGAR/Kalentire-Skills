@@ -20,6 +20,7 @@ import org.bukkit.inventory.ItemStack;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 public class SkillRepair extends ActiveSkill {
 
@@ -50,19 +51,25 @@ public class SkillRepair extends ActiveSkill {
         node.set("iron-weapons", 1);
         node.set("gold-weapons", 1);
         node.set("diamond-weapons", 1);
+        node.set("netherite-weapons", 1);
         node.set("leather-armor", 1);
         node.set("iron-armor", 1);
         node.set("chain-armor", 1);
         node.set("gold-armor", 1);
         node.set("diamond-armor", 1);
+        node.set("netherite-armor", 1);
         node.set("wood-tools", 1);
         node.set("stone-tools", 1);
         node.set("iron-tools", 1);
         node.set("gold-tools", 1);
         node.set("diamond-tools", 1);
+        node.set("netherite-tools", 1);
         node.set("fishing-rod", 1);
         node.set("shears", 1);
         node.set("flint-steel", 1);
+        node.set("netherite-armor-cost", 1);
+        node.set("netherite-tool-cost", 1);
+        node.set("additional-cost-per-enchantment-levels", 1);
         node.set("unchant-chance", .5);
         node.set("unchant-chance-reduce", .005);
         return node;
@@ -115,6 +122,19 @@ public class SkillRepair extends ActiveSkill {
             return SkillResult.INVALID_TARGET_NO_MSG;
         }
 
+        boolean enchanted = !is.getEnchantments().isEmpty();
+        int repairCost = getRepairCost(hero, is);
+        if (enchanted) {
+            int additionalCostPerEnchantmentLevels = SkillConfigManager.getUseSetting(hero, this, "additional-cost-per-enchantment-levels", 1, true);
+            int enchantmentLevels = 0;
+            for (Map.Entry<Enchantment, Integer> entry : is.getEnchantments().entrySet()) {
+                Enchantment enchantment = entry.getKey();
+                Integer enchantmentLevel = entry.getValue();
+                enchantmentLevels += enchantmentLevel;
+            }
+            repairCost += (additionalCostPerEnchantmentLevels * enchantmentLevels);
+        }
+
         ItemStack reagentStack = null;
         if (reagent == Material.OAK_PLANKS){
             //Handle all wood variants as a reagent
@@ -128,7 +148,7 @@ public class SkillRepair extends ActiveSkill {
 
             boolean hasReagant = false;
             for (Material woodMaterial : woodMaterials) {
-                reagentStack = new ItemStack(woodMaterial, getRepairCost(is));
+                reagentStack = new ItemStack(woodMaterial, repairCost);
                 hasReagant = hasReagentCost(player, reagentStack);
                 if (hasReagant){
                     // Found valid wood reagent that the player has
@@ -143,17 +163,16 @@ public class SkillRepair extends ActiveSkill {
                         + " or " + MaterialUtil.getFriendlyName(Material.JUNGLE_PLANKS)
                         + " or " + MaterialUtil.getFriendlyName(Material.ACACIA_PLANKS)
                         + " or " + MaterialUtil.getFriendlyName(Material.DARK_OAK_PLANKS);
-                return new SkillResult(ResultType.MISSING_REAGENT, true, getRepairCost(is), planksString);
+                return new SkillResult(ResultType.MISSING_REAGENT, true, repairCost, planksString);
             }
         } else {
-            reagentStack = new ItemStack(reagent, getRepairCost(is));
+            reagentStack = new ItemStack(reagent, repairCost);
             if (!hasReagentCost(player, reagentStack)) {
                 return new SkillResult(ResultType.MISSING_REAGENT, true, reagentStack.getAmount(), MaterialUtil.getFriendlyName(reagentStack.getType()));
             }
         }
 
         boolean lost = false;
-        boolean enchanted = !is.getEnchantments().isEmpty();
         if (enchanted) {
             double unchant = SkillConfigManager.getUseSetting(hero, this, "unchant-chance", .5, true);
             unchant -= SkillConfigManager.getUseSetting(hero, this, "unchant-chance-reduce", .005, false) * hero.getHeroLevel(this);
@@ -169,17 +188,31 @@ public class SkillRepair extends ActiveSkill {
         Util.syncInventory(player, plugin);
         hero.getPlayer().getWorld().playSound(hero.getPlayer().getLocation(), Sound.BLOCK_ANVIL_USE, 0.6F, 1.0F);
         //hero.getPlayer().getWorld().spigot().playEffect(hero.getPlayer().getLocation().add(0, 0.6, 0), org.bukkit.Effect.ITEM_BREAK, Material.DIAMOND_SWORD.getId(), 0, 0.1F, 0.1F, 0.1F, 0.0F, 15, 16);
-        broadcast(player.getLocation(), useText.replace("%hero%", player.getName()).replace("%item%", is.getType().name().toLowerCase().replace("_", " ")).replace("%ench%", !enchanted ? "." : lost ? " and stripped it of enchantments!" : " and successfully kept the enchantments."));
+        String message = useText.replace("%hero%", player.getName())
+                .replace("%item%", MaterialUtil.getFriendlyName(is.getType()))
+                .replace("%ench%", !enchanted ? "." : lost ? " and stripped it of enchantments!" : " and successfully kept the enchantments.");
+        broadcast(player.getLocation(), message);
         return SkillResult.NORMAL;
     }
 
-    private int getRepairCost(ItemStack is) {
+    private int getRepairCost(Hero hero, ItemStack is) {
         Material mat = is.getType();
         int amt;
         switch (mat) {
             case BOW:
                 amt = (int) ((is.getDurability() / (double) mat.getMaxDurability()) * 2.0);
                 return amt < 1 ? 1 : amt;
+            case NETHERITE_CHESTPLATE:
+            case NETHERITE_LEGGINGS:
+            case NETHERITE_BOOTS:
+            case NETHERITE_HELMET:
+                return SkillConfigManager.getUseSetting(hero, this, "netherite-armor-cost", 1, true); // FIXME how much cost per netherite item?
+            case NETHERITE_SWORD:
+            case NETHERITE_AXE:
+            case NETHERITE_HOE:
+            case NETHERITE_PICKAXE:
+            case NETHERITE_SHOVEL:
+                return SkillConfigManager.getUseSetting(hero, this, "netherite-tool-cost", 1, true); // FIXME how much cost per netherite item?
             case LEATHER_BOOTS:
             case IRON_BOOTS:
             case CHAINMAIL_BOOTS:
@@ -218,6 +251,7 @@ public class SkillRepair extends ActiveSkill {
             case WOODEN_SWORD:
             case WOODEN_AXE:
             case BOW:
+            case CROSSBOW:
                 return SkillConfigManager.getUseSetting(hero, this, "wood-weapons", 1, true);
             case WOODEN_HOE:
             case WOODEN_PICKAXE:
@@ -275,6 +309,13 @@ public class SkillRepair extends ActiveSkill {
             case DIAMOND_PICKAXE:
             case DIAMOND_SHOVEL:
                 return SkillConfigManager.getUseSetting(hero, this, "diamond-tools", 1, true);
+            case NETHERITE_SWORD:
+            case NETHERITE_AXE:
+                return SkillConfigManager.getUseSetting(hero, this, "netherite-weapons", 1, true);
+            case NETHERITE_HOE:
+            case NETHERITE_PICKAXE:
+            case NETHERITE_SHOVEL:
+                return SkillConfigManager.getUseSetting(hero, this, "netherite-tools", 1, true);
             case LEATHER_BOOTS:
             case LEATHER_CHESTPLATE:
             case LEATHER_HELMET:
@@ -334,6 +375,16 @@ public class SkillRepair extends ActiveSkill {
             case DIAMOND_PICKAXE:
             case DIAMOND_SHOVEL:
                 return Material.DIAMOND;
+            case NETHERITE_CHESTPLATE:
+            case NETHERITE_LEGGINGS:
+            case NETHERITE_BOOTS:
+            case NETHERITE_HELMET:
+            case NETHERITE_SWORD:
+            case NETHERITE_AXE:
+            case NETHERITE_HOE:
+            case NETHERITE_PICKAXE:
+            case NETHERITE_SHOVEL:
+                return Material.NETHERITE_INGOT; // FIXME use netherite ingot or scrap for netherite items? (since only one is used per item, or just one ingot?)
             case LEATHER_BOOTS:
             case LEATHER_CHESTPLATE:
             case LEATHER_HELMET:
@@ -341,6 +392,7 @@ public class SkillRepair extends ActiveSkill {
                 return Material.LEATHER;
             case FISHING_ROD:
             case BOW:
+            case CROSSBOW: // FIXME use string for crossbow too?
                 return Material.STRING;
             case CHAINMAIL_HELMET:
             case CHAINMAIL_CHESTPLATE:
