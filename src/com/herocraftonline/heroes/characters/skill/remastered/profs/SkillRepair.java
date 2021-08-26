@@ -145,6 +145,8 @@ public class SkillRepair extends ActiveSkill {
             woodMaterials.add(Material.JUNGLE_PLANKS);
             woodMaterials.add(Material.ACACIA_PLANKS);
             woodMaterials.add(Material.DARK_OAK_PLANKS);
+            woodMaterials.add(Material.CRIMSON_PLANKS);
+            woodMaterials.add(Material.WARPED_PLANKS);
 
             boolean hasReagant = false;
             for (Material woodMaterial : woodMaterials) {
@@ -162,7 +164,9 @@ public class SkillRepair extends ActiveSkill {
                         + " or " + MaterialUtil.getFriendlyName(Material.SPRUCE_PLANKS)
                         + " or " + MaterialUtil.getFriendlyName(Material.JUNGLE_PLANKS)
                         + " or " + MaterialUtil.getFriendlyName(Material.ACACIA_PLANKS)
-                        + " or " + MaterialUtil.getFriendlyName(Material.DARK_OAK_PLANKS);
+                        + " or " + MaterialUtil.getFriendlyName(Material.DARK_OAK_PLANKS)
+                        + " or " + MaterialUtil.getFriendlyName(Material.CRIMSON_PLANKS)
+                        + " or " + MaterialUtil.getFriendlyName(Material.WARPED_PLANKS);
                 return new SkillResult(ResultType.MISSING_REAGENT, true, repairCost, planksString);
             }
         } else {
