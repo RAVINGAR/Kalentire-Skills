@@ -8,6 +8,7 @@ import com.herocraftonline.heroes.characters.skill.PassiveSkill;
 import com.herocraftonline.heroes.characters.skill.Skill;
 import com.herocraftonline.heroes.characters.skill.SkillSetting;
 import com.herocraftonline.heroes.characters.skill.SkillType;
+
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.configuration.ConfigurationSection;
@@ -17,11 +18,13 @@ import org.bukkit.event.Listener;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.event.block.BlockBreakEvent;
+import org.bukkit.event.player.PlayerInteractEvent;
+import org.bukkit.enchantments.Enchantment;
 
 public class SkillBeehives extends PassiveSkill{
     public SkillBeehives(Heroes plugin) {
         super(plugin, "Beehives");
-        setDescription("You are able to harvest beehives!");
+        setDescription("You are able to harvest from and move beehives!");
         setArgumentRange(0, 0);
         setTypes(new SkillType[] { SkillType.BLOCK_REMOVING });
         setEffectTypes(new EffectType[] { EffectType.BENEFICIAL });
@@ -32,7 +35,6 @@ public class SkillBeehives extends PassiveSkill{
         ConfigurationSection node = super.getDefaultConfig();
         node.set(SkillSetting.APPLY_TEXT.node(), "");
         node.set(SkillSetting.UNAPPLY_TEXT.node(), "");
-        node.set(SkillSetting.LEVEL.node(), 1);
         return node;
     }
 
@@ -51,15 +53,28 @@ public class SkillBeehives extends PassiveSkill{
             Hero hero = SkillBeehives.this.plugin.getCharacterManager().getHero(event.getPlayer());
 
             if (hero.canUseSkill(this.skill)) {
-                if (event.getBlock().getType() == Material.BEE_NEST)
-                    event.getBlock().getLocation().getWorld().dropItem(event.getBlock().getLocation(), new ItemStack(Material.BEE_NEST, 1));
-                else return;
+                ItemStack silkTool = new ItemStack(Material.WOODEN_PICKAXE);
+                silkTool.addEnchantment(Enchantment.SILK_TOUCH, 1);
+                event.getBlock().breakNaturally(silkTool);
             }
             else {
                 event.setCancelled(true);
-                event.getPlayer().sendMessage("You must be a farmer to harvest beehives!");
+                event.getPlayer().sendMessage("You must be a farmer to move beehives!");
             }
 
+        }
+        @EventHandler(priority = EventPriority.LOW)
+        public void onBlockInteract(PlayerInteractEvent event){
+            if(event.getClickedBlock().getType() != Material.BEE_NEST && event.getClickedBlock().getType() != Material.BEEHIVE) {
+                return;
+            }
+
+            Hero hero = SkillBeehives.this.plugin.getCharacterManager().getHero(event.getPlayer());
+
+            if (!hero.canUseSkill(this.skill)) {
+                event.setCancelled(true);
+                event.getPlayer().sendMessage("You must be a farmer to harvest honey/honeycomb!");
+            }
         }
     }
 
