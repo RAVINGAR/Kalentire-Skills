@@ -12,6 +12,7 @@ import com.herocraftonline.heroes.characters.skill.SkillSetting;
 import com.herocraftonline.heroes.characters.skill.SkillType;
 import com.herocraftonline.heroes.util.Util;
 import org.bukkit.Bukkit;
+import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
@@ -30,9 +31,9 @@ public class SkillNimbleDraw extends ActiveSkill {
         setDescription("You are able to move quickly while drawing bows.");
         setUsage("/skill NimbleDraw");
         setArgumentRange(0, 0);
-        setIdentifiers(new String[] { "skill nimbledraw" });
-        setTypes(new SkillType[] { SkillType.BUFFING, SkillType.MOVEMENT_INCREASING });
-        Bukkit.getServer().getPluginManager().registerEvents(new SkillEntityListener(), (Plugin)plugin);
+        setIdentifiers("skill nimbledraw");
+        setTypes(SkillType.BUFFING, SkillType.MOVEMENT_INCREASING);
+        Bukkit.getServer().getPluginManager().registerEvents(new SkillEntityListener(), plugin);
     }
 
     public String getDescription(Hero hero) {
@@ -50,13 +51,18 @@ public class SkillNimbleDraw extends ActiveSkill {
     }
 
     public SkillResult use(Hero hero, String[] args) {
+        //FIXME If possible (not sure it is entirely), make this speed boost only effective if the user is drawing a bow.
+        // E.g. possibly using interact event? see https://www.spigotmc.org/threads/detect-if-the-player-is-pulling-their-bow-back.158483
+        // Or see https://www.spigotmc.org/threads/1-12-2-serverbound-packet-for-cancel-bow-draw.332520/
+        // As without this, it is just a (slight?) speed boosting effect requiring you to hold a bow at first.
+
         Player player = hero.getPlayer();
         if(player.getInventory().getItemInMainHand().getType() == Material.BOW)
         {
             int duration = SkillConfigManager.getUseSetting(hero, SkillNimbleDraw.this, SkillSetting.DURATION, 10000, false);
             int multiplier = SkillConfigManager.getUseSetting(hero, SkillNimbleDraw.this, "speed-multiplier", 12, false);
             NimbleDrawEffect nimEffect = new NimbleDrawEffect(SkillNimbleDraw.this, player, duration, multiplier);
-            hero.addEffect((Effect)nimEffect);
+            hero.addEffect(nimEffect);
             return SkillResult.NORMAL;
         }
         player.sendMessage("You cannot use this skill with that weapon!");
@@ -77,20 +83,25 @@ public class SkillNimbleDraw extends ActiveSkill {
             }
             return diffx + diffz;
         }
+
         @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = false)
         public void onMove(PlayerMoveEvent event)
         {
-
-            Player player = (Player)event.getPlayer();
+            Player player = event.getPlayer();
             Hero hero = SkillNimbleDraw.this.plugin.getCharacterManager().getHero(player);
+            if (!hero.hasEffect("NimbleDraw"))
+                return; // Skip players without this effect. This event will run frequently, and we want to reduce the time we're here.
+
+            final Location from = event.getFrom();
+            final Location to = event.getTo();
+            if (to == null)
+                return; // Not sure what this means, not moving? But we can't check anyway, so skip.
+
             int multiplier = SkillConfigManager.getUseSetting(hero, SkillNimbleDraw.this, "speed-multiplier", 12, false);
             double speedMult = multiplier * 0.2 + 1;
-            if(getSpeed(event.getTo().getX(),event.getFrom().getX(),event.getTo().getZ(),event.getFrom().getZ()) > ((speedMult * 0.117) + (hero.getAttributeValue(AttributeType.DEXTERITY))*0.00152)) {
-                if (hero.hasEffect("NimbleDraw"))
-                    hero.removeEffect(hero.getEffect("NimbleDraw"));
-                return;
+            if (getSpeed(to.getX(), from.getX(), to.getZ(), from.getZ()) > ((speedMult * 0.117) + (hero.getAttributeValue(AttributeType.DEXTERITY))*0.00152)) {
+                hero.removeEffect(hero.getEffect("NimbleDraw"));
             }
-
         }
     }
     public class NimbleDrawEffect extends SpeedEffect {
@@ -106,7 +117,7 @@ public class SkillNimbleDraw extends ActiveSkill {
             Player player = hero.getPlayer();
             if (player.hasPotionEffect(PotionEffectType.POISON) || player.hasPotionEffect(PotionEffectType.WITHER) || player
                     .hasPotionEffect(PotionEffectType.HARM)) {
-                Bukkit.getScheduler().runTaskLater((Plugin)this.plugin, new Runnable() {
+                Bukkit.getScheduler().runTaskLater(this.plugin, new Runnable() {
                     public void run() {
                         SkillNimbleDraw.NimbleDrawEffect.this.removeFromHero(hero);
                     }

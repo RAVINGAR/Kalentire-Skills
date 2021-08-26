@@ -188,7 +188,11 @@ public class SkillRepair extends ActiveSkill {
         Util.syncInventory(player, plugin);
         hero.getPlayer().getWorld().playSound(hero.getPlayer().getLocation(), Sound.BLOCK_ANVIL_USE, 0.6F, 1.0F);
         //hero.getPlayer().getWorld().spigot().playEffect(hero.getPlayer().getLocation().add(0, 0.6, 0), org.bukkit.Effect.ITEM_BREAK, Material.DIAMOND_SWORD.getId(), 0, 0.1F, 0.1F, 0.1F, 0.0F, 15, 16);
-        broadcast(player.getLocation(), useText.replace("%hero%", player.getName()).replace("%item%", is.getType().name().toLowerCase().replace("_", " ")).replace("%ench%", !enchanted ? "." : lost ? " and stripped it of enchantments!" : " and successfully kept the enchantments."));        return SkillResult.NORMAL;
+        String message = useText.replace("%hero%", player.getName())
+                .replace("%item%", MaterialUtil.getFriendlyName(is.getType()))
+                .replace("%ench%", !enchanted ? "." : lost ? " and stripped it of enchantments!" : " and successfully kept the enchantments.");
+        broadcast(player.getLocation(), message);
+        return SkillResult.NORMAL;
     }
 
     private int getRepairCost(Hero hero, ItemStack is) {
