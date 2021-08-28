@@ -17,6 +17,8 @@ import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.Damageable;
+import org.bukkit.inventory.meta.ItemMeta;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -107,8 +109,9 @@ public class SkillRepair extends ActiveSkill {
         Material isType = is.getType();
         int level = getRequiredLevel(hero, isType);
         Material reagent = getRequiredReagent(isType);
+        final ItemMeta itemMeta = is.getItemMeta();
 
-        if (level == -1 || reagent == null) {
+        if (level == -1 || reagent == null || !(itemMeta instanceof Damageable)) { // note implies itemMeta == null
             player.sendMessage("You are not holding a repairable tool.");
             return SkillResult.FAIL;
         }
@@ -117,7 +120,8 @@ public class SkillRepair extends ActiveSkill {
             player.sendMessage("You must be level " + level + " to repair " + MaterialUtil.getFriendlyName(isType));
             return new SkillResult(ResultType.LOW_LEVEL, false);
         }
-        if (is.getDurability() == 0) {
+        //if (is.getDurability() == 0) {
+        if (((Damageable)itemMeta).getDamage() == 0) {
             player.sendMessage("That item is already at full durability!");
             return SkillResult.INVALID_TARGET_NO_MSG;
         }
@@ -187,7 +191,10 @@ public class SkillRepair extends ActiveSkill {
                 lost = true;
             }
         }
-        is.setDurability((short) 0);
+        //is.setDurability((short) 0);
+        ((Damageable)itemMeta).setDamage(0); // repair item
+        is.setItemMeta(itemMeta); // apply meta changes
+
         player.getInventory().removeItem(reagentStack);
         Util.syncInventory(player, plugin);
         hero.getPlayer().getWorld().playSound(hero.getPlayer().getLocation(), Sound.BLOCK_ANVIL_USE, 0.6F, 1.0F);

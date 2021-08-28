@@ -50,6 +50,7 @@ public class SkillLight extends ActiveSkill {
         allowedBlocks.add(Material.SPRUCE_PLANKS);
         allowedBlocks.add(Material.NETHERRACK);
         allowedBlocks.add(Material.SOUL_SAND);
+        allowedBlocks.add(Material.SOUL_SOIL);
         allowedBlocks.add(Material.SANDSTONE);
         allowedBlocks.add(Material.GLASS);
         allowedBlocks.add(Material.WHITE_WOOL);
@@ -74,6 +75,13 @@ public class SkillLight extends ActiveSkill {
         allowedBlocks.add(Material.OBSIDIAN);
         allowedBlocks.add(Material.NETHER_BRICK);
         allowedBlocks.add(Material.MOSSY_COBBLESTONE);
+        allowedBlocks.add(Material.ANDESITE);
+        allowedBlocks.add(Material.DIORITE);
+        allowedBlocks.add(Material.GRANITE);
+        allowedBlocks.add(Material.GRASS_PATH);
+        allowedBlocks.add(Material.PODZOL);
+//        allowedBlocks.add(Material.WARPED_NYLIUM); // add these?
+//        allowedBlocks.add(Material.CRIMSON_NYLIUM);
     }
 
     public SkillLight(Heroes plugin) {
