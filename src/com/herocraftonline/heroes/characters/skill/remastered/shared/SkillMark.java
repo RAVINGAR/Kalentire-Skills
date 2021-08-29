@@ -4,6 +4,7 @@ import com.herocraftonline.heroes.Heroes;
 import com.herocraftonline.heroes.api.SkillResult;
 import com.herocraftonline.heroes.characters.Hero;
 import com.herocraftonline.heroes.characters.skill.ActiveSkill;
+import com.herocraftonline.heroes.characters.skill.SkillConfigManager;
 import com.herocraftonline.heroes.characters.skill.SkillSetting;
 import com.herocraftonline.heroes.characters.skill.SkillType;
 import com.herocraftonline.heroes.util.Util;
@@ -81,6 +82,8 @@ public class SkillMark extends ActiveSkill {
     @Override
     public SkillResult use(Hero hero, String[] args) {
         Player player = hero.getPlayer();
+
+        // Note this may be null if no location has been set (set/created with hero#setSkillSetting)
         ConfigurationSection skillSettings = hero.getSkillSettings(skillSettingsName);
 
         if (args.length > 0 && args[0].equalsIgnoreCase("reset")) {
@@ -107,10 +110,11 @@ public class SkillMark extends ActiveSkill {
             }
             return SkillResult.SKIP_POST_USAGE;
         } else {
-            boolean ignoreRegionPlugins = skillSettings.getBoolean("ignore-region-plugins");
+            boolean ignoreRegionPlugins = SkillConfigManager.getUseSetting(hero, this, "ignore-region-plugins", false);
 
             // Save a new mark
             Location loc = player.getLocation();
+            World world = player.getWorld();
 
             // Validate Towny
             if (towny && !ignoreRegionPlugins) {
@@ -162,13 +166,13 @@ public class SkillMark extends ActiveSkill {
             if (plugin.getServerName() != null) {
                 hero.setSkillSetting(skillSettingsName, "server", plugin.getServerName());
             }
-            hero.setSkillSetting(skillSettingsName, "world", loc.getWorld().getName());
+            hero.setSkillSetting(skillSettingsName, "world", world.getName());
             hero.setSkillSetting(skillSettingsName, "x", loc.getX());
             hero.setSkillSetting(skillSettingsName, "y", loc.getY());
             hero.setSkillSetting(skillSettingsName, "z", loc.getZ());
             hero.setSkillSetting(skillSettingsName, "yaw", (double) loc.getYaw());
             hero.setSkillSetting(skillSettingsName, "pitch", (double) loc.getPitch());
-            player.sendMessage("You have marked a new location on " + loc.getWorld().getName() + " at: " + loc.getBlockX() + ", " + loc.getBlockY() + ", " + loc.getBlockZ());
+            player.sendMessage("You have marked a new location on " + world.getName() + " at: " + loc.getBlockX() + ", " + loc.getBlockY() + ", " + loc.getBlockZ());
 
             //plugin.getCharacterManager().saveHero(hero, false); (remove this as its now being saved with skillsettings.
             hero.getPlayer().getWorld().playSound(hero.getPlayer().getLocation(), Sound.ENTITY_WITHER_SPAWN, 0.5F, 1.0F);
@@ -189,6 +193,8 @@ public class SkillMark extends ActiveSkill {
     }
 
     public static void clearStoredData(ConfigurationSection skillSettings) {
+        if (skillSettings == null)
+            return;
         skillSettings.set("server", null);
         skillSettings.set("world", null);
         skillSettings.set("x", null);
@@ -233,8 +239,11 @@ public class SkillMark extends ActiveSkill {
     public static World getValidWorld(ConfigurationSection skillSetting, String playerName) {
         World world = null;
 
-        if (skillSetting != null && StringUtils.isNotEmpty(skillSetting.getString("world"))) {
-            world = Bukkit.getServer().getWorld(skillSetting.getString("world"));
+        if (skillSetting != null) {
+            final String worldName = skillSetting.getString("world");
+            if (StringUtils.isNotEmpty(worldName)) {
+                world = Bukkit.getServer().getWorld(worldName);
+            }
         }
 
         Player player = Bukkit.getPlayer(playerName);
