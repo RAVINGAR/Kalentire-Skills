@@ -317,7 +317,7 @@ public class SkillRecall extends ActiveSkill implements Listener {
             return SkillResult.SKIP_POST_USAGE;
         }
 
-        boolean ignoreRegionPlugins = skillSettings.getBoolean("ignore-region-plugins");
+        boolean ignoreRegionPlugins = SkillConfigManager.getUseSetting(hero, this, "ignore-region-plugins", false);
         Location teleportLocation = new Location(world, xyzyp[0], xyzyp[1], xyzyp[2], (float) xyzyp[3], (float) xyzyp[4]);
 
         // Validate Towny
@@ -451,10 +451,11 @@ public class SkillRecall extends ActiveSkill implements Listener {
     }
 
     private boolean isRemoteServerLocation(ConfigurationSection skillSettings) {
-
-        return skillSettings != null && StringUtils.isNotEmpty(skillSettings.getString("server"))
-                && !skillSettings.getString("server").equals(plugin.getServerName())
-                && plugin.getServerNames().contains(skillSettings.getString("server"));
+        if (skillSettings != null) {
+            String serverName = skillSettings.getString("server");
+            return StringUtils.isNotEmpty(serverName) && !serverName.equals(plugin.getServerName()) && plugin.getServerNames().contains(serverName);
+        }
+        return false;
     }
 
     private boolean isValidUses(String uses, Player player) {
