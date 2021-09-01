@@ -23,6 +23,7 @@ import org.bukkit.inventory.meta.ItemMeta;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.logging.Level;
 
 public class SkillRepair extends ActiveSkill {
 
@@ -71,6 +72,9 @@ public class SkillRepair extends ActiveSkill {
         node.set("flint-steel", 1);
         node.set("netherite-armor-cost", 1);
         node.set("netherite-tool-cost", 1);
+        node.set("trident", 1);
+        node.set("trident-material", "GOLD_INGOT");
+        node.set("trident-max-cost", 2);
         node.set("additional-cost-per-enchantment-levels", 1);
         node.set("unchant-chance", .5);
         node.set("unchant-chance-reduce", .005);
@@ -108,7 +112,7 @@ public class SkillRepair extends ActiveSkill {
         }
         Material isType = is.getType();
         int level = getRequiredLevel(hero, isType);
-        Material reagent = getRequiredReagent(isType);
+        Material reagent = getRequiredReagent(hero, isType);
         final ItemMeta itemMeta = is.getItemMeta();
 
         if (level == -1 || reagent == null || !(itemMeta instanceof Damageable)) { // note implies itemMeta == null
@@ -140,43 +144,45 @@ public class SkillRepair extends ActiveSkill {
         }
 
         ItemStack reagentStack = null;
-        if (reagent == Material.OAK_PLANKS){
-            //Handle all wood variants as a reagent
-            List<Material> woodMaterials = new ArrayList<Material>();
-            woodMaterials.add(Material.OAK_PLANKS);
-            woodMaterials.add(Material.BIRCH_PLANKS);
-            woodMaterials.add(Material.SPRUCE_PLANKS);
-            woodMaterials.add(Material.JUNGLE_PLANKS);
-            woodMaterials.add(Material.ACACIA_PLANKS);
-            woodMaterials.add(Material.DARK_OAK_PLANKS);
-            woodMaterials.add(Material.CRIMSON_PLANKS);
-            woodMaterials.add(Material.WARPED_PLANKS);
+        if (repairCost > 0) {
+            if (reagent == Material.OAK_PLANKS) {
+                //Handle all wood variants as a reagent
+                List<Material> woodMaterials = new ArrayList<Material>();
+                woodMaterials.add(Material.OAK_PLANKS);
+                woodMaterials.add(Material.BIRCH_PLANKS);
+                woodMaterials.add(Material.SPRUCE_PLANKS);
+                woodMaterials.add(Material.JUNGLE_PLANKS);
+                woodMaterials.add(Material.ACACIA_PLANKS);
+                woodMaterials.add(Material.DARK_OAK_PLANKS);
+                woodMaterials.add(Material.CRIMSON_PLANKS);
+                woodMaterials.add(Material.WARPED_PLANKS);
 
-            boolean hasReagant = false;
-            for (Material woodMaterial : woodMaterials) {
-                reagentStack = new ItemStack(woodMaterial, repairCost);
-                hasReagant = hasReagentCost(player, reagentStack);
-                if (hasReagant){
-                    // Found valid wood reagent that the player has
-                    break;
+                boolean hasReagant = false;
+                for (Material woodMaterial : woodMaterials) {
+                    reagentStack = new ItemStack(woodMaterial, repairCost);
+                    hasReagant = hasReagentCost(player, reagentStack);
+                    if (hasReagant) {
+                        // Found valid wood reagent that the player has
+                        break;
+                    }
                 }
-            }
 
-            if (!hasReagant) {
-                String planksString = MaterialUtil.getFriendlyName(Material.OAK_PLANKS)
-                        + " or " + MaterialUtil.getFriendlyName(Material.BIRCH_PLANKS)
-                        + " or " + MaterialUtil.getFriendlyName(Material.SPRUCE_PLANKS)
-                        + " or " + MaterialUtil.getFriendlyName(Material.JUNGLE_PLANKS)
-                        + " or " + MaterialUtil.getFriendlyName(Material.ACACIA_PLANKS)
-                        + " or " + MaterialUtil.getFriendlyName(Material.DARK_OAK_PLANKS)
-                        + " or " + MaterialUtil.getFriendlyName(Material.CRIMSON_PLANKS)
-                        + " or " + MaterialUtil.getFriendlyName(Material.WARPED_PLANKS);
-                return new SkillResult(ResultType.MISSING_REAGENT, true, repairCost, planksString);
-            }
-        } else {
-            reagentStack = new ItemStack(reagent, repairCost);
-            if (!hasReagentCost(player, reagentStack)) {
-                return new SkillResult(ResultType.MISSING_REAGENT, true, reagentStack.getAmount(), MaterialUtil.getFriendlyName(reagentStack.getType()));
+                if (!hasReagant) {
+                    String planksString = MaterialUtil.getFriendlyName(Material.OAK_PLANKS)
+                            + " or " + MaterialUtil.getFriendlyName(Material.BIRCH_PLANKS)
+                            + " or " + MaterialUtil.getFriendlyName(Material.SPRUCE_PLANKS)
+                            + " or " + MaterialUtil.getFriendlyName(Material.JUNGLE_PLANKS)
+                            + " or " + MaterialUtil.getFriendlyName(Material.ACACIA_PLANKS)
+                            + " or " + MaterialUtil.getFriendlyName(Material.DARK_OAK_PLANKS)
+                            + " or " + MaterialUtil.getFriendlyName(Material.CRIMSON_PLANKS)
+                            + " or " + MaterialUtil.getFriendlyName(Material.WARPED_PLANKS);
+                    return new SkillResult(ResultType.MISSING_REAGENT, true, repairCost, planksString);
+                }
+            } else {
+                reagentStack = new ItemStack(reagent, repairCost);
+                if (!hasReagentCost(player, reagentStack)) {
+                    return new SkillResult(ResultType.MISSING_REAGENT, true, reagentStack.getAmount(), MaterialUtil.getFriendlyName(reagentStack.getType()));
+                }
             }
         }
 
@@ -195,8 +201,10 @@ public class SkillRepair extends ActiveSkill {
         ((Damageable)itemMeta).setDamage(0); // repair item
         is.setItemMeta(itemMeta); // apply meta changes
 
-        player.getInventory().removeItem(reagentStack);
-        Util.syncInventory(player, plugin);
+        if (reagentStack != null) {
+            player.getInventory().removeItem(reagentStack);
+            Util.syncInventory(player, plugin);
+        }
         hero.getPlayer().getWorld().playSound(hero.getPlayer().getLocation(), Sound.BLOCK_ANVIL_USE, 0.6F, 1.0F);
         //hero.getPlayer().getWorld().spigot().playEffect(hero.getPlayer().getLocation().add(0, 0.6, 0), org.bukkit.Effect.ITEM_BREAK, Material.DIAMOND_SWORD.getId(), 0, 0.1F, 0.1F, 0.1F, 0.0F, 15, 16);
         String message = useText.replace("%hero%", player.getName())
@@ -212,6 +220,12 @@ public class SkillRepair extends ActiveSkill {
         switch (mat) {
             case BOW:
                 amt = (int) ((is.getDurability() / (double) mat.getMaxDurability()) * 2.0);
+                return amt < 1 ? 1 : amt;
+            case TRIDENT:
+                int cost = SkillConfigManager.getUseSetting(hero, this, "trident-max-cost", 2, true);
+                if (cost <= 0)
+                    return 0;
+                amt = (int) ((is.getDurability() / (double) mat.getMaxDurability()) * cost);
                 return amt < 1 ? 1 : amt;
             case NETHERITE_CHESTPLATE:
             case NETHERITE_LEGGINGS:
@@ -334,12 +348,14 @@ public class SkillRepair extends ActiveSkill {
                 return SkillConfigManager.getUseSetting(hero, this, "leather-armor", 1, true);
             case FISHING_ROD:
                 return SkillConfigManager.getUseSetting(hero, this, "fishing-rod", 1, true);
+            case TRIDENT:
+                return SkillConfigManager.getUseSetting(hero, this, "trident", 1, true);
             default:
                 return -1;
         }
     }
 
-    private Material getRequiredReagent(Material material) {
+    private Material getRequiredReagent(Hero hero, Material material) {
         switch (material) {
             case WOODEN_SWORD:
             case WOODEN_AXE:
@@ -410,6 +426,13 @@ public class SkillRepair extends ActiveSkill {
             case CHAINMAIL_BOOTS:
             case CHAINMAIL_LEGGINGS:
                 return Material.IRON_BARS;
+            case TRIDENT:
+                final String materialName = SkillConfigManager.getUseSetting(hero, this, "trident-material", "GOLD_INGOT");
+                final Material reagent = Material.matchMaterial(materialName);
+                if (reagent == null) {
+                    Heroes.debugLog(Level.WARNING, "Invalid Trident reagent material: " + materialName);
+                }
+                return reagent; // may be null
             default:
                 return null;
         }

@@ -108,6 +108,11 @@ public class SkillWardStone extends SkillBaseRunestone {
         // Add protection to map
         int duration = SkillConfigManager.getUseSettingInt(hero, this, SkillSetting.DURATION, false);
         regionCoordsProtectionInfoMap.put(regionCoords, new ProtectionInfo(System.currentTimeMillis(), player, duration));
+
+        // TODO make this persist through restarts, probably through use of hero.setSkillSetting() (Stores in memory and database)
+        // Possibly only do this on plugin unloading
+        //ConfigurationSection skillSettings = hero.getSkillSettings(skillSettingsName);
+
         return true; // used
     }
 
