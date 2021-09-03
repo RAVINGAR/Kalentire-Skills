@@ -402,14 +402,14 @@ public class SkillOvergrowth extends TargettedLocationSkill {
                 boolean isUpperLevel = block.getY() >= (data.getTopY() - (data.getDistance() * 0.15d));
 
                 if (isTopLevel) {
-                    block.setType(Material.LEAVES);
+                    block.setType(Material.OAK_LEAVES);
                 } else {
                     int chance = random.nextInt(100);
                     if (chance >= 20) {
                         if (isUpperLevel) {
-                            block.setType(Material.LEAVES);
+                            block.setType(Material.OAK_LEAVES);
                         } else if (isBlockWithinFlatCircle(block, data.getCenterFor(block), (int) (data.radius * 0.60))) {
-                            block.setType(Material.LOG);
+                            block.setType(Material.OAK_LOG);
                         } else {
                             continue;
                         }

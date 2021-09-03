@@ -12,6 +12,8 @@ import com.herocraftonline.heroes.characters.skill.SkillSetting;
 import com.herocraftonline.heroes.characters.skill.SkillType;
 import com.herocraftonline.heroes.characters.skill.TargettedSkill;
 import com.herocraftonline.heroes.util.Util;
+import org.bukkit.Color;
+import org.bukkit.Particle;
 import org.bukkit.Sound;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.LivingEntity;
@@ -92,13 +94,9 @@ public class SkillBlackjack extends TargettedSkill {
         CharacterTemplate targetCT = plugin.getCharacterManager().getCharacter(target);
 
         addSpellTarget(target, hero);
-        if (isStealthy) {
-            damageEntity(target, player, stealthyDamage, EntityDamageEvent.DamageCause.ENTITY_ATTACK, false);
-            targetCT.addEffect(new StunEffect(this, player, stealthyDuration));
-        } else {
-            damageEntity(target, player, damage, EntityDamageEvent.DamageCause.ENTITY_ATTACK, false);
-            targetCT.addEffect(new StunEffect(this, player, duration));
-        }
+        damageEntity(target, player, isStealthy ? stealthyDamage : damage,
+                EntityDamageEvent.DamageCause.ENTITY_ATTACK, false);
+        targetCT.addEffect(new StunEffect(this, player, isStealthy ? stealthyDuration : duration));
 
         // Remove any invis effects the player may have on them at the time of use.
         for (final Effect effect : hero.getEffects()) {
@@ -108,8 +106,8 @@ public class SkillBlackjack extends TargettedSkill {
         }
 
         player.getWorld().playSound(player.getLocation(), Sound.BLOCK_WOODEN_DOOR_CLOSE, 0.4F, 0.4F);
-        player.getWorld().spigot().playEffect(target.getLocation().add(0, 0.5, 0), org.bukkit.Effect.COLOURED_DUST, 0, 0, 0, 0, 0, 1, 150, 16);
-//        player.getWorld().spawnParticle(Particle.REDSTONE, target.getLocation().add(0, 0.5, 0), 150, 0, 0, 0, 1, new Particle.DustOptions(Color.BLACK, 1));
+        //player.getWorld().spigot().playEffect(target.getLocation().add(0, 0.5, 0), org.bukkit.Effect.COLOURED_DUST, 0, 0, 0, 0, 0, 1, 150, 16);
+        player.getWorld().spawnParticle(Particle.REDSTONE, target.getLocation().add(0, 0.5, 0), 150, 0, 0, 0, 1, new Particle.DustOptions(Color.BLACK, 1));
         return SkillResult.NORMAL;
     }
 }
