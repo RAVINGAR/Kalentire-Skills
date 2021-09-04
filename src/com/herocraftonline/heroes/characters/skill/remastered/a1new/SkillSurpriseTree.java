@@ -1,4 +1,4 @@
-package com.herocraftonline.heroes.characters.skill.remastered.a1new.conflicting;
+package com.herocraftonline.heroes.characters.skill.remastered.a1new;
 
 import com.herocraftonline.heroes.Heroes;
 import com.herocraftonline.heroes.api.SkillResult;
@@ -31,21 +31,22 @@ import org.bukkit.util.Vector;
 
 import java.util.*;
 
-public class SkillOvergrowth extends TargettedLocationSkill {
+public class SkillSurpriseTree extends TargettedLocationSkill {
 
     private static final Random random = new Random(System.currentTimeMillis());
+    private static final String toggleableEffectName = "SurpriseTree";
 
-    public SkillOvergrowth(Heroes plugin) {
-        super(plugin, "Overgrowth");
-        setDescription("Create a large overgrowth in front of you that is $1 blocks wide and $2 blocks tall. " +
-                "Anyone that is near the overgrowth when it grows will be transported on top of it. " +
-                "The overgrowth lasts for a maximum of $3 seconds, and anyone that remains on top of it when it ends will be granted safety from fall damage.");
-        setUsage("/skill overgrowth");
-        setIdentifiers("skill overgrowth");
+    public SkillSurpriseTree(Heroes plugin) {
+        super(plugin, "SurpriseTree");
+        setDescription("Create a large Surprise Tree in front of you that is $1 blocks wide and $2 blocks tall. " +
+                "Anyone that is near the Surprise Tree when it grows will be transported on top of it. " +
+                "The Surprise Tree lasts for a maximum of $3 seconds, and anyone that remains on top of it when it ends will be granted safety from fall damage.");
+        setUsage("/skill surprisetree");
+        setIdentifiers("skill surprisetree", "skill suprisetree", "skill stree", "skill druidtree"); // 2nd one is to help typos work
         setArgumentRange(0, 0);
         setTypes(SkillType.ABILITY_PROPERTY_EARTH, SkillType.SILENCEABLE, SkillType.BLOCK_CREATING);
 
-        setToggleableEffectName("Overgrowth");
+        setToggleableEffectName(toggleableEffectName);
     }
 
     public String getDescription(Hero hero) {
@@ -86,7 +87,7 @@ public class SkillOvergrowth extends TargettedLocationSkill {
 
         OvergrowthConstructionData overgrowthConstructionData = tryGetOvergrowthConstructionData(hero, targetBlock, heightWithoutBaseBlock, radius);
         if (overgrowthConstructionData == null) {
-            player.sendMessage("Unable to fit an overgrowth at this location.");
+            player.sendMessage("Unable to fit a Surprise Tree at this location.");
             return SkillResult.INVALID_TARGET_NO_MSG;
         }
 
@@ -359,7 +360,7 @@ public class SkillOvergrowth extends TargettedLocationSkill {
         private SkillBlockListener listener = new SkillBlockListener();
 
         OvergrowthEffect(Skill skill, Player applier, long duration, OvergrowthConstructionData data) {
-            super(skill, "Overgrowth", applier, duration);
+            super(skill, toggleableEffectName, applier, duration);
             this.data = data;
 
             types.add(EffectType.BENEFICIAL);
@@ -425,7 +426,7 @@ public class SkillOvergrowth extends TargettedLocationSkill {
                 Location onPillarLoc = new Location(entLoc.getWorld(), entLoc.getX(), data.getTopY() + 1, entLoc.getZ(), entLoc.getYaw(), entLoc.getPitch());
                 entity.teleport(onPillarLoc, PlayerTeleportEvent.TeleportCause.PLUGIN);
                 if (entity instanceof Player) {
-                    entity.sendMessage("    " + ChatComponents.GENERIC_SKILL + ChatColor.GOLD + "You've been caught by an Overgrowth! " +
+                    entity.sendMessage("    " + ChatComponents.GENERIC_SKILL + ChatColor.GOLD + "You've been caught by a Surprise Tree! " +
                             "Stay on the tree to avoid fall damage!");
                 }
             }
