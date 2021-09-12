@@ -197,9 +197,13 @@ public class SkillRepair extends ActiveSkill {
                 lost = true;
             }
         }
+        // Old repair approach (doesn't consider custom durability)
         //is.setDurability((short) 0);
-        ((Damageable)itemMeta).setDamage(0); // repair item
-        is.setItemMeta(itemMeta); // apply meta changes
+//        ((Damageable)itemMeta).setDamage(0); // repair item
+//        is.setItemMeta(itemMeta); // apply meta changes
+
+        // Repair item (applies meta changes too)
+        Util.repairItem(plugin, is, itemMeta);
 
         if (reagentStack != null) {
             player.getInventory().removeItem(reagentStack);
