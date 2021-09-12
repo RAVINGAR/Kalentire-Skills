@@ -1,4 +1,4 @@
-package com.herocraftonline.heroes.characters.skill.remastered.ranger;
+package com.herocraftonline.heroes.characters.skill.remastered.ranger.legacy;
 
 import com.herocraftonline.heroes.Heroes;
 import com.herocraftonline.heroes.api.SkillResult;
