@@ -10,6 +10,7 @@ import com.herocraftonline.heroes.characters.effects.EffectType;
 import com.herocraftonline.heroes.characters.effects.PeriodicExpirableEffect;
 import com.herocraftonline.heroes.characters.skill.*;
 import com.herocraftonline.heroes.chat.ChatComponents;
+import com.herocraftonline.heroes.util.GeometryUtil;
 import com.herocraftonline.heroes.util.Util;
 import org.bukkit.*;
 import org.bukkit.configuration.ConfigurationSection;
@@ -18,7 +19,7 @@ import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.entity.EntityDamageEvent.DamageCause;
 
-import java.util.ArrayList;
+import java.util.List;
 
 //TODO change to passive
 public class SkillHolyAura extends ActiveSkill {
@@ -147,24 +148,6 @@ public class SkillHolyAura extends ActiveSkill {
         public void tickHero(Hero hero) {
             healNerby(hero);
         }
-        
-        public ArrayList<Location> circle(Location centerPoint, int particleAmount, double circleRadius)
-    	{
-    		World world = centerPoint.getWorld();
-
-    		double increment = (2 * Math.PI) / particleAmount;
-
-    		ArrayList<Location> locations = new ArrayList<Location>();
-
-    		for (int i = 0; i < particleAmount; i++)
-    		{
-    			double angle = i * increment;
-    			double x = centerPoint.getX() + (circleRadius * Math.cos(angle));
-    			double z = centerPoint.getZ() + (circleRadius * Math.sin(angle));
-    			locations.add(new Location(world, x, centerPoint.getY(), z));
-    		}
-    		return locations;
-    	}
 
         private void healNerby(Hero hero) {
 
@@ -175,7 +158,7 @@ public class SkillHolyAura extends ActiveSkill {
             
     		for (double r = 1; r < radius * 2; r++)
     		{
-    			ArrayList<Location> particleLocations = circle(player.getLocation(), 36, r / 2);
+    			List<Location> particleLocations = GeometryUtil.circle(player.getLocation(), 36, r / 2);
     			for (int i = 0; i < particleLocations.size(); i++)
     			{
     				//player.getWorld().spigot().playEffect(particleLocations.get(i), Effect.FIREWORKS_SPARK, 0, 0, 0, 0.1F, 0, 0.1F, 1, 16);

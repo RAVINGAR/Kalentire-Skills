@@ -8,6 +8,7 @@ import com.herocraftonline.heroes.characters.skill.ActiveSkill;
 import com.herocraftonline.heroes.characters.skill.SkillConfigManager;
 import com.herocraftonline.heroes.characters.skill.SkillSetting;
 import com.herocraftonline.heroes.characters.skill.SkillType;
+import com.herocraftonline.heroes.util.GeometryUtil;
 import org.bukkit.Location;
 import org.bukkit.Particle;
 import org.bukkit.Sound;
@@ -54,24 +55,6 @@ public class SkillPulse extends ActiveSkill {
 
         return node;
     }
-    
-    public ArrayList<Location> circle(Location centerPoint, int particleAmount, double circleRadius)
-	{
-		World world = centerPoint.getWorld();
-
-		double increment = (2 * Math.PI) / particleAmount;
-
-		ArrayList<Location> locations = new ArrayList<Location>();
-
-		for (int i = 0; i < particleAmount; i++)
-		{
-			double angle = i * increment;
-			double x = centerPoint.getX() + (circleRadius * Math.cos(angle));
-			double z = centerPoint.getZ() + (circleRadius * Math.sin(angle));
-			locations.add(new Location(world, x, centerPoint.getY(), z));
-		}
-		return locations;
-	}
 
     @Override
     public SkillResult use(Hero hero, String[] args) {
@@ -110,7 +93,7 @@ public class SkillPulse extends ActiveSkill {
         
         for (double r = 1; r < radius * 2; r++)
 		{
-			ArrayList<Location> particleLocations = circle(player.getLocation(), 45, r / 2);
+			List<Location> particleLocations = GeometryUtil.circle(player.getLocation(), 45, r / 2);
 			for (int i = 0; i < particleLocations.size(); i++)
 			{
 				//player.getWorld().spigot().playEffect(particleLocations.get(i), Effect.MAGIC_CRIT, 0, 0, 0, 0.1F, 0, 0.1F, 1, 16);
