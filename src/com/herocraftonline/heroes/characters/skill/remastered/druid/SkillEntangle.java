@@ -11,6 +11,7 @@ import com.herocraftonline.heroes.characters.skill.SkillSetting;
 import com.herocraftonline.heroes.characters.skill.SkillType;
 import com.herocraftonline.heroes.characters.skill.TargettedSkill;
 import com.herocraftonline.heroes.chat.ChatComponents;
+import com.herocraftonline.heroes.util.GeometryUtil;
 import com.herocraftonline.heroes.util.Util;
 import org.bukkit.*;
 import org.bukkit.configuration.ConfigurationSection;
@@ -21,7 +22,7 @@ import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityDamageEvent;
 
-import java.util.ArrayList;
+import java.util.List;
 
 public class SkillEntangle extends TargettedSkill {
 
@@ -70,24 +71,6 @@ public class SkillEntangle extends TargettedSkill {
 		expireText = SkillConfigManager.getRaw(this, SkillSetting.EXPIRE_TEXT, ChatComponents.GENERIC_SKILL + "%target% has broken free from the root!").replace("%target%", "$1");
 	}
 
-	public ArrayList<Location> circle(Location centerPoint, int particleAmount, double circleRadius)
-	{
-		World world = centerPoint.getWorld();
-
-		double increment = (2 * Math.PI) / particleAmount;
-
-		ArrayList<Location> locations = new ArrayList<Location>();
-
-		for (int i = 0; i < particleAmount; i++)
-		{
-			double angle = i * increment;
-			double x = centerPoint.getX() + (circleRadius * Math.cos(angle));
-			double z = centerPoint.getZ() + (circleRadius * Math.sin(angle));
-			locations.add(new Location(world, x, centerPoint.getY(), z));
-		}
-		return locations;
-	}
-
 	@Override
 	public SkillResult use(Hero hero, LivingEntity target, String[] args) {
 
@@ -109,7 +92,7 @@ public class SkillEntangle extends TargettedSkill {
 
 		player.getWorld().playSound(player.getLocation(), Sound.ENTITY_ZOMBIE_BREAK_WOODEN_DOOR, 0.8F, 1.0F);
 
-		ArrayList<Location> particleLocations = circle(player.getLocation(), 36, 1.5);
+		List<Location> particleLocations = GeometryUtil.circle(player.getLocation(), 36, 1.5);
 		for (int i = 0; i < particleLocations.size(); i++)
 		{
 			//player.getWorld().spigot().playEffect(particleLocations.get(i), Effect.TILE_BREAK, Material.WOOD.getId(), 0, 0, 0.1F, 0, 0.0F, 1, 16);

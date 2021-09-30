@@ -175,4 +175,5 @@ public class SkillRegrowth extends TargettedSkill {
             player.getWorld().spawnParticle(Particle.VILLAGER_HAPPY, player.getLocation(), 25, 0.5, 1, 0.5, 1);
         }
     }
+
 }

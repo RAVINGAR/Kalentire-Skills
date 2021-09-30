@@ -1,4 +1,4 @@
-package com.herocraftonline.heroes.characters.skill.remastered.druid;
+package com.herocraftonline.heroes.characters.skill.remastered.a1new;
 
 import com.herocraftonline.heroes.Heroes;
 import com.herocraftonline.heroes.api.SkillResult;
@@ -20,6 +20,8 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityDamageEvent.DamageCause;
 
 public class SkillMight extends ActiveSkill {
+    public static final String SKILL_MESSAGE_PREFIX_SPACES = "    ";
+
     private String applyText;
     private String expireText;
 
@@ -47,6 +49,7 @@ public class SkillMight extends ActiveSkill {
         ConfigurationSection node = super.getDefaultConfig();
 
         node.set("damage-bonus", 1.20);
+        node.set(SkillSetting.COOLDOWN.node(), 60000);
         node.set(SkillSetting.RADIUS.node(), 10);
         node.set(SkillSetting.APPLY_TEXT.node(), ChatComponents.GENERIC_SKILL + "Your muscles bulge with power!");
         node.set(SkillSetting.EXPIRE_TEXT.node(), ChatComponents.GENERIC_SKILL + "You feel strength leave your body!");
@@ -59,8 +62,8 @@ public class SkillMight extends ActiveSkill {
     public void init() {
         super.init();
 
-        applyText = SkillConfigManager.getRaw(this, SkillSetting.APPLY_TEXT, ChatComponents.GENERIC_SKILL + "Your muscles bulge with power!");
-        expireText = SkillConfigManager.getRaw(this, SkillSetting.EXPIRE_TEXT, ChatComponents.GENERIC_SKILL + "You feel strength leave your body!");
+        applyText = SKILL_MESSAGE_PREFIX_SPACES + SkillConfigManager.getRaw(this, SkillSetting.APPLY_TEXT, ChatComponents.GENERIC_SKILL + "Your muscles bulge with power!");
+        expireText = SKILL_MESSAGE_PREFIX_SPACES + SkillConfigManager.getRaw(this, SkillSetting.EXPIRE_TEXT, ChatComponents.GENERIC_SKILL + "You feel strength leave your body!");
     }
 
     @Override
@@ -69,7 +72,7 @@ public class SkillMight extends ActiveSkill {
 
         broadcastExecuteText(hero);
 
-        int duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, 180000, false);
+        int duration = SkillConfigManager.getScaledUseSettingInt(hero, this, SkillSetting.DURATION, false);
         double damageBonus = SkillConfigManager.getUseSetting(hero, this, "damage-bonus", 1.20, false);
 
         MightEffect mEffect = new MightEffect(this, player, duration, damageBonus);
@@ -80,10 +83,9 @@ public class SkillMight extends ActiveSkill {
                 }
             }
             hero.addEffect(mEffect);
-        }
-        else {
-            int range = SkillConfigManager.getUseSetting(hero, this, SkillSetting.RADIUS, 10, false);
-            int rangeSquared = range * range;
+        } else {
+            double range = SkillConfigManager.getScaledUseSettingDouble(hero, this, SkillSetting.RADIUS, false);
+            double rangeSquared = range * range;
             Location loc = player.getLocation();
             for (Hero pHero : hero.getParty().getMembers()) {
                 Player pPlayer = pHero.getPlayer();

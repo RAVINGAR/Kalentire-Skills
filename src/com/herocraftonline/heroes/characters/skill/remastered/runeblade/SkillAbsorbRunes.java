@@ -44,6 +44,7 @@ import com.herocraftonline.heroes.characters.classes.HeroClass;
 import com.herocraftonline.heroes.characters.effects.ExpirableEffect;
 import com.herocraftonline.heroes.characters.skill.*;
 import com.herocraftonline.heroes.characters.skill.runes.*;
+import com.herocraftonline.heroes.util.GeometryUtil;
 import com.herocraftonline.heroes.util.Util;
 import org.bukkit.*;
 import org.bukkit.configuration.ConfigurationSection;
@@ -112,24 +113,6 @@ public class SkillAbsorbRunes extends ActiveSkill {
         return node;
     }
     
-    public ArrayList<Location> circle(Location centerPoint, int particleAmount, double circleRadius)
-	{
-		World world = centerPoint.getWorld();
-
-		double increment = (2 * Math.PI) / particleAmount;
-
-		ArrayList<Location> locations = new ArrayList<Location>();
-
-		for (int i = 0; i < particleAmount; i++)
-		{
-			double angle = i * increment;
-			double x = centerPoint.getX() + (circleRadius * Math.cos(angle));
-			double z = centerPoint.getZ() + (circleRadius * Math.sin(angle));
-			locations.add(new Location(world, x, centerPoint.getY(), z));
-		}
-		return locations;
-	}
-
     @Override
     public SkillResult use(Hero hero, String[] args) {
         // Check to see if the hero is contained within the hashmap and is actually allowed to use runeList
@@ -175,7 +158,7 @@ public class SkillAbsorbRunes extends ActiveSkill {
         // Save the altered list to the hashmap
         heroRunes.put(hero, runeList);
 
-        List<Location> circle = circle(player.getLocation(), 36, 1.5);
+        List<Location> circle = GeometryUtil.circle(player.getLocation(), 36, 1.5);
         for (int i = 0; i < circle.size(); i++)
 		{
         	//player.getWorld().spigot().playEffect(circle(player.getLocation().add(0, 1, 0), 36, 1.5).get(i), org.bukkit.Effect.FLYING_GLYPH, 0, 0, 0.0F, 0.0F, 0.0F, 0.0F, 1, 16);

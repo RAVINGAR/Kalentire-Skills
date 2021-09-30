@@ -9,6 +9,7 @@ import com.herocraftonline.heroes.characters.effects.EffectType;
 import com.herocraftonline.heroes.characters.effects.ExpirableEffect;
 import com.herocraftonline.heroes.characters.skill.*;
 import com.herocraftonline.heroes.chat.ChatComponents;
+import com.herocraftonline.heroes.util.GeometryUtil;
 import com.herocraftonline.heroes.util.Util;
 import org.bukkit.Location;
 import org.bukkit.Particle;
@@ -22,7 +23,7 @@ import org.bukkit.event.entity.EntityDamageEvent.DamageCause;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 
-import java.util.ArrayList;
+import java.util.List;
 
 public class SkillDespair extends ActiveSkill {
     private String applyText;
@@ -78,24 +79,6 @@ public class SkillDespair extends ActiveSkill {
         applyText = SkillConfigManager.getRaw(this, SkillSetting.APPLY_TEXT, ChatComponents.GENERIC_SKILL + "%hero% has blinded %target% with %skill%!").replace("%hero%", "$2").replace("%target%", "$1").replace("%skill%", "$3");
         expireText = SkillConfigManager.getRaw(this, SkillSetting.EXPIRE_TEXT, ChatComponents.GENERIC_SKILL + "%hero% has recovered their sight!").replace("%hero%", "$2").replace("%target%", "$1").replace("%skill%", "$3");
     }
-    
-    public ArrayList<Location> circle(Location centerPoint, int particleAmount, double circleRadius)
-	{
-		World world = centerPoint.getWorld();
-
-		double increment = (2 * Math.PI) / particleAmount;
-
-		ArrayList<Location> locations = new ArrayList<Location>();
-
-		for (int i = 0; i < particleAmount; i++)
-		{
-			double angle = i * increment;
-			double x = centerPoint.getX() + (circleRadius * Math.cos(angle));
-			double z = centerPoint.getZ() + (circleRadius * Math.sin(angle));
-			locations.add(new Location(world, x, centerPoint.getY(), z));
-		}
-		return locations;
-	}
 
     @Override
     public SkillResult use(Hero hero, String[] args) {
@@ -129,7 +112,7 @@ public class SkillDespair extends ActiveSkill {
         
 		for (double r = 1; r < radius * 2; r++)
 		{
-			ArrayList<Location> particleLocations = circle(player.getLocation(), 36, r / 2);
+			List<Location> particleLocations = GeometryUtil.circle(player.getLocation(), 36, r / 2);
 			for (int i = 0; i < particleLocations.size(); i++)
 			{
 				//player.getWorld().spigot().playEffect(particleLocations.get(i), Effect.SPELL, 0, 0, 0, 0.1F, 0, 0.0F, 1, 16);

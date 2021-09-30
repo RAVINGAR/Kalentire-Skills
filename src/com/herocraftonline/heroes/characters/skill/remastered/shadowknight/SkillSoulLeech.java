@@ -134,16 +134,27 @@ public class SkillSoulLeech extends TargettedSkill {
         public void tickMonster(Monster monster) {
             super.tickMonster(monster);
 
+            final LivingEntity entity = monster.getEntity();
+            if (entity.isDead() || entity.getHealth() <= 0) {
+                expire();
+                return;
+            }
+
             totalDamage += tickDamage;
-            playSound(monster.getEntity().getLocation());
+            playSound(entity.getLocation());
         }
 
         @Override
         public void tickHero(Hero hero) {
             super.tickHero(hero);
+            final Player player = hero.getPlayer();
+            if (player.isDead() || player.getHealth() <= 0) {
+                expire();
+                return;
+            }
 
             totalDamage += tickDamage;
-            playSound(hero.getPlayer().getLocation());
+            playSound(player.getLocation());
         }
 
         private void healApplier() {

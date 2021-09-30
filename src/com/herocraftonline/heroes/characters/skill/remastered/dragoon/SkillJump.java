@@ -5,9 +5,9 @@ import com.herocraftonline.heroes.Heroes;
 import com.herocraftonline.heroes.api.SkillResult;
 import com.herocraftonline.heroes.attributes.AttributeType;
 import com.herocraftonline.heroes.characters.Hero;
-import com.herocraftonline.heroes.characters.skill.ActiveSkill;
-import com.herocraftonline.heroes.characters.skill.SkillConfigManager;
-import com.herocraftonline.heroes.characters.skill.SkillType;
+import com.herocraftonline.heroes.characters.effects.EffectType;
+import com.herocraftonline.heroes.characters.effects.common.SafeFallEffect;
+import com.herocraftonline.heroes.characters.skill.*;
 import com.herocraftonline.heroes.characters.skill.ncp.NCPFunction;
 import com.herocraftonline.heroes.characters.skill.ncp.NCPUtils;
 import org.bukkit.Location;
@@ -17,6 +17,8 @@ import org.bukkit.Sound;
 import org.bukkit.block.BlockFace;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
+import org.bukkit.potion.PotionEffect;
+import org.bukkit.potion.PotionEffectType;
 import org.bukkit.util.Vector;
 
 import java.util.HashSet;
@@ -41,6 +43,7 @@ public class SkillJump extends ActiveSkill {
     @Override
     public ConfigurationSection getDefaultConfig() {
         ConfigurationSection config = super.getDefaultConfig();
+        config.set(SkillSetting.DURATION.node(), 2000);
         config.set("no-air-jump", false);
         config.set("horizontal-power", 1.0);
         config.set("horizontal-power-increase-per-dexterity", 0.0);
@@ -126,13 +129,15 @@ public class SkillJump extends ActiveSkill {
 
         player.getWorld().playSound(player.getLocation(), Sound.ENTITY_ENDER_DRAGON_FLAP, 0.5F, 1.0F);
         player.getWorld().spawnParticle(Particle.CLOUD, player.getLocation(), 25, 0, 0.1, 0, 0.5);
-
+        int duration = (int) SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION.node(), 5000, false);
+        hero.addEffect(new JumpEffect(this, player, duration));
         return SkillResult.NORMAL;
     }
 
     private void jump(Player player, Vector velocity) {
         player.setVelocity(velocity);
         player.setFallDistance(-8f);
+
     }
 
     private static final Set<Material> requiredMaterials;
@@ -148,5 +153,15 @@ public class SkillJump extends ActiveSkill {
         requiredMaterials.add(Material.ACACIA_LEAVES);
         requiredMaterials.add(Material.SPRUCE_LEAVES);
         requiredMaterials.add(Material.SOUL_SAND);
+    }
+    private class JumpEffect extends SafeFallEffect {
+        JumpEffect(Skill skill, Player applier, long duration) {
+            super(skill, applier, duration, null, null);
+            types.add(EffectType.BENEFICIAL);
+            types.add(EffectType.HARMFUL);
+            types.add(EffectType.PHYSICAL);
+            types.add(EffectType.STAMINA_FREEZING);
+
+        }
     }
 }

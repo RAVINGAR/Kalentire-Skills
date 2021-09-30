@@ -10,6 +10,7 @@ import com.herocraftonline.heroes.characters.effects.EffectType;
 import com.herocraftonline.heroes.characters.effects.PeriodicExpirableEffect;
 import com.herocraftonline.heroes.characters.skill.*;
 import com.herocraftonline.heroes.chat.ChatComponents;
+import com.herocraftonline.heroes.util.GeometryUtil;
 import com.herocraftonline.heroes.util.Util;
 import org.bukkit.Location;
 import org.bukkit.Particle;
@@ -81,24 +82,6 @@ public class SkillWhirlwind extends ActiveSkill {
 		expireText = SkillConfigManager.getRaw(this, SkillSetting.EXPIRE_TEXT, ChatComponents.GENERIC_SKILL + "%hero% is no longer whirlwinding!").replace("%hero%", "$1");
 	}
 
-	public ArrayList<Location> circle(Location centerPoint, int particleAmount, double circleRadius)
-	{
-		World world = centerPoint.getWorld();
-
-		double increment = (2 * Math.PI) / particleAmount;
-
-		ArrayList<Location> locations = new ArrayList<Location>();
-
-		for (int i = 0; i < particleAmount; i++)
-		{
-			double angle = i * increment;
-			double x = centerPoint.getX() + (circleRadius * Math.cos(angle));
-			double z = centerPoint.getZ() + (circleRadius * Math.sin(angle));
-			locations.add(new Location(world, x, centerPoint.getY(), z));
-		}
-		return locations;
-	}
-
 	@Override
 	public SkillResult use(Hero hero, String[] args) {
 		Player player = hero.getPlayer();
@@ -158,7 +141,7 @@ public class SkillWhirlwind extends ActiveSkill {
 			// TORNADOOOO
 			for (int h = 0; h < 2; h++)
 			{
-				ArrayList<Location> locations = circle(player.getLocation(), 36, (double) h + 1.2);
+				List<Location> locations = GeometryUtil.circle(player.getLocation(), 36, (double) h + 1.2);
 				for (int i = 0; i < locations.size(); i++)
 				{
 					//player.getWorld().spigot().playEffect(locations.get(i).add(0, (double) h + 0.2, 0), org.bukkit.Effect.CLOUD, 0, 0, 0, 0, 0, 0, 8, 16);

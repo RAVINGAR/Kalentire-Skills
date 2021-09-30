@@ -14,6 +14,7 @@ import com.herocraftonline.heroes.characters.effects.common.SoundEffect.Song;
 import com.herocraftonline.heroes.characters.effects.common.SpeedEffect;
 import com.herocraftonline.heroes.characters.skill.*;
 import com.herocraftonline.heroes.chat.ChatComponents;
+import com.herocraftonline.heroes.util.GeometryUtil;
 import com.herocraftonline.heroes.util.Util;
 import org.bukkit.*;
 import org.bukkit.configuration.ConfigurationSection;
@@ -97,24 +98,6 @@ public class SkillAccelerando extends ActiveSkill {
         expireText = SkillConfigManager.getRaw(this, SkillSetting.EXPIRE_TEXT, ChatComponents.GENERIC_SKILL + "%hero% returned to normal speed!");
     }
 
-    public ArrayList<Location> circle(Location centerPoint, int particleAmount, double circleRadius)
-    {
-        World world = centerPoint.getWorld();
-
-        double increment = (2 * Math.PI) / particleAmount;
-
-        ArrayList<Location> locations = new ArrayList<Location>();
-
-        for (int i = 0; i < particleAmount; i++)
-        {
-            double angle = i * increment;
-            double x = centerPoint.getX() + (circleRadius * Math.cos(angle));
-            double z = centerPoint.getZ() + (circleRadius * Math.sin(angle));
-            locations.add(new Location(world, x, centerPoint.getY(), z));
-        }
-        return locations;
-    }
-
     @Override
     public SkillResult use(Hero hero, String[] args) {
 
@@ -139,7 +122,7 @@ public class SkillAccelerando extends ActiveSkill {
 
         Location playerLoc = player.getLocation();
 
-        List<Location> circle = circle(playerLoc, 72, radius);
+        List<Location> circle = GeometryUtil.circle(playerLoc, 72, radius);
         for (int i = 0; i < circle.size(); i++)
         {
             //player.getWorld().spigot().playEffect(circle(player.getLocation(), 72, radius).get(i), org.bukkit.Effect.NOTE, 0, 0, 0, 0.2F, 0, 1, 1, 20);

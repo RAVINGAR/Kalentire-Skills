@@ -9,6 +9,7 @@ import com.herocraftonline.heroes.characters.effects.EffectType;
 import com.herocraftonline.heroes.characters.effects.PeriodicEffect;
 import com.herocraftonline.heroes.characters.skill.*;
 import com.herocraftonline.heroes.chat.ChatComponents;
+import com.herocraftonline.heroes.util.GeometryUtil;
 import com.herocraftonline.heroes.util.Util;
 import org.bukkit.*;
 import org.bukkit.configuration.ConfigurationSection;
@@ -30,36 +31,35 @@ public class SkillDreadAura extends ActiveSkill {
 
     public SkillDreadAura(Heroes plugin) {
         super(plugin, "DreadAura");
-        setDescription("Emit an aura of Dread. While active, every $1 seconds you damage all enemies within $2 blocks for $3 dark damage, and are healed for $4% of damage dealt. Requires $5 mana to activate, $6 mana per tick to maintain this effect, and you cannot heal more than $7 health in a single instance.");
+        setDescription("Emit an aura of Dread. While active, every $1 seconds you damage all enemies within $2 blocks" +
+                " for $3 dark damage, and are healed for $4% of damage dealt. Requires $5 mana to activate, $6 mana " +
+                "per tick to maintain this effect, and you cannot heal more than $7 health in a single instance.");
         setUsage("/skill dreadaura");
         setArgumentRange(0, 0);
         setIdentifiers("skill dreadaura");
-        setTypes(SkillType.ABILITY_PROPERTY_MAGICAL, SkillType.DAMAGING, SkillType.AREA_OF_EFFECT, SkillType.ABILITY_PROPERTY_DARK, SkillType.HEALING, SkillType.BUFFING);
+        setTypes(SkillType.ABILITY_PROPERTY_MAGICAL, SkillType.DAMAGING, SkillType.AREA_OF_EFFECT,
+                SkillType.ABILITY_PROPERTY_DARK, SkillType.HEALING, SkillType.BUFFING);
     }
 
     @Override
     public String getDescription(Hero hero) {
         int period = SkillConfigManager.getUseSetting(hero, this, SkillSetting.PERIOD, 1500, false);
 
-        double damage = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE, 60, false);
-        double damageIncrease = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE_INCREASE_PER_INTELLECT, 1.0, false);
-        damage += damageIncrease * hero.getAttributeValue(AttributeType.INTELLECT);
+        double damage = SkillConfigManager.getScaledUseSettingDouble(hero, this, SkillSetting.DAMAGE, 60, false);
 
         int radius = SkillConfigManager.getUseSetting(hero, this, SkillSetting.RADIUS, 5, false);
-
         double healMult = SkillConfigManager.getUseSetting(hero, this, "heal-mult", 0.1, false);
-
         int maxHealing = SkillConfigManager.getUseSetting(hero, this, "maximum-healing-per-tick", 200, false);
-
         int manaActivate = SkillConfigManager.getUseSetting(hero, this, "mana-activate", 150, false);
-
         int manaTick = SkillConfigManager.getUseSetting(hero, this, "mana-tick", 13, false);
 
-        String formattedPeriod = Util.decFormat.format(period / 1000.0);
-        String formattedDamage = Util.decFormat.format(damage);
-        String formattedHealMult = Util.decFormat.format(healMult * 100.0);
-
-        return getDescription().replace("$1", formattedPeriod).replace("$2", radius + "").replace("$3", formattedDamage).replace("$4", formattedHealMult).replace("$5", manaActivate + "").replace("$6", manaTick + "").replace("$7", maxHealing + "");
+        return getDescription().replace("$1", Util.decFormat.format(period / 1000.0))
+                .replace("$2", radius + "")
+                .replace("$3", Util.decFormat.format(damage))
+                .replace("$4", Util.decFormat.format(healMult * 100.0))
+                .replace("$5", manaActivate + "")
+                .replace("$6", manaTick + "")
+                .replace("$7", maxHealing + "");
     }
 
     @Override
@@ -83,12 +83,14 @@ public class SkillDreadAura extends ActiveSkill {
     public void init() {
         super.init();
 
-        applyText = SkillConfigManager.getRaw(this, SkillSetting.APPLY_TEXT, ChatComponents.GENERIC_SKILL + "%hero% is emitting an aura of dread!");
-        expireText = SkillConfigManager.getRaw(this, SkillSetting.EXPIRE_TEXT, ChatComponents.GENERIC_SKILL + "%hero% is no longer emitting an aura of dread.");
+        applyText = SkillConfigManager.getRaw(this, SkillSetting.APPLY_TEXT,
+                ChatComponents.GENERIC_SKILL + "%hero% is emitting an aura of dread!").replace("%hero%", "$1");
+        expireText = SkillConfigManager.getRaw(this, SkillSetting.EXPIRE_TEXT,
+                ChatComponents.GENERIC_SKILL + "%hero% is no longer emitting an aura of dread.").replace("%hero%", "$1");
     }
 
     @Override
-    public SkillResult use(Hero hero, String args[]) {
+    public SkillResult use(Hero hero, String[] args) {
         if (hero.hasEffect("DreadAura")) {
             hero.removeEffect(hero.getEffect("DreadAura"));
             return SkillResult.REMOVED_EFFECT;
@@ -145,7 +147,7 @@ public class SkillDreadAura extends ActiveSkill {
             if (applyText != null && applyText.length() > 0) {
                 Player player = hero.getPlayer();
                 if (hero.hasEffectType(EffectType.SILENT_ACTIONS))
-                    player.sendMessage("    " + applyText.replace("%hero%", player.getName()));
+                    player.sendMessage("    " + applyText.replace("$1", player.getName()));
                 else
                     broadcast(player.getLocation(), "    " + applyText, player.getName());
             }
@@ -158,29 +160,11 @@ public class SkillDreadAura extends ActiveSkill {
             if (expireText != null && expireText.length() > 0) {
                 final Player player = hero.getPlayer();
                 if (hero.hasEffectType(EffectType.SILENT_ACTIONS))
-                    player.sendMessage("    " + expireText.replace("%hero%", player.getName()));
+                    player.sendMessage("    " + expireText.replace("$1", player.getName()));
                 else
                     broadcast(player.getLocation(), "    " + expireText, player.getName());
             }
         }
-        
-        public ArrayList<Location> circle(Location centerPoint, int particleAmount, double circleRadius)
-    	{
-    		World world = centerPoint.getWorld();
-
-    		double increment = (2 * Math.PI) / particleAmount;
-
-    		ArrayList<Location> locations = new ArrayList<Location>();
-
-    		for (int i = 0; i < particleAmount; i++)
-    		{
-    			double angle = i * increment;
-    			double x = centerPoint.getX() + (circleRadius * Math.cos(angle));
-    			double z = centerPoint.getZ() + (circleRadius * Math.sin(angle));
-    			locations.add(new Location(world, x, centerPoint.getY(), z));
-    		}
-    		return locations;
-    	}
 
         @Override
         public void tickHero(Hero hero) {
@@ -202,20 +186,15 @@ public class SkillDreadAura extends ActiveSkill {
             
             Player player = hero.getPlayer();
             
-    		for (double r = 1; r < radius * 2; r++)
-    		{
-    			ArrayList<Location> particleLocations = circle(player.getLocation(), 36, r / 2);
-    			for (int i = 0; i < particleLocations.size(); i++)
-    			{
+    		for (double r = 1; r < radius * 2; r++)	{
+    			List<Location> particleLocations = GeometryUtil.circle(player.getLocation(), 36, r / 2);
+    			for (int i = 0; i < particleLocations.size(); i++) {
     				//player.getWorld().spigot().playEffect(particleLocations.get(i), Effect.WITCH_MAGIC, 0, 0, 0, 0.1F, 0, 0.1F, 1, 16);
                     player.getWorld().spawnParticle(Particle.SPELL_WITCH, particleLocations.get(i), 1, 0, 0.1, 0, 0.1);
     			}
     		}
 
-            double damage = SkillConfigManager.getUseSetting(hero, skill, SkillSetting.DAMAGE, 60, false);
-            double damageIncrease = SkillConfigManager.getUseSetting(hero, skill, SkillSetting.DAMAGE_INCREASE_PER_INTELLECT, 1.0, false);
-            damage += damageIncrease * hero.getAttributeValue(AttributeType.INTELLECT);
-
+            double damage = SkillConfigManager.getScaledUseSettingDouble(hero, skill, SkillSetting.DAMAGE, 60, false);
             double totalHealthHealed = 0;
 
             List<Entity> entities = player.getNearbyEntities(radius, radius, radius);
@@ -239,7 +218,8 @@ public class SkillDreadAura extends ActiveSkill {
                         // Heroes.log(Level.INFO, "DreadAura Debug: Hit Cap. New HealthToHeal: " + healing);
                     }
 
-                    HeroRegainHealthEvent healEvent = new HeroRegainHealthEvent(hero, healing, skill);       // Bypass self heal nerf because this cannot be used on others.
+                    // Bypass self heal nerf because this cannot be used on others.
+                    HeroRegainHealthEvent healEvent = new HeroRegainHealthEvent(hero, healing, skill);
                     Bukkit.getPluginManager().callEvent(healEvent);
                     if (!healEvent.isCancelled()) {
                         double finalHealing = healEvent.getDelta();
