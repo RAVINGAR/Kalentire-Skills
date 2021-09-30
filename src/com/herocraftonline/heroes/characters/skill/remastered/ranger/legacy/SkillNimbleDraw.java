@@ -9,7 +9,6 @@ import com.herocraftonline.heroes.characters.skill.Skill;
 import com.herocraftonline.heroes.characters.skill.SkillConfigManager;
 import com.herocraftonline.heroes.characters.skill.SkillSetting;
 import com.herocraftonline.heroes.characters.skill.SkillType;
-import com.herocraftonline.heroes.util.Util;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -36,9 +35,7 @@ public class SkillNimbleDraw extends ActiveSkill {
     }
 
     public String getDescription(Hero hero) {
-        int duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, 10000, false);
-        String formattedDuration = Util.decFormat.format(duration / 1000.0D);
-        return getDescription().replace("$1", formattedDuration);
+        return getDescription();
     }
 
     public ConfigurationSection getDefaultConfig() {
