@@ -67,9 +67,19 @@ public class SkillPort extends ActiveSkill implements Listener, PluginMessageLis
 
         List<String> keys = new ArrayList<>(SkillConfigManager.getUseSettingKeys(hero, this, null));
 
+        // Strip non-world keys
+        for (SkillSetting setting : SkillSetting.values()) {
+            keys.remove(setting.node());
+        }
+        keys.remove("cross-world");
+        keys.remove("icon-url");
 
-        if (args.length < this.getMinArguments() || args.length > this.getMaxArguments()) {
-            player.sendMessage("You must specify a location when using this skill!");
+        boolean wrongArgCount = args.length < this.getMinArguments() || args.length > this.getMaxArguments();
+        if (wrongArgCount || args[0].equalsIgnoreCase("list")) {
+            if (wrongArgCount) {
+                player.sendMessage("You must specify a location when using this skill!");
+            }
+            player.sendMessage("Valid Locations: ");
             for (String n : keys) {
                 String retrievedNode = SkillConfigManager.getUseSetting(hero, this, n, (String) null);
                 if (retrievedNode != null) {
@@ -78,13 +88,6 @@ public class SkillPort extends ActiveSkill implements Listener, PluginMessageLis
             }
             return SkillResult.SKIP_POST_USAGE;
         }
-
-        // Strip non-world keys
-        for (SkillSetting setting : SkillSetting.values()) {
-            keys.remove(setting.node());
-        }
-        keys.remove("cross-world");
-        keys.remove("icon-url");
 
         String portInfo = SkillConfigManager.getUseSetting(hero, this, args[0].toLowerCase(), (String) null);
         if (portInfo == null) {
