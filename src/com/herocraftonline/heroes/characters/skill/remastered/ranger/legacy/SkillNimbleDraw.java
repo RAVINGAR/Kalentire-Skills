@@ -9,7 +9,6 @@ import com.herocraftonline.heroes.characters.skill.Skill;
 import com.herocraftonline.heroes.characters.skill.SkillConfigManager;
 import com.herocraftonline.heroes.characters.skill.SkillSetting;
 import com.herocraftonline.heroes.characters.skill.SkillType;
-import com.herocraftonline.heroes.util.Util;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -18,6 +17,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
+import org.bukkit.event.entity.EntityShootBowEvent;
 import org.bukkit.event.player.PlayerMoveEvent;
 import org.bukkit.potion.PotionEffectType;
 import com.herocraftonline.heroes.attributes.AttributeType;
@@ -26,7 +26,7 @@ public class SkillNimbleDraw extends ActiveSkill {
 
     public SkillNimbleDraw(Heroes plugin) {
         super(plugin, "NimbleDraw");
-        setDescription("You are able to move quickly while drawing bows.");
+        setDescription("Bind this skill to a bow to move quickly while drawing.");
         setUsage("/skill NimbleDraw");
         setArgumentRange(0, 0);
         setIdentifiers("skill nimbledraw");
@@ -35,25 +35,19 @@ public class SkillNimbleDraw extends ActiveSkill {
     }
 
     public String getDescription(Hero hero) {
-        int duration = SkillConfigManager.getUseSetting(hero, (Skill)this, SkillSetting.DURATION, 10000, false);
-        String formattedDuration = Util.decFormat.format(duration / 1000.0D);
-        return getDescription().replace("$1", formattedDuration);
+        return getDescription();
     }
 
     public ConfigurationSection getDefaultConfig() {
         ConfigurationSection node = super.getDefaultConfig();
         node.set("speed-multiplier", 12);
-        node.set(SkillSetting.DURATION.node(), 20000);
-        node.set(SkillSetting.COOLDOWN.node(), 1200);
+        node.set(SkillSetting.DELAY.node(), 500);//small delay to prevent skill from deactivating when sprint-jumping into drawing bow, slow to counter-act unintended boost when cancelling shot
+        node.set(SkillSetting.DURATION.node(), 10000);
+        node.set(SkillSetting.COOLDOWN.node(), 0);
         return node;
     }
 
     public SkillResult use(Hero hero, String[] args) {
-        //FIXME If possible (not sure it is entirely), make this speed boost only effective if the user is drawing a bow.
-        // E.g. possibly using interact event? see https://www.spigotmc.org/threads/detect-if-the-player-is-pulling-their-bow-back.158483
-        // Or see https://www.spigotmc.org/threads/1-12-2-serverbound-packet-for-cancel-bow-draw.332520/
-        // As without this, it is just a (slight?) speed boosting effect requiring you to hold a bow at first.
-
         Player player = hero.getPlayer();
         if(player.getInventory().getItemInMainHand().getType() == Material.BOW)
         {
@@ -97,8 +91,17 @@ public class SkillNimbleDraw extends ActiveSkill {
 
             int multiplier = SkillConfigManager.getUseSetting(hero, SkillNimbleDraw.this, "speed-multiplier", 12, false);
             double speedMult = multiplier * 0.2 + 1;
-            if (getSpeed(to.getX(), from.getX(), to.getZ(), from.getZ()) > ((speedMult * 0.117) + (hero.getAttributeValue(AttributeType.DEXTERITY))*0.00152)) {
+            if (getSpeed(to.getX(), from.getX(), to.getZ(), from.getZ()) > ((speedMult * 0.12) + (hero.getAttributeValue(AttributeType.DEXTERITY))*0.00153)) {
                 hero.removeEffect(hero.getEffect("NimbleDraw"));
+            }
+        }
+        @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = false)
+        public void onBowRelease(EntityShootBowEvent event) {
+            if (event.getEntity() instanceof Player) {
+                Player player = (Player)event.getEntity();
+                Hero hero = SkillNimbleDraw.this.plugin.getCharacterManager().getHero(player);
+                if (hero.hasEffect("NimbleDraw"))
+                    hero.removeEffect(hero.getEffect("NimbleDraw"));
             }
         }
     }

@@ -30,7 +30,7 @@ public class SkillRuptureShot extends ActiveSkill {
 
     public SkillRuptureShot(Heroes plugin) {
         super(plugin, "RuptureShot");
-        setDescription("Your arrows will rupture their target dealing $1 damage over $2 seconds, each arrow will drain $3 mana.");
+        setDescription("Your arrows rupture targets, dealing $1 damage over $2 seconds, and draining $3 mana and $4 stamina.");
         setUsage("/skill ruptureshot");
         setArgumentRange(0, 0);
         setIdentifiers("skill ruptureshot", "skill ruptureshot");
@@ -202,8 +202,9 @@ public class SkillRuptureShot extends ActiveSkill {
         int duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, 10000, false);
         int period = SkillConfigManager.getUseSetting(hero, this, SkillSetting.PERIOD, 2000, false);
         int damage = SkillConfigManager.getUseSetting(hero, this, "tick-damage", 1, false);
-        int mana = SkillConfigManager.getUseSetting(hero, this, "mana-per-shot", 1, true);
+        int mana = SkillConfigManager.getUseSetting(hero, this, "mana-drain", 1, true);
+        int stamina = SkillConfigManager.getUseSetting(hero, this, "stamina-drain", 1, true);
         damage = damage * duration / period;
-        return getDescription().replace("$1", damage + "").replace("$2", duration / 1000 + "").replace("$3", mana + "");
+        return getDescription().replace("$1", damage + "").replace("$2", duration / 1000 + "").replace("$3", mana + "").replace("$4", stamina + "");
     }
 }
