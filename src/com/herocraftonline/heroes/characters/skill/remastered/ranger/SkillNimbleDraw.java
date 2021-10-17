@@ -19,7 +19,6 @@ import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityShootBowEvent;
 import org.bukkit.event.player.PlayerMoveEvent;
-import org.bukkit.potion.PotionEffectType;
 import com.herocraftonline.heroes.attributes.AttributeType;
 
 public class SkillNimbleDraw extends ActiveSkill {
@@ -114,18 +113,7 @@ public class SkillNimbleDraw extends ActiveSkill {
             super.applyToHero(hero);
         }
 
-        public void removeFromHero(final Hero hero) {
-            Player player = hero.getPlayer();
-            if (player.hasPotionEffect(PotionEffectType.POISON) || player.hasPotionEffect(PotionEffectType.WITHER) || player
-                    .hasPotionEffect(PotionEffectType.HARM)) {
-                Bukkit.getScheduler().runTaskLater(this.plugin, new Runnable() {
-                    public void run() {
-                        SkillNimbleDraw.NimbleDrawEffect.this.removeFromHero(hero);
-                    }
-                },  2L);
-            } else {
-                super.removeFromHero(hero);
-            }
-        }
+        public void removeFromHero(final Hero hero) { super.removeFromHero(hero); }
+
     }
 }
