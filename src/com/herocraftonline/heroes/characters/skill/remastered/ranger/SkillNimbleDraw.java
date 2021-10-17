@@ -1,4 +1,4 @@
-package com.herocraftonline.heroes.characters.skill.remastered.ranger.legacy;
+package com.herocraftonline.heroes.characters.skill.remastered.ranger;
 
 import com.herocraftonline.heroes.Heroes;
 import com.herocraftonline.heroes.api.SkillResult;
@@ -41,7 +41,7 @@ public class SkillNimbleDraw extends ActiveSkill {
     public ConfigurationSection getDefaultConfig() {
         ConfigurationSection node = super.getDefaultConfig();
         node.set("speed-multiplier", 12);
-        node.set(SkillSetting.DELAY.node(), 500);//small delay to prevent skill from deactivating when sprint-jumping into drawing bow, slow to counter-act unintended boost when cancelling shot
+        node.set(SkillSetting.DELAY.node(), 200);//small delay to prevent skill from deactivating when sprint-jumping into drawing bow, slow to counter-act unintended boost when cancelling shot
         node.set(SkillSetting.DURATION.node(), 10000);
         node.set(SkillSetting.COOLDOWN.node(), 0);
         return node;

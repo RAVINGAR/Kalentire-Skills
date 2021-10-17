@@ -6,10 +6,10 @@ import com.herocraftonline.heroes.characters.Hero;
 import com.herocraftonline.heroes.characters.effects.EffectType;
 import com.herocraftonline.heroes.characters.skill.PassiveSkill;
 import com.herocraftonline.heroes.characters.skill.Skill;
-import com.herocraftonline.heroes.characters.skill.SkillSetting;
 import com.herocraftonline.heroes.characters.skill.SkillType;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
+import org.bukkit.block.data.type.Beehive;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
@@ -69,10 +69,9 @@ public class SkillBeehives extends PassiveSkill {
             }
 
             Hero hero = SkillBeehives.this.plugin.getCharacterManager().getHero(event.getPlayer());
+            final Beehive hive = (Beehive) event.getClickedBlock().getBlockData();
 
-            if (!hero.canUseSkill(this.skill) && (event.getPlayer().getInventory().getItemInMainHand().getType() == Material.GLASS_BOTTLE ||
-                    event.getPlayer().getInventory().getItemInMainHand().getType() == Material.SHEARS || event.getPlayer().getInventory().getItemInOffHand().getType() == Material.GLASS_BOTTLE ||
-                    event.getPlayer().getInventory().getItemInOffHand().getType() == Material.SHEARS) && event.getAction() == Action.RIGHT_CLICK_BLOCK)
+            if (hive.getHoneyLevel() != 0 && !hero.canUseSkill(this.skill) && (event.getPlayer().getInventory().getItemInMainHand().getType() == Material.GLASS_BOTTLE || event.getPlayer().getInventory().getItemInMainHand().getType() == Material.SHEARS || event.getPlayer().getInventory().getItemInOffHand().getType() == Material.GLASS_BOTTLE || event.getPlayer().getInventory().getItemInOffHand().getType() == Material.SHEARS) && event.getAction() == Action.RIGHT_CLICK_BLOCK)
             {
                 event.setCancelled(true);
                 event.getPlayer().sendMessage("You must be a farmer to harvest honey/honeycomb!");
