@@ -14,6 +14,7 @@ import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
+import org.bukkit.event.block.Action;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
@@ -23,7 +24,7 @@ import org.bukkit.enchantments.Enchantment;
 public class SkillBeehives extends PassiveSkill {
     public SkillBeehives(Heroes plugin) {
         super(plugin, "Beehives");
-        setDescription("You are able to harvest from and move beehives!");
+        setDescription("You are able to harvest from and move beehives and bee nests!");
         setArgumentRange(0, 0);
         setTypes(SkillType.BLOCK_REMOVING);
         setEffectTypes(EffectType.BENEFICIAL);
@@ -32,9 +33,6 @@ public class SkillBeehives extends PassiveSkill {
 
     public ConfigurationSection getDefaultConfig() {
         ConfigurationSection node = super.getDefaultConfig();
-        node.set(SkillSetting.APPLY_TEXT.node(), "");
-        node.set(SkillSetting.UNAPPLY_TEXT.node(), "");
-        node.set(SkillSetting.LEVEL.node(), 1); // not necessary we can just assign the passive skill the class at a certain level in config
         return node;
     }
 
@@ -72,7 +70,10 @@ public class SkillBeehives extends PassiveSkill {
 
             Hero hero = SkillBeehives.this.plugin.getCharacterManager().getHero(event.getPlayer());
 
-            if (!hero.canUseSkill(this.skill)) {
+            if (!hero.canUseSkill(this.skill) && (event.getPlayer().getInventory().getItemInMainHand().getType() == Material.GLASS_BOTTLE ||
+                    event.getPlayer().getInventory().getItemInMainHand().getType() == Material.SHEARS || event.getPlayer().getInventory().getItemInOffHand().getType() == Material.GLASS_BOTTLE ||
+                    event.getPlayer().getInventory().getItemInOffHand().getType() == Material.SHEARS) && event.getAction() == Action.RIGHT_CLICK_BLOCK)
+            {
                 event.setCancelled(true);
                 event.getPlayer().sendMessage("You must be a farmer to harvest honey/honeycomb!");
             }
