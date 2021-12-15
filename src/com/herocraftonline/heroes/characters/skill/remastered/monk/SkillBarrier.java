@@ -155,11 +155,9 @@ public class SkillBarrier extends ActiveSkill {
 
 					double damageMultiplier = SkillConfigManager.getScaledUseSettingDouble(defenderHero, skill, "damage-multiplier", false);
 
-					Material item = NMSHandler.getInterface().getItemInMainHand(defenderPlayer.getInventory()).getType();
+					Material item = defenderPlayer.getInventory().getItemInMainHand().getType();
 					Double itemDamage = plugin.getDamageManager().getHighestItemDamage(defenderHero, item);
-					if (itemDamage == null) {
-						itemDamage = Util.getDefaultDamage(item);
-					}
+
 
 					double damage = itemDamage * damageMultiplier; // FIXME received null here, is this fix now using default damage?
 					addSpellTarget(damagerPlayer, defenderHero);
@@ -168,7 +166,7 @@ public class SkillBarrier extends ActiveSkill {
 					damagerPlayer.getWorld().playSound(damagerPlayer.getLocation(), Sound.ENTITY_ITEM_BREAK, 0.8F, 1.0F);
 
 					// Disarm checks
-					Material heldItem = NMSHandler.getInterface().getItemInMainHand(damagerPlayer.getInventory()).getType();
+					Material heldItem = damagerPlayer.getInventory().getItemInMainHand().getType();
 					if (!Util.isWeapon(heldItem) && !Util.isAwkwardWeapon(heldItem)) {
 						return;
 					}

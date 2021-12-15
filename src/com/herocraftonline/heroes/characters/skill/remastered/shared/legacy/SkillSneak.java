@@ -210,7 +210,7 @@ public class SkillSneak extends ActiveSkill {
                 return;
 
             // Warn user that they may use the advanced crafting table instead due to sneaking.
-            if (!((SneakEffect)hero.getEffect(toggleableEffectName)).isVanillaSneaking() && event.getClickedBlock().getType() == Material.WORKBENCH) {
+            if (!((SneakEffect)hero.getEffect(toggleableEffectName)).isVanillaSneaking() && event.getClickedBlock().getType() == Material.CRAFTING_TABLE) {
                 hero.getPlayer().sendMessage(ChatColor.RED
                         + "Silly ninja, accessing a workbench isn't very stealthly. Stop sneaking to access the normal workbench.");
             }

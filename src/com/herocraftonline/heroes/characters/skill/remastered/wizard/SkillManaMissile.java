@@ -110,7 +110,7 @@ public class SkillManaMissile extends PassiveSkill {
             if (!isAbleToCastRightNow(hero, true))
                 return;
 
-            Double damage = plugin.getDamageManager().getHighestItemDamage(hero, mainHand.getType());
+            Double damage = plugin.getDamageManager().getDefaultClassDamage(hero, mainHand.getType());
             if (damage == null) {
                 player.sendMessage("    " + ChatComponents.GENERIC_SKILL + "You don't deal any damage with that weapon!");
                 return;
@@ -140,8 +140,8 @@ public class SkillManaMissile extends PassiveSkill {
                 return;
 
             if (isAbleToCastRightNow(hero, true)) {
-                Double damage = plugin.getDamageManager().getHighestItemDamage(hero, mainHand.getType());
-                if (damage == null) {
+                Double damage = plugin.getDamageManager().getDefaultClassDamage(hero, mainHand.getType());
+                if (damage == 0.0D) {
                     player.sendMessage("    " + ChatComponents.GENERIC_SKILL + "You don't deal any damage with that weapon!");
                 } else {
                     damage *= SkillConfigManager.getUseSetting(hero, skill, "damage-multiplier", 1.0, false);

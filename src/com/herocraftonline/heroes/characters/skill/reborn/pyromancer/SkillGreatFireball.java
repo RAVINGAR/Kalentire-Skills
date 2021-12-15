@@ -83,12 +83,13 @@ public class SkillGreatFireball extends ActiveSkill {
     class GreatFireballMissile extends BasicMissile {
         private final int burnDuration;
         private final double burnMultipliaer;
+        private final double damage;
         private double explosionDamage;
         private double explosionRadius;
         private final double fireTickGroundRadius;
 
         GreatFireballMissile(Plugin plugin, Skill skill, Hero hero, double projectileSize, double projVelocity) {
-            super(plugin, skill, hero, projectileSize, projVelocity);
+            super((Heroes) plugin, skill, hero, Particle.FLAME, Color.RED, true);
 
             setRemainingLife(SkillConfigManager.getUseSetting(hero, skill, "projectile-max-ticks-lived", 20, false));
             setGravity(SkillConfigManager.getUseSetting(hero, skill, "projectile-gravity", 5.0, false));

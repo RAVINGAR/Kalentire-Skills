@@ -5,7 +5,6 @@ import com.herocraftonline.heroes.api.SkillResult;
 import com.herocraftonline.heroes.characters.Hero;
 import com.herocraftonline.heroes.characters.skill.*;
 import com.herocraftonline.heroes.chat.ChatComponents;
-import net.minecraft.server.v1_16_R3.*;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.configuration.ConfigurationSection;
@@ -58,20 +57,16 @@ public class SkillRiptide extends ActiveSkill {
 
         // f = yaw; f1 = pitch
 
-        float f2 = -MathHelper.sin(yaw * 0.017453292F) * MathHelper.cos(pitch * 0.017453292F);
+        float f2 = (float) (-Math.sin(yaw * 0.017453292F) * Math.cos(pitch * 0.017453292F));
+        float f3 = (float) -Math.sin(pitch * 0.017453292F);
+        float f4 = (float) (Math.cos(yaw * 0.017453292F) * Math.cos(pitch * 0.017453292F));
+        float f5 = (float) Math.sqrt(f2 * f2 + f3 * f3 + f4 * f4);
 
-        float f3 = -MathHelper.sin(pitch * 0.017453292F);
+        f2 *= 3.0F / f5;
+        f3 *= 3.0F / f5;
+        f4 *= 3.0F / f5;
 
-        float f4 = MathHelper.cos(yaw * 0.017453292F) * MathHelper.cos(pitch * 0.017453292F);
-
-        float f5 = MathHelper.c(f2 * f2 + f3 * f3 + f4 * f4);
-
-        float f6 = 3.0F * ((1.0F + (float)3) / 4.0F);
-        f2 *= f6 / f5;
-        f3 *= f6 / f5;
-        f4 *= f6 / f5;
-
-        Vector vector = new Vector((double) f2, (double) f3, (double) f4);
+        Vector vector = new Vector(f2, f3, f4);
 
         player.setVelocity(vector);
         player.setGliding(true);

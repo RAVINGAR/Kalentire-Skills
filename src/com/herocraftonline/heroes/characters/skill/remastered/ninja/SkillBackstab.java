@@ -111,11 +111,11 @@ public class SkillBackstab extends ActiveSkill implements Passive {
                 continue;
             }
 
-            int baseDamage = 0;
-            if (plugin.getDamageManager().getHighestItemDamage(hero, weapon) == null){
+            double baseDamage = 0.0;
+            if (plugin.getDamageManager().getDefaultClassDamage(hero, weapon) == null){
                 Heroes.log(Level.WARNING, "SkillBackstab: " + weaponName + " has no damage set.");
             } else {
-                baseDamage = plugin.getDamageManager().getHighestItemDamage(hero, weapon).intValue();
+                baseDamage = plugin.getDamageManager().getDefaultClassDamage(hero, weapon);
             }
 
             backstabDamage = baseDamage * backstabDamageModifier;

@@ -7,6 +7,7 @@ import com.herocraftonline.heroes.characters.skill.PassiveSkill;
 import com.herocraftonline.heroes.characters.skill.SkillConfigManager;
 import com.herocraftonline.heroes.characters.skill.SkillSetting;
 import com.herocraftonline.heroes.util.MaterialUtil;
+import com.herocraftonline.heroes.util.Properties;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
@@ -21,6 +22,7 @@ import org.bukkit.inventory.ItemStack;
 
 import java.util.HashSet;
 import java.util.Set;
+import java.util.logging.Level;
 
 /**
  * Created By MysticMight 2021
@@ -28,6 +30,7 @@ import java.util.Set;
 
 public class SkillCraftNetheriteGear extends PassiveSkill {
 
+    private static final int SUBVERSION = 16;
     private final Set<Material> netheriteGear;
 
     public SkillCraftNetheriteGear(Heroes plugin) {
@@ -37,16 +40,24 @@ public class SkillCraftNetheriteGear extends PassiveSkill {
         setEffectTypes(EffectType.BENEFICIAL);
 
         netheriteGear = new HashSet<>();
-        netheriteGear.add(Material.NETHERITE_SWORD);
-        netheriteGear.add(Material.NETHERITE_PICKAXE);
-        netheriteGear.add(Material.NETHERITE_AXE);
-        netheriteGear.add(Material.NETHERITE_SHOVEL);
-        netheriteGear.add(Material.NETHERITE_HOE);
-        netheriteGear.add(Material.NETHERITE_HELMET);
-        netheriteGear.add(Material.NETHERITE_CHESTPLATE);
-        netheriteGear.add(Material.NETHERITE_LEGGINGS);
-        netheriteGear.add(Material.NETHERITE_BOOTS);
-        Bukkit.getServer().getPluginManager().registerEvents(new SkillCraftingListener(this), plugin);
+
+        if(Properties.SUBVERSION >= this.SUBVERSION) {
+            netheriteGear.add(Material.NETHERITE_SWORD);
+            netheriteGear.add(Material.NETHERITE_PICKAXE);
+            netheriteGear.add(Material.NETHERITE_AXE);
+            netheriteGear.add(Material.NETHERITE_SHOVEL);
+            netheriteGear.add(Material.NETHERITE_HOE);
+            netheriteGear.add(Material.NETHERITE_HELMET);
+            netheriteGear.add(Material.NETHERITE_CHESTPLATE);
+            netheriteGear.add(Material.NETHERITE_LEGGINGS);
+            netheriteGear.add(Material.NETHERITE_BOOTS);
+            Bukkit.getServer().getPluginManager().registerEvents(new SkillCraftingListener(this), plugin);
+        }
+        else {
+            Heroes.log(Level.SEVERE, "Could not load Skill " + this.getName() + " as it requires minimum Minecraft version of 1." + SUBVERSION);
+        }
+
+
     }
 
     @Override

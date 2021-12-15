@@ -49,13 +49,13 @@ public class SkillPiercingStrike extends TargettedSkill {
     public SkillResult use(Hero hero, LivingEntity target, String[] args) {
         Player player = hero.getPlayer();
 
-        Material item = NMSHandler.getInterface().getItemInMainHand(player.getInventory()).getType();
+        Material item = player.getInventory().getItemInMainHand().getType();
         if (!SkillConfigManager.getUseSetting(hero, this, "weapons", Util.shovels).contains(item.name())) {
             player.sendMessage("You can't piercing strike with that weapon!");
             return SkillResult.FAIL;
         }
 
-        double damage = plugin.getDamageManager().getHighestItemDamage(hero, item);
+        double damage = plugin.getDamageManager().getHighestItemDamage(hero, item, !(target instanceof Player), 0);
         damage *= SkillConfigManager.getUseSetting(hero, this, "damage-multiplier", 1.0, false);
 
         addSpellTarget(target, hero);

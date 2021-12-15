@@ -27,7 +27,6 @@ import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.PlayerInventory;
 import org.bukkit.plugin.Plugin;
-import org.bukkit.potion.PotionEffect;
 import org.bukkit.util.Vector;
 
 import java.util.List;
@@ -102,9 +101,7 @@ public class SkillRegrowth extends PassiveSkill {
 		}
 
 		private void fireProjectile(Player player, Hero hero) {
-			double projSize = SkillConfigManager.getUseSetting(hero, skill, "projectile-size", 0.25, false);
-			double projVelocity = SkillConfigManager.getUseSetting(hero, skill, "projectile-velocity", 20.0, false);
-			ManaProjectile missile = new ManaProjectile(plugin, skill, hero, projSize, projVelocity);
+			ManaProjectile missile = new ManaProjectile(plugin, skill, hero);
 			missile.fireMissile();
 			player.getWorld().playSound(player.getLocation(), Sound.ENTITY_VEX_HURT, 2F, 1F);
 
@@ -197,8 +194,10 @@ public class SkillRegrowth extends PassiveSkill {
 	}
 
 	private class ManaProjectile extends BasicMissile {
-		public ManaProjectile(Plugin plugin, Skill skill, Hero hero, double projectileSize, double projVelocity) {
-			super(plugin, skill, hero, projectileSize, projVelocity);
+		private final double damage;
+
+		public ManaProjectile(Plugin plugin, Skill skill, Hero hero) {
+			super(plugin, skill, hero, Particle.ENCHANTMENT_TABLE, Color.GREEN, false);
 			setRemainingLife(SkillConfigManager.getUseSetting(hero, skill, "projectile-max-ticks-lived", 30, false));
 			setGravity(SkillConfigManager.getUseSetting(hero, skill, "projectile-gravity", 0.0, false));
 			this.damage = SkillConfigManager.getUseSetting(hero, skill, SkillSetting.HEALING, 65.0, false);

@@ -212,19 +212,18 @@ public class SkillHook extends ActiveSkill {
     }
 
     public SkillHook.HookProjectile createHookProjectile(Hero hero) {
-        double projSize = SkillConfigManager.getUseSetting(hero, this, "projectile-size", 0.25, false);
-        double projVelocity = SkillConfigManager.getUseSetting(hero, this, "projectile-velocity", 20, false);
-
-        return new HookProjectile(plugin, this, hero, projSize, projVelocity);
+        return new HookProjectile(plugin, this, hero);
     }
 
     public class HookProjectile extends BasicMissile {
         private final long hookedDuration;
         private final double hookLeashDistance;
         private final double hookLeashPower;
+        private final double damage;
 
-        HookProjectile(Plugin plugin, Skill skill, Hero hero, double projectileSize, double projVelocity) {
-            super(plugin, skill, hero, projectileSize, projVelocity);
+        HookProjectile(Plugin plugin, Skill skill, Hero hero) {
+            super((Heroes) plugin, skill, hero, Particle.CRIT_MAGIC, Color.GRAY, true);
+
 
             setRemainingLife(SkillConfigManager.getUseSetting(hero, skill, "projectile-max-ticks-lived", 20, false));
             setGravity(SkillConfigManager.getUseSetting(hero, skill, "projectile-gravity", 2.5, false));
