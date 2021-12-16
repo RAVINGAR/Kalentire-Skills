@@ -4,7 +4,7 @@
     <groupId>com.herocraftonline.heroes</groupId>
     <artifactId>Heroes-Skills</artifactId>
     <packaging>jar</packaging>
-    <version>1.5.1-REBORN-SNAPSHOT</version>
+    <version>1.5.2-REBORN-SNAPSHOT</version>
     <name>Heroes-Skills</name>
     <url>http://www.herocraftonline.com</url>
 
@@ -162,8 +162,7 @@
         <dependency>
             <groupId>io.lumine.xikage</groupId>
             <artifactId>MythicMobs</artifactId>
-            <version>4.10.0</version>
-            <scope>provided</scope>
+            <version>4.11.2</version>
         </dependency>
         <dependency>
             <groupId>com.griefcraft.lwc</groupId>
