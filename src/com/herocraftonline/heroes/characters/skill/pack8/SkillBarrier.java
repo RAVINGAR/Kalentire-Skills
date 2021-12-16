@@ -189,7 +189,7 @@ public class SkillBarrier extends ActiveSkill {
 					damageMultiplier += defenderHero.getAttributeValue(AttributeType.INTELLECT) * damageMultiplierIncrease;
 
 					Material item = NMSHandler.getInterface().getItemInMainHand(defenderPlayer.getInventory()).getType();
-					double damage = plugin.getDamageManager().getHighestItemDamage(defenderHero, item) * damageMultiplier;
+					double damage = plugin.getDamageManager().getFlatItemDamage(defenderHero, item) * damageMultiplier;
 					addSpellTarget(damagerPlayer, defenderHero);
 					damageEntity(damagerPlayer, defenderPlayer, damage, DamageCause.ENTITY_ATTACK);
 

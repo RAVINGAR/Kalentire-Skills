@@ -156,7 +156,7 @@ public class SkillBarrier extends ActiveSkill {
 					double damageMultiplier = SkillConfigManager.getScaledUseSettingDouble(defenderHero, skill, "damage-multiplier", false);
 
 					Material item = defenderPlayer.getInventory().getItemInMainHand().getType();
-					Double itemDamage = plugin.getDamageManager().getHighestItemDamage(defenderHero, item);
+					Double itemDamage = plugin.getDamageManager().getFlatItemDamage(defenderHero, item);
 
 
 					double damage = itemDamage * damageMultiplier; // FIXME received null here, is this fix now using default damage?

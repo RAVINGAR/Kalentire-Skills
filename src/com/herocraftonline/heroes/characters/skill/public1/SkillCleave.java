@@ -71,7 +71,7 @@ public class SkillCleave extends TargettedSkill {
         broadcastExecuteText(hero, target);
 
         CharacterDamageManager manager = plugin.getDamageManager();
-        double damage = manager.getHighestItemDamage(hero, itemType);
+        double damage = manager.getFlatItemDamage(hero, itemType);
         damage *= SkillConfigManager.getUseSetting(hero, this, "damage-multiplier", 1.0, false);
 
         addSpellTarget(target, hero);
