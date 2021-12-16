@@ -5,6 +5,7 @@ import com.herocraftonline.heroes.api.SkillResult;
 import com.herocraftonline.heroes.characters.Hero;
 import com.herocraftonline.heroes.characters.skill.ActiveSkill;
 import com.herocraftonline.heroes.characters.skill.SkillConfigManager;
+import com.herocraftonline.heroes.util.Properties;
 import com.herocraftonline.heroes.util.Util;
 import org.bukkit.Effect;
 import org.bukkit.Location;
@@ -19,8 +20,11 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
+import java.util.logging.Level;
 
 public class SkillForage extends ActiveSkill {
+
+    private static final int SUBVERSION = 16;
 
     public SkillForage(Heroes plugin) {
         super(plugin, "Forage");
@@ -77,8 +81,6 @@ public class SkillForage extends ActiveSkill {
 
         //FIXME Someone with more knowledge of the skill should address this switch statement
         switch (biome) {
-        default:
-            materialNames.addAll(SkillConfigManager.getUseSetting(hero, this, "default.items", new ArrayList<String>()));
         case TAIGA:
         case TAIGA_HILLS:
         case FROZEN_OCEAN:
@@ -141,16 +143,6 @@ public class SkillForage extends ActiveSkill {
             chance = SkillConfigManager.getUseSetting(hero, this, "mushroom.chance", .01, false) * hero.getHeroLevel(this);
             maxFinds = SkillConfigManager.getUseSetting(hero, this, "mushroom.max-found", 2, false);
             break;
-//        case NETHER:
-        case NETHER_WASTES:
-        case SOUL_SAND_VALLEY:
-        case CRIMSON_FOREST:
-        case WARPED_FOREST:
-        case BASALT_DELTAS:
-            materialNames.addAll(SkillConfigManager.getUseSetting(hero, this, "hell.items", Arrays.asList(new String[] { "ROTTEN_FLESH" })));
-            chance = SkillConfigManager.getUseSetting(hero, this, "hell.chance", .005, false) * hero.getHeroLevel(this);
-            maxFinds = SkillConfigManager.getUseSetting(hero, this, "hell.max-found", 1, false);
-            break;
         case THE_END:
         case SMALL_END_ISLANDS:
         case END_MIDLANDS:
@@ -160,6 +152,16 @@ public class SkillForage extends ActiveSkill {
             chance = SkillConfigManager.getUseSetting(hero, this, "sky.chance", .01, false) * hero.getHeroLevel(this);
             maxFinds = SkillConfigManager.getUseSetting(hero, this, "sky.max-found", 3, false);
             break;
+        default:
+            switch (biome.name()) {
+                case "NETHER", "NETHER_WASTES", "SOUL_SAND_VALLEY", "CRIMSON_FOREST", "WARPED_FOREST", "BASALT_DELTAS" -> {
+                    materialNames.addAll(SkillConfigManager.getUseSetting(hero, this, "hell.items", Arrays.asList(new String[]{"ROTTEN_FLESH"})));
+                    chance = SkillConfigManager.getUseSetting(hero, this, "hell.chance", .005, false) * hero.getHeroLevel(this);
+                    maxFinds = SkillConfigManager.getUseSetting(hero, this, "hell.max-found", 1, false);
+                }
+            }
+
+            materialNames.addAll(SkillConfigManager.getUseSetting(hero, this, "default.items", new ArrayList<String>()));
         }
 
         List<Material> materials = new ArrayList<>();

@@ -69,16 +69,16 @@
     <repositories>
         <!-- For ProtocolLib (dependency of LibsDisguises) -->
         <repository>
+            <id>dmulloy2-repo-protocol-lib</id>
+            <url>https://repo.dmulloy2.net/repository/public/</url>
+        </repository>
+        <repository>
             <id>maven-repo</id>
             <url>https://repo1.maven.org/maven2</url>
         </repository>
         <repository>
             <id>heroes-repo</id>
             <url>https://nexus.hc.to/content/groups/herocraft/</url>
-        </repository>
-        <repository>
-            <id>dmulloy2-repo-protocol-lib</id>
-            <url>https://repo.dmulloy2.net/repository/public/</url>
         </repository>
         <repository>
             <!-- For WorldGuard-->
@@ -109,12 +109,12 @@
         <dependency>
             <groupId>com.herocraftonline.heroes</groupId>
             <artifactId>Heroes</artifactId>
-            <version>1.9.14-SNAPSHOT</version>
+            <version>1.9.14-TEST-SNAPSHOT</version>
         </dependency>
         <dependency>
             <groupId>com.herocraftonline.heroes</groupId>
             <artifactId>heroes-bukkit-compat-base</artifactId>
-            <version>1.9.14-SNAPSHOT</version>
+            <version>1.9.14-TEST-SNAPSHOT</version>
         </dependency>
         <dependency>
             <groupId>org.spigotmc</groupId>
@@ -148,6 +148,11 @@
         <!--<artifactId>DisguiseCraft</artifactId>-->
         <!--<version>4.9</version>-->
         <!--</dependency>-->
+        <dependency>
+            <groupId>com.comphenix.protocol</groupId>
+            <artifactId>ProtocolLib</artifactId>
+            <version>4.7.0</version>
+        </dependency>
         <dependency>
             <groupId>LibsDisguises</groupId>
             <artifactId>LibsDisguises</artifactId>
