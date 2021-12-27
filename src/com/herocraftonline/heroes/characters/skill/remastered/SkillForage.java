@@ -68,7 +68,7 @@ public class SkillForage extends ActiveSkill {
     public SkillResult use(Hero hero, String[] args) {
         Player player = hero.getPlayer();
         Location loc = player.getLocation();
-        Biome biome = player.getWorld().getBiome(loc.getBlockX(), loc.getBlockZ());
+        Biome biome = loc.getBlock().getBiome();
 
         double chance = 0;
         int maxFinds = 0;
@@ -77,8 +77,6 @@ public class SkillForage extends ActiveSkill {
 
         //FIXME Someone with more knowledge of the skill should address this switch statement
         switch (biome) {
-        default:
-            materialNames.addAll(SkillConfigManager.getUseSetting(hero, this, "default.items", new ArrayList<String>()));
         case TAIGA:
         case TAIGA_HILLS:
         case FROZEN_OCEAN:
@@ -160,6 +158,21 @@ public class SkillForage extends ActiveSkill {
             chance = SkillConfigManager.getUseSetting(hero, this, "sky.chance", .01, false) * hero.getHeroLevel(this);
             maxFinds = SkillConfigManager.getUseSetting(hero, this, "sky.max-found", 3, false);
             break;
+        default:
+            switch (biome.name()) {
+                case "NETHER":
+                case "NETHER_WASTES":
+                case "SOUL_SAND_VALLEY":
+                case "CRIMSON_FOREST":
+                case "WARPED_FOREST":
+                case "BASALT_DELTAS":
+                    materialNames.addAll(SkillConfigManager.getUseSetting(hero, this, "hell.items", Arrays.asList(new String[]{"ROTTEN_FLESH"})));
+                    chance = SkillConfigManager.getUseSetting(hero, this, "hell.chance", .005, false) * hero.getHeroLevel(this);
+                    maxFinds = SkillConfigManager.getUseSetting(hero, this, "hell.max-found", 1, false);
+                    break;
+                default:
+                    materialNames.addAll(SkillConfigManager.getUseSetting(hero, this, "default.items", new ArrayList<String>()));
+            }
         }
 
         List<Material> materials = new ArrayList<>();
