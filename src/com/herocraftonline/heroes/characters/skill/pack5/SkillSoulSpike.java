@@ -12,6 +12,7 @@ import com.herocraftonline.heroes.characters.skill.SkillSetting;
 import com.herocraftonline.heroes.characters.skill.SkillType;
 import com.herocraftonline.heroes.characters.skill.skills.SkillBaseSpike;
 import com.herocraftonline.heroes.chat.ChatComponents;
+import com.herocraftonline.heroes.util.Properties;
 import com.herocraftonline.heroes.util.Util;
 import de.slikey.effectlib.util.ParticleEffect;
 import org.bukkit.Color;
@@ -25,6 +26,8 @@ import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 import org.bukkit.util.Vector;
 
+import java.util.logging.Level;
+
 public class SkillSoulSpike extends SkillBaseSpike {
 
 	private static final Particle PARTICLE = Particle.SPELL_MOB_AMBIENT;
@@ -32,13 +35,22 @@ public class SkillSoulSpike extends SkillBaseSpike {
 	private static final String SLOW_AMPLIFIER = "slow-amplifier";
 	private static final String HUNGER_AMPLIFIER = "hunger-amplifier";
 
+	private static final int SUBVERSION = 16;
+
 	public SkillSoulSpike(Heroes plugin) {
 		super(plugin, "SoulSpike");
-		setDescription("Impales the target's soul with a spike of negative energy, casting them into a soul shaken state for $1 second(s), dealing $2 damage.");
-		setUsage("/skill soulspike");
-		setIdentifiers("skill soulspike");
-		setArgumentRange(0, 0);
-		setTypes(SkillType.DAMAGING, SkillType.AGGRESSIVE, SkillType.NO_SELF_TARGETTING, SkillType.MOVEMENT_SLOWING, SkillType.BLINDING, SkillType.ABILITY_PROPERTY_DARK);
+		if (Properties.SUBVERSION >= this.SUBVERSION) {
+			setDescription("Impales the target's soul with a spike of negative energy, casting them into a soul shaken state for $1 second(s), dealing $2 damage.");
+			setUsage("/skill soulspike");
+			setIdentifiers("skill soulspike");
+			setArgumentRange(0, 0);
+			setTypes(SkillType.DAMAGING, SkillType.AGGRESSIVE, SkillType.NO_SELF_TARGETTING, SkillType.MOVEMENT_SLOWING, SkillType.BLINDING, SkillType.ABILITY_PROPERTY_DARK);
+		}
+		else {
+			String message = "Could not load Skill " + this.getName() + " as it requires minimum Minecraft version of 1." + SUBVERSION;
+			setDescription(message);
+			Heroes.log(Level.SEVERE, message);
+		}
 	}
 
 	@Override
@@ -106,7 +118,6 @@ public class SkillSoulSpike extends SkillBaseSpike {
 				Vector knockUpVector = new Vector(0, SkillConfigManager.getUseSetting(hero, this, KNOCK_UP_STRENGTH_NODE, 0.6, false), 0);
 				target.setVelocity(target.getVelocity().add(knockUpVector));
 			}
-
 //			target.getWorld().playSound(target.getLocation(), Sound.ENTITY_ZOMBIE_PIGMAN_HURT, 0.2f, 0.00001f);
 			target.getWorld().playSound(target.getLocation(), Sound.ENTITY_ZOMBIFIED_PIGLIN_HURT, 0.2f, 0.00001f);
 

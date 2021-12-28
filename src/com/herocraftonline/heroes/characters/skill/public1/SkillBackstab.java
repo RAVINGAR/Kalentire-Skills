@@ -115,10 +115,10 @@ public class SkillBackstab extends ActiveSkill {
             }
 
             double baseDamage = 0.0;
-            if (plugin.getDamageManager().getHighestItemDamage(hero, weapon) == null){
+            if (plugin.getDamageManager().getDefaultClassDamage(hero, weapon) == null){
                 Heroes.log(Level.WARNING, "SkillBackstab: " + weaponName + " has no damage set.");
             } else {
-                baseDamage = plugin.getDamageManager().getHighestItemDamage(hero, weapon);
+                baseDamage = plugin.getDamageManager().getDefaultClassDamage(hero, weapon);
             }
 
             backstabDamage = baseDamage * backstabDamageModifier;

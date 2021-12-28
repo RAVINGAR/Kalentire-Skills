@@ -4,9 +4,16 @@
     <groupId>com.herocraftonline.heroes</groupId>
     <artifactId>Heroes-Skills</artifactId>
     <packaging>jar</packaging>
-    <version>1.5.1-REBORN-SNAPSHOT</version>
+    <version>1.5.2-REBORN-SNAPSHOT</version>
     <name>Heroes-Skills</name>
     <url>http://www.herocraftonline.com</url>
+
+    <properties>
+        <maven.compiler.source>11</maven.compiler.source>
+        <maven.compiler.target>11</maven.compiler.target>
+        <maven.compiler.release>11</maven.compiler.release>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+    </properties>
 
     <build>
         <defaultGoal>clean install</defaultGoal>
@@ -31,34 +38,39 @@
             </resource>
         </resources>
 
-        <plugins>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-compiler-plugin</artifactId>
-                <version>3.0</version>
-                <configuration>
-                    <source>1.8</source>
-                    <target>1.8</target>
-                </configuration>
-            </plugin>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-jar-plugin</artifactId>
-                <version>2.5</version>
-                <configuration>
-                    <excludes>
-                        <exclude>**/unusedskills/*</exclude>
-                    </excludes>
-                </configuration>
-            </plugin>
-        </plugins>
+        <pluginManagement>
+            <plugins>
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-compiler-plugin</artifactId>
+                    <version>3.8.1</version>
+                    <configuration>
+                        <excludes>
+                            <exclude>**/unusedskills/*</exclude>
+                            <exclude>**/legacy/*</exclude>
+                        </excludes>
+                    </configuration>
+                </plugin>
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-jar-plugin</artifactId>
+                    <version>3.2.0</version>
+                    <configuration>
+                        <excludes>
+                            <exclude>**/unusedskills/*</exclude>
+                            <exclude>**/legacy/*</exclude>
+                        </excludes>
+                    </configuration>
+                </plugin>
+            </plugins>
+        </pluginManagement>
     </build>
 
     <repositories>
         <!-- For ProtocolLib (dependency of LibsDisguises) -->
         <repository>
-        <id>dmulloy2-repo-protocol-lib</id>
-        <url>https://repo.dmulloy2.net/repository/public/</url>
+            <id>dmulloy2-repo-protocol-lib</id>
+            <url>https://repo.dmulloy2.net/repository/public/</url>
         </repository>
         <repository>
             <id>maven-repo</id>
@@ -71,7 +83,7 @@
         <repository>
             <!-- For WorldGuard-->
             <id>sk89q-repo</id>
-            <url>http://maven.sk89q.com/repo/</url>
+            <url>https://maven.enginehub.org/repo/</url>
         </repository>
         <repository>
             <id>md_5-public</id>
@@ -97,27 +109,22 @@
         <dependency>
             <groupId>com.herocraftonline.heroes</groupId>
             <artifactId>Heroes</artifactId>
-            <version>1.9.13-SNAPSHOT</version>
+            <version>1.9.15-SNAPSHOT</version>
         </dependency>
         <dependency>
             <groupId>com.herocraftonline.heroes</groupId>
             <artifactId>heroes-bukkit-compat-base</artifactId>
-            <version>1.9.13-SNAPSHOT</version>
-        </dependency>
-        <dependency>
-            <groupId>com.herocraftonline.heroes</groupId>
-            <artifactId>heroes-bukkit-compat-v1_16_R3</artifactId>
-            <version>1.9.13-SNAPSHOT</version>
+            <version>1.9.15-SNAPSHOT</version>
         </dependency>
         <dependency>
             <groupId>org.spigotmc</groupId>
             <artifactId>spigot-api</artifactId>
-            <version>1.16.5-R0.1-SNAPSHOT</version>
+            <version>1.17.1-R0.1-SNAPSHOT</version>
         </dependency>
         <dependency>
             <groupId>junit</groupId>
             <artifactId>junit</artifactId>
-            <version>3.8.1</version>
+            <version>4.13.2</version>
             <scope>test</scope>
         </dependency>
         <dependency>
@@ -128,8 +135,8 @@
         </dependency>
         <dependency>
             <groupId>com.sk89q.worldguard</groupId>
-            <artifactId>worldguard-legacy</artifactId>
-            <version>7.0.0-SNAPSHOT</version>
+            <artifactId>worldguard-bukkit</artifactId>
+            <version>7.0.3</version>
         </dependency>
         <dependency>
             <groupId>mc.alk.tracker</groupId>
@@ -142,16 +149,20 @@
         <!--<version>4.9</version>-->
         <!--</dependency>-->
         <dependency>
+            <groupId>com.comphenix.protocol</groupId>
+            <artifactId>ProtocolLib</artifactId>
+            <version>4.7.0</version>
+        </dependency>
+        <dependency>
             <groupId>LibsDisguises</groupId>
             <artifactId>LibsDisguises</artifactId>
-            <version>10.0.15</version>
+            <version>10.0.26</version>
 <!--            <scope>provided</scope>-->
         </dependency>
         <dependency>
-<!--            <groupId>net.elseland.xikage</groupId>-->
             <groupId>io.lumine.xikage</groupId>
             <artifactId>MythicMobs</artifactId>
-            <version>4.10.0</version>
+            <version>4.11.2</version>
         </dependency>
         <dependency>
             <groupId>com.griefcraft.lwc</groupId>
@@ -204,8 +215,4 @@
             <url>http://nexus.hc.to/content/repositories/snapshots/</url>
         </snapshotRepository>
     </distributionManagement>
-
-    <properties>
-        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-    </properties>
 </project>

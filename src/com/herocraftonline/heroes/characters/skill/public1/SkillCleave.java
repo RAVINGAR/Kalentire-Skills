@@ -1,5 +1,6 @@
 package com.herocraftonline.heroes.characters.skill.public1;
 
+import com.herocraftonline.heroes.characters.CharacterDamageManager;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.Particle;
@@ -21,7 +22,7 @@ import com.herocraftonline.heroes.characters.skill.SkillType;
 import com.herocraftonline.heroes.characters.skill.TargettedSkill;
 import com.herocraftonline.heroes.nms.NMSHandler;
 import com.herocraftonline.heroes.util.Util;
-
+import org.bukkit.inventory.ItemStack;
 
 
 public class SkillCleave extends TargettedSkill {
@@ -59,16 +60,18 @@ public class SkillCleave extends TargettedSkill {
     @Override
     public SkillResult use(Hero hero, LivingEntity target, String[] args) {
         Player player = hero.getPlayer();
-        
-        Material item = NMSHandler.getInterface().getItemInMainHand(player.getInventory()).getType();
-        if (!SkillConfigManager.getUseSetting(hero, this, "weapons", Util.swords).contains(item.name())) {
+
+        ItemStack item = player.getInventory().getItemInMainHand();
+        Material itemType = item.getType();
+        if (!SkillConfigManager.getUseSetting(hero, this, "weapons", Util.swords).contains(itemType.toString())) {
             player.sendMessage("You can't cleave with that weapon!");
             return SkillResult.FAIL;
         }
 
         broadcastExecuteText(hero, target);
 
-        double damage = plugin.getDamageManager().getHighestItemDamage(hero, item);
+        CharacterDamageManager manager = plugin.getDamageManager();
+        double damage = manager.getFlatItemDamage(hero, itemType);
         damage *= SkillConfigManager.getUseSetting(hero, this, "damage-multiplier", 1.0, false);
 
         addSpellTarget(target, hero);

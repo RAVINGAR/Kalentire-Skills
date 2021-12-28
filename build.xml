@@ -11,14 +11,14 @@
     <property name="dir.maven.dependencies" value ="maven" />
     <property name="jar-version-prefix" value="Herocraft" />
     <!-- Skill packs to only build when running "build-packs" Ant task -->
-    <property name="skill-packs" value="public1,pack1,pack2,pack3,pack4,pack5,pack6,pack7,pack8,skills" />
+    <property name="skill-packs" value="public1,pack1,pack2,pack3,pack4,pack5,pack6,pack7,pack8" />
 
     <!-- Only "build-classes-and-skills" Ant task related properties -->
 
     <!-- Chooses the "pack" to build reborn/other classes from when running "build-classes-and-skills" task -->
     <!-- e.g. "remastered", or "reborn" as these are the only current packages organised with subpackages (classes). -->
     <!-- Only uncomment ONE at a time, and make sure to adjust "classes" or "skills" below as well! -->
-<!--    <property name="top-package" value="reborn"/>-->
+    <!-- <property name="top-package" value="reborn"/> -->
     <property name="top-package" value="remastered"/>
 
     <!-- Classes of skills to only build when running "build-classes-and-skills" Ant task, for specific skills only see below. -->
@@ -28,13 +28,13 @@
 
     <!--Can be used to only build specific skills e.g. ninja\SkillSneak-->
     <property name="classes" value="" /> <!-- If uncommented, no specified class packages of skills to build-->
-    <!--    <property name="skills" value="" /> &lt;!&ndash; If uncommented, no specified skills to build&ndash;&gt;-->
+    <property name="skills" value="" /> <!-- &lt;!&ndash;  If uncommented, no specified skills to build&ndash;&gt;-->
     <!--    <property name="skills" value="arcanist\SkillBolt,necromancer\SkillWeb" />-->
 <!--    <property name="skills" value="other\SkillEnchant,shared\SkillFireball" />-->
 
     <!--    <property name="skills" value="shadowknight\SkillAtrophy,cleric\SkillFaith,paladin\SkillHolyInspiration,pyromancer\SkillLavaSkin,druid\SkillNaturesBoon,bloodmage\SkillRecklessClot,dragoon\SkillGentleLanding" />-->
     <!--    <property name="skills" value="shadowknight\SkillAtrophy,dragoon\SkillDragonsGift,bard\SkillBoomingVoice,cleric\SkillFaith,druid\SkillNaturesBoon" />-->
-        <property name="skills" value="dragoon\SkillDragonSmash,shadowknight\SkillEmpathy,cleric\SkillCleanse,runeblade\SkillDevourMagic,necromancer\SkillBecomeDeath" />
+    <!--    <property name="skills" value="dragoon\SkillDragonSmash,shadowknight\SkillEmpathy,cleric\SkillCleanse,runeblade\SkillDevourMagic,necromancer\SkillBecomeDeath" /> -->
 <!--    <property name="skills" value="necromancer\SkillBecomeDeath" />-->
 
     <!-- End of Only "build-classes-and-skills" Ant task related properties -->
