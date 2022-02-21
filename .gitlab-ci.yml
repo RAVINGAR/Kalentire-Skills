@@ -1,0 +1,22 @@
+image: openjdk:11
+
+stages:
+  - build
+
+build:
+  stage: build
+  script:
+    - ant/apache-ant/bin/ant build
+  artifacts:
+    paths:
+      - build/Heroes-public1.zip
+      - build/Heroes-pack1.zip
+      - build/Heroes-pack2.zip
+      - build/Heroes-pack3.zip
+      - build/Heroes-pack4.zip
+      - build/Heroes-pack5.zip
+      - build/Heroes-pack6.zip
+      - build/Heroes-pack7.zip
+      - build/Heroes-pack8.zip
+      - build/Heroes-reborn.zip
+      - build/Heroes-remastered.zip
