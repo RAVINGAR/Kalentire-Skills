@@ -2,6 +2,7 @@
 bin/
 target/
 build/
+build-old/
 .gradle/
 maven/
 .externalToolBuilders/
