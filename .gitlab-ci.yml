@@ -9,8 +9,7 @@ stages:
 build:
   stage: build
   script:
-    - git update-index --chmod=+x gradlew
-    - git commit
+    - chmod +x ./gradlew
     - ./gradlew build-packs
   artifacts:
     paths:
