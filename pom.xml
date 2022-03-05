@@ -119,12 +119,6 @@
             <scope>provided</scope>
         </dependency>
         <dependency>
-            <groupId>com.herocraftonline.heroes</groupId>
-            <artifactId>heroes-bukkit-compat-base</artifactId>
-            <version>1.9.17-SNAPSHOT</version>
-            <scope>provided</scope>
-        </dependency>
-        <dependency>
             <groupId>net.milkbowl.vault</groupId>
             <artifactId>VaultAPI</artifactId>
             <version>1.7</version>
