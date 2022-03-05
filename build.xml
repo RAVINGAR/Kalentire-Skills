@@ -68,7 +68,7 @@
         <echo message="Jar build version: ${jar-version}"/>
     </target>
 
-    <target name="build">
+    <target name="build-packs">
         <!--Populate Maven Dependencies -->
         <antcall target="populate-maven-deps"/>
 
@@ -89,7 +89,7 @@
                 <mkdir dir="${dir.dist}/${dir.dist.path}"/>
                 <mkdir dir="${dir.bin}/${dir.dist.path}/@{package}"/>
                 <echo message="Building Pack: @{package}"/>
-                <javac srcdir="src/com/herocraftonline/heroes/characters/skill/@{package}" excludes="**/unusedskills/**"
+                <javac srcdir="src/main/java/com/herocraftonline/heroes/characters/skill/@{package}" excludes="**/unusedskills/**"
                        debug="on" destdir="bin" classpathref="classpath" includeantruntime="false" encoding="utf-8"
                        fork="yes"/>
                 <antcall target="jar-skills-packs">
