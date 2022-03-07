@@ -1,0 +1,24 @@
+image: openjdk:11
+
+before_script:
+  - export GRADLE_USER_HOME=`pwd`/.gradle
+
+stages:
+  - build
+  - deploy
+
+# jobs
+build:
+  stage: build
+  script:
+    - ./gradlew --refresh-dependencies build
+  # This effects the dropdown download files on the gitlab job
+  artifacts:
+    paths:
+    - build/libs/Heroes-Skills.jar
+deploy:
+  stage: deploy
+  script:
+    - ./gradlew publish
+  only:
+    - dev
