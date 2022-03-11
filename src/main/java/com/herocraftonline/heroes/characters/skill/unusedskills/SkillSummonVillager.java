@@ -21,7 +21,7 @@ import com.herocraftonline.heroes.util.Util;
 
 public class SkillSummonVillager extends SkillBaseSummonEntity {
 
-    private static final List<Profession> PROFESSIONS = Lists.newArrayList(Profession.FARMER, Profession.LIBRARIAN, Profession.PRIEST, Profession.BLACKSMITH,
+    private static final List<Profession> PROFESSIONS = Lists.newArrayList(Profession.FARMER, Profession.LIBRARIAN, Profession.CLERIC, Profession.ARMORER,
             Profession.BUTCHER);
     
     public SkillSummonVillager(Heroes plugin) {
@@ -56,7 +56,7 @@ public class SkillSummonVillager extends SkillBaseSummonEntity {
 
         if (args.length > 0) {
             try {
-                profession = "SMITH".equalsIgnoreCase(args[0]) ? Profession.BLACKSMITH : Profession.valueOf(args[0].toUpperCase());
+                profession = "SMITH".equalsIgnoreCase(args[0]) ? Profession.ARMORER : Profession.valueOf(args[0].toUpperCase());
             }
             catch (Exception e) {
                 // do nothing

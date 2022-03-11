@@ -76,29 +76,29 @@ public class SkillForage extends ActiveSkill {
         List<String> materialNames = new ArrayList<>();
 
         //FIXME Someone with more knowledge of the skill should address this switch statement
-        switch (biome) {
-        case TAIGA:
-        case TAIGA_HILLS:
-        case FROZEN_OCEAN:
-        case FROZEN_RIVER:
-        case ICE_SPIKES:
-        case SNOWY_MOUNTAINS:
+        switch (biome.name()) {
+        case "TAIGA":
+        case "TAIGA_HILLS":
+        case "FROZEN_OCEAN":
+        case "FROZEN_RIVER":
+        case "ICE_SPIKES":
+        case "SNOWY_MOUNTAINS":
         //case ICE_FLATS:
         //case ICE_MOUNTAINS:
             materialNames.addAll(SkillConfigManager.getUseSetting(hero, this, "ice.items", new ArrayList<String>()));
             chance = SkillConfigManager.getUseSetting(hero, this, "ice.chance", .01, false) * hero.getHeroLevel(this);
             maxFinds = SkillConfigManager.getUseSetting(hero, this, "ice.max-found", 3, false);
             break;
-        case FOREST:
-        case BIRCH_FOREST_HILLS:
-        case DARK_FOREST_HILLS:
-        case WOODED_HILLS:
-        case JUNGLE_HILLS:
-        case BAMBOO_JUNGLE_HILLS:
-        case SNOWY_TAIGA_HILLS:
-        case GIANT_SPRUCE_TAIGA_HILLS:
-        case GIANT_TREE_TAIGA_HILLS:
-        case TALL_BIRCH_HILLS:
+        case "FOREST":
+        case "BIRCH_FOREST_HILLS":
+        case "DARK_FOREST_HILLS":
+        case "WOODED_HILLS":
+        case "JUNGLE_HILLS":
+        case "BAMBOO_JUNGLE_HILLS":
+        case "SNOWY_TAIGA_HILLS":
+        case "GIANT_SPRUCE_TAIGA_HILLS":
+        case "GIANT_TREE_TAIGA_HILLS":
+        case "TALL_BIRCH_HILLS":
         //case FOREST_HILLS:
         //case EXTREME_HILLS:
         //case SMALLER_EXTREME_HILLS:
@@ -106,73 +106,60 @@ public class SkillForage extends ActiveSkill {
             chance = SkillConfigManager.getUseSetting(hero, this, "forest.chance", .01, false) * hero.getHeroLevel(this);
             maxFinds = SkillConfigManager.getUseSetting(hero, this, "forest.max-found", 3, false);
             break;
-        case SWAMP:
-        case SWAMP_HILLS:
+        case "SWAMP":
+        case "SWAMP_HILLS":
             materialNames.addAll(SkillConfigManager.getUseSetting(hero, this, "swamp.items", Arrays.asList(new String[] { "RED_MUSHROOM", "BROWN_MUSHROOM", "RAW_FISH", "VINE" })));
             chance = SkillConfigManager.getUseSetting(hero, this, "swamp.chance", .01, false) * hero.getHeroLevel(this);
             maxFinds = SkillConfigManager.getUseSetting(hero, this, "swamp.max-found", 4, false);
             break;
-        case PLAINS:
-        case SUNFLOWER_PLAINS:
+        case "PLAINS":
+        case "SUNFLOWER_PLAINS":
             materialNames.addAll(SkillConfigManager.getUseSetting(hero, this, "plains.items", Arrays.asList(new String[] { "WHEAT" })));
             chance = SkillConfigManager.getUseSetting(hero, this, "plains.chance", .01, false) * hero.getHeroLevel(this);
             maxFinds = SkillConfigManager.getUseSetting(hero, this, "plains.max-found", 3, false);
             break;
-        case DESERT:
-        case DESERT_HILLS:
-        case DESERT_LAKES:
+        case "DESERT":
+        case "DESERT_HILLS":
+        case "DESERT_LAKES":
             materialNames.addAll(SkillConfigManager.getUseSetting(hero, this, "desert.items", Arrays.asList(new String[] { "CACTUS" })));
             chance = SkillConfigManager.getUseSetting(hero, this, "desert.chance", .005, false) * hero.getHeroLevel(this);
             maxFinds = SkillConfigManager.getUseSetting(hero, this, "desert.max-found", 2, false);
             break;
-        case OCEAN:
-        case RIVER:
-        case BEACH:
-        case SNOWY_BEACH:
+        case "OCEAN":
+        case "RIVER":
+        case "BEACH":
+        case "SNOWY_BEACH":
             materialNames.addAll(SkillConfigManager.getUseSetting(hero, this, "water.items", Arrays.asList(new String[] { "RAW_FISH" })));
             chance = SkillConfigManager.getUseSetting(hero, this, "water.chance", .01, false) * hero.getHeroLevel(this);
             maxFinds = SkillConfigManager.getUseSetting(hero, this, "water.max-found", 3, false);
             break;
-        case MUSHROOM_FIELDS:
-        case MUSHROOM_FIELD_SHORE:
+        case "MUSHROOM_FIELDS":
+        case "MUSHROOM_FIELD_SHORE":
             materialNames.addAll(SkillConfigManager.getUseSetting(hero, this, "mushroom.items", Arrays.asList(new String[] { "RED_MUSHROOM", "BROWN_MUSHROOM", "HUGE_MUSHROOM_1", "HUGE_MUSHROOM_2" })));
             chance = SkillConfigManager.getUseSetting(hero, this, "mushroom.chance", .01, false) * hero.getHeroLevel(this);
             maxFinds = SkillConfigManager.getUseSetting(hero, this, "mushroom.max-found", 2, false);
             break;
-//        case NETHER:
-        case NETHER_WASTES:
-        case SOUL_SAND_VALLEY:
-        case CRIMSON_FOREST:
-        case WARPED_FOREST:
-        case BASALT_DELTAS:
+        case "NETHER":
+        case "NETHER_WASTES":
+        case "SOUL_SAND_VALLEY":
+        case "CRIMSON_FOREST":
+        case "WARPED_FOREST":
+        case "BASALT_DELTAS":
             materialNames.addAll(SkillConfigManager.getUseSetting(hero, this, "hell.items", Arrays.asList(new String[] { "ROTTEN_FLESH" })));
             chance = SkillConfigManager.getUseSetting(hero, this, "hell.chance", .005, false) * hero.getHeroLevel(this);
             maxFinds = SkillConfigManager.getUseSetting(hero, this, "hell.max-found", 1, false);
             break;
-        case THE_END:
-        case SMALL_END_ISLANDS:
-        case END_MIDLANDS:
-        case END_HIGHLANDS:
-        case END_BARRENS:
+        case "THE_END":
+        case "SMALL_END_ISLANDS":
+        case "END_MIDLANDS":
+        case "END_HIGHLANDS":
+        case "END_BARRENS":
             materialNames.addAll(SkillConfigManager.getUseSetting(hero, this, "sky.items", Arrays.asList(new String[] { "VINE" })));
             chance = SkillConfigManager.getUseSetting(hero, this, "sky.chance", .01, false) * hero.getHeroLevel(this);
             maxFinds = SkillConfigManager.getUseSetting(hero, this, "sky.max-found", 3, false);
             break;
         default:
-            switch (biome.name()) {
-                case "NETHER":
-                case "NETHER_WASTES":
-                case "SOUL_SAND_VALLEY":
-                case "CRIMSON_FOREST":
-                case "WARPED_FOREST":
-                case "BASALT_DELTAS":
-                    materialNames.addAll(SkillConfigManager.getUseSetting(hero, this, "hell.items", Arrays.asList(new String[]{"ROTTEN_FLESH"})));
-                    chance = SkillConfigManager.getUseSetting(hero, this, "hell.chance", .005, false) * hero.getHeroLevel(this);
-                    maxFinds = SkillConfigManager.getUseSetting(hero, this, "hell.max-found", 1, false);
-                    break;
-                default:
-                    materialNames.addAll(SkillConfigManager.getUseSetting(hero, this, "default.items", new ArrayList<String>()));
-            }
+            materialNames.addAll(SkillConfigManager.getUseSetting(hero, this, "default.items", new ArrayList<String>()));
         }
 
         List<Material> materials = new ArrayList<>();

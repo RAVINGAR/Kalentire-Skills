@@ -5,20 +5,22 @@ before_script:
 
 stages:
   - build
-  - deploy
 
-# jobs
 build:
   stage: build
   script:
-    - ./gradlew --refresh-dependencies build
-  # This effects the dropdown download files on the gitlab job
+    - chmod +x ./gradlew
+    - ./gradlew build-packs
   artifacts:
     paths:
-    - build/libs/Heroes-Skills.jar
-deploy:
-  stage: deploy
-  script:
-    - ./gradlew publish
-  only:
-    - dev
+      - build/Heroes-public1.zip
+      - build/Heroes-pack1.zip
+      - build/Heroes-pack2.zip
+      - build/Heroes-pack3.zip
+      - build/Heroes-pack4.zip
+      - build/Heroes-pack5.zip
+      - build/Heroes-pack6.zip
+      - build/Heroes-pack7.zip
+      - build/Heroes-pack8.zip
+      - build/Heroes-reborn.zip
+      - build/Heroes-remastered.zip
