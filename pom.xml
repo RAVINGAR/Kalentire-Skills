@@ -8,6 +8,7 @@
     <name>Heroes-Skills</name>
     <url>http://www.herocraftonline.com</url>
 
+
     <properties>
         <maven.compiler.source>11</maven.compiler.source>
         <maven.compiler.target>11</maven.compiler.target>

@@ -40,7 +40,7 @@
         <!--Populate Maven Dependencies -->
         <!--See https://maven.apache.org/ant-tasks/examples/dependencies.html -->
         <artifact:pom id="skillPom" file="pom.xml"/>
-        <artifact:dependencies filesetId="mavenDependencies" pomRefId="skillPom"/>
+        <artifact:dependencies filesetId="mavenDependencies" pomRefId="skillPom" settingsFile="settings.xml"/>
         <copy todir="${dir.maven.dependencies}">
             <!--suppress AntResolveInspection -->
             <fileset refid="mavenDependencies"/>

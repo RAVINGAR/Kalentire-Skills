@@ -1,0 +1,9 @@
+<settings>
+    <servers>
+        <server>
+            <id>heroes-repo</id>
+            <username>${env.HC_REPO_USERNAME}</username>
+            <password>${env.HC_REPO_PASSWORD}</password>
+        </server>
+    </servers>
+</settings>
