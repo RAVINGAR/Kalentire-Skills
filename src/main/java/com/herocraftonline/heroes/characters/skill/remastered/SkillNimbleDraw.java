@@ -3,7 +3,7 @@ package com.herocraftonline.heroes.characters.skill.remastered;
 import com.herocraftonline.heroes.Heroes;
 import com.herocraftonline.heroes.api.SkillResult;
 import com.herocraftonline.heroes.characters.Hero;
-import com.herocraftonline.heroes.characters.skill.ActiveSkill;
+import com.herocraftonline.heroes.characters.skill.PassiveSkill;
 import com.herocraftonline.heroes.characters.skill.SkillType;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
@@ -15,7 +15,7 @@ import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerMoveEvent;
 
-public class SkillNimbleDraw extends ActiveSkill
+public class SkillNimbleDraw extends PassiveSkill
 {
 
     public SkillNimbleDraw(Heroes plugin)
