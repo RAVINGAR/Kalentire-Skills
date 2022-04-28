@@ -1,36 +1,23 @@
 package com.herocraftonline.heroes.characters.skill.reborn;
 
+import com.herocraftonline.heroes.Heroes;
 import com.herocraftonline.heroes.characters.Hero;
 import com.herocraftonline.heroes.characters.effects.EffectType;
 import com.herocraftonline.heroes.characters.skill.PassiveSkill;
 import com.herocraftonline.heroes.characters.skill.Skill;
 import com.herocraftonline.heroes.characters.skill.SkillSetting;
-//import net.minecraft.server.v1_13_R2.*;
 import org.bukkit.Bukkit;
-import org.bukkit.Material;
-import org.bukkit.WeatherType;
 import org.bukkit.configuration.ConfigurationSection;
-import com.herocraftonline.heroes.Heroes;
-//import org.bukkit.craftbukkit.v1_13_R2.*;
-//import org.bukkit.craftbukkit.v1_13_R2.entity.CraftPlayer;
-//import org.bukkit.craftbukkit.v1_13_R2.inventory.CraftItemStack;
-import org.bukkit.enchantments.Enchantment;
-import org.bukkit.entity.Item;
 import org.bukkit.entity.Player;
-import org.bukkit.entity.Trident;
-import org.bukkit.event.Event;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
-import org.bukkit.event.block.Action;
-import org.bukkit.event.entity.EntityToggleSwimEvent;
-import org.bukkit.event.entity.ProjectileLaunchEvent;
-import org.bukkit.event.player.PlayerInteractEvent;
-import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerRiptideEvent;
-import org.bukkit.inventory.ItemStack;
-import org.bukkit.inventory.meta.ItemMeta;
-import org.bukkit.scheduler.BukkitRunnable;
+
+//import net.minecraft.server.v1_13_R2.*;
+//import org.bukkit.craftbukkit.v1_13_R2.*;
+//import org.bukkit.craftbukkit.v1_13_R2.entity.CraftPlayer;
+//import org.bukkit.craftbukkit.v1_13_R2.inventory.CraftItemStack;
 
 public class SkillTridents extends PassiveSkill {
 
@@ -139,26 +126,6 @@ public class SkillTridents extends PassiveSkill {
 ////            }
 //            event.setCancelled(true);
 //        }
-
-        @EventHandler(priority = EventPriority.MONITOR)
-        public void onPlayerJoin(PlayerJoinEvent event) {
-            Player player = event.getPlayer();
-//
-//            EntityPlayer ep = ((CraftPlayer)player).getHandle();
-//
-//            ep.setFlag(3, true);
-//            ep.setFlag(4, true);
-//
-//            ep.setPlayerWeather(WeatherType.DOWNFALL, true);
-//
-//            PacketPlayOutSpawnEntityWeather packetPlayOutSpawnEntityWeather = new PacketPlayOutSpawnEntityWeather();
-//
-//            PacketPlayOutEntityMetadata packetPlayOutEntityMetadata = new PacketPlayOutEntityMetadata(ep.getId(), ep.getDataWatcher(), true);
-//
-//            ep.playerConnection.sendPacket(packetPlayOutEntityMetadata);
-
-            player.setPlayerWeather(WeatherType.DOWNFALL);
-        }
 
 //        @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
 //        public void onPlayerInteract(PlayerInteractEvent event) {

@@ -14,6 +14,7 @@ import org.bukkit.Particle;
 import org.bukkit.Sound;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
+import org.bukkit.inventory.meta.Damageable;
 
 public class SkillMasamune extends ActiveSkill {
 
@@ -70,7 +71,8 @@ public class SkillMasamune extends ActiveSkill {
 
         int duraPercent = SkillConfigManager.getUseSetting(hero, this, "sword-sacrifice-percent", 20, false);
         if (duraPercent > 0) {
-            short dura = NMSHandler.getInterface().getItemInMainHand(player.getInventory()).getDurability();
+            Damageable itemDamage = ((Damageable)NMSHandler.getInterface().getItemInMainHand(player.getInventory()).getItemMeta());
+            int dura = itemDamage.getDamage();
             short maxDura = NMSHandler.getInterface().getItemInMainHand(player.getInventory()).getType().getMaxDurability();
             short duraCost = (short) (maxDura * (duraPercent * 0.01));
 

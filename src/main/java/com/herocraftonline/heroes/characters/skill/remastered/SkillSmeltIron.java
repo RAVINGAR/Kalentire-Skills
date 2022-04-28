@@ -32,7 +32,7 @@ public class SkillSmeltIron extends ActiveSkill{
 	
 	private double calculateChance(Hero hero){
 		return getUseSetting(hero, this, base, 10, false)
-					+getUseSetting(hero,this,gain,0.2,false)*hero.getHeroLevel(hero.getSecondClass());
+					+getUseSetting(hero,this,gain,0.2,false)*hero.getHeroLevel(hero.getSecondaryClass());
 	}
 	
 	@Override
@@ -50,7 +50,7 @@ public class SkillSmeltIron extends ActiveSkill{
         boolean addIngot = false;
 		for (int i = 0; i < contents.length; i++) {
 			ItemStack stack = contents[i];
-			if ((stack != null) && (stack.getType() == Material.IRON_ORE)) {
+			if ((stack != null) && (stack.getType() == Material.RAW_IRON)) {
 				// Remove 1 Iron ore from their inventory
 				final int cur_amount = stack.getAmount();
 				if (cur_amount == 1)

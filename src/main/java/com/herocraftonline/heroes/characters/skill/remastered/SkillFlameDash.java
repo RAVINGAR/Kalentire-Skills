@@ -54,7 +54,8 @@ public class SkillFlameDash extends ActiveSkill {
     public SkillResult use(Hero hero, String[] args) {
         Player player = hero.getPlayer();
         Location playerLoc = player.getLocation();
-        if (playerLoc.getBlockY() > playerLoc.getWorld().getMaxHeight() || playerLoc.getBlockY() < 1) {
+        World world = playerLoc.getWorld();
+        if (world == null || playerLoc.getBlockY() > world.getMaxHeight() || playerLoc.getBlockY() < world.getMinHeight()) {
             player.sendMessage("    " + ChatComponents.GENERIC_SKILL + "The void prevents you from flame dashing!");
             return SkillResult.FAIL;
         }
@@ -99,8 +100,6 @@ public class SkillFlameDash extends ActiveSkill {
 
         List<Material> mustStepDownBlocks = new ArrayList<Material>(Util.transparentBlocks);
         mustStepDownBlocks.remove(Material.WATER);
-//        mustStepDownBlocks.remove(Material.STATIONARY_WATER);
-//        mustStepDownBlocks.remove(Material.STATIONARY_LAVA);
         mustStepDownBlocks.remove(Material.LAVA);
         mustStepDownBlocks.remove(Material.FIRE);
 
