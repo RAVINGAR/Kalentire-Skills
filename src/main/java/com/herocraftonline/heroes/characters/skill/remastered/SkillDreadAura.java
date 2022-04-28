@@ -3,7 +3,6 @@ package com.herocraftonline.heroes.characters.skill.remastered;
 import com.herocraftonline.heroes.Heroes;
 import com.herocraftonline.heroes.api.SkillResult;
 import com.herocraftonline.heroes.api.events.HeroRegainHealthEvent;
-import com.herocraftonline.heroes.attributes.AttributeType;
 import com.herocraftonline.heroes.characters.Hero;
 import com.herocraftonline.heroes.characters.effects.EffectType;
 import com.herocraftonline.heroes.characters.effects.PeriodicEffect;
@@ -11,14 +10,16 @@ import com.herocraftonline.heroes.characters.skill.*;
 import com.herocraftonline.heroes.chat.ChatComponents;
 import com.herocraftonline.heroes.util.GeometryUtil;
 import com.herocraftonline.heroes.util.Util;
-import org.bukkit.*;
+import org.bukkit.Bukkit;
+import org.bukkit.Location;
+import org.bukkit.Particle;
+import org.bukkit.Sound;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.entity.EntityDamageEvent.DamageCause;
 
-import java.util.ArrayList;
 import java.util.List;
 
 //TODO make into a passive skill
@@ -74,8 +75,8 @@ public class SkillDreadAura extends ActiveSkill {
         node.set("mana-tick", 7);
         node.set("heal-mult", 0.2);
         node.set(SkillSetting.PERIOD.node(), 3000);
-        node.set(SkillSetting.APPLY_TEXT.node(), ChatComponents.GENERIC_SKILL + "%hero% is emitting an aura of dread!");
-        node.set(SkillSetting.EXPIRE_TEXT.node(), ChatComponents.GENERIC_SKILL + "%hero% is no longer emitting an aura of dread.");
+        node.set(SkillSetting.APPLY_TEXT.node(), ChatComponents.GENERIC_SKILL + "$1 is emitting an aura of dread!");
+        node.set(SkillSetting.EXPIRE_TEXT.node(), ChatComponents.GENERIC_SKILL + "$1 is no longer emitting an aura of dread.");
 
         return node;
     }
