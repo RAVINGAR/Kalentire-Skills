@@ -8,7 +8,6 @@ import com.herocraftonline.heroes.characters.effects.EffectType;
 import com.herocraftonline.heroes.characters.effects.ExpirableEffect;
 import com.herocraftonline.heroes.characters.skill.*;
 import com.herocraftonline.heroes.util.Util;
-import org.bukkit.Bukkit;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
@@ -22,17 +21,18 @@ import java.util.Collections;
  * Created By MysticMight 2021
  */
 
-public class SkillDread extends PassiveSkill {
+public class SkillDread extends PassiveSkill implements Listenable {
     private static final String dreadDebuffEffectName = "DreadDebuff";
     private String debuffApplyText;
     private String debuffExpireText;
+    private final Listener listener;
 
     public SkillDread(Heroes plugin) {
         super(plugin, "Dread");
         setDescription("$1% chance on attack to apply a debuff on target which reduces their damage output by $2% for " +
                 "$3 second(s)");
         setTypes(SkillType.ABILITY_PROPERTY_PHYSICAL, SkillType.DEBUFFING);
-        Bukkit.getServer().getPluginManager().registerEvents(new SkillHeroListener(this), plugin);
+        listener = new SkillHeroListener(this);
     }
 
     @Override
@@ -69,6 +69,11 @@ public class SkillDread extends PassiveSkill {
                 .replace("%target%", "$1").replace("%hero%", "$2");
         this.debuffExpireText = SkillConfigManager.getRaw(this, "debuff-expire-text", "")
                 .replace("%target%", "$1").replace("%hero%", "$2");
+    }
+
+    @Override
+    public Listener getListener() {
+        return listener;
     }
 
     public class SkillHeroListener implements Listener {

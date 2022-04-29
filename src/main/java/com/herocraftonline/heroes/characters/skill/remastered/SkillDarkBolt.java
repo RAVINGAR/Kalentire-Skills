@@ -32,10 +32,11 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
-public class SkillDarkBolt extends ActiveSkill {
+public class SkillDarkBolt extends ActiveSkill implements Listenable {
 
     private String applyText;
     private String expireText;
+    private final Listener listener;
 
     private Map<WitherSkull, Long> darkBolts = new LinkedHashMap<WitherSkull, Long>(100) {
         private static final long serialVersionUID = 4329526013158603250L;
@@ -57,7 +58,7 @@ public class SkillDarkBolt extends ActiveSkill {
         setTypes(SkillType.ABILITY_PROPERTY_DARK, SkillType.ABILITY_PROPERTY_WITHER, SkillType.ABILITY_PROPERTY_PROJECTILE,
                 SkillType.SILENCEABLE, SkillType.DAMAGING, SkillType.AREA_OF_EFFECT);
 
-        Bukkit.getServer().getPluginManager().registerEvents(new SkillEntityListener(), plugin);
+        listener = new SkillEntityListener();
     }
 
     @Override
@@ -128,6 +129,11 @@ public class SkillDarkBolt extends ActiveSkill {
         broadcastExecuteText(hero);
 
         return SkillResult.NORMAL;
+    }
+
+    @Override
+    public Listener getListener() {
+        return listener;
     }
 
     public class SkillEntityListener implements Listener {

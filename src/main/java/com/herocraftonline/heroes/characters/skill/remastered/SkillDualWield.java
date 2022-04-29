@@ -5,16 +5,10 @@ import com.herocraftonline.heroes.api.events.WeaponDamageEvent;
 import com.herocraftonline.heroes.characters.CharacterDamageManager;
 import com.herocraftonline.heroes.characters.Hero;
 import com.herocraftonline.heroes.characters.effects.ExpirableEffect;
-import com.herocraftonline.heroes.characters.skill.PassiveSkill;
-import com.herocraftonline.heroes.characters.skill.Skill;
-import com.herocraftonline.heroes.characters.skill.SkillConfigManager;
-import com.herocraftonline.heroes.characters.skill.SkillType;
+import com.herocraftonline.heroes.characters.skill.*;
 import com.herocraftonline.heroes.nms.NMSHandler;
-import com.herocraftonline.heroes.util.ArmorUtil;
 import com.herocraftonline.heroes.util.Util;
-import org.bukkit.Bukkit;
 import org.bukkit.Material;
-import org.bukkit.Sound;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
@@ -27,10 +21,11 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.PlayerInventory;
 import org.bukkit.scheduler.BukkitRunnable;
 
-public class SkillDualWield extends PassiveSkill {
+public class SkillDualWield extends PassiveSkill implements Listenable {
 
     private static String hitCountEffectName = "DualWield-HitCount";
     private static String cooldownEffectName = "DualWield-CooldownEffect";
+    private final Listener listener;
 
     private NMSHandler nmsHandler = NMSHandler.getInterface();
 
@@ -40,7 +35,7 @@ public class SkillDualWield extends PassiveSkill {
                 "you will follow up with an additional attack with your offhand weapon, dealing $2% of its normal damage.");
         setTypes(SkillType.ABILITY_PROPERTY_PHYSICAL, SkillType.DAMAGING);
 
-        Bukkit.getServer().getPluginManager().registerEvents(new SkillHeroListener(this), plugin);
+        listener = new SkillHeroListener(this);
     }
 
     public String getDescription(Hero hero) {
@@ -60,6 +55,11 @@ public class SkillDualWield extends PassiveSkill {
         config.set("damage-effectiveness", 1.0);
         config.set("attack-delay-ticks", 5);
         return config;
+    }
+
+    @Override
+    public Listener getListener() {
+        return listener;
     }
 
     public class SkillHeroListener implements Listener {
@@ -112,7 +112,9 @@ public class SkillDualWield extends PassiveSkill {
 
             event.setDamage(manager.getItemStackDamage(hero, mainHand, EquipmentSlot.HAND) - mitigation);
 
-            effect.addHit(hero, (LivingEntity) event.getEntity(), offHand);
+            if(effect.addHit(hero, (LivingEntity) event.getEntity(), offHand)) {
+                hero.removeEffect(effect);
+            }
             int cooldownDuration = SkillConfigManager.getUseSetting(hero, skill, "minimum-duration-inbetween-hits", 500, false);
             hero.addEffect(new CooldownEffect(skill, player, cooldownDuration));
         }
@@ -148,7 +150,6 @@ public class SkillDualWield extends PassiveSkill {
             currentHitCount++;
             if (currentHitCount >= requiredHits) {
                 triggerOffHandAttack(hero, target, offhand);
-                hero.removeEffect(this);
                 return true;
             }
             return false;

@@ -31,11 +31,12 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.logging.Level;
 
-public class SkillDragonSmash extends ActiveSkill implements Listener {
+public class SkillDragonSmash extends ActiveSkill implements Listenable {
 
     private static String launchedToggleableDragonSmashEffectName = "DragonSmashLaunched";
     private static String droppingDragonSmashEffectName = "DragonSmashDrop";
     private List<FallingBlock> fallingBlocks = new ArrayList<FallingBlock>();
+    private final Listener listener;
 
     public SkillDragonSmash(Heroes plugin) {
         super(plugin, "DragonSmash");
@@ -47,7 +48,7 @@ public class SkillDragonSmash extends ActiveSkill implements Listener {
         setTypes(SkillType.DAMAGING, SkillType.AGGRESSIVE, SkillType.ABILITY_PROPERTY_PHYSICAL, SkillType.VELOCITY_INCREASING);
 
         setToggleableEffectName(launchedToggleableDragonSmashEffectName);
-        Bukkit.getPluginManager().registerEvents(this, plugin);
+        listener = new DragonSmashSkillListener();
     }
 
     @Override
@@ -145,6 +146,11 @@ public class SkillDragonSmash extends ActiveSkill implements Listener {
                 ticks++;
             }
         }.runTaskTimer(plugin, 0, 1L);
+    }
+
+    @Override
+    public Listener getListener() {
+        return listener;
     }
 
     private class LaunchedDragonSmashEffect extends ExpirableEffect {
@@ -287,32 +293,34 @@ public class SkillDragonSmash extends ActiveSkill implements Listener {
         }.runTaskTimer(plugin, 0, 1);
     }
 
-    @EventHandler
-    public void onBlockChangeState(EntityChangeBlockEvent event) {
-        Entity ent = event.getEntity();
-        if (!(ent instanceof FallingBlock))
-            return;
+    private class DragonSmashSkillListener implements Listener {
+        @EventHandler
+        public void onBlockChangeState(EntityChangeBlockEvent event) {
+            Entity ent = event.getEntity();
+            if (!(ent instanceof FallingBlock))
+                return;
 
-        FallingBlock fb = (FallingBlock) event.getEntity();
-        if (fallingBlocks.contains(fb)) {
-            event.setCancelled(true);
-            fallingBlocks.remove(fb);
-            fb.getWorld().playSound(fb.getLocation(), Sound.BLOCK_STONE_STEP, 0.4f, 0.4f);
-            fb.remove();
-        }
-    }
-
-    @EventHandler(priority = EventPriority.MONITOR)
-    public void onPluginDisable(PluginDisableEvent e) {
-        if (e.getPlugin() != plugin) {
-            return;
+            FallingBlock fb = (FallingBlock) event.getEntity();
+            if (fallingBlocks.contains(fb)) {
+                event.setCancelled(true);
+                fallingBlocks.remove(fb);
+                fb.getWorld().playSound(fb.getLocation(), Sound.BLOCK_STONE_STEP, 0.4f, 0.4f);
+                fb.remove();
+            }
         }
 
-        Iterator<FallingBlock> iter = fallingBlocks.iterator();
-        while (iter.hasNext()) {
-            FallingBlock block = iter.next();
-            block.remove();
-            iter.remove();
+        @EventHandler(priority = EventPriority.MONITOR)
+        public void onPluginDisable(PluginDisableEvent e) {
+            if (e.getPlugin() != plugin) {
+                return;
+            }
+
+            Iterator<FallingBlock> iter = fallingBlocks.iterator();
+            while (iter.hasNext()) {
+                FallingBlock block = iter.next();
+                block.remove();
+                iter.remove();
+            }
         }
     }
 }

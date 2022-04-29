@@ -8,12 +8,8 @@ import com.herocraftonline.heroes.characters.Hero;
 import com.herocraftonline.heroes.characters.Monster;
 import com.herocraftonline.heroes.characters.effects.EffectType;
 import com.herocraftonline.heroes.characters.effects.PeriodicExpirableEffect;
-import com.herocraftonline.heroes.characters.skill.ActiveSkill;
-import com.herocraftonline.heroes.characters.skill.Skill;
-import com.herocraftonline.heroes.characters.skill.SkillConfigManager;
-import com.herocraftonline.heroes.characters.skill.SkillSetting;
+import com.herocraftonline.heroes.characters.skill.*;
 import com.herocraftonline.heroes.util.Util;
-import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Sound;
 import org.bukkit.configuration.ConfigurationSection;
@@ -22,7 +18,9 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 
-public class SkillDeathMark extends ActiveSkill {
+public class SkillDeathMark extends ActiveSkill implements Listenable {
+
+    private final Listener listener;
 
     public SkillDeathMark(Heroes plugin) {
         super(plugin, "DeathMark");
@@ -31,7 +29,7 @@ public class SkillDeathMark extends ActiveSkill {
         setArgumentRange(1, 1);
         setIdentifiers("skill deathmark");
 
-        Bukkit.getServer().getPluginManager().registerEvents(new SkillHeroListener(), plugin);
+        listener = new SkillHeroListener();
     }
 
     @Override
@@ -89,6 +87,11 @@ public class SkillDeathMark extends ActiveSkill {
         hero.getPlayer().getWorld().playSound(hero.getPlayer().getLocation(), Sound.ENTITY_PLAYER_LEVELUP, 0.8F, 5.0F);
 
         return SkillResult.NORMAL;
+    }
+
+    @Override
+    public Listener getListener() {
+        return listener;
     }
 
     public class SkillHeroListener implements Listener {

@@ -13,14 +13,13 @@ import com.herocraftonline.heroes.characters.party.HeroParty;
 import com.herocraftonline.heroes.characters.skill.*;
 import com.herocraftonline.heroes.chat.ChatComponents;
 import com.herocraftonline.heroes.util.Util;
-import org.bukkit.Bukkit;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 
-public class SkillDefenceInNumbers extends PassiveSkill {
+public class SkillDefenceInNumbers extends PassiveSkill implements Listenable {
     final static String allyEffectName = "DefenceInNumbersAllyEffect";
     public static final String SKILL_MESSAGE_PREFIX_SPACES = "    ";
     private String applyText;
@@ -28,6 +27,7 @@ public class SkillDefenceInNumbers extends PassiveSkill {
     private String renewText;
     private String allyApplyText;
     private String allyExpireText;
+    private final Listener listener;
 
     public SkillDefenceInNumbers(Heroes plugin) {
         super(plugin, "DefenceInNumbers");
@@ -36,7 +36,7 @@ public class SkillDefenceInNumbers extends PassiveSkill {
                 "The effect is reapplied every $7s.");
         setTypes(SkillType.BUFFING, SkillType.AREA_OF_EFFECT, SkillType.ABILITY_PROPERTY_PHYSICAL, SkillType.ABILITY_PROPERTY_MAGICAL);
 
-        Bukkit.getServer().getPluginManager().registerEvents(new DefenceInNumbersListener(this), plugin);
+        listener = new DefenceInNumbersListener(this);
     }
 
     @Override
@@ -113,6 +113,11 @@ public class SkillDefenceInNumbers extends PassiveSkill {
         boolean protectAllies = SkillConfigManager.getUseSettingBool(hero, this, "protect-allies");
 
         hero.addEffect(new DefenceInNumbersEffect(this, this.getName(), hero.getPlayer(), protectAllies, period, applyText, expireText));
+    }
+
+    @Override
+    public Listener getListener() {
+        return listener;
     }
 
     public class DefenceInNumbersEffect extends PeriodicEffect {

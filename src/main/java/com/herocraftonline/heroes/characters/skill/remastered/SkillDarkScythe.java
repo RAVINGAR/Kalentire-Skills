@@ -2,7 +2,6 @@ package com.herocraftonline.heroes.characters.skill.remastered;
 
 import com.herocraftonline.heroes.Heroes;
 import com.herocraftonline.heroes.api.SkillResult;
-import com.herocraftonline.heroes.attributes.AttributeType;
 import com.herocraftonline.heroes.characters.Hero;
 import com.herocraftonline.heroes.characters.effects.Effect;
 import com.herocraftonline.heroes.characters.effects.EffectType;
@@ -25,10 +24,11 @@ import org.bukkit.inventory.ItemStack;
 
 import java.util.List;
 
-public class SkillDarkScythe extends ActiveSkill {
+public class SkillDarkScythe extends ActiveSkill implements Listenable {
 
     private String applyText;
     private String expireText;
+    private final Listener listener;
 
     public SkillDarkScythe(Heroes plugin) {
         super(plugin, "Darkscythe");
@@ -39,7 +39,7 @@ public class SkillDarkScythe extends ActiveSkill {
         setIdentifiers("skill darkscythe");
         setTypes(SkillType.ABILITY_PROPERTY_DARK, SkillType.AGGRESSIVE, SkillType.DAMAGING, SkillType.BUFFING);
 
-        Bukkit.getServer().getPluginManager().registerEvents(new SkillDamageListener(this), plugin);
+        listener = new SkillDamageListener(this);
     }
 
     @Override
@@ -80,6 +80,11 @@ public class SkillDarkScythe extends ActiveSkill {
 
         broadcastExecuteText(hero);
         return SkillResult.NORMAL;
+    }
+
+    @Override
+    public Listener getListener() {
+        return listener;
     }
 
     public class SkillDamageListener implements Listener {

@@ -7,7 +7,6 @@ import com.herocraftonline.heroes.characters.effects.EffectType;
 import com.herocraftonline.heroes.characters.skill.*;
 import com.herocraftonline.heroes.chat.ChatComponents;
 import com.herocraftonline.heroes.util.Util;
-import org.bukkit.Bukkit;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -19,14 +18,15 @@ import org.bukkit.event.entity.EntityDamageEvent.DamageCause;
  * Created By MysticMight 2021
  */
 
-public class SkillDragonsGift extends PassiveSkill {
+public class SkillDragonsGift extends PassiveSkill implements Listenable {
     private String damageText;
+    private final Listener listener;
 
     public SkillDragonsGift(Heroes plugin) {
         super(plugin, "DragonsGift");
         setDescription("You fall gracefully and receive $1% fall damage.");
         setTypes(SkillType.ABILITY_PROPERTY_EARTH, SkillType.BUFFING);
-        Bukkit.getServer().getPluginManager().registerEvents(new SkillHeroListener(this), plugin);
+        listener = new SkillHeroListener(this);
     }
 
     @Override
@@ -49,6 +49,11 @@ public class SkillDragonsGift extends PassiveSkill {
     public void init() {
         super.init();
         damageText = "    " + SkillConfigManager.getRaw(this, "damage-text", ChatComponents.GENERIC_SKILL + "Your fall damage was reduced by $1!");
+    }
+
+    @Override
+    public Listener getListener() {
+        return listener;
     }
 
     public class SkillHeroListener implements Listener {

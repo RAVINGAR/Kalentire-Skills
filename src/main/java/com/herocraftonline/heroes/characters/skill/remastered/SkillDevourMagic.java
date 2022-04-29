@@ -7,16 +7,16 @@ import com.herocraftonline.heroes.characters.effects.EffectType;
 import com.herocraftonline.heroes.characters.skill.*;
 import com.herocraftonline.heroes.chat.ChatComponents;
 import com.herocraftonline.heroes.util.Util;
-import org.bukkit.Bukkit;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 
-public class SkillDevourMagic extends PassiveSkill {
+public class SkillDevourMagic extends PassiveSkill implements Listenable {
 
     private String devourText;
+    private final Listener listener;
 
     public SkillDevourMagic(Heroes plugin) {
         super(plugin, "DevourMagic");
@@ -25,7 +25,7 @@ public class SkillDevourMagic extends PassiveSkill {
         // Set types for passive effect
         setEffectTypes(EffectType.BENEFICIAL, EffectType.DARK, EffectType.MAGIC);
 
-        Bukkit.getPluginManager().registerEvents(new SkillHeroListener(this), plugin);
+        listener = new SkillHeroListener(this);
     }
 
     @Override
@@ -60,6 +60,11 @@ public class SkillDevourMagic extends PassiveSkill {
     @Override
     public void apply(Hero hero) {
         super.apply(hero);
+    }
+
+    @Override
+    public Listener getListener() {
+        return listener;
     }
 
     public class SkillHeroListener implements Listener {
