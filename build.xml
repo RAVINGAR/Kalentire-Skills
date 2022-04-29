@@ -14,6 +14,7 @@
     <property name="jar-version-prefix" value="Herocraft"/>
     <!-- Skill packs to only build when running "build" Ant task -->
     <property name="skill-packs" value="public1,pack1,pack2,pack3,pack4,pack5,pack6,pack7,pack8,reborn,remastered"/>
+    <property name="remastered" value="remastered"/>
 
     <!--Classpath used by javac compiler-->
     <path id="classpath">
@@ -66,6 +67,41 @@
         <echo message="Git hash: ${git-hash}"/>
         <property name="jar-version" value="${jar-version-prefix} ${git-hash} GMT ${jar-time-stamp}"/>
         <echo message="Jar build version: ${jar-version}"/>
+    </target>
+
+    <target name="build-remastered">
+        <!--Populate Maven Dependencies -->
+        <antcall target="populate-maven-deps"/>
+
+        <!--Pre-Cleanup-->
+        <delete dir="${dir.bin}"/>
+        <delete dir="${dir.dist}/${ant.project.name}"/>
+
+        <!--Get git hash, timestamp and hence jar version for build-->
+        <antcallback target="get-jar-version" return="jar-version"/>
+        <echo message="Jar build version: ${jar-version}"/>
+
+        <!--Make directories required for the build-->
+        <mkdir dir="${dir.dist}"/>
+        <mkdir dir="${dir.bin}"/>
+
+        <mkdir dir="${dir.dist}/${dir.dist.path}"/>
+        <mkdir dir="${dir.bin}/${dir.dist.path}/remastered"/>
+        <echo message="Building Pack: remastered"/>
+        <javac srcdir="src/main/java/com/herocraftonline/heroes/characters/skill/remastered" excludes="**/unusedskills/**"
+               debug="on" destdir="bin" classpathref="classpath" includeantruntime="false" encoding="utf-8"
+               fork="yes"/>
+        <antcall target="jar-skills-packs">
+            <param name="package" value="remastered"/>
+            <param name="jar-version" value="${jar-version}"/>
+        </antcall>
+        <delete dir="${dir.bin}" includes="**/*.class" excludes="**/*.jar"/>
+        <antcall target="zip">
+            <param name="package" value="remastered"/>
+        </antcall>
+
+        <delete dir="${dir.bin}"/>
+        <delete dir="${dir.dist}/${ant.project.name}"/>
     </target>
 
     <target name="build-packs">

@@ -5,14 +5,10 @@ import com.herocraftonline.heroes.Heroes;
 import com.herocraftonline.heroes.attributes.AttributeType;
 import com.herocraftonline.heroes.characters.Hero;
 import com.herocraftonline.heroes.characters.effects.EffectType;
-import com.herocraftonline.heroes.characters.skill.PassiveSkill;
-import com.herocraftonline.heroes.characters.skill.Skill;
-import com.herocraftonline.heroes.characters.skill.SkillConfigManager;
-import com.herocraftonline.heroes.characters.skill.SkillType;
+import com.herocraftonline.heroes.characters.skill.*;
 import com.herocraftonline.heroes.characters.skill.ncp.NCPFunction;
 import com.herocraftonline.heroes.characters.skill.ncp.NCPUtils;
 import com.herocraftonline.heroes.util.Util;
-import org.bukkit.Bukkit;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -21,19 +17,56 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.entity.EntityDamageEvent.DamageCause;
 
-public class SkillTumble extends PassiveSkill {
+public class SkillTumble extends PassiveSkill implements Listenable {
+    private final Listener listener;
 
     public SkillTumble(Heroes plugin) {
         super(plugin, "Tumble");
         setDescription("$1");
         setEffectTypes(EffectType.BENEFICIAL, EffectType.PHYSICAL);
         setTypes(SkillType.ABILITY_PROPERTY_PHYSICAL);
-        Bukkit.getServer().getPluginManager().registerEvents(new SkillEntityListener(this), plugin);
+
+        Skill skill = this;
+        listener = new Listener() {
+            @EventHandler(priority = EventPriority.LOWEST)
+            public void onEntityDamage(final EntityDamageEvent event) {
+                if (!(event.getEntity() instanceof Player) || event.getCause() != DamageCause.FALL) {
+                    return;
+                }
+                Hero hero = plugin.getCharacterManager().getHero((Player) event.getEntity());
+                if (!hero.hasEffect("Tumble") || hero.hasEffectType(EffectType.SAFEFALL)) {
+                    return;
+                }
+
+                double distance = SkillConfigManager.getUseSetting(hero, skill, "base-distance", 3, false);
+                double perLevel = SkillConfigManager.getUseSetting(hero, skill, "distance-increase-per-level", 0.16, false);
+                double perDex = SkillConfigManager.getUseSetting(hero, skill, "distance-increase-per-dexterity-level", 0.16, false);
+                distance += hero.getAttributeValue(AttributeType.DEXTERITY) * perDex;
+                distance += hero.getHeroLevel() * perLevel;
+
+                //fixme this is not how you reduce fall distance?
+                double fallDistance = event.getDamage();
+                fallDistance -= distance;
+
+                final double fallDamage = fallDistance;
+
+                NCPUtils.applyExemptions(event.getEntity(), new NCPFunction() {
+                    @Override
+                    public void execute() {
+                        if (fallDamage <= 0) {
+                            event.setCancelled(true);
+                        } else {
+                            event.setDamage(fallDamage);
+                        }
+                    }
+                }, Lists.newArrayList("MOVING"), SkillConfigManager.getUseSetting(hero, skill, "ncp-exemption-duration", 0, false));
+            }
+        };
     }
 
     @Override
     public String getDescription(Hero hero) {
-        String description = "";
+        String description;
 
         double distance = SkillConfigManager.getUseSetting(hero, this, "base-distance", 3, false);
         double perLevel = SkillConfigManager.getUseSetting(hero, this, "distance-increase-per-level", 0.16, false);
@@ -64,45 +97,19 @@ public class SkillTumble extends PassiveSkill {
         return config;
     }
 
-    public class SkillEntityListener implements Listener {
-        private final Skill skill;
+    @Override
+    public void apply(Hero hero) {
+        hero.addEffect(new TumbleEffect(this, hero.getPlayer(), this.effectTypes));
+    }
 
-        SkillEntityListener(Skill skill) {
-            this.skill = skill;
+    private class TumbleEffect extends PassiveEffect {
+        protected TumbleEffect(Skill skill, Player applier, EffectType[] effectTypes) {
+            super(skill, applier, effectTypes);
         }
+    }
 
-        @EventHandler(priority = EventPriority.LOWEST)
-        public void onEntityDamage(final EntityDamageEvent event) {
-            if (!(event.getEntity() instanceof Player) || event.getCause() != DamageCause.FALL) {
-                return;
-            }
-
-            Hero hero = plugin.getCharacterManager().getHero((Player) event.getEntity());
-            if (!hero.hasEffect("Tumble") || hero.hasEffectType(EffectType.SAFEFALL)) {
-                return;
-            }
-
-            double distance = SkillConfigManager.getUseSetting(hero, skill, "base-distance", 3, false);
-            double perLevel = SkillConfigManager.getUseSetting(hero, skill, "distance-increase-per-level", 0.16, false);
-            double perDex = SkillConfigManager.getUseSetting(hero, skill, "distance-increase-per-dexterity-level", 0.16, false);
-            distance += hero.getAttributeValue(AttributeType.DEXTERITY) * perDex;
-            distance += hero.getHeroLevel() * perLevel;
-
-            double fallDistance = event.getDamage();
-            fallDistance -= distance;
-
-            final double fallDamage = fallDistance;
-
-            NCPUtils.applyExemptions(event.getEntity(), new NCPFunction() {
-                @Override
-                public void execute() {
-                    if (fallDamage <= 0) {
-                        event.setCancelled(true);
-                    } else {
-                        event.setDamage(fallDamage);
-                    }
-                }
-            }, Lists.newArrayList("MOVING"), SkillConfigManager.getUseSetting(hero, skill, "ncp-exemption-duration", 0, false));
-        }
+    @Override
+    public Listener getListener() {
+        return listener;
     }
 }

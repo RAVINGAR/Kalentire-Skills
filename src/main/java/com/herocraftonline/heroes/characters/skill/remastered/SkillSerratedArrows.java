@@ -6,7 +6,6 @@ import com.herocraftonline.heroes.characters.Hero;
 import com.herocraftonline.heroes.characters.effects.ExpirableEffect;
 import com.herocraftonline.heroes.characters.skill.*;
 import com.herocraftonline.heroes.util.Util;
-import org.bukkit.Bukkit;
 import org.bukkit.Color;
 import org.bukkit.FireworkEffect;
 import org.bukkit.configuration.ConfigurationSection;
@@ -18,9 +17,9 @@ import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityDamageEvent;
-import org.bukkit.event.entity.EntityShootBowEvent;
 
-public class SkillSerratedArrows extends PassiveSkill {
+public class SkillSerratedArrows extends PassiveSkill implements Listenable {
+    private final Listener listener;
 
     public SkillSerratedArrows(Heroes plugin) {
         super(plugin, "SerratedArrows");
@@ -29,7 +28,68 @@ public class SkillSerratedArrows extends PassiveSkill {
         setArgumentRange(0, 0);
         setIdentifiers("skill serratedarrows");
         setTypes(SkillType.DAMAGING, SkillType.ARMOR_PIERCING);
-        Bukkit.getServer().getPluginManager().registerEvents(new SkillDamageListener(this), plugin);
+
+        PassiveSkill skill = this;
+        listener = new Listener() {
+            private String getMultiHitEffectName(Player player) {
+                return player.getName() + "-SerratedArrows";
+            }
+
+            @EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
+            public void onEntityDamage(EntityDamageByEntityEvent event) {
+                if (!(event.getDamager() instanceof Arrow)) {
+                    return;
+                }
+
+                Arrow arrow = (Arrow) event.getDamager();
+                if (!(arrow.getShooter() instanceof Player)) {
+                    return;
+                }
+
+                final Player player = (Player) arrow.getShooter();
+                final Hero hero = plugin.getCharacterManager().getHero(player);
+                double damage = SkillConfigManager.getUseSetting(hero, skill, SkillSetting.DAMAGE, 90, false);
+                long duration = SkillConfigManager.getUseSetting(hero, skill, SkillSetting.DURATION, 30000, false);
+
+                if (!skill.hasPassive(hero))
+                    return;
+
+                LivingEntity target = (LivingEntity) event.getEntity();
+                CharacterTemplate targetCT = plugin.getCharacterManager().getCharacter(target);
+                String effectName = getMultiHitEffectName(player);
+
+                if (!targetCT.hasEffect(effectName)) {
+                    targetCT.addEffect(new SerratedArrowsHitEffect(skill, effectName, player, duration));
+                    return;
+                }
+
+                SerratedArrowsHitEffect serratedEffect = (SerratedArrowsHitEffect) targetCT.getEffect(effectName);
+                assert serratedEffect != null;
+                serratedEffect.addHit();
+                if (serratedEffect.getHitCount() != 3)
+                    return;
+
+                // Reduce damage by current bow force. // TODO: Use meta key from HDamageListener?
+                if (arrow.hasMetadata("hero-fired-bow-force")) {
+                    damage *= (float) arrow.getMetadata("hero-fired-bow-force").get(0).value();
+                }
+
+                addSpellTarget(target, hero);
+                damageEntity(target, player, damage, EntityDamageEvent.DamageCause.ENTITY_ATTACK, 0.5f);
+                targetCT.removeEffect(serratedEffect);
+
+                VisualEffect.playInstantFirework(FireworkEffect.builder()
+                        .flicker(false)
+                        .trail(false)
+                        .with(FireworkEffect.Type.BURST)
+                        .withColor(Color.WHITE)
+                        .withFade(Color.GREEN)
+                        .build(), target.getLocation().add(0, 1.0, 0));
+
+                event.setDamage(0);
+                event.setCancelled(true);
+            }
+        };
     }
 
     @Override
@@ -52,74 +112,9 @@ public class SkillSerratedArrows extends PassiveSkill {
         return config;
     }
 
-    public class SkillDamageListener implements Listener {
-        private PassiveSkill skill;
-
-        SkillDamageListener(PassiveSkill skill) {
-            this.skill = skill;
-        }
-
-//        public void onEntityShootBow(EntityShootBowEvent event) {
-//        }
-
-        private String getMultiHitEffectName(Player player) {
-            return player.getName() + "-SerratedArrows";
-        }
-
-        @EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
-        public void onEntityDamage(EntityDamageByEntityEvent event) {
-            if (!(event.getDamager() instanceof Arrow)) {
-                return;
-            }
-
-            Arrow arrow = (Arrow) event.getDamager();
-            if (!(arrow.getShooter() instanceof Player)) {
-                return;
-            }
-
-            final Player player = (Player) arrow.getShooter();
-            final Hero hero = plugin.getCharacterManager().getHero(player);
-            double damage = SkillConfigManager.getUseSetting(hero, skill, SkillSetting.DAMAGE, 90, false);
-            long duration = SkillConfigManager.getUseSetting(hero, skill, SkillSetting.DURATION, 30000, false);
-
-            if (!skill.hasPassive(hero))
-                return;
-
-            LivingEntity target = (LivingEntity) event.getEntity();
-            CharacterTemplate targetCT = plugin.getCharacterManager().getCharacter(target);
-            String effectName = getMultiHitEffectName(player);
-
-            if (!targetCT.hasEffect(effectName)) {
-                targetCT.addEffect(new SerratedArrowsHitEffect(skill, effectName, player, duration));
-                return;
-            }
-
-            SerratedArrowsHitEffect serratedEffect = (SerratedArrowsHitEffect) targetCT.getEffect(effectName);
-            assert serratedEffect != null;
-            serratedEffect.addHit();
-            if (serratedEffect.getHitCount() != 3)
-                return;
-
-            // Reduce damage by current bow force. // TODO: Use meta key from HDamageListener?
-            if (arrow.hasMetadata("hero-fired-bow-force")) {
-                damage *= (float) arrow.getMetadata("hero-fired-bow-force").get(0).value();
-            }
-
-           addSpellTarget(target, hero);
-           damageEntity(target, player, damage, EntityDamageEvent.DamageCause.ENTITY_ATTACK, true);
-           targetCT.removeEffect(serratedEffect);
-
-           VisualEffect.playInstantFirework(FireworkEffect.builder()
-                   .flicker(false)
-                   .trail(false)
-                   .with(FireworkEffect.Type.BURST)
-                   .withColor(Color.WHITE)
-                   .withFade(Color.GREEN)
-                   .build(), target.getLocation().add(0, 1.0, 0));
-
-            event.setDamage(0);
-            event.setCancelled(true);
-        }
+    @Override
+    public Listener getListener() {
+        return listener;
     }
 
     private class SerratedArrowsHitEffect extends ExpirableEffect {

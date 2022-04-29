@@ -8,15 +8,10 @@ import com.herocraftonline.heroes.characters.Hero;
 import com.herocraftonline.heroes.characters.effects.EffectType;
 import com.herocraftonline.heroes.characters.effects.ExpirableEffect;
 import com.herocraftonline.heroes.characters.effects.PeriodicEffect;
-import com.herocraftonline.heroes.characters.skill.PassiveSkill;
-import com.herocraftonline.heroes.characters.skill.Skill;
-import com.herocraftonline.heroes.characters.skill.SkillConfigManager;
-import com.herocraftonline.heroes.characters.skill.SkillSetting;
-import com.herocraftonline.heroes.characters.skill.SkillType;
+import com.herocraftonline.heroes.characters.skill.*;
 import com.herocraftonline.heroes.chat.ChatComponents;
 import com.herocraftonline.heroes.util.Util;
 import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
@@ -24,15 +19,10 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
-import ru.xezard.glow.data.glow.Glow;
-import ru.xezard.glow.data.glow.IGlow;
-import ru.xezard.glow.data.glow.manager.GlowsManager;
 
 import javax.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
-import java.util.logging.Level;
 
 /**
  * Created By MysticMight May 23 2021
@@ -116,7 +106,6 @@ public class SkillArtOfWar extends PassiveSkill {
         public void onWeaponDamage(WeaponDamageEvent event) {
             if (event.getDamage() == 0 || !(event.getEntity() instanceof LivingEntity) || !(event.getDamager() instanceof Hero))
                 return;
-
             // Check attacked mob was the highlighted target
             LivingEntity entity = (LivingEntity) event.getEntity();
             final CharacterTemplate character = plugin.getCharacterManager().getCharacter(entity);

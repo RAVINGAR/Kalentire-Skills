@@ -141,7 +141,13 @@ public class SkillBoneSpear extends ActiveSkill {
         @Override
         protected boolean onCollideWithBlock(Block block, Vector point, BlockFace face) {
             // Custom "block radius"
-            return getLocation().distanceSquared(block.getLocation()) >= this.blockCollisionSizeSquared;
+            if(block == null) {
+                return true;
+            }
+            else {
+                return getLocation().distanceSquared(block.getLocation()) >= this.blockCollisionSizeSquared;
+            }
+
         }
     }
 }

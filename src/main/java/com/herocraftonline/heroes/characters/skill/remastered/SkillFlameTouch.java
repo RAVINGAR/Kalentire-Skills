@@ -2,11 +2,9 @@ package com.herocraftonline.heroes.characters.skill.remastered;
 
 import com.herocraftonline.heroes.Heroes;
 import com.herocraftonline.heroes.api.SkillResult;
-import com.herocraftonline.heroes.attributes.AttributeType;
 import com.herocraftonline.heroes.characters.Hero;
 import com.herocraftonline.heroes.characters.effects.EffectType;
 import com.herocraftonline.heroes.characters.effects.ExpirableEffect;
-import com.herocraftonline.heroes.characters.effects.common.SilenceEffect;
 import com.herocraftonline.heroes.characters.skill.*;
 import com.herocraftonline.heroes.chat.ChatComponents;
 import com.herocraftonline.heroes.util.Util;
@@ -65,17 +63,13 @@ public class SkillFlameTouch extends ActiveSkill {
 	public SkillResult use(Hero hero, String[] args) {
 		final Player player = hero.getPlayer();
 		int duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, 10000, false);
-		
-		// fuck it
+
 		applyText = SkillConfigManager.getRaw(this, SkillSetting.APPLY_TEXT,
 				ChatComponents.GENERIC_SKILL + " %hero%'s strikes are imbued with flame!")
 				.replace("%hero%", ChatColor.WHITE + hero.getName() + ChatColor.GRAY);
 		expireText = SkillConfigManager.getRaw(this, SkillSetting.EXPIRE_TEXT,
 				ChatComponents.GENERIC_SKILL + " %hero%'s strikes have returned to normal.")
 				.replace("%hero%", ChatColor.WHITE + hero.getName() + ChatColor.GRAY);
-
-		// Uh why is there Silence here?
-		hero.addEffect(new SilenceEffect(this, player, duration));
 
 		hero.addEffect(new FlameTouchEffect(plugin, this, hero.getPlayer(), duration));
 
@@ -113,6 +107,10 @@ public class SkillFlameTouch extends ActiveSkill {
 		broadcastExecuteText(hero);
 
 		return SkillResult.NORMAL;
+	}
+
+	public void registerListener(Hero hero) {
+
 	}
 
 	public class SkillDamageListener implements Listener {
