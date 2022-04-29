@@ -16,7 +16,10 @@ import com.herocraftonline.heroes.characters.skill.*;
 import com.herocraftonline.heroes.chat.ChatComponents;
 import com.herocraftonline.heroes.util.GeometryUtil;
 import com.herocraftonline.heroes.util.Util;
-import org.bukkit.*;
+import org.bukkit.Bukkit;
+import org.bukkit.Location;
+import org.bukkit.Particle;
+import org.bukkit.Sound;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -24,19 +27,19 @@ import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.potion.PotionEffectType;
 
-import java.util.ArrayList;
 import java.util.List;
 
 //import com.herocraftonline.heroes.characters.skill.animations.AreaOfEffectAnimation;
 
 //import de.slikey.effectlib.EffectManager;
 
-public class SkillAccelerando extends ActiveSkill {
+public class SkillAccelerando extends ActiveSkill implements Listenable {
 
     private String applyText;
     private String expireText;
 
     private Song skillSong;
+    private final Listener listener;
 
     public SkillAccelerando(Heroes plugin) {
         super(plugin, "Accelerando");
@@ -46,7 +49,7 @@ public class SkillAccelerando extends ActiveSkill {
         setIdentifiers("skill accelerando");
         setTypes(SkillType.BUFFING, SkillType.ABILITY_PROPERTY_SONG, SkillType.MOVEMENT_INCREASING, SkillType.AREA_OF_EFFECT);
 
-        Bukkit.getServer().getPluginManager().registerEvents(new SkillEntityListener(), plugin);
+        listener = new SkillEntityListener();
 
         skillSong = new Song(
                 new Note(Sound.BLOCK_NOTE_BLOCK_BASEDRUM, 0.9F, 0.2F, 0),
@@ -149,6 +152,11 @@ public class SkillAccelerando extends ActiveSkill {
 //        player.getWorld().playEffect(player.getLocation().add(0, 2.5, 0), org.bukkit.Effect.NOTE, 3);
 
         return SkillResult.NORMAL;
+    }
+
+    @Override
+    public Listener getListener() {
+        return listener;
     }
 
     public class SkillEntityListener implements Listener {

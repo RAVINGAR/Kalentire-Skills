@@ -62,13 +62,13 @@ import org.bukkit.event.player.PlayerChangedWorldEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
-public class SkillAbsorbRunes extends ActiveSkill {
+public class SkillAbsorbRunes extends ActiveSkill implements Listenable {
     // Runequeue Hashmap for holding all player RuneQueue tables
     HashMap<Hero, RuneQueue> heroRunes;
+    private final Listener listener;
 
     public SkillAbsorbRunes(Heroes plugin) {
         // Heroes stuff
@@ -79,11 +79,9 @@ public class SkillAbsorbRunes extends ActiveSkill {
         setTypes(SkillType.MANA_INCREASING, SkillType.ABILITY_PROPERTY_MAGICAL);
         setArgumentRange(0, 0);
 
-        // Start up the listener for Rune events
-        Bukkit.getPluginManager().registerEvents(new AbsorbRunesListener(this), plugin);
-
         // Create a new hashmap for all hero Rune queues.
         heroRunes = new HashMap<>();
+        listener = new AbsorbRunesListener(this);
     }
 
     @Override
@@ -166,6 +164,11 @@ public class SkillAbsorbRunes extends ActiveSkill {
 		}
 
         return SkillResult.NORMAL;
+    }
+
+    @Override
+    public Listener getListener() {
+        return listener;
     }
 
     private class AbsorbRunesListener implements Listener {

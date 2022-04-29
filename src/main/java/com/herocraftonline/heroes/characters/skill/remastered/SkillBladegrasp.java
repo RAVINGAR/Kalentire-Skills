@@ -9,7 +9,6 @@ import com.herocraftonline.heroes.characters.Hero;
 import com.herocraftonline.heroes.characters.effects.EffectType;
 import com.herocraftonline.heroes.characters.effects.ExpirableEffect;
 import com.herocraftonline.heroes.characters.skill.*;
-import org.bukkit.Bukkit;
 import org.bukkit.Sound;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
@@ -17,12 +16,13 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 
 
-public class SkillBladegrasp extends ActiveSkill {
+public class SkillBladegrasp extends ActiveSkill implements Listenable {
 
     private String applyText;
     private String expireText;
     private String parryText;
     private String parrySkillText;
+    private final Listener listener;
 
     public SkillBladegrasp(Heroes plugin) {
         super(plugin, "Bladegrasp");
@@ -31,7 +31,7 @@ public class SkillBladegrasp extends ActiveSkill {
         setArgumentRange(0, 0);
         setIdentifiers("skill bladegrasp", "skill bgrasp");
         setTypes(SkillType.ABILITY_PROPERTY_PHYSICAL, SkillType.BUFFING);
-        Bukkit.getServer().getPluginManager().registerEvents(new SkillEntityListener(this), plugin);
+        listener = new SkillEntityListener(this);
     }
 
     @Override
@@ -62,6 +62,11 @@ public class SkillBladegrasp extends ActiveSkill {
 
         hero.getPlayer().getWorld().playSound(hero.getPlayer().getLocation(), Sound.BLOCK_ANVIL_LAND , 0.6F, 1.0F);
         return SkillResult.NORMAL;
+    }
+
+    @Override
+    public Listener getListener() {
+        return listener;
     }
 
     public class BladegraspEffect extends ExpirableEffect {

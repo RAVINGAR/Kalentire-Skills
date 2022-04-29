@@ -98,17 +98,6 @@ public class SkillTumble extends PassiveSkill implements Listenable {
     }
 
     @Override
-    public void apply(Hero hero) {
-        hero.addEffect(new TumbleEffect(this, hero.getPlayer(), this.effectTypes));
-    }
-
-    private class TumbleEffect extends PassiveEffect {
-        protected TumbleEffect(Skill skill, Player applier, EffectType[] effectTypes) {
-            super(skill, applier, effectTypes);
-        }
-    }
-
-    @Override
     public Listener getListener() {
         return listener;
     }

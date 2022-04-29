@@ -11,7 +11,6 @@ import com.herocraftonline.heroes.characters.effects.PeriodicEffect;
 import com.herocraftonline.heroes.characters.skill.*;
 import com.herocraftonline.heroes.chat.ChatComponents;
 import com.herocraftonline.heroes.util.Util;
-import org.bukkit.Bukkit;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
@@ -28,11 +27,12 @@ import java.util.List;
  * Created By MysticMight May 23 2021
  */
 
-public class SkillArtOfWar extends PassiveSkill {
+public class SkillArtOfWar extends PassiveSkill implements Listenable {
 
     private static final String highlightedTargetEffectName = "ArtOfWarHighlightedTarget";
     private boolean glowApiLoaded;
     private String newTargetText;
+    private final Listener listener;
 
     public SkillArtOfWar(Heroes plugin) {
         super(plugin, "ArtOfWar");
@@ -45,7 +45,7 @@ public class SkillArtOfWar extends PassiveSkill {
 //        } else {
 //            Heroes.debugLog(Level.INFO, "Skill ArtOfWar: XGlow API isn't loaded, add it or targets won't glow");
 //        }
-        Bukkit.getServer().getPluginManager().registerEvents(new SkillHeroListener(this), plugin);
+        listener = new SkillHeroListener(this);
     }
 
     @Override
@@ -93,6 +93,11 @@ public class SkillArtOfWar extends PassiveSkill {
         long period = SkillConfigManager.getUseSettingInt(hero, this, SkillSetting.PERIOD, false);
         boolean preferencePlayers = SkillConfigManager.getUseSetting(hero, this, "preference-players", false);
         hero.addEffect(new ArtOfWarPeriodicPassiveEffect(this, hero.getPlayer(), period, damageMultiplier, hRadius, vRadius, preferencePlayers));
+    }
+
+    @Override
+    public Listener getListener() {
+        return listener;
     }
 
     public class SkillHeroListener implements Listener {

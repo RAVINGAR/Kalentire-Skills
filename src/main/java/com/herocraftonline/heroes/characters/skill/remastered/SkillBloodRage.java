@@ -19,8 +19,9 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityDamageEvent.DamageCause;
 import org.bukkit.scheduler.BukkitRunnable;
 
-public class SkillBloodRage extends ActiveSkill {
+public class SkillBloodRage extends ActiveSkill implements Listenable {
     private String applyText, expireText;
+    private final Listener listener;
 
     public SkillBloodRage(Heroes plugin) {
         super(plugin, "BloodRage");
@@ -29,7 +30,7 @@ public class SkillBloodRage extends ActiveSkill {
         setArgumentRange(0, 0);
         setIdentifiers("skill bloodrage", "skill rage");
         setTypes(SkillType.BUFFING, SkillType.SILENCEABLE);
-        Bukkit.getServer().getPluginManager().registerEvents(new SkillDamageListener(this), plugin);
+        listener = new SkillDamageListener(this);
     }
 
     public ConfigurationSection getDefaultConfig() {
@@ -108,6 +109,11 @@ public class SkillBloodRage extends ActiveSkill {
         broadcastExecuteText(hero);
 
         return SkillResult.NORMAL;
+    }
+
+    @Override
+    public Listener getListener() {
+        return listener;
     }
 
     public class SkillDamageListener implements Listener {

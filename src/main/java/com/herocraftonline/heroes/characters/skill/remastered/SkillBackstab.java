@@ -12,7 +12,6 @@ import com.herocraftonline.heroes.util.Util;
 import org.apache.commons.lang.WordUtils;
 import org.bukkit.*;
 import org.bukkit.configuration.ConfigurationSection;
-import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Monster;
 import org.bukkit.entity.Player;
@@ -24,8 +23,9 @@ import org.bukkit.inventory.ItemStack;
 import java.util.List;
 import java.util.logging.Level;
 
-public class SkillBackstab extends ActiveSkill implements Passive {
+public class SkillBackstab extends ActiveSkill implements Passive, Listenable {
 
+    private final Listener listener;
     private String backstabText;
 
     public SkillBackstab(Heroes plugin) {
@@ -36,7 +36,7 @@ public class SkillBackstab extends ActiveSkill implements Passive {
         setIdentifiers("skill backstab");
         setTypes(SkillType.ABILITY_PROPERTY_PHYSICAL, SkillType.AGGRESSIVE, SkillType.UNBINDABLE);
 
-        Bukkit.getServer().getPluginManager().registerEvents(new SkillHeroesListener(this), plugin);
+        listener = new SkillHeroesListener(this);
     }
 
     public String getDescription(Hero hero) {
@@ -151,6 +151,11 @@ public class SkillBackstab extends ActiveSkill implements Passive {
     public void unapply(Hero hero) {
         // blank just so we implement Passive, and appear as a skill that does passive effects (though we dont need an effect to do this)
         // After all our only use as a active is to show bonus attack damage for weapons
+    }
+
+    @Override
+    public Listener getListener() {
+        return listener;
     }
 
     public class SkillHeroesListener implements Listener {

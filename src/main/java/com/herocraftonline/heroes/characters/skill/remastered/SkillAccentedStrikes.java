@@ -20,11 +20,12 @@ import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityDamageEvent.DamageCause;
 import org.bukkit.inventory.ItemStack;
 
-public class SkillAccentedStrikes extends ActiveSkill {
+public class SkillAccentedStrikes extends ActiveSkill implements Listenable {
     private String effectName = "AccentedStrikes";
 
     private String applyText;
     private String expireText;
+    private final Listener listener;
 
     public SkillAccentedStrikes(Heroes plugin) {
         super(plugin, "AccentedStrikes");
@@ -35,7 +36,7 @@ public class SkillAccentedStrikes extends ActiveSkill {
         setArgumentRange(0, 0);
         setTypes(SkillType.ABILITY_PROPERTY_MAGICAL, SkillType.ABILITY_PROPERTY_POISON, SkillType.AGGRESSIVE, SkillType.DAMAGING, SkillType.BUFFING);
 
-        Bukkit.getServer().getPluginManager().registerEvents(new SkillDamageListener(this), plugin);
+        listener = new SkillDamageListener(this);
     }
 
     @Override
@@ -76,6 +77,11 @@ public class SkillAccentedStrikes extends ActiveSkill {
         broadcastExecuteText(hero);
 
         return SkillResult.NORMAL;
+    }
+
+    @Override
+    public Listener getListener() {
+        return listener;
     }
 
     public class SkillDamageListener implements Listener {

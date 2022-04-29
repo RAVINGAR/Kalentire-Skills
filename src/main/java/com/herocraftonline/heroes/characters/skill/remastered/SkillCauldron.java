@@ -30,7 +30,6 @@ import com.herocraftonline.heroes.characters.skill.PassiveSkill;
 import com.herocraftonline.heroes.characters.skill.Skill;
 import com.herocraftonline.heroes.characters.skill.SkillSetting;
 import com.herocraftonline.heroes.characters.skill.SkillType;
-import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
@@ -74,7 +73,8 @@ public class SkillCauldron extends PassiveSkill {
 		setTypes(SkillType.ITEM_CREATION, SkillType.ITEM_MODIFYING);
 		setEffectTypes(EffectType.BENEFICIAL);
 		loadCauldronRecipes();
-		Bukkit.getServer().getPluginManager().registerEvents(new SkillListener(this, plugin), plugin);
+		//Bukkit.getServer().getPluginManager().registerEvents(new SkillListener(this, plugin), plugin);
+		//fixme completely remake this skill :)
 	}
 
 	@Override
@@ -182,7 +182,7 @@ public class SkillCauldron extends PassiveSkill {
 	public class SkillListener implements Listener {
 
 		private final Skill skill;
-		private final ArrayList<Player> player = new ArrayList<Player>();
+		private final ArrayList<Player> players = new ArrayList<Player>();
 		private final ArrayList<Boolean> usingCauldronbench = new ArrayList<Boolean>();
 		private final ArrayList<Boolean> bCanMake = new ArrayList<Boolean>();
 
@@ -198,11 +198,11 @@ public class SkillCauldron extends PassiveSkill {
 			}
 			Hero hero = plugin.getCharacterManager().getHero(event.getPlayer());
 
-			if(event.getClickedBlock().getType() == Material.CRAFTING_TABLE){
-				if(!player.contains(event.getPlayer())){
-					player.add(event.getPlayer());
-					usingCauldronbench.add(player.size()-1, false);
-					bCanMake.add(player.size()-1, false);
+			if(event.getClickedBlock().getType() == Material.CAULDRON){
+				if(!players.contains(event.getPlayer())){
+					players.add(event.getPlayer());
+					usingCauldronbench.add(players.size()-1, false);
+					bCanMake.add(players.size()-1, false);
 				}
 			}
 
@@ -212,7 +212,7 @@ public class SkillCauldron extends PassiveSkill {
 			}
 
 			if(hero.canUseSkill(skill) && event.getClickedBlock().getType() == Material.CAULDRON){
-				if(!player.contains(event.getPlayer())){
+				if(!players.contains(event.getPlayer())){
 
 					Location loc = new Location(event.getPlayer().getWorld(),event.getClickedBlock().getLocation().getBlockX(),event.getClickedBlock().getLocation().getBlockY() - 1,event.getClickedBlock().getLocation().getBlockZ());
 					Block fireblock = event.getClickedBlock().getLocation().getBlock().getRelative(BlockFace.DOWN);
@@ -241,11 +241,11 @@ public class SkillCauldron extends PassiveSkill {
 				return;
 			}
 
-			for(int i = 0; i < player.size(); i++){
+			for(int i = 0; i < players.size(); i++){
 				for(int v = 0; v < event.getViewers().size(); v++){
-					if (event.getViewers().get(v) == player.get(i)){
+					if (event.getViewers().get(v) == players.get(i)){
 
-						Hero hero = plugin.getCharacterManager().getHero(player.get(i));
+						Hero hero = plugin.getCharacterManager().getHero(players.get(i));
 						int sLevel = hero.getLevel(hero.getSecondClass());
 						Recipe recipe = event.getRecipe();
 						if(!usingCauldronbench.get(i)) {
@@ -275,7 +275,7 @@ public class SkillCauldron extends PassiveSkill {
 							}
 						}
 					}
-					if (!bCanMake.get(i) && event.getViewers().get(v) == player.get(i)){
+					if (!bCanMake.get(i) && event.getViewers().get(v) == players.get(i)){
 						event.getInventory().setResult(new ItemStack(Material.AIR));
 						break;
 					}
@@ -287,12 +287,12 @@ public class SkillCauldron extends PassiveSkill {
 		//Possible fix in thread: http://forums.bukkit.org/threads/cant-get-amount-of-shift-click-craft-item.79090/
 		@EventHandler
 		public void onCraftItemEvent(CraftItemEvent event) {
-			if (!player.contains(event.getWhoClicked())){
+			if (!players.contains(event.getWhoClicked())){
 				return;
 			}
 
-			for(int i=0; i<player.size(); i++){
-				if (player.get(i) == event.getWhoClicked()){
+			for(int i = 0; i< players.size(); i++){
+				if (players.get(i) == event.getWhoClicked()){
 					if (usingCauldronbench.get(i)) {
 
 						ItemStack item = event.getCurrentItem();
@@ -312,15 +312,15 @@ public class SkillCauldron extends PassiveSkill {
 		//Flush iterators onInventoryCloseEvent if iterator contains player.
 		@EventHandler
 		public void onInventoryCloseEvent(InventoryCloseEvent event){
-			if(!player.contains(event.getPlayer())){
+			if(!players.contains(event.getPlayer())){
 				return;
 			}
 
-			for(int i = 0; i < player.size(); i++){
-				if (player.get(i) == event.getPlayer()){
+			for(int i = 0; i < players.size(); i++){
+				if (players.get(i) == event.getPlayer()){
 					usingCauldronbench.set(i, false);
 					bCanMake.set(i, false);
-					player.remove(i);
+					players.remove(i);
 					usingCauldronbench.remove(i);
 					bCanMake.remove(i);
 				}

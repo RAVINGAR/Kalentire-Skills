@@ -5,19 +5,17 @@ import com.herocraftonline.heroes.api.events.SkillDamageEvent;
 import com.herocraftonline.heroes.api.events.WeaponDamageEvent;
 import com.herocraftonline.heroes.characters.Hero;
 import com.herocraftonline.heroes.characters.effects.EffectType;
-import com.herocraftonline.heroes.characters.skill.PassiveSkill;
-import com.herocraftonline.heroes.characters.skill.SkillConfigManager;
-import com.herocraftonline.heroes.characters.skill.SkillSetting;
-import com.herocraftonline.heroes.characters.skill.SkillType;
+import com.herocraftonline.heroes.characters.skill.*;
 import com.herocraftonline.heroes.util.Util;
-import org.bukkit.Bukkit;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 
-public class SkillBerserkerRage extends PassiveSkill {
+public class SkillBerserkerRage extends PassiveSkill implements Listenable {
+
+    private final Listener listener;
 
     public SkillBerserkerRage(Heroes plugin) {
         super(plugin, "BerserkerRage");
@@ -26,7 +24,7 @@ public class SkillBerserkerRage extends PassiveSkill {
         setEffectTypes(EffectType.BENEFICIAL, EffectType.PHYSICAL);
         setTypes(SkillType.ABILITY_PROPERTY_PHYSICAL, SkillType.BUFFING);
 
-        Bukkit.getServer().getPluginManager().registerEvents(new SkillHeroListener(), plugin);
+        listener = new SkillHeroListener();
     }
 
     public String getDescription(Hero hero) {
@@ -57,6 +55,11 @@ public class SkillBerserkerRage extends PassiveSkill {
         node.set("damage-percent-increase-threshhold", 0.40);
 
         return node;
+    }
+
+    @Override
+    public Listener getListener() {
+        return listener;
     }
 
     public class SkillHeroListener implements Listener {

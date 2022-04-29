@@ -3,7 +3,6 @@ package com.herocraftonline.heroes.characters.skill.remastered;
 import com.herocraftonline.heroes.Heroes;
 import com.herocraftonline.heroes.api.SkillResult;
 import com.herocraftonline.heroes.api.events.WeaponDamageEvent;
-import com.herocraftonline.heroes.attributes.AttributeType;
 import com.herocraftonline.heroes.characters.Hero;
 import com.herocraftonline.heroes.characters.effects.Effect;
 import com.herocraftonline.heroes.characters.effects.EffectType;
@@ -11,7 +10,6 @@ import com.herocraftonline.heroes.characters.effects.ExpirableEffect;
 import com.herocraftonline.heroes.characters.effects.common.DisarmEffect;
 import com.herocraftonline.heroes.characters.skill.*;
 import com.herocraftonline.heroes.chat.ChatComponents;
-import com.herocraftonline.heroes.nms.NMSHandler;
 import com.herocraftonline.heroes.util.GeometryUtil;
 import com.herocraftonline.heroes.util.Util;
 import org.bukkit.*;
@@ -26,13 +24,13 @@ import org.bukkit.event.entity.EntityDamageEvent.DamageCause;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 
-import java.util.ArrayList;
 import java.util.List;
 
-public class SkillBarrier extends ActiveSkill {
+public class SkillBarrier extends ActiveSkill implements Listenable {
 
 	private String applyText;
 	private String expireText;
+	private final Listener listener;
 
 	public SkillBarrier(Heroes plugin) {
 		super(plugin, "Barrier");
@@ -44,7 +42,7 @@ public class SkillBarrier extends ActiveSkill {
 		setArgumentRange(0, 0);
 		setTypes(SkillType.ABILITY_PROPERTY_LIGHT, SkillType.DAMAGING, SkillType.BUFFING, SkillType.AGGRESSIVE);
 
-		Bukkit.getServer().getPluginManager().registerEvents(new SkillEntityListener(this), plugin);
+		listener = new SkillEntityListener(this);
 	}
 
 	@Override
@@ -104,6 +102,11 @@ public class SkillBarrier extends ActiveSkill {
 		player.getWorld().playSound(player.getLocation(), Sound.ENTITY_GENERIC_EXPLODE, 0.7F, 2.0F);
 
 		return SkillResult.NORMAL;
+	}
+
+	@Override
+	public Listener getListener() {
+		return listener;
 	}
 
 	public class SkillEntityListener implements Listener {

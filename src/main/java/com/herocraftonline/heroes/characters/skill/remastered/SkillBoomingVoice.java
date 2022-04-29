@@ -7,13 +7,8 @@ import com.herocraftonline.heroes.characters.effects.Effect;
 import com.herocraftonline.heroes.characters.effects.EffectType;
 import com.herocraftonline.heroes.characters.effects.ExpirableEffect;
 import com.herocraftonline.heroes.characters.effects.PeriodicHealEffect;
-import com.herocraftonline.heroes.characters.skill.PassiveSkill;
-import com.herocraftonline.heroes.characters.skill.Skill;
-import com.herocraftonline.heroes.characters.skill.SkillConfigManager;
-import com.herocraftonline.heroes.characters.skill.SkillSetting;
-import com.herocraftonline.heroes.characters.skill.SkillType;
+import com.herocraftonline.heroes.characters.skill.*;
 import com.herocraftonline.heroes.util.Util;
-import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
@@ -29,15 +24,16 @@ import java.util.Set;
  * Created By MysticMight 2021
  */
 
-public class SkillBoomingVoice extends PassiveSkill {
+public class SkillBoomingVoice extends PassiveSkill implements Listenable {
 
     private static final String boomingVoiceHealingEffectName = "BoomingVoiceHealing";
+    private final Listener listener;
 
     public SkillBoomingVoice(Heroes plugin) {
         super(plugin, "BoomingVoice");
         setDescription("While a song is active, you passively regain $1 health every $2 second(s).");
         setTypes(SkillType.BUFFING, SkillType.ABILITY_PROPERTY_LIGHT, SkillType.ABILITY_PROPERTY_SONG);
-        Bukkit.getServer().getPluginManager().registerEvents(new SkillHeroListener(this), plugin);
+        listener = new SkillHeroListener(this);
     }
 
     @Override
@@ -72,6 +68,11 @@ public class SkillBoomingVoice extends PassiveSkill {
         List<String> songEffectNamesList = SkillConfigManager.getUseSettingStringList(hero, this, "supported-song-buff-effects");
         Set<String> supportedSongBuffEffectNames = new HashSet<>(songEffectNamesList);
         hero.addEffect(new BoomingVoiceEffect(this, hero.getPlayer(), supportedSongBuffEffectNames, healthTick, period));
+    }
+
+    @Override
+    public Listener getListener() {
+        return listener;
     }
 
     public class BoomingVoiceEffect extends PassiveEffect {

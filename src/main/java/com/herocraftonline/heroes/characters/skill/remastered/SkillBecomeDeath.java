@@ -3,12 +3,8 @@ package com.herocraftonline.heroes.characters.skill.remastered;
 import com.herocraftonline.heroes.Heroes;
 import com.herocraftonline.heroes.characters.Hero;
 import com.herocraftonline.heroes.characters.effects.EffectType;
-import com.herocraftonline.heroes.characters.skill.PassiveSkill;
-import com.herocraftonline.heroes.characters.skill.Skill;
-import com.herocraftonline.heroes.characters.skill.SkillSetting;
-import com.herocraftonline.heroes.characters.skill.SkillType;
+import com.herocraftonline.heroes.characters.skill.*;
 import com.herocraftonline.heroes.util.Util;
-import org.bukkit.Bukkit;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
@@ -23,13 +19,15 @@ import org.bukkit.event.entity.EntityTargetEvent;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
-public class SkillBecomeDeath extends PassiveSkill {
+public class SkillBecomeDeath extends PassiveSkill implements Listenable {
+
+    private final Listener listener;
 
     public SkillBecomeDeath(Heroes plugin) {
         super(plugin, "BecomeDeath");
         setDescription("Undead do not see you unless you provoke them. Additionally, you can breathe underwater.");
         setTypes(SkillType.SILENCEABLE, SkillType.BUFFING, SkillType.ABILITY_PROPERTY_DARK);
-        Bukkit.getServer().getPluginManager().registerEvents(new SkillEntityListener(this), plugin);
+        listener = new SkillEntityListener(this);
     }
 
     @Override
@@ -50,6 +48,11 @@ public class SkillBecomeDeath extends PassiveSkill {
     public void apply(Hero hero) {
         // Note we don't want the default passive effect, we're making our own with a custom constructor
         hero.addEffect(new BecomeDeathEffect(this, hero.getPlayer()));
+    }
+
+    @Override
+    public Listener getListener() {
+        return listener;
     }
 
     public class SkillEntityListener implements Listener {

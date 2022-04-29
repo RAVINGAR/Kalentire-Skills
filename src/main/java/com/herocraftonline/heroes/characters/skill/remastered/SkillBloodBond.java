@@ -9,7 +9,6 @@ import com.herocraftonline.heroes.characters.skill.*;
 import com.herocraftonline.heroes.chat.ChatComponents;
 import com.herocraftonline.heroes.util.GeometryUtil;
 import com.herocraftonline.heroes.util.Util;
-import org.bukkit.Bukkit;
 import org.bukkit.Color;
 import org.bukkit.Location;
 import org.bukkit.Particle;
@@ -24,11 +23,12 @@ import org.bukkit.event.entity.EntityDamageEvent.DamageCause;
 
 import java.util.List;
 
-public class SkillBloodBond extends ActiveSkill {
+public class SkillBloodBond extends ActiveSkill implements Listenable {
     private final String effectName = "BloodBond";
     private static final Particle.DustOptions skillEffectDustOptions = new Particle.DustOptions(Color.RED, 1);
     private String applyText;
     private String expireText;
+    private final Listener listener;
 
     public SkillBloodBond(Heroes plugin) {
         super(plugin, "BloodBond");
@@ -41,7 +41,7 @@ public class SkillBloodBond extends ActiveSkill {
         setTypes(SkillType.BUFFING, SkillType.SILENCEABLE, SkillType.AREA_OF_EFFECT, SkillType.HEALING, SkillType.ABILITY_PROPERTY_MAGICAL, SkillType.ABILITY_PROPERTY_DARK);
 
         setToggleableEffectName(effectName);
-        Bukkit.getServer().getPluginManager().registerEvents(new BloodBondListener(this), plugin);
+        listener = new BloodBondListener(this);
     }
 
     @Override
@@ -101,6 +101,11 @@ public class SkillBloodBond extends ActiveSkill {
             player.getWorld().spawnParticle(Particle.REDSTONE, circle.get(i), 4, 0.2F, 1.5F, 0.2F, 0, skillEffectDustOptions);
 		}
         return SkillResult.NORMAL;
+    }
+
+    @Override
+    public Listener getListener() {
+        return listener;
     }
 
     public class BloodBondEffect extends PeriodicEffect {
@@ -163,27 +168,13 @@ public class SkillBloodBond extends ActiveSkill {
             this.skill = skill;
         }
 
-        // Why was this here? Is it actually needed? We need to test.
-//        @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
-//        public void onEntityDamageByEntity(EntityDamageByEntityEvent event) {
-//            if (!event.getCause().equals(DamageCause.MAGIC) || !(event.getDamager() instanceof Player))
-//                return;
-//
-//            // Make sure the hero has the bloodbond effect
-//            Hero hero = plugin.getCharacterManager().getHero((Player) event.getDamager());
-//            if (hero.hasEffect(effectName)) {
-//                BloodBondEffect effect = (BloodBondEffect) hero.getEffect(effectName);
-//                healHeroParty(hero, event.getDamage(), effect);
-//            }
-//        }
-
         @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
         public void onSkillDamage(EntityDamageByEntityEvent event) {
             if (!event.getCause().equals(DamageCause.MAGIC) || !(event.getDamager() instanceof Player))
                 return;
 
-                // Make sure the hero has the bloodbond effect
-                Hero hero = plugin.getCharacterManager().getHero((Player) event.getDamager());
+            // Make sure the hero has the bloodbond effect
+            Hero hero = plugin.getCharacterManager().getHero((Player) event.getDamager());
             if (hero.hasEffect(effectName)) {
                 BloodBondEffect effect = (BloodBondEffect) hero.getEffect(effectName);
                 healHeroParty(hero, event.getDamage(), effect);

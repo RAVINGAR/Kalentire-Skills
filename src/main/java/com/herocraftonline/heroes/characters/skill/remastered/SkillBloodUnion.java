@@ -8,7 +8,6 @@ import com.herocraftonline.heroes.characters.effects.BloodUnionEffect;
 import com.herocraftonline.heroes.characters.skill.*;
 import com.herocraftonline.heroes.util.GeometryUtil;
 import com.herocraftonline.heroes.util.Util;
-import org.bukkit.Bukkit;
 import org.bukkit.Color;
 import org.bukkit.Location;
 import org.bukkit.Particle;
@@ -21,9 +20,10 @@ import org.bukkit.event.Listener;
 
 import java.util.List;
 
-public class SkillBloodUnion extends PassiveSkill {
+public class SkillBloodUnion extends PassiveSkill implements Listenable {
     private final static String bloodUnionEffectName = "BloodUnionEffect";
     private static final Particle.DustOptions skillEffectDustOptions = new Particle.DustOptions(Color.RED, 1);
+    private final Listener listener;
 
     public SkillBloodUnion(Heroes plugin) {
         super(plugin, "BloodUnion");
@@ -36,7 +36,7 @@ public class SkillBloodUnion extends PassiveSkill {
         setTypes(SkillType.BUFFING, SkillType.SILENCEABLE, SkillType.AREA_OF_EFFECT, SkillType.HEALING,
                 SkillType.ABILITY_PROPERTY_MAGICAL, SkillType.ABILITY_PROPERTY_DARK);
 
-        Bukkit.getPluginManager().registerEvents(new BloodUnionListener(this), plugin);
+        listener = new BloodUnionListener(this);
     }
 
     @Override
@@ -64,6 +64,11 @@ public class SkillBloodUnion extends PassiveSkill {
                 .replace("$2", Util.decFormat.format(period / 1000.0))
                 .replace("$3", Util.decFormat.format(healPercent * 100))
                 .replace("$4", Util.decFormat.format(radius));
+    }
+
+    @Override
+    public Listener getListener() {
+        return listener;
     }
 
     private class BloodUnionListener implements Listener {

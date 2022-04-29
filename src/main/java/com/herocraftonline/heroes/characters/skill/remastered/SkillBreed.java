@@ -68,6 +68,7 @@ public class SkillBreed extends PassiveSkill {
             Material material = NMSHandler.getInterface().getItemInMainHand(player.getInventory()).getType();
 
             Entity targetEntity = event.getRightClicked();
+            //fixme this is coded horribly.
 
             // Only deal with animals.
             if (!(targetEntity instanceof Animals))
@@ -91,7 +92,7 @@ public class SkillBreed extends PassiveSkill {
                 }
 
                 boolean canMountHorses = SkillConfigManager.getUseSetting(hero, skill, "allow-horse-mounting", false);
-                if (!isBreedAttempt && !canMountHorses) {
+                if (!canMountHorses) {
                     player.sendMessage(ChatColor.GRAY + "Horse Mounting is Currently Disabled!");
                     event.setCancelled(true);
                     return;
