@@ -29,7 +29,6 @@ import org.bukkit.util.Vector;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
-import java.util.logging.Level;
 
 public class SkillDragonSmash extends ActiveSkill implements Listenable {
 
@@ -38,6 +37,7 @@ public class SkillDragonSmash extends ActiveSkill implements Listenable {
     private List<FallingBlock> fallingBlocks = new ArrayList<FallingBlock>();
     private final Listener listener;
 
+    //fixme needs a lookover if it works
     public SkillDragonSmash(Heroes plugin) {
         super(plugin, "DragonSmash");
         setDescription("Launch high into the air, if recast, crash back to the ground knocking back all " +
@@ -168,7 +168,7 @@ public class SkillDragonSmash extends ActiveSkill implements Listenable {
     public void doDrop(Hero hero) {
         final Player player = hero.getPlayer();
 
-        if (hero.getPlayer().isOnGround()) {
+        if (isOnGround(player)) {
             // Already on ground, don't let them aoe or drop
             if (hero.hasEffect(launchedToggleableDragonSmashEffectName)) {
                 hero.removeEffect(hero.getEffect(launchedToggleableDragonSmashEffectName));
@@ -191,15 +191,16 @@ public class SkillDragonSmash extends ActiveSkill implements Listenable {
         updateTask.setTaskId(scheduler.scheduleSyncRepeatingTask(plugin, updateTask, 1L, 1L));
     }
 
-    // TODO add timeout for the task this has been handled, just in case
     private class DragonSmashUpdateTask implements Runnable {
         private final Hero hero;
         private final BukkitScheduler scheduler;
         private int taskId;
+        private long timeout;
 
         DragonSmashUpdateTask(BukkitScheduler scheduler, Hero hero) {
             this.scheduler = scheduler;
             this.hero = hero;
+            timeout = 60L; //Timeout of 3 seconds
         }
 
         public void setTaskId(int id) {
@@ -211,20 +212,29 @@ public class SkillDragonSmash extends ActiveSkill implements Listenable {
             final Player player = hero.getPlayer();
             final boolean dead = player.isDead();
             // Note death handling as its a good idea and well for cases such as if they fell in the void, this could be running for a while
-            if (dead || player.isOnGround()) {
+
+            if(dead || --timeout <= 0) {
+                //If less than or equal to 0 then timeout
+                scheduler.cancelTask(taskId);
+                taskId = 0;
+                hero.removeEffect(hero.getEffect(droppingDragonSmashEffectName));
+                return;
+            }
+
+
+            if (isOnGround(player)) {
                 if (taskId != 0 && scheduler.isCurrentlyRunning(taskId)) {
                     scheduler.cancelTask(taskId);
                     taskId = 0;
-                    if (dead) {
-                        hero.removeEffect(hero.getEffect(droppingDragonSmashEffectName));
-                    } else {
-                        smash(hero);
-                    }
-                } else {
-                    Heroes.log(Level.WARNING, "SkillDragonSmash: Bad Coder alert! Somebody is not cancelling a bukkit task properly. This is gonna cause some big lag eventually.");
+                    smash(hero);
                 }
             }
         }
+    }
+
+    private boolean isOnGround(Player player) {
+        Material down = player.getLocation().getBlock().getRelative(BlockFace.DOWN).getType();
+        return down != Material.AIR && down != Material.CAVE_AIR && down != Material.VOID_AIR;
     }
 
     private void smash(final Hero hero) {
