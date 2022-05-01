@@ -10,16 +10,17 @@ import com.herocraftonline.heroes.characters.skill.SkillType;
 import com.herocraftonline.heroes.util.Properties;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
+import org.bukkit.block.Block;
 import org.bukkit.block.data.type.Beehive;
 import org.bukkit.configuration.ConfigurationSection;
+import org.bukkit.enchantments.Enchantment;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
-import org.bukkit.inventory.ItemStack;
 import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
-import org.bukkit.enchantments.Enchantment;
+import org.bukkit.inventory.ItemStack;
 
 import java.util.logging.Level;
 
@@ -78,7 +79,11 @@ public class SkillBeehives extends PassiveSkill {
         }
         @EventHandler(priority = EventPriority.LOW)
         public void onBlockInteract(PlayerInteractEvent event){
-            if(event.getClickedBlock().getType() != Material.matchMaterial("BEE_NEST") && event.getClickedBlock().getType() != Material.matchMaterial("BEEHIVE")) {
+            Block clickedBlock = event.getClickedBlock();
+            if(clickedBlock == null) {
+                return;
+            }
+            if(clickedBlock.getType() != Material.matchMaterial("BEE_NEST") && clickedBlock.getType() != Material.matchMaterial("BEEHIVE")) {
                 return;
             }
 
