@@ -115,7 +115,9 @@ public class SkillNimbleDraw extends PassiveSkill implements Listenable
 
         private void removeShooting(Player player) {
             Float speed = shooting.remove(player.getUniqueId());
-            player.setWalkSpeed(speed);
+            if(speed != null) {
+                player.setWalkSpeed(speed);
+            }
         }
     }
 }
