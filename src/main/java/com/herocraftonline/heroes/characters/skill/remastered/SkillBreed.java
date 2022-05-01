@@ -7,16 +7,16 @@ import com.herocraftonline.heroes.characters.skill.PassiveSkill;
 import com.herocraftonline.heroes.characters.skill.Skill;
 import com.herocraftonline.heroes.characters.skill.SkillConfigManager;
 import com.herocraftonline.heroes.characters.skill.SkillSetting;
-import com.herocraftonline.heroes.nms.NMSHandler;
 import com.herocraftonline.heroes.util.Util;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
-import org.bukkit.Material;
 import org.bukkit.configuration.ConfigurationSection;
-import org.bukkit.entity.*;
+import org.bukkit.entity.EntityType;
+import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
+import org.bukkit.event.entity.EntityBreedEvent;
 import org.bukkit.event.player.PlayerInteractEntityEvent;
 
 public class SkillBreed extends PassiveSkill {
@@ -55,123 +55,41 @@ public class SkillBreed extends PassiveSkill {
 
     public class SkillListener implements Listener {
 
-        private Skill skill;
+        private final Skill skill;
 
         SkillListener(Skill skill) {
             this.skill = skill;
         }
 
-        @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
-        public void onPlayerEntityInteract(PlayerInteractEntityEvent event) {
-            Player player = event.getPlayer();
-            Hero hero = plugin.getCharacterManager().getHero(player);
-            Material material = NMSHandler.getInterface().getItemInMainHand(player.getInventory()).getType();
-
-            Entity targetEntity = event.getRightClicked();
-            //fixme this is coded horribly.
-
-            // Only deal with animals.
-            if (!(targetEntity instanceof Animals))
-                return;
-
-            boolean isBreedAttempt = false;
-
-            // Handle horse interaction
-            if (targetEntity instanceof Horse) {
-                switch (material) {
-                    case WHEAT:
-                    case HAY_BLOCK:
-                    case SUGAR:
-                    case BREAD:
-                    case GOLDEN_APPLE:
-                    case GOLDEN_CARROT:
-                        isBreedAttempt = true;
-                        break;
-                    default:
-                        break;
-                }
-
-                boolean canMountHorses = SkillConfigManager.getUseSetting(hero, skill, "allow-horse-mounting", false);
-                if (!canMountHorses) {
-                    player.sendMessage(ChatColor.GRAY + "Horse Mounting is Currently Disabled!");
-                    event.setCancelled(true);
-                    return;
-                }
-
-                if (isBreedAttempt) {
-                    // If they are trying to breed the horse, check to make sure they are allowed to.
-                    boolean canBreedHorses = SkillConfigManager.getUseSetting(hero, skill, "allow-horse-breeding", false);
-                    if (!hero.canUseSkill(getName())) {
-                        if (canBreedHorses) {
-                            event.setCancelled(true);
-                            player.sendMessage(ChatColor.GRAY + "You must be a farmer to do that!");
-                            return;
-                        }
-                    }
-
-                    if (!canBreedHorses) {
+        @EventHandler(priority = EventPriority.HIGHEST)
+        public void onPlayerBreedEvent(EntityBreedEvent event) {
+            if(event.getBreeder() instanceof Player player) {
+                Hero hero = plugin.getCharacterManager().getHero(player);
+                if(hero.canUseSkill(getName())) {
+                    if(event.getEntityType() == EntityType.HORSE && !SkillConfigManager.getUseSetting(hero, skill, "allow-horse-breeding", false)) {
                         event.setCancelled(true);
-                        player.sendMessage(ChatColor.GRAY + "Horse breeding is currently disabled!");
-                        return;
+                        player.sendMessage(ChatColor.GRAY + "You cannot breed horses!");
                     }
-
-                    return;
                 }
-            }
-            else if (targetEntity instanceof Sheep || targetEntity instanceof Cow) {
-                if (material == Material.WHEAT)
-                    isBreedAttempt = true;
-            }
-            else if (targetEntity instanceof Pig) {
-                if (material == Material.CARROT)
-                    isBreedAttempt = true;
-            }
-            else if (targetEntity instanceof Chicken) {
-                switch (material) {
-                    case MELON_SEEDS:
-                    case PUMPKIN_SEEDS:
-                    case NETHER_WART:
-                        isBreedAttempt = true;
-                        break;
-                    default:
-                        return;
+                else {
+                    event.setCancelled(true);
+                    player.sendMessage(ChatColor.GRAY + "You must be a farmer to do that!");
                 }
-            }
-            else if (targetEntity instanceof Ocelot) {
-                switch (material) {
-                    case COD:
-                    case SALMON:
-                    case TROPICAL_FISH:
-                        isBreedAttempt = true;
-                        break;
-                    default:
-                        return;
-                }
-            }
-            else if (targetEntity instanceof Wolf) {
-                if (material == Material.BONE) {
-                    // We don't handle wolf taming events. ignore it.
-                    return;
-                }
-            }
-            else if (targetEntity instanceof Rabbit) {
-                switch (material) {
-                    case CARROT:
-                    case GOLDEN_CARROT:
-//                    case DANDELION_YELLOW:
-                    case DANDELION:
-                        isBreedAttempt = true;
-                        break;
-                    default:
-                        return;
-                }
-            }
-
-            // If we make it this far, they are trying to breed.
-            if (isBreedAttempt && !hero.canUseSkill(getName())) {
-                event.setCancelled(true);
-                player.sendMessage(ChatColor.GRAY + "You must be a farmer to do that!");
             }
         }
+
+        @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
+        public void onPlayerEntityInteract(PlayerInteractEntityEvent event) {
+            EntityType type = event.getRightClicked().getType();
+            if(type == EntityType.HORSE || type == EntityType.DONKEY) {
+                Hero hero = plugin.getCharacterManager().getHero(event.getPlayer());
+                boolean canMountHorses = SkillConfigManager.getUseSetting(hero, skill, "allow-horse-mounting", false);
+                if (!canMountHorses) {
+                    hero.getPlayer().sendMessage(ChatColor.GRAY + "You cannot mount that horse!");
+                    event.setCancelled(true);
+                }
+            }
+        }
+
     }
 }
