@@ -6,6 +6,7 @@ import com.herocraftonline.heroes.characters.skill.Listenable;
 import com.herocraftonline.heroes.characters.skill.PassiveSkill;
 import com.herocraftonline.heroes.characters.skill.SkillConfigManager;
 import com.herocraftonline.heroes.characters.skill.SkillType;
+import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
@@ -13,11 +14,9 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
-import org.bukkit.event.entity.EntityShootBowEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
-import org.bukkit.event.player.PlayerItemHeldEvent;
-import org.bukkit.event.player.PlayerSwapHandItemsEvent;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.scheduler.BukkitScheduler;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -44,7 +43,7 @@ public class SkillNimbleDraw extends PassiveSkill implements Listenable
     public ConfigurationSection getDefaultConfig()
     {
         ConfigurationSection node = super.getDefaultConfig();
-        node.set("speed-multiplier", 7);
+        node.set("speed-increase-percentage", 0.1);
         return node;
     }
 
@@ -55,7 +54,7 @@ public class SkillNimbleDraw extends PassiveSkill implements Listenable
 
     public class SkillEntityListener implements Listener
     {
-        Map<UUID, Float> shooting;
+        private final Map<UUID, Float> shooting;
 
         public SkillEntityListener() {
             shooting = new HashMap<>();
@@ -63,46 +62,18 @@ public class SkillNimbleDraw extends PassiveSkill implements Listenable
         //A bow draw can only be cancelled by these things; You shoot the bow, you drop the bow, you change slot, or you swap hands
 
         @EventHandler(priority = EventPriority.MONITOR)
-        public void onDrawBow(PlayerInteractEvent event)
-        {
+        public void onDrawBow(PlayerInteractEvent event) {
             Player player = event.getPlayer();
             Hero hero = SkillNimbleDraw.this.plugin.getCharacterManager().getHero(player);
 
-            if(hasPassive(hero) && (event.getAction() == Action.RIGHT_CLICK_BLOCK || event.getAction() == Action.RIGHT_CLICK_AIR)) {
-                ItemStack inUse = player.getItemInUse();
-                if(inUse != null && (inUse.getType() == Material.BOW || inUse.getType() == Material.CROSSBOW)) {
+            if (hasPassive(hero) && (event.getAction() == Action.RIGHT_CLICK_BLOCK || event.getAction() == Action.RIGHT_CLICK_AIR)) {
+                if (!shooting.containsKey(player.getUniqueId())) {
+                    BukkitScheduler scheduler = Bukkit.getServer().getScheduler();
                     addShooting(hero);
+                    NimbleRunnable runnable = new NimbleRunnable(scheduler, hero);
+                    runnable.setTaskId(scheduler.scheduleSyncRepeatingTask(SkillNimbleDraw.this.plugin, runnable, 2L, 1L));
+
                 }
-            }
-        }
-
-        @EventHandler
-        public void onSlotChange(PlayerItemHeldEvent event) {
-            if(event.isCancelled()) {
-                return;
-            }
-            removeShooting(event.getPlayer());
-        }
-
-        @EventHandler
-        public void onShootBow(EntityShootBowEvent event) {
-            if(event.isCancelled() || !(event.getEntity() instanceof Player)) {
-                return;
-            }
-            removeShooting((Player)event.getEntity());
-        }
-
-        @EventHandler
-        public void onSwapHands(PlayerSwapHandItemsEvent event) {
-            Player player = event.getPlayer();
-            if(event.isCancelled() || !shooting.containsKey(player.getUniqueId())) {
-                return;
-            }
-
-            if(player.getItemInUse() == null) {
-                //If inUse == null means that player is no longer using their bow.
-                //Therefore if they swap hands and are STILL using their bow then still apply movement bonus
-                removeShooting(player);
             }
         }
 
@@ -110,13 +81,57 @@ public class SkillNimbleDraw extends PassiveSkill implements Listenable
             Player player = hero.getPlayer();
             float f = player.getWalkSpeed();
             shooting.put(player.getUniqueId(), f);
-            player.setWalkSpeed(f * SkillConfigManager.getUseSettingInt(hero, SkillNimbleDraw.this, "speed-multiplier", false));
         }
 
         private void removeShooting(Player player) {
             Float speed = shooting.remove(player.getUniqueId());
             if(speed != null) {
+                //SkillNimbleDraw.this.plugin.getCharacterManager().getHero(player).resolveMovementSpeed();
                 player.setWalkSpeed(speed);
+            }
+        }
+
+        private class NimbleRunnable implements Runnable {
+            private final Hero hero;
+            private final Player player;
+            private final BukkitScheduler scheduler;
+            private long timeout;
+            private int taskId;
+            private float newWalkSpeed;
+
+            public NimbleRunnable(BukkitScheduler scheduler, Hero hero) {
+                this.scheduler = scheduler;
+                this.hero = hero;
+                this.player = hero.getPlayer();
+                timeout = 600L;
+                newWalkSpeed = hero.getPlayer().getWalkSpeed() + 0.2f * (float) SkillConfigManager.getUseSettingDouble(hero, SkillNimbleDraw.this, "speed-increase-percentage", false);
+                if(newWalkSpeed > 1.0f) {
+                    newWalkSpeed = 1.0f;
+                }
+            }
+
+            public void setTaskId(int id) {
+                this.taskId = id;
+            }
+
+            @Override
+            public void run() {
+                if(--timeout > 0) {
+                    ItemStack inUse = player.getItemInUse();
+                    if(inUse != null && (inUse.getType() == Material.BOW || inUse.getType() == Material.CROSSBOW)) {
+                        if(player.getWalkSpeed() != newWalkSpeed) {
+                            player.setWalkSpeed(newWalkSpeed);
+                        }
+                    }
+                    else {
+                        removeShooting(player);
+                        scheduler.cancelTask(taskId);
+                    }
+                }
+                else {
+                    removeShooting(player);
+                    scheduler.cancelTask(taskId);
+                }
             }
         }
     }
