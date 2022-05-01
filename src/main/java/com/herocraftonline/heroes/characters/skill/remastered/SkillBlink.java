@@ -48,7 +48,7 @@ public class SkillBlink extends ActiveSkill {
     public SkillResult use(Hero hero, String[] args) {
         Player player = hero.getPlayer();
         Location loc = player.getLocation();
-        if (loc.getBlockY() > loc.getWorld().getMaxHeight() || loc.getBlockY() > loc.getWorld().getMinHeight()+1) {
+        if (loc.getBlockY() > loc.getWorld().getMaxHeight() || loc.getBlockY() < loc.getWorld().getMinHeight()+1) {
             player.sendMessage("    " + ChatComponents.GENERIC_SKILL + "The void prevents you from blinking!");
             return SkillResult.FAIL;
         }
