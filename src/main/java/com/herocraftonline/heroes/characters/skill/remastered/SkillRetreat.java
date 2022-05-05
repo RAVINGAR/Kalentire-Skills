@@ -180,12 +180,6 @@ public class SkillRetreat extends ActiveSkill {
 
             types.add(EffectType.BENEFICIAL);
         }
-
-        @Override
-        public void removeFromHero(Hero hero) {
-            super.removeFromHero(hero);
-
-        }
     }
 
     public class SkillDamageListener implements Listener {
