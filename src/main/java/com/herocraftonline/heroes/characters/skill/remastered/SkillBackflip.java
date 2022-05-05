@@ -4,13 +4,13 @@ import com.google.common.collect.Lists;
 import com.herocraftonline.heroes.Heroes;
 import com.herocraftonline.heroes.api.SkillResult;
 import com.herocraftonline.heroes.characters.Hero;
+import com.herocraftonline.heroes.characters.effects.common.SafeFallEffect;
 import com.herocraftonline.heroes.characters.skill.ActiveSkill;
 import com.herocraftonline.heroes.characters.skill.SkillConfigManager;
 import com.herocraftonline.heroes.characters.skill.SkillSetting;
 import com.herocraftonline.heroes.characters.skill.SkillType;
 import com.herocraftonline.heroes.characters.skill.ncp.NCPFunction;
 import com.herocraftonline.heroes.characters.skill.ncp.NCPUtils;
-import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.Sound;
@@ -126,13 +126,6 @@ public class SkillBackflip extends ActiveSkill {
             }
         }
 
-        Bukkit.getScheduler().runTaskLater(plugin, new Runnable() {
-            @Override
-            public void run() {
-                player.setFallDistance(-10f);
-            }
-        }, 2);
-
         player.getWorld().playSound(player.getLocation(), Sound.ENTITY_ENDER_DRAGON_FLAP, 4.0F, 1.0F);
 
         if (hero.canUseSkill("Frontflip")) {
@@ -150,7 +143,8 @@ public class SkillBackflip extends ActiveSkill {
             public void execute() {
                 // Backflip!
                 player.setVelocity(velocity);
-                player.setFallDistance(-12f);
+                int duration = SkillConfigManager.getUseSetting(hero, SkillBackflip.this, "ncp-exemption-duration", 1000, false);
+                hero.addEffect(new SafeFallEffect(SkillBackflip.this, "BackflipSafeFall", player, duration, null, null));
             }
         }, Lists.newArrayList("MOVING"), SkillConfigManager.getUseSetting(hero, this, "ncp-exemption-duration", 1000, false));
     }
