@@ -10,7 +10,6 @@ import com.herocraftonline.heroes.characters.effects.PeriodicDamageEffect;
 import com.herocraftonline.heroes.characters.effects.common.ImbueEffect;
 import com.herocraftonline.heroes.characters.skill.*;
 import com.herocraftonline.heroes.util.Messaging;
-import org.bukkit.Bukkit;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Arrow;
 import org.bukkit.entity.LivingEntity;
@@ -22,10 +21,11 @@ import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.entity.EntityShootBowEvent;
 
-public class SkillRuptureShot extends ActiveSkill {
+public class SkillRuptureShot extends ActiveSkill implements Listenable {
 
     private String applyText;
     private String expireText;
+    private final Listener listener;
 
     public SkillRuptureShot(Heroes plugin) {
         super(plugin, "RuptureShot");
@@ -34,7 +34,7 @@ public class SkillRuptureShot extends ActiveSkill {
         setArgumentRange(0, 0);
         setIdentifiers("skill ruptureshot", "skill ruptureshot");
         setTypes(SkillType.BUFFING);
-        Bukkit.getServer().getPluginManager().registerEvents(new SkillDamageListener(this), plugin);
+        listener = new SkillDamageListener(this);
     }
 
     @Override
@@ -70,6 +70,11 @@ public class SkillRuptureShot extends ActiveSkill {
         hero.addEffect(new RuptureShotBuff(this));
         broadcastExecuteText(hero);
         return SkillResult.NORMAL;
+    }
+
+    @Override
+    public Listener getListener() {
+        return listener;
     }
 
     public class ArrowRupture extends PeriodicDamageEffect {
