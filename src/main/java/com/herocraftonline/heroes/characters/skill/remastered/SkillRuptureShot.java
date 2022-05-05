@@ -9,6 +9,7 @@ import com.herocraftonline.heroes.characters.effects.EffectType;
 import com.herocraftonline.heroes.characters.effects.PeriodicDamageEffect;
 import com.herocraftonline.heroes.characters.effects.common.ImbueEffect;
 import com.herocraftonline.heroes.characters.skill.*;
+import com.herocraftonline.heroes.util.Messaging;
 import org.bukkit.Bukkit;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Arrow;
@@ -20,8 +21,6 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.entity.EntityShootBowEvent;
-import org.bukkit.potion.PotionEffect;
-import org.bukkit.potion.PotionEffectType;
 
 public class SkillRuptureShot extends ActiveSkill {
 
@@ -82,22 +81,21 @@ public class SkillRuptureShot extends ActiveSkill {
             this.types.add(EffectType.BLEED);
             staminaDrain = sDrain;
             manaDrain = mDrain;
-            addPotionEffect(new PotionEffect(PotionEffectType.WITHER, (int) (duration / 1000) * 20, 0), true);
+            //addPotionEffect(new PotionEffect(PotionEffectType.WITHER, (int) (duration / 1000) * 20, 0)); fixme well theres no such thing as 'fake' effects anymore
             //addPotionEffect(new PotionEffect(PotionEffectType.SLOW, (int) (duration / 1000) * 20, 5), true);
         }
         @Override
         public void tickHero(Hero hero) {
+            super.tickHero(hero);
             int targetStam = hero.getStamina();
             if (targetStam > staminaDrain) {
                 hero.setStamina(targetStam - staminaDrain);
-                hero.getPlayer().sendMessage("you lost " + staminaDrain + " due to rupture");
             } else {
                 hero.setStamina(0);
             }
 
             int targetMana = hero.getMana();
             if (targetMana > manaDrain) {
-                hero.getPlayer().sendMessage("you lost " + manaDrain + " due to rupture");
                 hero.setMana(targetMana - manaDrain);
             } else {
                 hero.setStamina(0);
@@ -115,6 +113,7 @@ public class SkillRuptureShot extends ActiveSkill {
             super.applyToHero(hero);
             Player player = hero.getPlayer();
             broadcast(player.getLocation(), "    " + applyText, player.getName(), applier.getName());
+            Messaging.sendSkillMessage(player, "You feel your essence being ruptured..");
         }
 
         @Override
@@ -128,6 +127,7 @@ public class SkillRuptureShot extends ActiveSkill {
             super.removeFromHero(hero);
             Player player = hero.getPlayer();
             broadcast(player.getLocation(), "    " + expireText, player.getName());
+            Messaging.sendSkillMessage(player, "You no longer feel that you are being ruptured");
         }
     }
 
@@ -136,8 +136,8 @@ public class SkillRuptureShot extends ActiveSkill {
         public RuptureShotBuff(Skill skill) {
             super(skill, "RuptureShotBuff");
 
-            types.add(EffectType.POISON);
             types.add(EffectType.BENEFICIAL);
+            setDescription("Ruptured Shots");
         }
     }
 
