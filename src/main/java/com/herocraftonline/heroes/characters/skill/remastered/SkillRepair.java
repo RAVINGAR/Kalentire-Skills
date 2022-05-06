@@ -10,6 +10,7 @@ import com.herocraftonline.heroes.characters.skill.SkillSetting;
 import com.herocraftonline.heroes.characters.skill.SkillType;
 import com.herocraftonline.heroes.nms.NMSHandler;
 import com.herocraftonline.heroes.util.MaterialUtil;
+import com.herocraftonline.heroes.util.Messaging;
 import com.herocraftonline.heroes.util.Util;
 import org.bukkit.Material;
 import org.bukkit.Sound;
@@ -98,17 +99,21 @@ public class SkillRepair extends ActiveSkill {
             try {
                 itemSlotNumber = Integer.parseInt(args[0]);
             } catch (final NumberFormatException e){
-                player.sendMessage("That is not a valid slot number (0-8).");
+                Messaging.sendSkillMessage(player, "That is not a valid slot number (0-8).");
                 return SkillResult.INVALID_TARGET_NO_MSG;
             }
 
             // Support only hotbar slots
             if (itemSlotNumber > 8){
-                player.sendMessage("That is not a valid hotbar slot number (0-8).");
+                Messaging.sendSkillMessage(player, "That is not a valid hotbar slot number (0-8).");
                 return SkillResult.INVALID_TARGET_NO_MSG;
             }
 
             is = player.getInventory().getItem(itemSlotNumber);
+        }
+        if(is == null) {
+            Messaging.sendSkillMessage(player, "You cannot repair nothing");
+            return SkillResult.FAIL;
         }
         Material isType = is.getType();
         int level = getRequiredLevel(hero, isType);
@@ -116,17 +121,17 @@ public class SkillRepair extends ActiveSkill {
         final ItemMeta itemMeta = is.getItemMeta();
 
         if (level == -1 || reagent == null || !(itemMeta instanceof Damageable)) { // note implies itemMeta == null
-            player.sendMessage("You are not holding a repairable tool.");
+            Messaging.sendSkillMessage(player, "You are not holding a repairable tool.");
             return SkillResult.FAIL;
         }
 
         if (hero.getHeroLevel(this) < level) {
-            player.sendMessage("You must be level " + level + " to repair " + MaterialUtil.getFriendlyName(isType));
+            Messaging.sendSkillMessage(player, "You must be level " + level + " to repair " + MaterialUtil.getFriendlyName(isType));
             return new SkillResult(ResultType.LOW_LEVEL, false);
         }
         //if (is.getDurability() == 0) {
         if (((Damageable)itemMeta).getDamage() == 0) {
-            player.sendMessage("That item is already at full durability!");
+            Messaging.sendSkillMessage(player, "That item is already at full durability!");
             return SkillResult.INVALID_TARGET_NO_MSG;
         }
 
@@ -218,19 +223,20 @@ public class SkillRepair extends ActiveSkill {
         return SkillResult.NORMAL;
     }
 
-    private int getRepairCost(Hero hero, ItemStack is) {
-        Material mat = is.getType();
+    private int getRepairCost(Hero hero, ItemStack item) {
+        Material mat = item.getType();
+        Damageable is = (Damageable)item;
         int amt;
         switch (mat) {
             case BOW:
-                amt = (int) ((is.getDurability() / (double) mat.getMaxDurability()) * 2.0);
-                return amt < 1 ? 1 : amt;
+                amt = (int) ((is.getDamage() / (double) mat.getMaxDurability()) * 2.0);
+                return Math.max(amt, 1);
             case TRIDENT:
                 int cost = SkillConfigManager.getUseSetting(hero, this, "trident-max-cost", 2, true);
                 if (cost <= 0)
                     return 0;
-                amt = (int) ((is.getDurability() / (double) mat.getMaxDurability()) * cost);
-                return amt < 1 ? 1 : amt;
+                amt = (int) ((is.getDamage() / (double) mat.getMaxDurability()) * cost);
+                return Math.max(amt, 1);
             case NETHERITE_CHESTPLATE:
             case NETHERITE_LEGGINGS:
             case NETHERITE_BOOTS:
@@ -247,116 +253,59 @@ public class SkillRepair extends ActiveSkill {
             case CHAINMAIL_BOOTS:
             case GOLDEN_BOOTS:
             case DIAMOND_BOOTS:
-                amt = (int) ((is.getDurability() / (double) mat.getMaxDurability()) * 3.0);
-                return amt < 1 ? 1 : amt;
+                amt = (int) ((is.getDamage() / (double) mat.getMaxDurability()) * 3.0);
+                return Math.max(amt, 1);
             case LEATHER_HELMET:
             case IRON_HELMET:
             case CHAINMAIL_HELMET:
             case GOLDEN_HELMET:
             case DIAMOND_HELMET:
-                amt = (int) ((is.getDurability() / (double) mat.getMaxDurability()) * 4.0);
-                return amt < 1 ? 1 : amt;
+                amt = (int) ((is.getDamage() / (double) mat.getMaxDurability()) * 4.0);
+                return Math.max(amt, 1);
             case LEATHER_CHESTPLATE:
             case IRON_CHESTPLATE:
             case CHAINMAIL_CHESTPLATE:
             case GOLDEN_CHESTPLATE:
             case DIAMOND_CHESTPLATE:
-                amt = (int) ((is.getDurability() / (double) mat.getMaxDurability()) * 7.0);
-                return amt < 1 ? 1 : amt;
+                amt = (int) ((is.getDamage() / (double) mat.getMaxDurability()) * 7.0);
+                return Math.max(amt, 1);
             case LEATHER_LEGGINGS:
             case IRON_LEGGINGS:
             case CHAINMAIL_LEGGINGS:
             case GOLDEN_LEGGINGS:
             case DIAMOND_LEGGINGS:
-                amt = (int) ((is.getDurability() / (double) mat.getMaxDurability()) * 6.0);
-                return amt < 1 ? 1 : amt;
+                amt = (int) ((is.getDamage() / (double) mat.getMaxDurability()) * 6.0);
+                return Math.max(amt, 1);
             default:
                 return 1;
         }
     }
 
     private int getRequiredLevel(Hero hero, Material material) {
-        switch (material) {
-            case WOODEN_SWORD:
-            case WOODEN_AXE:
-            case BOW:
-            case CROSSBOW:
-                return SkillConfigManager.getUseSetting(hero, this, "wood-weapons", 1, true);
-            case WOODEN_HOE:
-            case WOODEN_PICKAXE:
-            case WOODEN_SHOVEL:
-                return SkillConfigManager.getUseSetting(hero, this, "wood-tools", 1, true);
-            case STONE_SWORD:
-            case STONE_AXE:
-                return SkillConfigManager.getUseSetting(hero, this, "stone-weapons", 1, true);
-            case STONE_HOE:
-            case STONE_PICKAXE:
-            case STONE_SHOVEL:
-                return SkillConfigManager.getUseSetting(hero, this, "stone-tools", 1, true);
-            case SHEARS:
-                return SkillConfigManager.getUseSetting(hero, this, "shears", 1, true);
-            case FLINT_AND_STEEL:
-                return SkillConfigManager.getUseSetting(hero, this, "flint-steel", 1, true);
-            case IRON_CHESTPLATE:
-            case IRON_LEGGINGS:
-            case IRON_BOOTS:
-            case IRON_HELMET:
-                return SkillConfigManager.getUseSetting(hero, this, "iron-armor", 1, true);
-            case IRON_SWORD:
-            case IRON_AXE:
-                return SkillConfigManager.getUseSetting(hero, this, "iron-weapons", 1, true);
-            case IRON_HOE:
-            case IRON_PICKAXE:
-            case IRON_SHOVEL:
-                return SkillConfigManager.getUseSetting(hero, this, "iron-tools", 1, true);
-            case CHAINMAIL_HELMET:
-            case CHAINMAIL_CHESTPLATE:
-            case CHAINMAIL_BOOTS:
-            case CHAINMAIL_LEGGINGS:
-                return SkillConfigManager.getUseSetting(hero, this, "chain-armor", 1, true);
-            case GOLDEN_CHESTPLATE:
-            case GOLDEN_LEGGINGS:
-            case GOLDEN_BOOTS:
-            case GOLDEN_HELMET:
-                return SkillConfigManager.getUseSetting(hero, this, "gold-armor", 1, true);
-            case GOLDEN_SWORD:
-            case GOLDEN_AXE:
-                return SkillConfigManager.getUseSetting(hero, this, "gold-weapons", 1, true);
-            case GOLDEN_HOE:
-            case GOLDEN_PICKAXE:
-            case GOLDEN_SHOVEL:
-                return SkillConfigManager.getUseSetting(hero, this, "gold-tools", 1, true);
-            case DIAMOND_CHESTPLATE:
-            case DIAMOND_LEGGINGS:
-            case DIAMOND_BOOTS:
-            case DIAMOND_HELMET:
-                return SkillConfigManager.getUseSetting(hero, this, "diamond-armor", 1, true);
-            case DIAMOND_SWORD:
-            case DIAMOND_AXE:
-                return SkillConfigManager.getUseSetting(hero, this, "diamond-weapons", 1, true);
-            case DIAMOND_HOE:
-            case DIAMOND_PICKAXE:
-            case DIAMOND_SHOVEL:
-                return SkillConfigManager.getUseSetting(hero, this, "diamond-tools", 1, true);
-            case NETHERITE_SWORD:
-            case NETHERITE_AXE:
-                return SkillConfigManager.getUseSetting(hero, this, "netherite-weapons", 1, true);
-            case NETHERITE_HOE:
-            case NETHERITE_PICKAXE:
-            case NETHERITE_SHOVEL:
-                return SkillConfigManager.getUseSetting(hero, this, "netherite-tools", 1, true);
-            case LEATHER_BOOTS:
-            case LEATHER_CHESTPLATE:
-            case LEATHER_HELMET:
-            case LEATHER_LEGGINGS:
-                return SkillConfigManager.getUseSetting(hero, this, "leather-armor", 1, true);
-            case FISHING_ROD:
-                return SkillConfigManager.getUseSetting(hero, this, "fishing-rod", 1, true);
-            case TRIDENT:
-                return SkillConfigManager.getUseSetting(hero, this, "trident", 1, true);
-            default:
-                return -1;
-        }
+        return switch (material) {
+            case WOODEN_SWORD, WOODEN_AXE, BOW, CROSSBOW -> SkillConfigManager.getUseSetting(hero, this, "wood-weapons", 1, true);
+            case WOODEN_HOE, WOODEN_PICKAXE, WOODEN_SHOVEL -> SkillConfigManager.getUseSetting(hero, this, "wood-tools", 1, true);
+            case STONE_SWORD, STONE_AXE -> SkillConfigManager.getUseSetting(hero, this, "stone-weapons", 1, true);
+            case STONE_HOE, STONE_PICKAXE, STONE_SHOVEL -> SkillConfigManager.getUseSetting(hero, this, "stone-tools", 1, true);
+            case SHEARS -> SkillConfigManager.getUseSetting(hero, this, "shears", 1, true);
+            case FLINT_AND_STEEL -> SkillConfigManager.getUseSetting(hero, this, "flint-steel", 1, true);
+            case IRON_CHESTPLATE, IRON_LEGGINGS, IRON_BOOTS, IRON_HELMET -> SkillConfigManager.getUseSetting(hero, this, "iron-armor", 1, true);
+            case IRON_SWORD, IRON_AXE -> SkillConfigManager.getUseSetting(hero, this, "iron-weapons", 1, true);
+            case IRON_HOE, IRON_PICKAXE, IRON_SHOVEL -> SkillConfigManager.getUseSetting(hero, this, "iron-tools", 1, true);
+            case CHAINMAIL_HELMET, CHAINMAIL_CHESTPLATE, CHAINMAIL_BOOTS, CHAINMAIL_LEGGINGS -> SkillConfigManager.getUseSetting(hero, this, "chain-armor", 1, true);
+            case GOLDEN_CHESTPLATE, GOLDEN_LEGGINGS, GOLDEN_BOOTS, GOLDEN_HELMET -> SkillConfigManager.getUseSetting(hero, this, "gold-armor", 1, true);
+            case GOLDEN_SWORD, GOLDEN_AXE -> SkillConfigManager.getUseSetting(hero, this, "gold-weapons", 1, true);
+            case GOLDEN_HOE, GOLDEN_PICKAXE, GOLDEN_SHOVEL -> SkillConfigManager.getUseSetting(hero, this, "gold-tools", 1, true);
+            case DIAMOND_CHESTPLATE, DIAMOND_LEGGINGS, DIAMOND_BOOTS, DIAMOND_HELMET -> SkillConfigManager.getUseSetting(hero, this, "diamond-armor", 1, true);
+            case DIAMOND_SWORD, DIAMOND_AXE -> SkillConfigManager.getUseSetting(hero, this, "diamond-weapons", 1, true);
+            case DIAMOND_HOE, DIAMOND_PICKAXE, DIAMOND_SHOVEL -> SkillConfigManager.getUseSetting(hero, this, "diamond-tools", 1, true);
+            case NETHERITE_SWORD, NETHERITE_AXE -> SkillConfigManager.getUseSetting(hero, this, "netherite-weapons", 1, true);
+            case NETHERITE_HOE, NETHERITE_PICKAXE, NETHERITE_SHOVEL -> SkillConfigManager.getUseSetting(hero, this, "netherite-tools", 1, true);
+            case LEATHER_BOOTS, LEATHER_CHESTPLATE, LEATHER_HELMET, LEATHER_LEGGINGS -> SkillConfigManager.getUseSetting(hero, this, "leather-armor", 1, true);
+            case FISHING_ROD -> SkillConfigManager.getUseSetting(hero, this, "fishing-rod", 1, true);
+            case TRIDENT -> SkillConfigManager.getUseSetting(hero, this, "trident", 1, true);
+            default -> -1;
+        };
     }
 
     private Material getRequiredReagent(Hero hero, Material material) {
