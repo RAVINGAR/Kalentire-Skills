@@ -29,10 +29,11 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
-public class SkillExplosiveShot extends ActiveSkill {
+public class SkillExplosiveShot extends ActiveSkill implements Listenable {
 
     private boolean ncpEnabled = false;
     public VisualEffect fplayer = new VisualEffect();
+    private final Listener listener;
 
     private Map<Arrow, Long> explosiveShots = new LinkedHashMap<Arrow, Long>(100) {
         private static final long serialVersionUID = 1L;
@@ -54,7 +55,7 @@ public class SkillExplosiveShot extends ActiveSkill {
         setIdentifiers("skill explosiveshot");
         setTypes(SkillType.ABILITY_PROPERTY_MAGICAL, SkillType.AGGRESSIVE, SkillType.AREA_OF_EFFECT, SkillType.DAMAGING, SkillType.ABILITY_PROPERTY_FIRE, SkillType.FORCE);
 
-        Bukkit.getServer().getPluginManager().registerEvents(new SkillEntityListener(this), plugin);
+        listener = new SkillEntityListener(this);
 
         if (Bukkit.getServer().getPluginManager().getPlugin("NoCheatPlus") != null)
             ncpEnabled = true;
@@ -140,6 +141,11 @@ public class SkillExplosiveShot extends ActiveSkill {
         return SkillResult.NORMAL;
     }
 
+    @Override
+    public Listener getListener() {
+        return listener;
+    }
+
     public class SkillEntityListener implements Listener {
 
         private Skill skill;
@@ -157,7 +163,6 @@ public class SkillExplosiveShot extends ActiveSkill {
                         p.getWorld().spawnParticle(Particle.SMOKE_NORMAL, loc, 1, 0, 0.1, 0, 0);
                     } else {
                         this.cancel();
-                        return;
                     }
                 }
             }.runTaskTimer(plugin, 0, 1);
@@ -211,16 +216,13 @@ public class SkillExplosiveShot extends ActiveSkill {
                 return;
 
             // Wait a tick to explode, otherwise we can't cancel the damage since the shot is removed from the Map
-            plugin.getServer().getScheduler().scheduleSyncDelayedTask(plugin, new Runnable() {
-                @Override
-                public void run() {
-                    // Run the explosion logic
-                    explode(projectile);
-                    // Remove the shot from the hashlist
-                    explosiveShots.remove(projectile);
-                    // Remove the arrow from the world (because it can bounce)
-                    projectile.remove();
-                }
+            plugin.getServer().getScheduler().scheduleSyncDelayedTask(plugin, () -> {
+                // Run the explosion logic
+                explode(projectile);
+                // Remove the shot from the hashlist
+                explosiveShots.remove(projectile);
+                // Remove the arrow from the world (because it can bounce)
+                projectile.remove();
             });
 
         }
@@ -257,7 +259,7 @@ public class SkillExplosiveShot extends ActiveSkill {
                     // Damage target
                     LivingEntity target = (LivingEntity) entity;
                     addSpellTarget(target, hero);
-                    damageEntity(target, shooter, altArrowDamage, DamageCause.MAGIC, false);
+                    damageEntity(target, shooter, altArrowDamage, DamageCause.MAGIC, 0.0F);
                 }
             }
 

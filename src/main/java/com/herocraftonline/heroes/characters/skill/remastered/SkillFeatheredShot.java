@@ -9,7 +9,6 @@ import com.herocraftonline.heroes.characters.effects.ExpirableEffect;
 import com.herocraftonline.heroes.characters.skill.*;
 import com.herocraftonline.heroes.chat.ChatComponents;
 import com.herocraftonline.heroes.util.Util;
-import org.bukkit.Bukkit;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Arrow;
 import org.bukkit.entity.LivingEntity;
@@ -21,11 +20,12 @@ import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 
-public class SkillFeatheredShot extends ActiveSkill {
+public class SkillFeatheredShot extends ActiveSkill implements Listenable {
 
     private String applyText;
     private String expireText;
     private String shotEffect = "HasFeatheredArrows";
+    private Listener listener;
 
     public SkillFeatheredShot(Heroes plugin) {
         super(plugin, "FeatheredShot");
@@ -35,7 +35,7 @@ public class SkillFeatheredShot extends ActiveSkill {
         setArgumentRange(0, 0);
         setTypes(SkillType.DEBUFFING, SkillType.BUFFING);
 
-        Bukkit.getServer().getPluginManager().registerEvents(new SkillDamageListener(this), plugin);
+        listener = new SkillDamageListener(this);
     }
 
     @Override
@@ -87,6 +87,11 @@ public class SkillFeatheredShot extends ActiveSkill {
         return SkillResult.NORMAL;
     }
 
+    @Override
+    public Listener getListener() {
+        return listener;
+    }
+
     public class FeatherArrowsEffect extends ExpirableEffect {
 
         FeatherArrowsEffect(Skill skill, Player applier, long duration) {
@@ -113,7 +118,6 @@ public class SkillFeatheredShot extends ActiveSkill {
         @Override
         public void removeFromHero(Hero hero) {
             super.removeFromHero(hero);
-            VisualEffect effect = new VisualEffect();
         }
     }
 

@@ -6,6 +6,7 @@ import com.herocraftonline.heroes.characters.classes.HeroClass;
 import com.herocraftonline.heroes.characters.classes.HeroClass.ExperienceType;
 import com.herocraftonline.heroes.characters.effects.EffectType;
 import com.herocraftonline.heroes.characters.skill.*;
+import com.herocraftonline.heroes.util.Properties;
 import org.bukkit.Bukkit;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.enchantments.Enchantment;
@@ -16,7 +17,9 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.enchantment.EnchantItemEvent;
 import org.bukkit.event.enchantment.PrepareItemEnchantEvent;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.scheduler.BukkitRunnable;
 
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -35,29 +38,32 @@ public class SkillEnchant extends PassiveSkill {
     @Override
     public ConfigurationSection getDefaultConfig() {
         ConfigurationSection section = super.getDefaultConfig();
-        section.set("PROTECTION_ENVIRONMENTAL", 200);
-        section.set("PROTECTION_FIRE", 1);
-        section.set("PROTECTION_FALL", 1);
-        section.set("PROTECTION_EXPLOSIONS", 200);
-        section.set("PROTECTION_PROJECTILE", 200);
-        section.set("OXYGEN", 1);
-        section.set("WATER_WORKER", 1);
-        section.set("DAMAGE_ALL", 200);
-        section.set("DAMAGE_UNDEAD", 200);
-        section.set("DAMAGE_ARTHROPODS", 200);
-        section.set("KNOCKBACK", 1);
-        section.set("FIRE_ASPECT", 1);
-        section.set("LOOT_BONUS_MOBS", 1);
-        section.set("DIG_SPEED", 1);
-        section.set("SILK_TOUCH", 200);
-        section.set("DURABILITY", 1);
-        section.set("LOOT_BONUS_BLOCKS", 1);
-        section.set("ARROW_DAMAGE", 200);
-        section.set("ARROW_KNOCKBACK", 1);
-        section.set("ARROW_FIRE", 1);
-        section.set("ARROW_INFINITE", 1);
-        section.set("FROST_WALKER", 200);
-        section.set("MENDING", 200);
+        section.set("protection", 1);
+        section.set("fire_protection", 1);
+        section.set("feather_falling", 1);
+        section.set("blast_protection", 1);
+        section.set("projectile_protection", 1);
+        section.set("respiration", 1);
+        section.set("aqua_affinity", 1);
+        section.set("sharpness", 1);
+        section.set("smite", 1);
+        section.set("bane_of_athropods", 1);
+        section.set("knockback", 1);
+        section.set("fire_aspect", 1);
+        section.set("looting", 1);
+        section.set("efficiency", 1);
+        section.set("silk_touch", 1);
+        section.set("unbreaking", 1);
+        section.set("fortune", 1);
+        section.set("power", 1);
+        section.set("punch", 1);
+        section.set("flame", 1);
+        section.set("infinity", 1);
+        section.set("frost_walker", 1);
+        section.set("mending", 1);
+        section.set("depth_strider", 1);
+        section.set("sweeping_edge", 1);
+        section.set("experience-cost-per-level", -1);
         section.set(SkillSetting.APPLY_TEXT.node(), "");
         section.set(SkillSetting.UNAPPLY_TEXT.node(), "");
         return section;
@@ -102,49 +108,64 @@ public class SkillEnchant extends PassiveSkill {
             hero.setSyncPrimary(enchanter.equals(hero.getHeroClass()));
             int level = hero.getHeroLevel(enchanter);
 
+            double perLevel = SkillConfigManager.getUseSettingDouble(hero, skill, "experience-cost-per-level", true);
+
             Map<Enchantment, Integer> enchants = event.getEnchantsToAdd();
-            Iterator<Entry<Enchantment, Integer>> iter = enchants.entrySet().iterator();
-            int xpCost = 0;
+            Iterator<Entry<Enchantment, Integer>> iter = (new HashMap<>(enchants)).entrySet().iterator(); //copy to avoid concurrent modification
+            double levelCost = 0;
             while (iter.hasNext()) {
                 Entry<Enchantment, Integer> entry = iter.next();
                 int enchLevel = entry.getValue();
                 Enchantment ench = entry.getKey();
-                int reqLevel = SkillConfigManager.getUseSetting(hero, skill, entry.getKey().getName(), 1, true);
-                if (enchLevel > ench.getMaxLevel()) {
-                    entry.setValue(ench.getMaxLevel());
-                } else if (enchLevel < ench.getStartLevel()) {
-                    entry.setValue(ench.getStartLevel());
+                double reqLevel = SkillConfigManager.getUseSetting(hero, skill, entry.getKey().getKey().getKey(), -1.0, true);
+                if(reqLevel == -1) {
+                    reqLevel = SkillConfigManager.getUseSetting(hero, skill, entry.getKey().getName(), 1.0, true);
                 }
+
+                //IF level of enchanter is less than the required level.
                 if (level < reqLevel || !ench.canEnchantItem(event.getItem())) {
                     iter.remove();
-                } else {
-                    int val = entry.getValue();
-                    int maxVal = ench.getMaxLevel();
-                    xpCost +=  Math.max(event.getExpLevelCost() * ((double) val / maxVal), 1);
+                    enchants.remove(ench);
+                } else if(perLevel > -1) {
+                    levelCost += SkillConfigManager.getUseSettingDouble(hero, skill, "experience-cost-per-level", true) * entry.getValue();
                 }
             }
             if (event.getEnchantsToAdd().isEmpty()) {
+                player.sendMessage("You don't have enough experience to enchant that item!");
                 event.setCancelled(true);
                 return;
             }
-            event.setExpLevelCost(1);
             ItemStack reagent = getReagentCost(hero);
             if (!hasReagentCost(player, reagent)) {
                 player.sendMessage("You need " + reagent.getAmount() + " " + reagent.getType().name().toLowerCase().replace("_", " ") + " to enchant an item!");
                 event.setCancelled(true);
             }
 
-            if (xpCost == 0) {
+            if(perLevel == -1) {
+                levelCost = event.getExpLevelCost();
+            }
+
+            if (event.getExpLevelCost() == 0) {
                 player.sendMessage("Enchanting failed!");
                 event.setCancelled(true);
             } else {
-                xpCost *= Heroes.properties.enchantXPMultiplier;
-                if (hero.getExperience(enchanter) < xpCost) {
+                event.setExpLevelCost((int) levelCost);
+                levelCost *= Heroes.properties.enchantXPMultiplier;
+
+                if (hero.getHeroLevel(enchanter) < levelCost) {
                     player.sendMessage("You don't have enough experience to enchant that item!");
                     event.setCancelled(true);
                     return;
                 }
-                hero.gainExp(-xpCost, ExperienceType.ENCHANTING, player.getLocation());
+                double exp = Properties.getExp((int) levelCost) * -1;
+                hero.gainExp(exp, ExperienceType.ENCHANTING, player.getLocation());
+
+                new BukkitRunnable() {
+                    @Override
+                    public void run() {
+                        hero.syncExperience();
+                    }
+                }.runTaskLater(plugin, 5L);
             }
         }
     }

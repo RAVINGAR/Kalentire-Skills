@@ -8,7 +8,6 @@ import com.herocraftonline.heroes.characters.effects.ExpirableEffect;
 import com.herocraftonline.heroes.characters.skill.*;
 import com.herocraftonline.heroes.chat.ChatComponents;
 import com.herocraftonline.heroes.util.Util;
-import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.Sound;
 import org.bukkit.configuration.ConfigurationSection;
@@ -20,10 +19,11 @@ import org.bukkit.event.block.BlockDamageEvent;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 
-public class SkillExcavate extends ActiveSkill {
+public class SkillExcavate extends ActiveSkill implements Listenable {
 
     private String applyText;
     private String expireText;
+    private final Listener listener;
 
     public SkillExcavate(Heroes plugin) {
         super(plugin, "Excavate");
@@ -32,7 +32,7 @@ public class SkillExcavate extends ActiveSkill {
         setArgumentRange(0, 0);
         setIdentifiers("skill excavate");
         setTypes(SkillType.BUFFING, SkillType.SILENCEABLE);
-        Bukkit.getServer().getPluginManager().registerEvents(new SkillBlockListener(), plugin);
+        listener = new SkillBlockListener();
     }
 
     @Override
@@ -81,6 +81,11 @@ public class SkillExcavate extends ActiveSkill {
         player.getWorld().playSound(player.getLocation(), Sound.ENTITY_EXPERIENCE_ORB_PICKUP, 0.8F, 1.0F);
 
         return SkillResult.NORMAL;
+    }
+
+    @Override
+    public Listener getListener() {
+        return listener;
     }
 
     public class ExcavateEffect extends ExpirableEffect {

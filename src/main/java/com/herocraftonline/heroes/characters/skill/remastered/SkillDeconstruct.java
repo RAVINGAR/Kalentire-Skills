@@ -190,7 +190,7 @@ public class SkillDeconstruct extends ActiveSkill {
         }
 
         Set<String> returned = SkillConfigManager.getUseSettingKeys(hero, this, matName);
-        if (returned == null || returned.isEmpty()) {
+        if (returned.isEmpty()) {
             player.sendMessage("There was an error attempting to deconstruct that item!");
             return SkillResult.FAIL;
         }

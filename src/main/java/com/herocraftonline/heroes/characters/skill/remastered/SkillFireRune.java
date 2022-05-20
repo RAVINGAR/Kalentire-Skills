@@ -33,7 +33,6 @@ import com.herocraftonline.heroes.characters.skill.runes.RuneActivationEvent;
 import com.herocraftonline.heroes.characters.skill.runes.RuneApplicationEvent;
 import com.herocraftonline.heroes.chat.ChatComponents;
 import com.herocraftonline.heroes.util.GeometryUtil;
-import com.herocraftonline.heroes.util.Util;
 import org.bukkit.*;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Entity;
@@ -43,9 +42,7 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityDamageEvent.DamageCause;
-import org.bukkit.util.Vector;
 
-import java.util.ArrayList;
 import java.util.List;
 
 public class SkillFireRune extends ActiveSkill {
@@ -155,7 +152,7 @@ public class SkillFireRune extends ActiveSkill {
 
                     // Damage the target
                     addSpellTarget((LivingEntity) targEnt, hero);
-                    damageEntity((LivingEntity) targEnt, hero.getPlayer(), damage, DamageCause.MAGIC, false);
+                    damageEntity((LivingEntity) targEnt, hero.getPlayer(), damage, DamageCause.MAGIC, 0.0F);
                     
                     //targEnt.getWorld().spigot().playEffect(targEnt.getLocation().add(0, 0.5, 0), Effect.FLAME, 0, 0, 0, 0, 0, 1.5F, 45, 16);
                     targEnt.getWorld().spawnParticle(Particle.FLAME, targEnt.getLocation(), 45, 0, 0, 0, 1.5);

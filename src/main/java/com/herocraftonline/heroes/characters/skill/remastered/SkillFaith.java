@@ -5,7 +5,6 @@ import com.herocraftonline.heroes.api.events.CharacterRegainHealthEvent;
 import com.herocraftonline.heroes.characters.Hero;
 import com.herocraftonline.heroes.characters.skill.*;
 import com.herocraftonline.heroes.util.Util;
-import org.bukkit.Bukkit;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
@@ -15,13 +14,15 @@ import org.bukkit.event.Listener;
  * Created By MysticMight 2021
  */
 
-public class SkillFaith extends PassiveSkill {
+public class SkillFaith extends PassiveSkill implements Listenable {
+
+    private final Listener listener;
 
     public SkillFaith(Heroes plugin) {
         super(plugin, "Faith");
         setDescription("While under $1% mana, your heals do $2% more.");
         setTypes(SkillType.BUFFING, SkillType.ABILITY_PROPERTY_LIGHT);
-        Bukkit.getServer().getPluginManager().registerEvents(new SkillHeroListener(this), plugin);
+        listener = new SkillHeroListener(this);
     }
 
     @Override
@@ -42,6 +43,11 @@ public class SkillFaith extends PassiveSkill {
         config.set("heal-multiplier", 1.1);
         config.set("heal-self-multiplier", 1.1);
         return config;
+    }
+
+    @Override
+    public Listener getListener() {
+        return listener;
     }
 
     public class SkillHeroListener implements Listener {
