@@ -89,13 +89,15 @@ public class SkillEnchant extends PassiveSkill {
                 event.setCancelled(true);
                 return;
             }
+
             HeroClass hc = hero.getEnchantingClass();
-            if (hc != null) {
-                hero.syncExperience(hc);
-            } else {
+            if(hc == null) {
                 // if for some reason we don't have an enchanting class also cancel the event
                 hero.getPlayer().sendMessage("You aren't an enchanter!");
                 event.setCancelled(true);
+            }
+            else {
+                hero.syncExperience(hc);
             }
         }
 
@@ -115,7 +117,6 @@ public class SkillEnchant extends PassiveSkill {
             double levelCost = 0;
             while (iter.hasNext()) {
                 Entry<Enchantment, Integer> entry = iter.next();
-                int enchLevel = entry.getValue();
                 Enchantment ench = entry.getKey();
                 double reqLevel = SkillConfigManager.getUseSetting(hero, skill, entry.getKey().getKey().getKey(), -1.0, true);
                 if(reqLevel == -1) {
@@ -127,7 +128,7 @@ public class SkillEnchant extends PassiveSkill {
                     iter.remove();
                     enchants.remove(ench);
                 } else if(perLevel > -1) {
-                    levelCost += SkillConfigManager.getUseSettingDouble(hero, skill, "experience-cost-per-level", true) * entry.getValue();
+                    levelCost += perLevel * entry.getValue();
                 }
             }
             if (event.getEnchantsToAdd().isEmpty()) {
@@ -141,7 +142,7 @@ public class SkillEnchant extends PassiveSkill {
                 event.setCancelled(true);
             }
 
-            if(perLevel == -1) {
+            if(levelCost == 0) {
                 levelCost = event.getExpLevelCost();
             }
 
@@ -157,15 +158,18 @@ public class SkillEnchant extends PassiveSkill {
                     event.setCancelled(true);
                     return;
                 }
-                double exp = Properties.getExp((int) levelCost) * -1;
-                hero.gainExp(exp, ExperienceType.ENCHANTING, player.getLocation());
+                double exp = (Math.max(0,Properties.getTotalExp(level) - Properties.getTotalExp((int) (level-levelCost)))) * -1;
+                if(exp < 0) {
+                    hero.gainExp(exp, ExperienceType.ENCHANTING, player.getLocation());
+                }
 
                 new BukkitRunnable() {
                     @Override
                     public void run() {
+                        hero.setSyncPrimary(true);
                         hero.syncExperience();
                     }
-                }.runTaskLater(plugin, 5L);
+                }.runTaskLater(plugin, 20L);
             }
         }
     }
