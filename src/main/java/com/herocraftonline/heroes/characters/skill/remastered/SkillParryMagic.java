@@ -102,6 +102,7 @@ public class SkillParryMagic extends ActiveSkill {
             }
             Player player = (Player) event.getEntity();
             Hero hero = plugin.getCharacterManager().getHero(player);
+
             if (hero.hasEffect(getName())) {
                 hero.getEffect(getName()).removeFromHero(hero);
                 event.setCancelled(true);

@@ -4,8 +4,10 @@ import com.herocraftonline.heroes.Heroes;
 import com.herocraftonline.heroes.api.SkillResult;
 import com.herocraftonline.heroes.api.events.SkillDamageEvent;
 import com.herocraftonline.heroes.api.events.WeaponDamageEvent;
+import com.herocraftonline.heroes.characters.CharacterTemplate;
 import com.herocraftonline.heroes.characters.CustomNameManager;
 import com.herocraftonline.heroes.characters.Hero;
+import com.herocraftonline.heroes.characters.effects.Effect;
 import com.herocraftonline.heroes.characters.effects.EffectType;
 import com.herocraftonline.heroes.characters.effects.ExpirableEffect;
 import com.herocraftonline.heroes.characters.skill.*;
@@ -26,7 +28,7 @@ public class SkillBladegrasp extends ActiveSkill implements Listenable {
 
     public SkillBladegrasp(Heroes plugin) {
         super(plugin, "Bladegrasp");
-        setDescription("You parry the next physical attack within $1 second(s).");
+        setDescription("After making a melee attack, if you are attacked by any physical attack within $1 seconds you parry the attack.");
         setUsage("/skill bladegrasp");
         setArgumentRange(0, 0);
         setIdentifiers("skill bladegrasp", "skill bgrasp");
@@ -38,6 +40,7 @@ public class SkillBladegrasp extends ActiveSkill implements Listenable {
     public ConfigurationSection getDefaultConfig() {
         ConfigurationSection node = super.getDefaultConfig();
         node.set(SkillSetting.DURATION.node(), 5000);
+        node.set("parry-duration", 1000);
         node.set(SkillSetting.APPLY_TEXT.node(), "%hero% tightened their grip!");
         node.set(SkillSetting.EXPIRE_TEXT.node(), "%hero% loosened their grip!");
         node.set("parry-text", "%hero% parried an attack!");
@@ -93,9 +96,18 @@ public class SkillBladegrasp extends ActiveSkill implements Listenable {
 
     }
 
+    public class BladegraspCounter extends ExpirableEffect {
+
+        public BladegraspCounter(Skill skill, Player applier, long duration) {
+            super(skill, "BladegraspCounter", applier, duration);
+            this.types.add(EffectType.PHYSICAL);
+            this.types.add(EffectType.BENEFICIAL);
+        }
+    }
+
     public class SkillEntityListener implements Listener {
 
-        @SuppressWarnings("unused")
+
         private Skill skill;
 
         SkillEntityListener(Skill skill) {
@@ -105,17 +117,23 @@ public class SkillBladegrasp extends ActiveSkill implements Listenable {
         @EventHandler()
         public void onWeaponDamage(WeaponDamageEvent event) {
             // Ignore cancelled damage events & 0/1 damage events for Spam Control
-            if (event.getDamage() <= 1 || event.isCancelled() || !(event.getEntity() instanceof Player)) {
+            if (event.getDamage() <= 1 || event.isCancelled() || !(event.getEntity() instanceof Player defenderPlayer)) {
                 return;
             }
 
-            Player player = (Player) event.getEntity();
-            Hero hero = plugin.getCharacterManager().getHero(player);
-            if (hero.hasEffect(getName())) {
-                hero.getEffect(getName()).removeFromHero(hero);
+            CharacterTemplate attacker = event.getDamager();
+            if(attacker.hasEffect(getName())) {
+                int parryDuration = SkillConfigManager.getUseSetting((Hero)attacker, SkillBladegrasp.this, "parry-duration", 1000, false);
+                attacker.addEffect(new BladegraspCounter(SkillBladegrasp.this, ((Hero)attacker).getPlayer(), parryDuration));
+            }
+
+            Hero defender = plugin.getCharacterManager().getHero(defenderPlayer);
+            Effect counter = defender.getEffect("BladegraspCounter");
+            if (counter != null) {
+                counter.removeFromHero(defender);
                 event.setCancelled(true);
-                String message = parryText.replace("%hero%", player.getName());
-                player.sendMessage(message);
+                String message = parryText.replace("%hero%", defenderPlayer.getName());
+                defenderPlayer.sendMessage(message);
                 if (event.getDamager() instanceof Hero) {
                     ((Hero) event.getDamager()).getPlayer().sendMessage(message);
                 }
@@ -128,10 +146,13 @@ public class SkillBladegrasp extends ActiveSkill implements Listenable {
             if (event.getDamage() == 0 || event.isCancelled() || !event.getSkill().isType(SkillType.ABILITY_PROPERTY_PHYSICAL) || !(event.getEntity() instanceof Player)) {
                 return;
             }
+
+
             Player player = (Player) event.getEntity();
             Hero hero = plugin.getCharacterManager().getHero(player);
-            if (hero.hasEffect(getName())) {
-                hero.getEffect(getName()).removeFromHero(hero);
+            Effect counter = hero.getEffect("BladegraspCounter");
+            if (counter != null) {
+                counter.removeFromHero(hero);
                 event.setCancelled(true);
                 String message = parrySkillText.replace("%hero%", player.getName()).replace("%target%", CustomNameManager.getName(event.getDamager())).replace("%skill%", event.getSkill().getName());
                 player.sendMessage(message);

@@ -1,10 +1,59 @@
 plugins {
     id 'java-library'
+    id 'groovy'
+}
+
+ext {
+    hcRepoUsername = System.getenv("HC_REPO_USERNAME") ?: hcRepoUsername
+    hcRepoPassword = System.getenv("HC_REPO_PASSWORD") ?: hcRepoPassword
+}
+
+allprojects {
+    apply plugin: 'java-library'
+    apply plugin: 'idea'
+
+    group 'com.herocraftonline.heroes.characters.skill'
+
+    repositories {
+        mavenLocal()
+        mavenCentral()
+
+        maven {
+            name 'Bungee Chat Repo'
+            url 'https://oss.sonatype.org/content/groups/public/'
+        }
+        maven {
+            name 'worldguard'
+            url 'https://maven.enginehub.org/repo/'
+        }
+        maven {
+            name 'herocraft-repo'
+            url 'https://nexus.hc.to/content/repositories/herocraft/'
+            credentials {
+                username hcRepoUsername
+                password hcRepoPassword
+            }
+        }
+        maven {
+            name 'mythic-repo'
+            url 'https://mvn.lumine.io/repository/maven-public/'
+        }
+
+        maven {
+            name 'dmullloy2-repo'
+            url 'https://repo.dmulloy2.net/repository/public/'
+        }
+
+        maven {
+            name 'md-5'
+            url 'https://repo.md-5.net/content/groups/public/'
+        }
+    }
 }
 
 dependencies {
-    implementation "com.herocraftonline.heroes:Heroes:1.9.21-SNAPSHOT"
-    implementation 'org.jetbrains:annotations:20.1.0'
+    compileOnly "com.herocraftonline.heroes:Heroes:1.9.21-SNAPSHOT"
+    compileOnly 'org.jetbrains:annotations:20.1.0'
     compileOnly "org.spigotmc:spigot-api:1.18.2-R0.1-SNAPSHOT"
     compileOnly "net.milkbowl.vault:VaultAPI:1.7"
     compileOnly "com.sk89q.worldguard:worldguard-bukkit:7.0.3"
@@ -14,19 +63,104 @@ dependencies {
     compileOnly "de.slikey:EffectLib:6.1"
     compileOnly "com.herocraftonline:townships:1.1.0-SNAPSHOT"
     compileOnly "fr.neatmonster:nocheatplus:3.16.1-SNAPSHOT"
-    compileOnly "com.github.Xezard:XGlow:1.0.5"
+    compileOnly 'io.lumine:Mythic-Dist:5.0.3-SNAPSHOT'
+
+    implementation gradleApi()
 }
 
-allprojects {
-    apply plugin: 'java-library'
-    apply plugin: 'idea'
-    ant.importBuild("build.xml")
-
-    group 'com.herocraftonline.heroes.characters.skill'
-
+configurations {
+    packClasspath.extendsFrom(compileOnly)
+    packClasspath.setCanBeResolved(true)
+    packClasspath.transitive(false)
 }
 
-repositories {
-    gradlePluginPortal()
-    mavenLocal()
+tasks.register("public1", CompilePackTask) {
+    pack = "public1"
+}
+tasks.register("pack1", CompilePackTask) {
+    pack = "pack1"
+}
+tasks.register("pack2", CompilePackTask) {
+    pack = "pack2"
+}
+tasks.register("pack3", CompilePackTask) {
+    pack = "pack3"
+}
+tasks.register("pack4", CompilePackTask) {
+    pack = "pack4"
+}
+tasks.register("pack5", CompilePackTask) {
+    pack = "pack5"
+}
+tasks.register("pack6", CompilePackTask) {
+    pack = "pack6"
+}
+tasks.register("pack7", CompilePackTask) {
+    pack = "pack7"
+}
+tasks.register("pack8", CompilePackTask) {
+    pack = "pack8"
+}
+tasks.register("reborn", CompilePackTask) {
+    pack = "reborn"
+}
+tasks.register("remastered", CompilePackTask) {
+    pack = "remastered"
+}
+
+abstract class CompilePackTask extends DefaultTask {
+
+    @Input
+    String pack = "public1"
+
+    @TaskAction
+    def compile() {
+        def bin = "bin/" + project.name + "/" + pack
+        def dist = "build/" + project.name + "/" + pack
+        def destination = "build"
+
+        def classpath = project.configurations.packClasspath.asPath
+
+
+        //CLASS DIRECTORY IS bin/project.name/pack
+        //BUILD directory IS build/project.name/pack
+
+        ant.mkdir(dir: bin)
+        ant.mkdir(dir: dist)
+
+        ant.echo("Building Pack : " + pack)
+
+        ant.javac(srcdir: "src/main/java/com/herocraftonline/heroes/characters/skill/" + pack
+                , excludes: "**/unusedskills/**"
+                , destdir: bin
+                , includeantruntime: "false"
+                , encoding: "utf-8"
+                , fork: "yes"
+                , classpathref: classpath)
+
+        def scanner = ant.fileScanner {
+            fileset(dir: bin) {
+                include(name: "Skill*.class")
+                exclude(name: "Skill.*.class")
+            }
+        }
+        //https://groovy-lang.org/scripting-ant.html
+
+        for(f in scanner) {
+            def classname = f.name.replaceAll(".class", "")
+            ant.echo("com.herocraftonline.heroes.characters.skill." + pack + "/" + classname)
+            ant.java(jarfile: dist + "/" + classname + ".jar", basedir: bin, includes: "*.class skill.info") {
+                manifest {
+                    attributes.put("Class-Path", "../../Heroes.jar")
+                }
+            }
+        }
+
+        ant.zip(destfile: destination + "/heroes-" + pack + ".zip") {
+            fileset(dir: dist, include: "*.jar")
+        }
+
+        //delete(dir: bin)
+        //delete(dir: dist)
+    }
 }
