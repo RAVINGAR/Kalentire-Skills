@@ -5,6 +5,7 @@ import com.herocraftonline.heroes.api.SkillResult;
 import com.herocraftonline.heroes.api.events.SkillDamageEvent;
 import com.herocraftonline.heroes.characters.CustomNameManager;
 import com.herocraftonline.heroes.characters.Hero;
+import com.herocraftonline.heroes.characters.effects.Effect;
 import com.herocraftonline.heroes.characters.effects.EffectType;
 import com.herocraftonline.heroes.characters.effects.ExpirableEffect;
 import com.herocraftonline.heroes.characters.skill.*;
@@ -87,7 +88,6 @@ public class SkillParryMagic extends ActiveSkill {
 
     public class SkillEntityListener implements Listener {
 
-        @SuppressWarnings("unused")
         private Skill skill;
 
         SkillEntityListener(Skill skill) {
@@ -103,8 +103,9 @@ public class SkillParryMagic extends ActiveSkill {
             Player player = (Player) event.getEntity();
             Hero hero = plugin.getCharacterManager().getHero(player);
 
-            if (hero.hasEffect(getName())) {
-                hero.getEffect(getName()).removeFromHero(hero);
+            Effect parry = hero.getEffect(getName());
+            if (parry != null) {
+                parry.removeFromHero(hero);
                 event.setCancelled(true);
                 String message = parrySkillText.replace("%hero%", player.getName()).replace("%target%", CustomNameManager.getName(event.getDamager())).replace("%skill%", event.getSkill().getName());
                 player.sendMessage(message);

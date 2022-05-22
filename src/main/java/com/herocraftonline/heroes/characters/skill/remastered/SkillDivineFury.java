@@ -1,6 +1,5 @@
 package com.herocraftonline.heroes.characters.skill.remastered;
 
-import com.google.common.base.Predicate;
 import com.herocraftonline.heroes.Heroes;
 import com.herocraftonline.heroes.api.SkillResult;
 import com.herocraftonline.heroes.characters.Hero;
@@ -13,7 +12,6 @@ import com.herocraftonline.heroes.nms.physics.RayCastFlag;
 import com.herocraftonline.heroes.nms.physics.collision.AABB;
 import com.herocraftonline.heroes.nms.physics.collision.Capsule;
 import org.bukkit.Location;
-import org.bukkit.block.Block;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.LivingEntity;
 
@@ -80,13 +78,7 @@ public class SkillDivineFury extends SkillBaseBeamShot {
             public void onRenderShot(Location origin, Capsule shot, int frame, boolean first, boolean last) {
 
             }
-        }, new Predicate<Block>() {
-
-            @Override
-            public boolean apply(Block block) {
-                return false;
-            }
-        }, EnumSet.of(RayCastFlag.BLOCK_IGNORE_NON_SOLID, RayCastFlag.BLOCK_HIGH_DETAIL));
+        }, block -> false, EnumSet.of(RayCastFlag.BLOCK_IGNORE_NON_SOLID, RayCastFlag.BLOCK_HIGH_DETAIL));
 
         return SkillResult.NORMAL;
     }

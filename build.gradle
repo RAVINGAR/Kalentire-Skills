@@ -1,6 +1,5 @@
 plugins {
     id 'java-library'
-    id 'groovy'
 }
 
 ext {
@@ -15,7 +14,7 @@ allprojects {
     group 'com.herocraftonline.heroes.characters.skill'
 
     repositories {
-        mavenLocal()
+        //mavenLocal()
         mavenCentral()
 
         maven {
@@ -53,7 +52,6 @@ allprojects {
 
 dependencies {
     compileOnly "com.herocraftonline.heroes:Heroes:1.9.21-SNAPSHOT"
-    compileOnly 'org.jetbrains:annotations:20.1.0'
     compileOnly "org.spigotmc:spigot-api:1.18.2-R0.1-SNAPSHOT"
     compileOnly "net.milkbowl.vault:VaultAPI:1.7"
     compileOnly "com.sk89q.worldguard:worldguard-bukkit:7.0.3"
@@ -64,11 +62,10 @@ dependencies {
     compileOnly "com.herocraftonline:townships:1.1.0-SNAPSHOT"
     compileOnly "fr.neatmonster:nocheatplus:3.16.1-SNAPSHOT"
     compileOnly 'io.lumine:Mythic-Dist:5.0.3-SNAPSHOT'
-
-    implementation gradleApi()
 }
 
 configurations {
+    packClasspath
     packClasspath.extendsFrom(compileOnly)
     packClasspath.setCanBeResolved(true)
     packClasspath.transitive(false)
@@ -119,8 +116,7 @@ abstract class CompilePackTask extends DefaultTask {
         def dist = "build/" + project.name + "/" + pack
         def destination = "build"
 
-        def classpath = project.configurations.packClasspath.asPath
-
+        def classpath = project.configurations.packClasspath.getAsPath()
 
         //CLASS DIRECTORY IS bin/project.name/pack
         //BUILD directory IS build/project.name/pack
