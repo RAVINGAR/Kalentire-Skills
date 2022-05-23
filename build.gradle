@@ -433,7 +433,7 @@ tasks.register("pack8", CompilePackTask) {
             "GrapplingShot",
             "RampartVine",
             "RuptureShot",
-            "Shadowstep",
+            "ShadowStep",
             "SmokeBomb",
             "ThrowAxe",
             "TitansGrip",
@@ -766,7 +766,7 @@ tasks.register("remastered", CompilePackTask) {
             "Scan",
             "SeismicAssault",
             "SerratedArrows",
-            "Shadowstep",
+            "ShadowStep",
             "Shuriken",
             "Shurikens",
             "SiphonBlood",
@@ -824,6 +824,8 @@ abstract class CompilePackTask extends DefaultTask {
     //Then the src below would be
     @Input
     String pack = ""
+
+    @Input
     ArrayList<String> skills = new ArrayList<>()
 
     @TaskAction
@@ -884,6 +886,8 @@ abstract class CompilePackTask extends DefaultTask {
 
             ant.delete(file: infopath)
         }
+
+        ant.delete(file: "build/heroes-" + pack + ".zip")
 
         ant.zip(destfile: "build/heroes-" + pack + ".zip") {
             fileset(dir: "build/" + pack) {

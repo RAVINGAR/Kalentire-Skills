@@ -63,8 +63,8 @@ public class SkillShadowStep extends ActiveSkill {
         double boost = hero.getHeroLevel() * SkillConfigManager.getUseSetting(hero, this, "speed-boost-per-level", 0.000125, true);
         double radius = SkillConfigManager.getUseSetting(hero, this, "damage-radius", 3.0, true);
 
-        FlipPlayerAround(player);
         PerformDash(hero, player, damage, speedMult, boost, radius);
+        FlipPlayerAround(player);
 
         broadcastExecuteText(hero);
         return SkillResult.NORMAL;
