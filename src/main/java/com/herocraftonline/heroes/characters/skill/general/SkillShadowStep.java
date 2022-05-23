@@ -63,6 +63,8 @@ public class SkillShadowStep extends ActiveSkill {
         double boost = hero.getHeroLevel() * SkillConfigManager.getUseSetting(hero, this, "speed-boost-per-level", 0.000125, true);
         double radius = SkillConfigManager.getUseSetting(hero, this, "damage-radius", 3.0, true);
 
+        player.setInvisible(true);
+
         PerformDash(hero, player, damage, speedMult, boost, radius);
         FlipPlayerAround(player);
 
@@ -89,6 +91,7 @@ public class SkillShadowStep extends ActiveSkill {
             public void run() {
                 if (ticks == maxTicks) {
                     player.setFallDistance(-3f);
+                    player.setInvisible(false);
                     cancel();
                     return;
                 }
@@ -107,7 +110,7 @@ public class SkillShadowStep extends ActiveSkill {
                     final double finalDamage = ApplyAoEDiminishingReturns(damage, currentHitCount);
                     addSpellTarget(lEnt, hero);
                     lungeEntitiesToHit.add(lEnt);
-                    damageEntity(lEnt, player, finalDamage, EntityDamageEvent.DamageCause.ENTITY_ATTACK, false);
+                    damageEntity(lEnt, player, finalDamage, EntityDamageEvent.DamageCause.ENTITY_ATTACK, 0.0F);
                     player.getWorld().playSound(player.getLocation(), Sound.ENTITY_PHANTOM_FLAP, 1.0F, 1.0F);
                 }
                 ticks++;
