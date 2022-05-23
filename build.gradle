@@ -435,6 +435,7 @@ tasks.register("pack8", CompilePackTask) {
             "RuptureShot",
             "ShadowStep",
             "SmokeBomb",
+            "Shurikens",
             "ThrowAxe",
             "TitansGrip",
             "TornadoKick",
