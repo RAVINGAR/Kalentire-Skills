@@ -89,6 +89,14 @@ configurations {
     packClasspath.transitive(true)
 }
 
+sourceSets {
+    main {
+        java {
+            srcDirs "src/main/java"
+        }
+    }
+}
+
 tasks.register("public1", CompilePackTask) {
     pack = "public1"
 }
@@ -123,27 +131,56 @@ tasks.register("remastered", CompilePackTask) {
     pack = "remastered"
 }
 
-abstract class CompilePackTask extends DefaultTask {
+task printSourceSetInformation() {
 
+    doLast{
+        sourceSets.each { srcSet ->
+            println "["+srcSet.name+"]"
+            print "-->Source directories: "+srcSet.allJava.srcDirs+"\n"
+            print "-->Output directories: "+srcSet.output.classesDirs.files+"\n"
+            print "-->Compile classpath:\n"
+            srcSet.compileClasspath.files.each {
+                print "  "+it.path+"\n"
+            }
+            println ""
+        }
+    }
+}
+
+abstract class CompilePackTask extends DefaultTask {
+    //Ultimately, the argument here should actually be a fileset. There should only be ONE version of every skill
+    //These should basically from a fileset copy into bin/classes/pack
+    //Then the src below would be
     @Input
     String pack = "public1"
+    ArrayList<String> skills = new ArrayList<>()
 
     @TaskAction
     def compile() {
-        def bin = "bin"
-        def dist = "build"
-        def src = "com/herocraftonline/heroes/characters/skill/" + pack
+        def src = "bin/" + pack
+        def srcpath = "com/herocraftonline/heroes/characters/skill/general"
 
-        ant.mkdir(dir: bin)
-        ant.mkdir(dir: dist)
+        ant.mkdir(dir: "bin")
+        ant.mkdir(dir: "dist")
+
+        //Copy source files to group based on defined var skills
+        ant.mkdir(dir: "bin/" + pack)
+
+        project.copy {
+            into "bin/" + pack
+            skills.forEach {
+                def name = "Skill" + it + ".java"
+                from "src/main/java/$srcpath/$name"
+            }
+        }
 
         def version = project.version + "-" + project.getGitHash()
 
         ant.echo(message: "Heroes Skills Version " + version + " \nBuilding Pack - "  + pack)
 
-        ant.javac(srcdir: "src/main/java/" + src
+        ant.javac(srcdir: src
                 , excludes: "**/unusedskills/**"
-                , destdir: bin
+                , destdir: "bin"
                 , debug: "on"
                 , includeantruntime: "false"
                 , encoding: "utf-8"
@@ -152,21 +189,23 @@ abstract class CompilePackTask extends DefaultTask {
                 , source: 17
                 , target: 17)
 
+        ant.delete(dir: "bin/" + pack)
+
         def scanner = ant.fileScanner {
-            fileset(dir: bin + "/" + src) {
+            fileset(dir: "bin/" + srcpath) {
                 include(name: "Skill*.class")
                 exclude(name: "Skill*\$*.class")
             }
         }
-        //https://groovy-lang.org/scripting-ant.html
 
-        ant.mkdir(dir: dist + "/" + pack)
+        ant.mkdir(dir: "build/" + pack)
+
         for(f in scanner) {
             def classname = f.name.replaceAll(".class", "")
-            def infopath = bin + "/skill.info"
+            def infopath = "bin/skill.info"
             ant.echo(message: src + "/" + classname)
-            ant.echo(file: infopath, message: "main-class: com.herocraftonline.heroes.characters.skill." + pack + "." + classname + ",version: " + version)
-            ant.jar(jarfile: dist + "/" + pack + "/" + classname + ".jar", basedir: bin, includes: src + "/" + classname + "*.class, skill.info") {
+            ant.echo(file: infopath, message: "main-class: com.herocraftonline.heroes.characters.skill.general" + "." + classname + ",version: " + version)
+            ant.jar(jarfile: "build/" + pack + "/" + classname + ".jar", basedir: "bin", includes: srcpath + "/" + classname + "*.class, skill.info") {
                 manifest {
                     attribute(name: "Class-Path", value: "../../Heroes.jar")
                 }
@@ -175,13 +214,13 @@ abstract class CompilePackTask extends DefaultTask {
             ant.delete(file: infopath)
         }
 
-        ant.zip(destfile: dist + "/heroes-" + pack + ".zip") {
-            fileset(dir: dist + "/" + pack) {
+        ant.zip(destfile: "build/heroes-" + pack + ".zip") {
+            fileset(dir: "build/" + pack) {
                 include(name: "*.jar")
             }
         }
 
-        ant.delete(dir: bin + "/" + src)
-        ant.delete(dir: dist + "/" + pack)
+        ant.delete(dir: "bin/" + srcpath)
+        ant.delete(dir: "build/" + pack)
     }
 }
