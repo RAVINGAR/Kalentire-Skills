@@ -1,4 +1,4 @@
-package com.herocraftonline.heroes.characters.skill.reborn;
+package com.herocraftonline.heroes.characters.skill.general;
 
 import com.herocraftonline.heroes.Heroes;
 import com.herocraftonline.heroes.api.SkillResult;
