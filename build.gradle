@@ -123,23 +123,6 @@ tasks.register("remastered", CompilePackTask) {
     pack = "remastered"
 }
 
-tasks.register("compile-remaster", CompileJar) {
-    pack = "remastered"
-}
-
-abstract class CompileJar extends JavaCompile {
-    @Input
-    String pack = ""
-
-    CompileJar() {
-        source = project.fileTree(dir: "src/main/java/com/herocraftonline/heroes/characters/skill/" + pack, include: 'Skill*.java')
-        options.encoding("UTF-8")
-        sourceCompatibility = '17'
-        targetCompatibility = '17'
-        classpath = project.configurations.packClasspath.getAsFileTree()
-    }
-}
-
 abstract class CompilePackTask extends DefaultTask {
 
     @Input
@@ -161,12 +144,13 @@ abstract class CompilePackTask extends DefaultTask {
         ant.javac(srcdir: "src/main/java/" + src
                 , excludes: "**/unusedskills/**"
                 , destdir: bin
+                , debug: "on"
                 , includeantruntime: "false"
                 , encoding: "utf-8"
                 , fork: "yes"
                 , classpath: project.configurations.packClasspath.asPath
-                , source: '17'
-                , target: '17')
+                , source: 17
+                , target: 17)
 
         def scanner = ant.fileScanner {
             fileset(dir: bin + "/" + src) {

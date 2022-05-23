@@ -10,17 +10,27 @@ build:
   stage: build
   script:
     - chmod +x ./gradlew
-    - ./gradlew build-packs
+    - ./gradlew public1
+    - ./gradlew pack1
+    - ./gradlew pack2
+    - ./gradlew pack3
+    - ./gradlew pack4
+    - ./gradlew pack5
+    - ./gradlew pack6
+    - ./gradlew pack7
+    - ./gradlew pack8
+    - ./gradlew reborn
+    - ./gradlew remastered
   artifacts:
     paths:
-      - build/Heroes-public1.zip
-      - build/Heroes-pack1.zip
-      - build/Heroes-pack2.zip
-      - build/Heroes-pack3.zip
-      - build/Heroes-pack4.zip
-      - build/Heroes-pack5.zip
-      - build/Heroes-pack6.zip
-      - build/Heroes-pack7.zip
-      - build/Heroes-pack8.zip
-      - build/Heroes-reborn.zip
-      - build/Heroes-remastered.zip
+      - build/heroes-public1.zip
+      - build/heroes-pack1.zip
+      - build/heroes-pack2.zip
+      - build/heroes-pack3.zip
+      - build/heroes-pack4.zip
+      - build/heroes-pack5.zip
+      - build/heroes-pack6.zip
+      - build/heroes-pack7.zip
+      - build/heroes-pack8.zip
+      - build/heroes-reborn.zip
+      - build/heroes-remastered.zip
