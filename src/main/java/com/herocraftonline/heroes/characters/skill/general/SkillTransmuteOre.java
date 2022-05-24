@@ -10,10 +10,11 @@ import com.herocraftonline.heroes.characters.skill.SkillSetting;
 import com.herocraftonline.heroes.characters.skill.SkillType;
 import com.herocraftonline.heroes.nms.NMSHandler;
 import com.herocraftonline.heroes.util.Util;
+import org.bukkit.ChatColor;
 import org.bukkit.Material;
+import org.bukkit.Sound;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
-import org.bukkit.Sound;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.PlayerInventory;
 
@@ -60,7 +61,7 @@ public class SkillTransmuteOre extends ActiveSkill {
         Player player = hero.getPlayer();
         ItemStack item = NMSHandler.getInterface().getItemInMainHand(player.getInventory());
 
-        if (SkillConfigManager.getUseSetting(hero, this, "require-furnace", false) && player.getTargetBlock((HashSet<Material>) null, 3).getType() != Material.FURNACE) {
+        if (SkillConfigManager.getUseSetting(hero, this, "require-furnace", false) && player.getTargetBlock(null, 3).getType() != Material.FURNACE) {
             player.sendMessage("You must have a furnace targetted to transmute ores!");
             return SkillResult.FAIL;
         }
@@ -71,7 +72,7 @@ public class SkillTransmuteOre extends ActiveSkill {
             itemSet.remove(set.node());
         }
 
-        if (item == null || !itemSet.contains(item.getType().name())) {
+        if (item == null || !itemSet.contains(item.getType().getKey().getKey())) {
             player.sendMessage("You can't transmute that item!");
             return SkillResult.INVALID_TARGET_NO_MSG;
         }
@@ -105,7 +106,7 @@ public class SkillTransmuteOre extends ActiveSkill {
             for (ItemStack leftOver : leftOvers.values()) {
                 player.getWorld().dropItemNaturally(player.getLocation(), leftOver);
             }
-            player.sendMessage("Items have been dropped at your feet!");
+            player.sendMessage(ChatColor.GRAY + "Items have been dropped at your feet!");
         }
         hero.getPlayer().getWorld().playSound(hero.getPlayer().getLocation(), Sound.ENTITY_PLAYER_LEVELUP, 0.8F, 1.0F);
         Util.syncInventory(player, plugin);
