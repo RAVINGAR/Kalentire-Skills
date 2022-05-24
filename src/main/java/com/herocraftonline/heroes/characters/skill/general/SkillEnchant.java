@@ -1,13 +1,14 @@
 package com.herocraftonline.heroes.characters.skill.general;
 
 import com.herocraftonline.heroes.Heroes;
+import com.herocraftonline.heroes.api.SkillResult;
 import com.herocraftonline.heroes.characters.Hero;
 import com.herocraftonline.heroes.characters.classes.HeroClass;
 import com.herocraftonline.heroes.characters.classes.HeroClass.ExperienceType;
-import com.herocraftonline.heroes.characters.effects.EffectType;
 import com.herocraftonline.heroes.characters.skill.*;
 import com.herocraftonline.heroes.util.Properties;
 import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.Player;
@@ -18,55 +19,100 @@ import org.bukkit.event.enchantment.EnchantItemEvent;
 import org.bukkit.event.enchantment.PrepareItemEnchantEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.scheduler.BukkitRunnable;
+import to.hc.common.core.collect.Pair;
 
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.Map;
+import java.util.*;
 import java.util.Map.Entry;
 
-public class SkillEnchant extends PassiveSkill {
-
+public class SkillEnchant extends ActiveSkill implements Passive {
+    private final static List<String> ALL_ENCHANTMENTS = getAllEnchantments();
+    
     public SkillEnchant(Heroes plugin) {
         super(plugin, "Enchant");
         setDescription("You are able to enchant items.");
+        setUsage("/skill enchant");
         setArgumentRange(0, 0);
+        setIdentifiers("skill enchant");
         setTypes(SkillType.ITEM_MODIFYING);
-        setEffectTypes(EffectType.BENEFICIAL);
+        
         Bukkit.getServer().getPluginManager().registerEvents(new SkillEnchantListener(this), plugin);
+    }
+
+    public static List<String> getAllEnchantments() {
+        List<String> enchants = new LinkedList<>();
+        for(Enchantment e : Enchantment.values()) {
+            enchants.add(e.getKey().getKey());
+        }
+        return enchants;
     }
 
     @Override
     public ConfigurationSection getDefaultConfig() {
         ConfigurationSection section = super.getDefaultConfig();
-        section.set("protection", 1);
-        section.set("fire_protection", 1);
-        section.set("feather_falling", 1);
-        section.set("blast_protection", 1);
-        section.set("projectile_protection", 1);
-        section.set("respiration", 1);
-        section.set("aqua_affinity", 1);
-        section.set("sharpness", 1);
-        section.set("smite", 1);
-        section.set("bane_of_athropods", 1);
-        section.set("knockback", 1);
-        section.set("fire_aspect", 1);
-        section.set("looting", 1);
-        section.set("efficiency", 1);
-        section.set("silk_touch", 1);
-        section.set("unbreaking", 1);
-        section.set("fortune", 1);
-        section.set("power", 1);
-        section.set("punch", 1);
-        section.set("flame", 1);
-        section.set("infinity", 1);
-        section.set("frost_walker", 1);
-        section.set("mending", 1);
-        section.set("depth_strider", 1);
-        section.set("sweeping_edge", 1);
+        ALL_ENCHANTMENTS.forEach(e -> {
+            section.set(e, 1);
+        });
         section.set("experience-cost-per-level", -1);
         section.set(SkillSetting.APPLY_TEXT.node(), "");
         section.set(SkillSetting.UNAPPLY_TEXT.node(), "");
         return section;
+    }
+
+    @Override
+    public SkillResult use(Hero hero, String[] strings) {
+        Player player = hero.getPlayer();
+
+        player.sendMessage(ChatColor.DARK_PURPLE + "----------[ " + ChatColor.WHITE + "Enchanting " + ChatColor.DARK_PURPLE + "]----------");
+
+        List<Pair<String, Integer>> requiredLevels = new LinkedList<>();
+        ALL_ENCHANTMENTS.forEach(e -> requiredLevels.add(new Pair<>(e, SkillConfigManager.getUseSetting(hero, this, e, 1, true))));
+        requiredLevels.sort(Comparator.comparing(Pair::getRight));
+
+        List<String> notUnlocked = new LinkedList<>();
+        StringBuilder unlocked = new StringBuilder();
+
+        unlocked.append("Unlocked : ");
+        for(Pair<String, Integer> entry : requiredLevels) {
+            if(hero.getHeroLevel(hero.getEnchantingClass()) >= entry.getRight()) {
+                unlocked.append(ChatColor.GREEN).append(classify(entry.getLeft())).append(ChatColor.WHITE).append(" | ");
+            }
+            else {
+                notUnlocked.add(ChatColor.DARK_GRAY + classify(entry.getLeft()) + ChatColor.WHITE + " | Requires Level: " + ChatColor.GRAY + entry.getRight());
+            }
+        }
+        notUnlocked.forEach(player::sendMessage);
+        player.sendMessage("");
+        player.sendMessage(unlocked.toString());
+
+        return SkillResult.NORMAL;
+    }
+
+    private String classify(String key) {
+        StringBuilder builder = new StringBuilder();
+        String[] split = key.split("_");
+        for(int i = 0; i < split.length; i++) {
+            builder.append(split[i].substring(0,1).toUpperCase());
+            builder.append(split[i].substring(1));
+            if(i + 1 < split.length) {
+                builder.append(" ");
+            }
+        }
+        return builder.toString();
+    }
+
+    @Override
+    public void tryApplying(Hero hero) {
+
+    }
+
+    @Override
+    public void apply(Hero hero) {
+
+    }
+
+    @Override
+    public void unapply(Hero hero) {
+
     }
 
     public class SkillEnchantListener implements Listener {
@@ -158,7 +204,7 @@ public class SkillEnchant extends PassiveSkill {
                     event.setCancelled(true);
                     return;
                 }
-                double exp = (Math.max(0,Properties.getTotalExp(level) - Properties.getTotalExp((int) (level-levelCost)))) * -1;
+                double exp = (Math.max(1,Properties.getTotalExp(level) - Properties.getTotalExp((int) (level-levelCost)))) * -1;
                 if(exp < 0) {
                     hero.gainExp(exp, ExperienceType.ENCHANTING, player.getLocation());
                 }
