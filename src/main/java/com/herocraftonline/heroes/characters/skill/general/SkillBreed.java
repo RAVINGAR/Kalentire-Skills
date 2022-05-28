@@ -17,7 +17,6 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityBreedEvent;
-import org.bukkit.event.player.PlayerInteractEntityEvent;
 
 public class SkillBreed extends PassiveSkill {
 
@@ -47,7 +46,6 @@ public class SkillBreed extends PassiveSkill {
         node.set(SkillSetting.APPLY_TEXT.node(), "");
         node.set(SkillSetting.UNAPPLY_TEXT.node(), "");
         node.set(SkillSetting.CHANCE_PER_LEVEL.node(), .001);
-        node.set("allow-horse-mounting", false);
         node.set("allow-horse-breeding", false);
 
         return node;
@@ -74,19 +72,6 @@ public class SkillBreed extends PassiveSkill {
                 else {
                     event.setCancelled(true);
                     player.sendMessage(ChatColor.GRAY + "You must be a farmer to do that!");
-                }
-            }
-        }
-
-        @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
-        public void onPlayerEntityInteract(PlayerInteractEntityEvent event) {
-            EntityType type = event.getRightClicked().getType();
-            if(type == EntityType.HORSE || type == EntityType.DONKEY) {
-                Hero hero = plugin.getCharacterManager().getHero(event.getPlayer());
-                boolean canMountHorses = SkillConfigManager.getUseSetting(hero, skill, "allow-horse-mounting", false);
-                if (!canMountHorses) {
-                    hero.getPlayer().sendMessage(ChatColor.GRAY + "You cannot mount that horse!");
-                    event.setCancelled(true);
                 }
             }
         }
