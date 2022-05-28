@@ -10,7 +10,6 @@ import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.configuration.ConfigurationSection;
-import org.bukkit.entity.HumanEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
@@ -59,25 +58,22 @@ public class SkillCraftNetheriteIngot extends PassiveSkill {
             if (result == null || result.getType() != Material.NETHERITE_INGOT)
                 return; // Skip handled smithing or not netherite ingots
 
-            for (HumanEntity humanEntity : event.getViewers()) {
-                // Should only be one, still...
-                Hero hero = plugin.getCharacterManager().getHero((Player) humanEntity);
+            Hero hero = plugin.getCharacterManager().getHero((Player) event.getView().getPlayer());
 
-                // Don't allow crafting to players that don't have this skill (or level required for it)
-                if (!skill.hasPassive(hero)) {
-                    if (!hero.hasAccessToSkill(skill)) {
-                        hero.getPlayer().sendMessage(ChatColor.RED + "You must be a Blacksmith to create Netherite Ingots!");
-                    } else {
-                        // Could have access to the skill (has right class), but doesn't meet level requirements
-                        int level = SkillConfigManager.getLevel(hero, skill, -1);
-                        hero.getPlayer().sendMessage(ChatColor.RED + "You must be a level " + level + " Blacksmith to create Netherite Ingots!");
-                    }
-                    event.getInventory().setResult(null); // effectively 'cancel' crafting (doesn't close inventory though), showing it like its not a valid recipe
-
-                    // Hopefully this wont cause issues for other plugins that may be using 'event.getRecipe().getResult()'
-                    // which is supposed to be non-null. If this becomes a issue we can try going with a itemstack of
-                    // Material.Air instead. It's not like this currently because I'm not sure on the difference
+            // Don't allow crafting to players that don't have this skill (or level required for it)
+            if (!skill.hasPassive(hero)) {
+                if (!hero.hasAccessToSkill(skill)) {
+                    hero.getPlayer().sendMessage(ChatColor.RED + "You must be a Blacksmith in order to create Netherite Ingots!");
+                } else {
+                    // Could have access to the skill (has right class), but doesn't meet level requirements
+                    int level = SkillConfigManager.getLevel(hero, skill, -1);
+                    hero.getPlayer().sendMessage(ChatColor.RED + "You must be a level " + level + " Blacksmith to create Netherite Ingots!");
                 }
+                event.getInventory().setResult(null); // effectively 'cancel' crafting (doesn't close inventory though), showing it like its not a valid recipe
+
+                // Hopefully this wont cause issues for other plugins that may be using 'event.getRecipe().getResult()'
+                // which is supposed to be non-null. If this becomes a issue we can try going with a itemstack of
+                // Material.Air instead. It's not like this currently because I'm not sure on the difference
             }
         }
     }

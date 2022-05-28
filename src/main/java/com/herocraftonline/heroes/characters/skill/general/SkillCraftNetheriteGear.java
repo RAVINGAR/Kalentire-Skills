@@ -12,7 +12,6 @@ import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.configuration.ConfigurationSection;
-import org.bukkit.entity.HumanEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
@@ -97,27 +96,24 @@ public class SkillCraftNetheriteGear extends PassiveSkill {
                 return; // Skip handled or non netherite items
 
             final Material resultType = result.getType();
-            for (HumanEntity humanEntity : event.getViewers()) {
-                // Should only be one, still...
-                Hero hero = plugin.getCharacterManager().getHero((Player) humanEntity);
+            Hero hero = plugin.getCharacterManager().getHero((Player) event.getView().getPlayer());
 
-                // Don't allow crafting to players that don't have this skill
-                if (!skill.hasPassive(hero)) {
-                    hero.getPlayer().sendMessage(ChatColor.RED + "You must be a Blacksmith to create netherite gear!");
-                    event.setResult(null);
-                    continue;
-                }
+            // Don't allow crafting to players that don't have this skill
+            if (!skill.hasPassive(hero)) {
+                hero.getPlayer().sendMessage(ChatColor.RED + "You must be a Blacksmith in order to create netherite gear!");
+                event.setResult(null);
+                return;
+            }
 
-                int levelRequired = SkillConfigManager.getUseSetting(hero, skill, resultType.toString(), 1, true);
-                int level = hero.getHeroLevel(skill);
+            int levelRequired = SkillConfigManager.getUseSetting(hero, skill, resultType.toString(), 1, true);
+            int level = hero.getHeroLevel(skill);
 
-                // Don't allow crafting to players that don't have the level required for it
-                if (level <= 0 || level < levelRequired) {
-                    hero.getPlayer().sendMessage(ChatColor.RED + "You must be level " + levelRequired + " to create "
-                            + MaterialUtil.getFriendlyName(resultType) + "!");
-                    event.setResult(null);
-                    //event.getInventory().setResult(null);
-                }
+            // Don't allow crafting to players that don't have the level required for it
+            if (level <= 0 || level < levelRequired) {
+                hero.getPlayer().sendMessage(ChatColor.RED + "You must be level " + levelRequired + " to create "
+                        + MaterialUtil.getFriendlyName(resultType) + "!");
+                event.setResult(null);
+                //event.getInventory().setResult(null);
             }
         }
     }

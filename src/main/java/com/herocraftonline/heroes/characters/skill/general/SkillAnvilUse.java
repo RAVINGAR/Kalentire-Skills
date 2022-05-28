@@ -55,7 +55,6 @@ public class SkillAnvilUse extends PassiveSkill {
         public void onOpenAnvilInventory(InventoryOpenEvent event) {
             if (event.getInventory().getType() != InventoryType.ANVIL)
                 return;
-
             // Deny opening to those without this skill (and the right level)
             Hero hero = plugin.getCharacterManager().getHero((Player) event.getPlayer());
             if (!skill.hasPassive(hero)) {

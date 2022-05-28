@@ -95,7 +95,7 @@ public class SkillRepair extends ActiveSkill {
         if (args == null || args.length < 1 ) {
             is = NMSHandler.getInterface().getItemInMainHand(player.getInventory());
         } else {
-            int itemSlotNumber = 0;
+            int itemSlotNumber;
             try {
                 itemSlotNumber = Integer.parseInt(args[0]);
             } catch (final NumberFormatException e){
@@ -136,9 +136,9 @@ public class SkillRepair extends ActiveSkill {
         }
 
         boolean enchanted = !is.getEnchantments().isEmpty();
-        int repairCost = getRepairCost(hero, is);
+        double repairCost = getRepairCost(hero, is);
         if (enchanted) {
-            int additionalCostPerEnchantmentLevels = SkillConfigManager.getUseSetting(hero, this, "additional-cost-per-enchantment-levels", 1, true);
+            double additionalCostPerEnchantmentLevels = SkillConfigManager.getUseSetting(hero, this, "additional-cost-per-enchantment-levels", 1.0, true);
             int enchantmentLevels = 0;
             for (Map.Entry<Enchantment, Integer> entry : is.getEnchantments().entrySet()) {
                 Enchantment enchantment = entry.getKey();
@@ -164,7 +164,7 @@ public class SkillRepair extends ActiveSkill {
 
                 boolean hasReagant = false;
                 for (Material woodMaterial : woodMaterials) {
-                    reagentStack = new ItemStack(woodMaterial, repairCost);
+                    reagentStack = new ItemStack(woodMaterial, (int)repairCost);
                     hasReagant = hasReagentCost(player, reagentStack);
                     if (hasReagant) {
                         // Found valid wood reagent that the player has
@@ -184,7 +184,7 @@ public class SkillRepair extends ActiveSkill {
                     return new SkillResult(ResultType.MISSING_REAGENT, true, repairCost, planksString);
                 }
             } else {
-                reagentStack = new ItemStack(reagent, repairCost);
+                reagentStack = new ItemStack(reagent, (int)repairCost);
                 if (!hasReagentCost(player, reagentStack)) {
                     return new SkillResult(ResultType.MISSING_REAGENT, true, reagentStack.getAmount(), MaterialUtil.getFriendlyName(reagentStack.getType()));
                 }
@@ -224,8 +224,11 @@ public class SkillRepair extends ActiveSkill {
     }
 
     private int getRepairCost(Hero hero, ItemStack item) {
+        if(!item.hasItemMeta()) {
+            return 0;
+        }
         Material mat = item.getType();
-        Damageable is = (Damageable)item;
+        Damageable is = (Damageable)(item.getItemMeta());
         int amt;
         switch (mat) {
             case BOW:
@@ -364,7 +367,7 @@ public class SkillRepair extends ActiveSkill {
             case NETHERITE_HOE:
             case NETHERITE_PICKAXE:
             case NETHERITE_SHOVEL:
-                return Material.NETHERITE_INGOT; // FIXME use netherite ingot or scrap for netherite items? (since only one is used per item, or just one ingot?)
+                return Material.NETHERITE_SCRAP;
             case LEATHER_BOOTS:
             case LEATHER_CHESTPLATE:
             case LEATHER_HELMET:
@@ -372,7 +375,7 @@ public class SkillRepair extends ActiveSkill {
                 return Material.LEATHER;
             case FISHING_ROD:
             case BOW:
-            case CROSSBOW: // FIXME use string for crossbow too?
+            case CROSSBOW:
                 return Material.STRING;
             case CHAINMAIL_HELMET:
             case CHAINMAIL_CHESTPLATE:
