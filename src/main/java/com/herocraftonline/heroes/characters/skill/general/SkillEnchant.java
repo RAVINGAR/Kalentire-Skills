@@ -4,11 +4,11 @@ import com.herocraftonline.heroes.Heroes;
 import com.herocraftonline.heroes.api.SkillResult;
 import com.herocraftonline.heroes.characters.Hero;
 import com.herocraftonline.heroes.characters.classes.HeroClass;
-import com.herocraftonline.heroes.characters.classes.HeroClass.ExperienceType;
 import com.herocraftonline.heroes.characters.skill.*;
 import com.herocraftonline.heroes.util.Properties;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
+import org.bukkit.Material;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.Player;
@@ -17,6 +17,8 @@ import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.enchantment.EnchantItemEvent;
 import org.bukkit.event.enchantment.PrepareItemEnchantEvent;
+import org.bukkit.event.inventory.InventoryCloseEvent;
+import org.bukkit.event.inventory.InventoryType;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.scheduler.BukkitRunnable;
 import to.hc.common.core.collect.Pair;
@@ -117,10 +119,12 @@ public class SkillEnchant extends ActiveSkill implements Passive {
 
     public class SkillEnchantListener implements Listener {
 
+        private final List<UUID> playersInEnchantingTable;
         private final Skill skill;
 
         public SkillEnchantListener(Skill skill) {
             this.skill = skill;
+            playersInEnchantingTable = new LinkedList<>();
         }
 
         @EventHandler(priority = EventPriority.LOWEST)
@@ -129,7 +133,7 @@ public class SkillEnchant extends ActiveSkill implements Passive {
                 return;
             }
             Hero hero = plugin.getCharacterManager().getHero(event.getEnchanter());
-            if (!hero.hasEffect(getName())) {
+            if (!hero.canUseSkill(skill)) {
                 // Don't offer enchants to players that don't meet the requirements
                 hero.getPlayer().sendMessage("You aren't an enchanter!");
                 event.setCancelled(true);
@@ -143,7 +147,9 @@ public class SkillEnchant extends ActiveSkill implements Passive {
                 event.setCancelled(true);
             }
             else {
+                hero.setSyncPrimary(hc.equals(hero.getHeroClass()));
                 hero.syncExperience(hc);
+                playersInEnchantingTable.add(hero.getUUID());
             }
         }
 
@@ -153,7 +159,6 @@ public class SkillEnchant extends ActiveSkill implements Passive {
             Hero hero = plugin.getCharacterManager().getHero(player);
 
             HeroClass enchanter = hero.getEnchantingClass();
-            hero.setSyncPrimary(enchanter.equals(hero.getHeroClass()));
             int level = hero.getHeroLevel(enchanter);
 
             double perLevel = SkillConfigManager.getUseSettingDouble(hero, skill, "experience-cost-per-level", true);
@@ -170,15 +175,15 @@ public class SkillEnchant extends ActiveSkill implements Passive {
                 }
 
                 //IF level of enchanter is less than the required level.
-                if (level < reqLevel || !ench.canEnchantItem(event.getItem())) {
+                if (level < reqLevel || (event.getItem().getType() != Material.BOOK && !ench.canEnchantItem(event.getItem()))) {
                     iter.remove();
                     enchants.remove(ench);
-                } else if(perLevel > -1) {
+                } else if(perLevel >= 0) {
                     levelCost += perLevel * entry.getValue();
                 }
             }
             if (event.getEnchantsToAdd().isEmpty()) {
-                player.sendMessage("You don't have enough experience to enchant that item!");
+                player.sendMessage("You are not skilled enough to apply such enchants to that item!");
                 event.setCancelled(true);
                 return;
             }
@@ -188,34 +193,41 @@ public class SkillEnchant extends ActiveSkill implements Passive {
                 event.setCancelled(true);
             }
 
-            if(levelCost == 0) {
-                levelCost = event.getExpLevelCost();
+            if(perLevel == -1) {
+                levelCost = event.whichButton() + 1;
             }
 
-            if (event.getExpLevelCost() == 0) {
-                player.sendMessage("Enchanting failed!");
-                event.setCancelled(true);
-            } else {
-                event.setExpLevelCost((int) levelCost);
+            event.setExpLevelCost((int) levelCost);
+            if(Heroes.properties.enchantXPMultiplier > 0) {
                 levelCost *= Heroes.properties.enchantXPMultiplier;
+            }
 
-                if (hero.getHeroLevel(enchanter) < levelCost) {
-                    player.sendMessage("You don't have enough experience to enchant that item!");
-                    event.setCancelled(true);
-                    return;
-                }
-                double exp = (Math.max(1,Properties.getTotalExp(level) - Properties.getTotalExp((int) (level-levelCost)))) * -1;
-                if(exp < 0) {
-                    hero.gainExp(exp, ExperienceType.ENCHANTING, player.getLocation());
-                }
 
+            if (hero.getHeroLevel(enchanter) < levelCost) {
+                player.sendMessage("You don't have enough experience to enchant that item!");
+                event.setCancelled(true);
+                return;
+            }
+            double exp = (Math.max(0, com.herocraftonline.heroes.util.Properties.getTotalExp(level) - Properties.getTotalExp((int) (level-levelCost)))) * -1;
+            if(exp < 0) {
+                hero.gainExp(exp, HeroClass.ExperienceType.ENCHANTING, player.getLocation());
+            }
+        }
+
+        @EventHandler
+        public void onEnchantingTableClose(InventoryCloseEvent event) {
+            if(playersInEnchantingTable.remove(event.getPlayer().getUniqueId())) {
                 new BukkitRunnable() {
                     @Override
                     public void run() {
-                        hero.setSyncPrimary(true);
-                        hero.syncExperience();
+                        Hero hero = plugin.getCharacterManager().getHero((Player)event.getPlayer());
+                        if(!(hero.getPlayer().getOpenInventory().getTopInventory().getType() == InventoryType.ENCHANTING)) {
+                            hero.setSyncPrimary(true);
+                            hero.syncExperience();
+                        }
+
                     }
-                }.runTaskLater(plugin, 20L);
+                }.runTaskLater(plugin, 5L);
             }
         }
     }

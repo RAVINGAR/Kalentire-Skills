@@ -1,22 +1,20 @@
 package com.herocraftonline.heroes.characters.skill.general;
 
-import java.util.HashMap;
-import java.util.LinkedHashMap;
-import java.util.Map;
-
-import org.bukkit.ChatColor;
-import org.bukkit.Material;
-import org.bukkit.enchantments.Enchantment;
-import org.bukkit.entity.Player;
-import org.bukkit.Sound;
-import org.bukkit.inventory.ItemStack;
-import org.bukkit.inventory.meta.EnchantmentStorageMeta;
-
 import com.herocraftonline.heroes.Heroes;
 import com.herocraftonline.heroes.api.SkillResult;
 import com.herocraftonline.heroes.characters.Hero;
 import com.herocraftonline.heroes.characters.skill.ActiveSkill;
 import com.herocraftonline.heroes.characters.skill.SkillType;
+import org.bukkit.ChatColor;
+import org.bukkit.Material;
+import org.bukkit.enchantments.Enchantment;
+import org.bukkit.entity.Player;
+import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.EnchantmentStorageMeta;
+
+import java.util.HashMap;
+import java.util.LinkedHashMap;
+import java.util.Map;
 
 public class SkillEnchantingBook extends ActiveSkill {
 	HashMap<Player,PlayerExecuteData> executors;
@@ -48,7 +46,7 @@ public class SkillEnchantingBook extends ActiveSkill {
 	public SkillResult use(Hero h, String[] args) {
 		Player p = h.getPlayer();
 		if(!executors.containsKey(p)) {
-			ItemStack hand = p.getItemInHand();
+			ItemStack hand = p.getInventory().getItemInMainHand();
 			if(!hand.getType().equals(Material.ENCHANTED_BOOK)) {
 				p.sendMessage(ChatColor.GRAY + "This is not an Enchanted Book!");
 				return SkillResult.INVALID_TARGET_NO_MSG;
@@ -62,7 +60,7 @@ public class SkillEnchantingBook extends ActiveSkill {
 				p.sendMessage(ChatColor.GRAY + "Your selection has expired, please try again");
 				executors.remove(p);
 			}
-			ItemStack tool = p.getItemInHand();
+			ItemStack tool = p.getInventory().getItemInMainHand();
 			if(!isEnchantable(tool)) {
 				p.sendMessage(ChatColor.GRAY + "This is not an enchantable item!");
 				return SkillResult.INVALID_TARGET_NO_MSG;

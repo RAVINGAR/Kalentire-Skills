@@ -656,6 +656,7 @@ tasks.register("remastered", CompilePackTask) {
             "DualWield",
             "EarthernFury",
             "Empathy",
+            "Enchant",
             "EnderPearls",
             "EngulfingTotem",
             "Entangle",
