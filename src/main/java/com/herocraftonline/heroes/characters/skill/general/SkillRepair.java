@@ -12,6 +12,8 @@ import com.herocraftonline.heroes.nms.NMSHandler;
 import com.herocraftonline.heroes.util.MaterialUtil;
 import com.herocraftonline.heroes.util.Messaging;
 import com.herocraftonline.heroes.util.Util;
+import io.lumine.mythic.lib.api.item.NBTItem;
+import net.Indyuce.mmoitems.api.interaction.util.DurabilityItem;
 import org.bukkit.Material;
 import org.bukkit.Sound;
 import org.bukkit.configuration.ConfigurationSection;
@@ -27,8 +29,8 @@ import java.util.Map;
 import java.util.logging.Level;
 
 public class SkillRepair extends ActiveSkill {
-
-    String useText = null;
+    private boolean usingMMOItems = false;
+    private String useText = null;
 
     public SkillRepair(Heroes plugin) {
         super(plugin, "Repair");
@@ -37,6 +39,10 @@ public class SkillRepair extends ActiveSkill {
         setArgumentRange(0, 1);
         setIdentifiers("skill repair");
         setTypes(SkillType.ITEM_MODIFYING, SkillType.ABILITY_PROPERTY_PHYSICAL);
+
+        if(plugin.getServer().getPluginManager().getPlugin("MMOItems") != null) {
+            usingMMOItems = true;
+        }
     }
 
     @Override
@@ -71,8 +77,8 @@ public class SkillRepair extends ActiveSkill {
         node.set("fishing-rod", 1);
         node.set("shears", 1);
         node.set("flint-steel", 1);
-        node.set("netherite-armor-cost", 1);
-        node.set("netherite-tool-cost", 1);
+        node.set("netherite-armor-max-cost", 1);
+        node.set("netherite-tool-max-cost", 1);
         node.set("trident", 1);
         node.set("trident-material", "GOLD_INGOT");
         node.set("trident-max-cost", 2);
@@ -130,6 +136,7 @@ public class SkillRepair extends ActiveSkill {
             return new SkillResult(ResultType.LOW_LEVEL, false);
         }
         //if (is.getDurability() == 0) {
+
         if (((Damageable)itemMeta).getDamage() == 0) {
             Messaging.sendSkillMessage(player, "That item is already at full durability!");
             return SkillResult.INVALID_TARGET_NO_MSG;
@@ -208,7 +215,20 @@ public class SkillRepair extends ActiveSkill {
 //        is.setItemMeta(itemMeta); // apply meta changes
 
         // Repair item (applies meta changes too)
-        Util.repairItem(plugin, is, itemMeta);
+        if(usingMMOItems && NBTItem.get(is).hasType()) {
+            DurabilityItem durabilityItem = new DurabilityItem(hero.getPlayer(), is);
+            durabilityItem.addDurability(durabilityItem.getMaxDurability());
+            //Repair currently works in that it will always repair to the max
+            hero.getPlayer().sendMessage("Repairing in here!");
+            ItemMeta result = durabilityItem.toItem().getItemMeta();
+            is.setItemMeta(result);
+        }
+        else {
+            hero.getPlayer().sendMessage("Repairing out here!");
+            Util.repairItem(plugin, is, itemMeta);
+        }
+
+
 
         if (reagentStack != null) {
             player.getInventory().removeItem(reagentStack);
@@ -227,57 +247,74 @@ public class SkillRepair extends ActiveSkill {
         if(!item.hasItemMeta()) {
             return 0;
         }
+
         Material mat = item.getType();
-        Damageable is = (Damageable)(item.getItemMeta());
+
+        final double currDurability;
+        final double maxDurability;
+
+        if(usingMMOItems && NBTItem.get(item).hasType()) {
+            DurabilityItem dura = new DurabilityItem(hero.getPlayer(), item);
+            currDurability = dura.getDurability();
+            maxDurability = dura.getMaxDurability();
+        }
+        else {
+            Damageable is = (Damageable)(item.getItemMeta());
+            maxDurability = mat.getMaxDurability();
+            currDurability = maxDurability - is.getDamage();
+        }
+
         int amt;
         switch (mat) {
             case BOW:
-                amt = (int) ((is.getDamage() / (double) mat.getMaxDurability()) * 2.0);
+                amt = (int) ((currDurability / maxDurability) * 2.0);
                 return Math.max(amt, 1);
             case TRIDENT:
                 int cost = SkillConfigManager.getUseSetting(hero, this, "trident-max-cost", 2, true);
                 if (cost <= 0)
                     return 0;
-                amt = (int) ((is.getDamage() / (double) mat.getMaxDurability()) * cost);
+                amt = (int) ((currDurability / maxDurability) * cost);
                 return Math.max(amt, 1);
             case NETHERITE_CHESTPLATE:
             case NETHERITE_LEGGINGS:
             case NETHERITE_BOOTS:
             case NETHERITE_HELMET:
-                return SkillConfigManager.getUseSetting(hero, this, "netherite-armor-cost", 1, true); // FIXME how much cost per netherite item?
+                amt = (int) ((currDurability / maxDurability) * (SkillConfigManager.getUseSetting(hero, this, "netherite-armor-max-cost", 1, true)));
+                return Math.max(amt, 1);
             case NETHERITE_SWORD:
             case NETHERITE_AXE:
             case NETHERITE_HOE:
             case NETHERITE_PICKAXE:
             case NETHERITE_SHOVEL:
-                return SkillConfigManager.getUseSetting(hero, this, "netherite-tool-cost", 1, true); // FIXME how much cost per netherite item?
+                amt = (int) ((currDurability / maxDurability) * (SkillConfigManager.getUseSetting(hero, this, "netherite-tool-max-cost", 1, true)));
+                return Math.max(amt, 1);
             case LEATHER_BOOTS:
             case IRON_BOOTS:
             case CHAINMAIL_BOOTS:
             case GOLDEN_BOOTS:
             case DIAMOND_BOOTS:
-                amt = (int) ((is.getDamage() / (double) mat.getMaxDurability()) * 3.0);
+                amt = (int) ((currDurability / maxDurability) * 3.0);
                 return Math.max(amt, 1);
             case LEATHER_HELMET:
             case IRON_HELMET:
             case CHAINMAIL_HELMET:
             case GOLDEN_HELMET:
             case DIAMOND_HELMET:
-                amt = (int) ((is.getDamage() / (double) mat.getMaxDurability()) * 4.0);
+                amt = (int) ((currDurability / maxDurability) * 4.0);
                 return Math.max(amt, 1);
             case LEATHER_CHESTPLATE:
             case IRON_CHESTPLATE:
             case CHAINMAIL_CHESTPLATE:
             case GOLDEN_CHESTPLATE:
             case DIAMOND_CHESTPLATE:
-                amt = (int) ((is.getDamage() / (double) mat.getMaxDurability()) * 7.0);
+                amt = (int) ((currDurability / maxDurability) * 7.0);
                 return Math.max(amt, 1);
             case LEATHER_LEGGINGS:
             case IRON_LEGGINGS:
             case CHAINMAIL_LEGGINGS:
             case GOLDEN_LEGGINGS:
             case DIAMOND_LEGGINGS:
-                amt = (int) ((is.getDamage() / (double) mat.getMaxDurability()) * 6.0);
+                amt = (int) ((currDurability / maxDurability) * 6.0);
                 return Math.max(amt, 1);
             default:
                 return 1;
