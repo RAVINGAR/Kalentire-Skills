@@ -8,7 +8,6 @@ import com.herocraftonline.heroes.characters.skill.SkillConfigManager;
 import com.herocraftonline.heroes.characters.skill.SkillSetting;
 import com.herocraftonline.heroes.characters.skill.SkillType;
 import com.herocraftonline.heroes.characters.skill.TargettedSkill;
-import com.herocraftonline.heroes.nms.NMSHandler;
 import com.herocraftonline.heroes.util.Util;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
@@ -68,7 +67,7 @@ public class SkillCleave extends TargettedSkill {
         broadcastExecuteText(hero, target);
 
         CharacterDamageManager manager = plugin.getDamageManager();
-        double damage = manager.getFlatItemDamage(hero, itemType);
+        double damage = manager.getFlatItemDamage(hero);
         damage *= SkillConfigManager.getUseSetting(hero, this, "damage-multiplier", 1.0, false);
 
         addSpellTarget(target, hero);

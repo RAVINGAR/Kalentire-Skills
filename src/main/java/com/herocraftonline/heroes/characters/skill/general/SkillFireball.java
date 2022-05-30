@@ -133,7 +133,7 @@ public class SkillFireball extends ActiveSkill {
                 }
 
                 // Ignite the player
-                targetLE.setFireTicks(fireballAttributes.targetFireTicks);
+                targetLE.setFireTicks(targetLE.getFireTicks() + fireballAttributes.targetFireTicks);
                 plugin.getCharacterManager().getCharacter(targetLE).addEffect(new CombustEffect(skill, (Player) dmger));
 
                 // Damage the target

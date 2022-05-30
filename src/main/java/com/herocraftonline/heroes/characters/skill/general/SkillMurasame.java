@@ -15,6 +15,7 @@ import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.Particle;
 import org.bukkit.Sound;
+import org.bukkit.attribute.Attribute;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
@@ -101,14 +102,13 @@ public class SkillMurasame extends TargettedSkill {
 
         if (damage > 0) {
             addSpellTarget(target, hero);
-            damageEntity(target, player, damage, DamageCause.MAGIC, false);
+            damageEntity(target, player, damage, DamageCause.MAGIC, 0.0F);
         }
 
         if (healingPercent > 0) {
 
-            double healAmount = player.getMaxHealth() * ((double)healingPercent / 100);
+            double healAmount = player.getAttribute(Attribute.GENERIC_MAX_HEALTH).getValue() * ((double)healingPercent / 100);
 
-            // No selfheal nerf since we have a number preset
             HeroRegainHealthEvent hrhEvent = new HeroRegainHealthEvent(hero, healAmount, this);
             Bukkit.getPluginManager().callEvent(hrhEvent);
             if(!hrhEvent.isCancelled()) {

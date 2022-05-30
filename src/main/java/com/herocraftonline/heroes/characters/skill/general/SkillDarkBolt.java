@@ -8,6 +8,7 @@ import com.herocraftonline.heroes.characters.effects.EffectType;
 import com.herocraftonline.heroes.characters.effects.common.HealthRegainReductionEffect;
 import com.herocraftonline.heroes.characters.skill.*;
 import com.herocraftonline.heroes.chat.ChatComponents;
+import com.herocraftonline.heroes.util.GeometryUtil;
 import com.herocraftonline.heroes.util.Util;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
@@ -193,7 +194,7 @@ public class SkillDarkBolt extends ActiveSkill implements Listenable {
         darkBoltLoc.getWorld().spawnParticle(Particle.EXPLOSION_LARGE, darkBoltLoc, 15, 1, 1, 1, 0);
         player.getWorld().playSound(player.getLocation(), Sound.ENTITY_WITHER_DEATH, 0.1F, 2.0F);
 
-        List<Location> circle = Util.getCircleLocationList(darkBoltLoc, (int) radius, 0, true, true, 0);
+        List<Location> circle = GeometryUtil.getPerfectCircle(darkBoltLoc, (int) radius, 0, true, true, 0);
         for (Location location : circle) {
             darkBolt.getWorld().spawnParticle(Particle.SPELL_WITCH, location, 2, 0.2, 0.3, 0.2, 0);
         }

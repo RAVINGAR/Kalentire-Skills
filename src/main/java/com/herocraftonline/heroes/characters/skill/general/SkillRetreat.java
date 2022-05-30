@@ -26,6 +26,7 @@ import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.entity.EntityShootBowEvent;
 import org.bukkit.util.Vector;
 
+import java.io.Serial;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -36,7 +37,8 @@ public class SkillRetreat extends ActiveSkill {
     private String stunReadyText;
     private String stunExpireText;
 
-    private Map<Arrow, Long> stunArrows = new LinkedHashMap<Arrow, Long>(100) {
+    private final Map<Arrow, Long> stunArrows = new LinkedHashMap<Arrow, Long>(100) {
+        @Serial
         private static final long serialVersionUID = 4329526013158603250L;
 
         @Override
@@ -47,7 +49,7 @@ public class SkillRetreat extends ActiveSkill {
 
     public SkillRetreat(Heroes plugin) {
         super(plugin, "Retreat");
-        setDescription("Retreat from your enemies, your next arrow will stun your enemy. ");
+        setDescription("Retreat from your enemies, your next arrow will stun your enemy for $1 seconds. ");
         setUsage("/skill retreat");
         setIdentifiers("skill retreat");
         setArgumentRange(0, 0);
@@ -58,7 +60,7 @@ public class SkillRetreat extends ActiveSkill {
 
     @Override
     public String getDescription(Hero hero) {
-        return getDescription();
+        return getDescription().replace("$1", String.valueOf(SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, 1500, false)));
     }
 
     @Override

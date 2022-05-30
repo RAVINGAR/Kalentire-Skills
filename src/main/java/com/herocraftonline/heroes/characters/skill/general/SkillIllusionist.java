@@ -24,8 +24,9 @@ public class SkillIllusionist extends PassiveSkill {
     private String missText;
 
     public SkillIllusionist(Heroes plugin) {
+        //todo rework this because it involves like no player skill.
         super(plugin, "Illusionist");
-        setDescription("Enemies have a $1% chance for their melee attacks to miss the you completely.");
+        setDescription("Enemies have a $1% chance for their melee attacks to miss you completely.");
         setArgumentRange(0, 0);
         setTypes(SkillType.ABILITY_PROPERTY_DARK, SkillType.AGGRESSIVE, SkillType.DEBUFFING);
         Bukkit.getServer().getPluginManager().registerEvents(new SkillEventListener(this), plugin);
