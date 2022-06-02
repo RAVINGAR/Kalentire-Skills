@@ -12,9 +12,6 @@ import org.bukkit.Sound;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
-import org.bukkit.inventory.PlayerInventory;
-
-import java.util.HashMap;
 
 public class SkillAssemblePickaxe extends ActiveSkill {
 
@@ -50,11 +47,9 @@ public class SkillAssemblePickaxe extends ActiveSkill {
 
         broadcastExecuteText(hero);
 
-        PlayerInventory inventory = player.getInventory();
-        HashMap<Integer, ItemStack> leftOvers = inventory.addItem(new ItemStack(Material.IRON_PICKAXE, amount));
-        for (java.util.Map.Entry<Integer, ItemStack> entry : leftOvers.entrySet()) {
-            player.getWorld().dropItemNaturally(player.getLocation(), entry.getValue());
-            player.sendMessage("Item(s) have been dropped at your feet!");
+        player.sendMessage("Items have been dropped at your feet!");
+        for(int i = 0; i < amount; i++) {
+            player.getWorld().dropItemNaturally(player.getLocation(), new ItemStack(Material.IRON_PICKAXE, 1));
         }
 
         player.getWorld().playSound(player.getLocation(), Sound.ENTITY_ITEM_BREAK, 0.8F, 1.0F);
