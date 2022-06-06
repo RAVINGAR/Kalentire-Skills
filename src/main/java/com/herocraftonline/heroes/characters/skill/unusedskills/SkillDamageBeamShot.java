@@ -1,6 +1,5 @@
 package com.herocraftonline.heroes.characters.skill.unusedskills;
 
-import com.google.common.base.Predicate;
 import com.herocraftonline.heroes.Heroes;
 import com.herocraftonline.heroes.api.SkillResult;
 import com.herocraftonline.heroes.characters.Hero;
@@ -11,12 +10,10 @@ import com.herocraftonline.heroes.nms.NMSHandler;
 import com.herocraftonline.heroes.nms.physics.RayCastFlag;
 import com.herocraftonline.heroes.nms.physics.collision.AABB;
 import com.herocraftonline.heroes.nms.physics.collision.Capsule;
-
-import de.slikey.effectlib.EffectManager;
-import de.slikey.effectlib.EffectType;
-import de.slikey.effectlib.effect.LineEffect;
-import de.slikey.effectlib.util.ParticleEffect;
-import org.bukkit.*;
+import org.bukkit.Color;
+import org.bukkit.Location;
+import org.bukkit.Particle;
+import org.bukkit.Sound;
 import org.bukkit.block.Block;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.LivingEntity;
@@ -24,10 +21,9 @@ import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.util.Vector;
 
 import java.util.EnumSet;
+import java.util.function.Predicate;
 
 import static com.herocraftonline.heroes.characters.skill.SkillType.*;
-import static com.herocraftonline.heroes.characters.skill.SkillType.SILENCEABLE;
-import static com.herocraftonline.heroes.characters.skill.SkillType.UNINTERRUPTIBLE;
 
 public class SkillDamageBeamShot extends SkillBaseBeamShot {
 
@@ -136,7 +132,7 @@ public class SkillDamageBeamShot extends SkillBaseBeamShot {
 			}
 		}, new Predicate<Block>() {
 			@Override
-			public boolean apply(Block block) {
+			public boolean test(Block block) {
 				return true;
 				//FIXME Don't care about this skill, is test skill I made to test beam skills way back
 //				return block.getType() != Material.GLASS && block.getType() !=  Material.STAINED_GLASS &&

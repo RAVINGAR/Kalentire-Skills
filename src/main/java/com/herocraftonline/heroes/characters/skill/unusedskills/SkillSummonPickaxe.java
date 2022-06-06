@@ -1,15 +1,5 @@
 package com.herocraftonline.heroes.characters.skill.unusedskills;
 
-import java.util.HashMap;
-
-import org.bukkit.Material;
-import org.bukkit.Sound;
-import org.bukkit.configuration.ConfigurationSection;
-import org.bukkit.entity.Player;
-import org.bukkit.Sound;
-import org.bukkit.inventory.ItemStack;
-import org.bukkit.inventory.PlayerInventory;
-
 import com.herocraftonline.heroes.Heroes;
 import com.herocraftonline.heroes.api.SkillResult;
 import com.herocraftonline.heroes.characters.Hero;
@@ -17,6 +7,11 @@ import com.herocraftonline.heroes.characters.skill.ActiveSkill;
 import com.herocraftonline.heroes.characters.skill.SkillConfigManager;
 import com.herocraftonline.heroes.characters.skill.SkillSetting;
 import com.herocraftonline.heroes.characters.skill.SkillType;
+import org.bukkit.Material;
+import org.bukkit.Sound;
+import org.bukkit.configuration.ConfigurationSection;
+import org.bukkit.entity.Player;
+import org.bukkit.inventory.ItemStack;
 
 public class SkillSummonPickaxe extends ActiveSkill {
 
@@ -50,11 +45,9 @@ public class SkillSummonPickaxe extends ActiveSkill {
 
         int amount = SkillConfigManager.getUseSetting(hero, this, SkillSetting.AMOUNT, 1, false);
 
-        PlayerInventory inventory = player.getInventory();
-        HashMap<Integer, ItemStack> leftOvers = inventory.addItem(new ItemStack[] { new ItemStack(Material.STONE_PICKAXE, amount) });
-        for (java.util.Map.Entry<Integer, ItemStack> entry : leftOvers.entrySet()) {
-            player.getWorld().dropItemNaturally(player.getLocation(), entry.getValue());
-            player.sendMessage("Items have been dropped at your feet!");
+        player.sendMessage("Items have been dropped at your feet!");
+        for(int i = 0; i < amount; i++) {
+            player.getWorld().dropItemNaturally(player.getLocation(), new ItemStack(Material.STONE_PICKAXE, 1));
         }
         player.getWorld().playSound(player.getLocation(), Sound.ENTITY_ITEM_BREAK, 0.8F, 1.0F);
         broadcastExecuteText(hero);

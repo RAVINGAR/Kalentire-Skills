@@ -2,9 +2,74 @@ plugins {
     id 'java-library'
 }
 
+ext {
+    hcRepoUsername = System.getenv("HC_REPO_USERNAME") ?: hcRepoUsername
+    hcRepoPassword = System.getenv("HC_REPO_PASSWORD") ?: hcRepoPassword
+}
+
+allprojects {
+    apply plugin: 'java-library'
+    apply plugin: 'idea'
+
+    group 'com.herocraftonline.heroes.characters.skill'
+    version '1.9.21'
+}
+repositories {
+    //mavenLocal()
+    mavenCentral()
+
+    maven {
+        name 'Bungee Chat Repo'
+        url 'https://oss.sonatype.org/content/groups/public/'
+    }
+    maven {
+        name 'worldguard'
+        url 'https://maven.enginehub.org/repo/'
+    }
+    maven {
+        name 'herocraft-repo'
+        url 'https://nexus.hc.to/content/repositories/herocraft/'
+        credentials {
+            username hcRepoUsername
+            password hcRepoPassword
+        }
+    }
+    maven {
+        name 'mythic-repo'
+        url 'https://mvn.lumine.io/repository/maven-public/'
+    }
+
+    maven {
+        name 'dmullloy2-repo'
+        url 'https://repo.dmulloy2.net/repository/public/'
+    }
+
+    maven {
+        name 'md-5'
+        url 'https://repo.md-5.net/content/groups/public/'
+    }
+}
+
+ext.getGitHash = { ->
+    try {
+        def stdout = new ByteArrayOutputStream()
+        exec {
+            commandLine 'git', 'rev-parse', '--short', 'HEAD'
+            standardOutput = stdout
+        }
+        return stdout.toString().trim()
+    }
+    catch(ignored) {
+        def out = System.getenv("CI_COMMIT_SHORT_SHA")
+        if(out == null) {
+            out = ""
+        }
+        return out
+    }
+}
+
 dependencies {
-    implementation "com.herocraftonline.heroes:Heroes:1.9.17-SNAPSHOT"
-    implementation 'org.jetbrains:annotations:20.1.0'
+    compileOnly "com.herocraftonline.heroes:Heroes:1.9.21-SNAPSHOT"
     compileOnly "org.spigotmc:spigot-api:1.18.2-R0.1-SNAPSHOT"
     compileOnly "net.milkbowl.vault:VaultAPI:1.7"
     compileOnly "com.sk89q.worldguard:worldguard-bukkit:7.0.3"
@@ -12,21 +77,827 @@ dependencies {
     compileOnly "LibsDisguises:LibsDisguises:10.0.26"
     compileOnly "com.griefcraft.lwc:LWC:4.4.0"
     compileOnly "de.slikey:EffectLib:6.1"
-    compileOnly "com.herocraftonline:townships:1.0.0-SNAPSHOT"
+    compileOnly "com.herocraftonline:townships:1.1.0-SNAPSHOT"
     compileOnly "fr.neatmonster:nocheatplus:3.16.1-SNAPSHOT"
-    compileOnly "com.github.Xezard:XGlow:1.0.5"
+    compileOnly 'io.lumine:Mythic-Dist:5.1.0-SNAPSHOT'
+    compileOnly 'io.lumine:MythicLib-dist:1.3-SNAPSHOT'
+    compileOnly 'net.Indyuce:MMOItems:6.7.2'
 }
 
-allprojects {
-    apply plugin: 'java-library'
-    apply plugin: 'idea'
-    ant.importBuild("build.xml")
-
-    group 'com.herocraftonline.heroes.characters.skill'
-
+configurations {
+    packClasspath
+    packClasspath.extendsFrom(compileOnly)
+    packClasspath.setCanBeResolved(true)
+    packClasspath.transitive(true)
 }
 
-repositories {
-    gradlePluginPortal()
-    mavenLocal()
+sourceSets {
+    main {
+        java {
+            srcDirs "src/main/java"
+        }
+    }
+}
+
+tasks.register("public1", CompilePackTask) {
+    pack = "public1"
+    skills = [
+            "AimedShot",
+            "Alchemy",
+            "Antidote",
+            "ArcaneStorm",
+            "Arrowstorm",
+            "AssassinsBlade",
+            "AssemblePickaxe",
+            "Awaken",
+            "Backstab",
+            "Bandage",
+            "BaseTNT",
+            "Bash",
+            "Bleed",
+            "Blink",
+            "Bolt",
+            "Charge",
+            "Cleave",
+            "Confuse",
+            "Cripple",
+            "Curse",
+            "Decay",
+            "Despair",
+            "Disarm",
+            "Disenchant",
+            "Dispel",
+            "Empathy",
+            "Enchant",
+            "EnchantingBook",
+            "EnderPearls",
+            "Entangle",
+            "EscapeArtist",
+            "Excavate",
+            "ExplosiveShot",
+            "FarSight",
+            "FireArrow",
+            "Fireball",
+            "Fishing",
+            "Flameshield",
+            "ForgeChainBoots",
+            "ForgeChainChest",
+            "ForgeChainHelmet",
+            "ForgeChainLeggings",
+            "ForgeShield",
+            "FullHeal",
+            "Gills",
+            "GroupHeal",
+            "GuardianAngel",
+            "Harmtouch",
+            "Herbalism",
+            "IceArrow",
+            "Icebolt",
+            "IceVolley",
+            "Inversion",
+            "Invuln",
+            "Jump",
+            "Kick",
+            "Layhands",
+            "Light",
+            "ManaFreeze",
+            "Mark",
+            "Might",
+            "Mining",
+            "One",
+            "Overgrowth",
+            "PickPocket",
+            "Piggify",
+            "Poison",
+            "PoisonArrow",
+            "Port",
+            "Potion",
+            "Pray",
+            "Pulse",
+            "Reborn",
+            "Recall",
+            "Regrowth",
+            "Repair",
+            "Revive",
+            "Root",
+            "Safefall",
+            "Scan",
+            "Shield",
+            "Slow",
+            "Smite",
+            "Smoke",
+            "Sneak",
+            "SonicBoom",
+            "SummonArrow",
+            "SummonChicken",
+            "SummonCow",
+            "Summonfood",
+            "SummonMooshroomCow",
+            "SummonPig",
+            "SummonSheep",
+            "Superheat",
+            "SuperJump",
+            "Tackle",
+            "Taunt",
+            "Telekinesis",
+            "Web",
+            "Wisdom",
+            "Wolf",
+            "Woodcutting"]
+}
+tasks.register("pack1", CompilePackTask) {
+    pack = "pack1"
+    skills = [
+            "Bloodbeam",
+            "BloodBond",
+            "BloodDrinker",
+            "BloodGift",
+            "BloodRitual",
+            "BloodUnion",
+            "BloodWell",
+            "BoilBlood",
+            "Cauterize",
+            "CombustBlood",
+            "Conflux",
+            "DragonsBreath",
+            "Fireblast",
+            "FireStorm",
+            "Flameshield",
+            "Flicker",
+            "GreatCombustion",
+            "InfernoBlade",
+            "InfernoFlash",
+            "InfernoOrb",
+            "Infusion",
+            "SiphonBlood",
+            "Soothe",
+            "ThickenBlood",
+            "Transfuse",
+            "UndyingWill"]
+}
+tasks.register("pack2", CompilePackTask) {
+    pack = "pack2"
+    skills = [
+            "AbsorbRunes",
+            "AncientRunestone",
+            "BerserkerRage",
+            "FireRune",
+            "Frenzy",
+            "GiganticRunestone",
+            "Headbutt",
+            "IceRune",
+            "ImbueRunestone",
+            "IronFist",
+            "Lunge",
+            "Maim",
+            "MajorRunestone",
+            "MightyBlow",
+            "MinorRunestone",
+            "MortalWound",
+            "PiercingStrike",
+            "Provoke",
+            "RechargeRunestone",
+            "Runeword",
+            "Rupture",
+            "Spear",
+            "TimeRune",
+            "Toss",
+            "ToxicRune",
+            "VoidRune",
+            "Whirlwind"]
+}
+tasks.register("pack3", CompilePackTask) {
+    pack = "pack3"
+    skills = [
+            "Accelerando",
+            "Awaken",
+            "Balance",
+            "Battlesong",
+            "BoastfulBellow",
+            "Chakra",
+            "DoomstarRequiem",
+            "DropTheBass",
+            "FullHeal",
+            "HealingBloom",
+            "HealingChorus",
+            "HealingSurge",
+            "Manasong",
+            "MelodicBinding",
+            "Regrowth",
+            "Rejuvenate",
+            "Renewal",
+            "Replenish",
+            "SacredHymn",
+            "SacredTouch",
+            "SacredWord",
+            "Serenity",
+            "SongOfRespiration",
+            "Voidsong",
+            "Warsong"]
+}
+tasks.register("pack4", CompilePackTask) {
+    pack = "pack4"
+    skills = [
+            "Alacrity",
+            "Blessing",
+            "BruteForce",
+            "ChaoticStrength",
+            "Clarity",
+            "CleanseSpirit",
+            "Courage",
+            "Deconstruct",
+            "DivineBlessing",
+            "Energize",
+            "Enlightenment",
+            "Forage",
+            "Gift",
+            "Honor",
+            "LabelChest",
+            "SmeltGold",
+            "SmeltIron",
+            "Splendor",
+            "SummonBat",
+            "SummonCat",
+            "SummonHorse",
+            "SummonRabbit",
+            "SummonSquid",
+            "SummonSword",
+            "TransmuteOre",
+            "Ultravision"]
+}
+tasks.register("pack5", CompilePackTask) {
+    pack = "pack5"
+    skills = [
+            "Arcaneblast",
+            "ArcaneTransfer",
+            "BoneSpear",
+            "Doomwave",
+            "Drainsoul",
+            "DreadAura",
+            "Duskblade",
+            "EarthernFury",
+            "ForcePull",
+            "ForcePush",
+            "GroupTeleport",
+            "Harmtouch",
+            "Impale",
+            "Megabolt",
+            "Nightmare",
+            "Pulse",
+            "QuantumLeap",
+            "QuiveringPalm",
+            "Reckoning",
+            "SoulLeech",
+            "SoulSpike",
+            "StealEssence",
+            "Teleport",
+            "Terror",
+            "Tremor"]
+}
+tasks.register("pack6", CompilePackTask) {
+    pack = "pack6"
+    skills = [
+            "Ashura",
+            "Bladegrasp",
+            "Blitz",
+            "ChainLightning",
+            "DarkBlade",
+            "DragonSmash",
+            "EarthWall",
+            "Entangle",
+            "Flash",
+            "FrostBlast",
+            "Fulmination",
+            "Icebolt",
+            "Innervate",
+            "Ire",
+            "Kotesu",
+            "LunarLance",
+            "ManaFreeze",
+            "Masamune",
+            "MassPiggify",
+            "Meditate",
+            "Murasame",
+            "ParryMagic",
+            "Purge",
+            "Rally",
+            "Sacrifice",
+            "ShockingStrike"]
+}
+tasks.register("pack7", CompilePackTask) {
+    pack = "pack7"
+    skills = [
+            "Absolution",
+            "AngelsGrace",
+            "Atrophy",
+            "BecomeDeath",
+            "DarkBolt",
+            "DarkRitual",
+            "DarkScythe",
+            "DeathMark",
+            "Decay",
+            "Despair",
+            "DevouringDarkness",
+            "DevourMagic",
+            "DivineFury",
+            "DivineStun",
+            "Empathy",
+            "Famine",
+            "Harmshield",
+            "Hellgate",
+            "HolyAura",
+            "HolyWater",
+            "Intervene",
+            "Plague",
+            "Reincarnate",
+            "ShieldReflect",
+            "Tsunami",
+            "Wrath"]
+}
+tasks.register("pack8", CompilePackTask) {
+    pack = "pack8"
+    skills = [
+            "Backflip",
+            "Barrier",
+            "Camouflage",
+            "Cannon",
+            "ChaoticVisions",
+            "Dynamite",
+            "Envenom",
+            "Eruption",
+            "EscapeArtist",
+            "Eviscerate",
+            "Fade",
+            "FauxBomb",
+            "FistOfJin",
+            "FlyingKick",
+            "GrapplingHook",
+            "GrapplingShot",
+            "RampartVine",
+            "RuptureShot",
+            "ShadowStep",
+            "SmokeBomb",
+            "Shurikens",
+            "ThrowAxe",
+            "TitansGrip",
+            "TornadoKick",
+            "WindGale"]
+}
+tasks.register("reborn", CompilePackTask) {
+    pack = "reborn"
+    skills = [
+            "AccelerationField",
+            "AetherMissiles",
+            "AetherOrb",
+            "Alchemy",
+            "AnkleBiter",
+            "ArrowStorm",
+            "Balance",
+            "Battery",
+            "Blink",
+            "Bolt",
+            "ChainBelt",
+            "ChainLightning",
+            "ChaosOrb",
+            "ChaosStream",
+            "Clairvoyance",
+            "CleanseSpirit",
+            "Combust",
+            "CombustingAxe",
+            "CorruptedSeed",
+            "DarkAxe",
+            "DarkBolt",
+            "DarkPact",
+            "DecelerationField",
+            "DeepWound",
+            "DefenceInNumbers",
+            "DefensiveStance",
+            "DragonSmash",
+            "DrainLife",
+            "DualWield",
+            "EnderBreath",
+            "EnderPearls",
+            "Entomb",
+            "Evocation",
+            "ExplosiveShot",
+            "FeatheredShot",
+            "Firebolt",
+            "Firenado",
+            "FireStream",
+            "FlameDash",
+            "FlameWalk",
+            "FlashHeal",
+            "FlyingKick",
+            "ForcePull",
+            "ForcePush",
+            "GatherArsenal",
+            "GiftOfEir",
+            "Grapple",
+            "GrapplingHook",
+            "GravityFlux",
+            "GreatFireball",
+            "GroupTeleport",
+            "Gust",
+            "HardenScales",
+            "HealingBloom",
+            "Hellgate",
+            "Hemorrhage",
+            "HerosCall",
+            "Hook",
+            "Impale",
+            "Jump",
+            "Kick",
+            "LavaLurk",
+            "Leverage",
+            "LichForm",
+            "Lockup",
+            "LungingBite",
+            "MagmaOrb",
+            "ManaMissile",
+            "ManaShield",
+            "Mark",
+            "Might",
+            "MindandBody",
+            "MortalWound",
+            "MysticWinds",
+            "NoviceArcher",
+            "NoxiousMinion",
+            "OceansCall",
+            "One",
+            "Overgrowth",
+            "Phase",
+            "PiercingStrike",
+            "PlagueBomb",
+            "Port",
+            "Potion",
+            "Pyromania",
+            "QuiveringPalm",
+            "RampartVine",
+            "Recall",
+            "RecklessFlurry",
+            "Regrowth",
+            "Rejuvenate",
+            "Retreat",
+            "Rewind",
+            "Rift",
+            "Riptide",
+            "RisingLance",
+            "Roundup",
+            "RuptureShot",
+            "Scan",
+            "SeismicAssault",
+            "SerratedArrows",
+            "ShadowStep",
+            "Spear",
+            "Stampede",
+            "SummonArrow",
+            "SummonEnderCrystal",
+            "SuperJump",
+            "TemporalEchoes",
+            "TemporalWard",
+            "TheWither",
+            "TimeDifferential",
+            "TimeShift",
+            "Track",
+            "Transform",
+            "Trap",
+            "Tremor",
+            "Tridents",
+            "Tumble",
+            "WardensRend",
+            "WaterWall",
+            "WaveRider",
+            "Web",
+            "Yank",
+            "YggdrasilsTouch"]
+}
+tasks.register("remastered", CompilePackTask) {
+    pack = "remastered"
+    skills = [
+            "Absolution",
+            "AbsorbRunes",
+            "Accelerando",
+            "AccentedStrikes",
+            "AetherMissiles",
+            "AetherOrb",
+            "Airburst",
+            "Alchemy",
+            "AncientRunestone",
+            "AnvilUse",
+            "ArcaneKnowledge",
+            "ArcaneStorm",
+            "ArcaneTransfer",
+            "ArtOfWar",
+            "Ashura",
+            "AssemblePickaxe",
+            "Atrophy",
+            "Awaken",
+            "Backflip",
+            "Backstab",
+            "Balance",
+            "Bandage",
+            "Barrier",
+            "Battlesong",
+            "BecomeDeath",
+            "Beehives",
+            "Beguile",
+            "BerserkerRage",
+            "Blackjack",
+            "Bladegrasp",
+            "Blind",
+            "Blink",
+            "BloodBeam",
+            "BloodBond",
+            "BloodRage",
+            "BloodRitual",
+            "BloodUnion",
+            "BoastfulBellow",
+            "BoilBlood",
+            "Bolt",
+            "BoneSpear",
+            "BoomingVoice",
+            "Breed",
+            "Cauldron",
+            "Cauterize",
+            "ChainLightning",
+            "Chakra",
+            "Chant",
+            "ChaoticVisions",
+            "Clarity",
+            "Cleanse",
+            "Cleave",
+            "Combust",
+            "CombustBlood",
+            "Consecration",
+            "CorruptedSeed",
+            "CraftNetheriteGear",
+            "CraftNetheriteIngot",
+            "Culling",
+            "DarkBolt",
+            "DarkRitual",
+            "DarkScythe",
+            "DeathMark",
+            "Decay",
+            "Deconstruct",
+            "DefenceInNumbers",
+            "Despair",
+            "DevourMagic",
+            "Disarm",
+            "Disenchant",
+            "DivineBlessing",
+            "DivineFury",
+            "DivineStun",
+            "DoomstarRequiem",
+            "DragonsBreath",
+            "DragonsGift",
+            "DragonSmash",
+            "DrainLife",
+            "Drainsoul",
+            "Dread",
+            "DreadAura",
+            "DualWield",
+            "EarthernFury",
+            "Empathy",
+            "EnderPearls",
+            "EngulfingTotem",
+            "Entangle",
+            "Eviscerate",
+            "Evocation",
+            "Excavate",
+            "ExplosiveShot",
+            "Fade",
+            "Faith",
+            "Famine",
+            "FarSight",
+            "FeatheredShot",
+            "Fireball",
+            "Firenado",
+            "FireRune",
+            "FirestrikeTotem",
+            "Fishing",
+            "FistOfJin",
+            "FlameDash",
+            "FlameTouch",
+            "Flash",
+            "Flicker",
+            "Flood",
+            "FlyingKick",
+            "Forage",
+            "ForcePull",
+            "ForcePush",
+            "ForgeChainBoots",
+            "ForgeChainChest",
+            "ForgeChainHelmet",
+            "ForgeChainLeggings",
+            "ForgeShield",
+            "Gift",
+            "GiftOfEir",
+            "GiganticRunestone",
+            "Gills",
+            "GrapplingHook",
+            "GroupTeleport",
+            "Gust",
+            "Harmshield",
+            "HealingBloom",
+            "HealingTotem",
+            "Hellgate",
+            "Herbalism",
+            "HerosCall",
+            "HolyAura",
+            "HolyInspiration",
+            "HolyStrike",
+            "IceRune",
+            "Illusionist",
+            "ImbueRunestone",
+            "Impale",
+            "Infusion",
+            "Intervene",
+            "IronFist",
+            "Jump",
+            "Kick",
+            "Kotesu",
+            "LabelChest",
+            "LavaSkin",
+            "Layhands",
+            "Light",
+            "Lunge",
+            "MajorRunestone",
+            "ManaMissile",
+            "Mark",
+            "Masamune",
+            "MassPiggify",
+            "MelodicBinding",
+            "Might",
+            "Mining",
+            "MinorRunestone",
+            "MortalWound",
+            "Murasame",
+            "NaturesBoon",
+            "NimbleDraw",
+            "Overgrowth",
+            "ParryMagic",
+            "Petrify",
+            "PiercingStrike",
+            "Piggify",
+            "Plague",
+            "PlagueBomb",
+            "Port",
+            "Potion",
+            "Pulse",
+            "Pyromania",
+            "QuantumLeap",
+            "QuiveringPalm",
+            "RampartVine",
+            "Recall",
+            "RechargeRunestone",
+            "RecklessClot",
+            "Reckoning",
+            "Regrowth",
+            "Reincarnate",
+            "Rejuvenate",
+            "Renewal",
+            "Repair",
+            "RestrictBows",
+            "Retreat",
+            "Revive",
+            "Runeword",
+            "Rupture",
+            "RuptureShot",
+            "SacredTouch",
+            "SacredWord",
+            "Scan",
+            "SeismicAssault",
+            "SerratedArrows",
+            "ShadowStep",
+            "Shuriken",
+            "Shurikens",
+            "SiphonBlood",
+            "SmeltGold",
+            "SmeltIron",
+            "Smite",
+            "SmokeBomb",
+            "Sneak",
+            "SoulLeech",
+            "SummonArrow",
+            "SummonBat",
+            "SummonCat",
+            "SummonChicken",
+            "SummonCow",
+            "SummonHorse",
+            "SummonMooshroom",
+            "SummonPig",
+            "SummonRabbit",
+            "SummonSheep",
+            "SummonSquid",
+            "SummonSword",
+            "Superheat",
+            "SuperJump",
+            "SurpriseTree",
+            "TameWolf",
+            "Teleport",
+            "Terror",
+            "Toss",
+            "TotemRecall",
+            "TownSpawn",
+            "ToxicRune",
+            "Track",
+            "Transfuse",
+            "TransmuteOre",
+            "Tremor",
+            "Tsunami",
+            "Tumble",
+            "Ultravision",
+            "UseRunestone",
+            "VillagerTrade",
+            "VoidRune",
+            "Voidsong",
+            "WardStone",
+            "Warp",
+            "Warsong",
+            "Waterbolt",
+            "Whirlwind",
+            "Woodcutting",
+            "YggdrasilsTouch"]
+}
+
+abstract class CompilePackTask extends DefaultTask {
+    //Ultimately, the argument here should actually be a fileset. There should only be ONE version of every skill
+    //These should basically from a fileset copy into bin/classes/pack
+    //Then the src below would be
+    @Input
+    String pack = ""
+
+    @Input
+    ArrayList<String> skills = new ArrayList<>()
+
+    @TaskAction
+    def compile() {
+        def src = "bin/" + pack
+        def srcpath = "com/herocraftonline/heroes/characters/skill/general"
+
+        ant.mkdir(dir: "bin")
+        ant.mkdir(dir: "dist")
+
+        //Copy source files to group based on defined var skills
+        ant.mkdir(dir: "bin/" + pack)
+
+        project.copy {
+            into "bin/" + pack
+            skills.forEach {
+                def name = "Skill" + it + ".java"
+                from "src/main/java/$srcpath/$name"
+            }
+        }
+
+        def version = project.version + "-" + project.getGitHash()
+
+        ant.echo(message: "Heroes Skills Version " + version + " \nBuilding Pack - "  + pack)
+
+        ant.javac(srcdir: src
+                , excludes: "**/unusedskills/**"
+                , destdir: "bin"
+                , debug: "on"
+                , includeantruntime: "false"
+                , encoding: "utf-8"
+                , fork: "yes"
+                , classpath: project.configurations.packClasspath.asPath
+                , source: 16
+                , target: 16)
+
+        ant.delete(dir: "bin/" + pack)
+
+        def scanner = ant.fileScanner {
+            fileset(dir: "bin/" + srcpath) {
+                include(name: "Skill*.class")
+                exclude(name: "Skill*\$*.class")
+            }
+        }
+
+        ant.mkdir(dir: "build/" + pack)
+
+        for(f in scanner) {
+            def classname = f.name.replaceAll(".class", "")
+            def infopath = "bin/skill.info"
+            ant.echo(message: src + "/" + classname)
+            ant.echo(file: infopath, message: "main-class: com.herocraftonline.heroes.characters.skill.general" + "." + classname + ",version: " + version)
+            ant.jar(jarfile: "build/" + pack + "/" + classname + ".jar", basedir: "bin", includes: srcpath + "/" + classname + "*.class, skill.info") {
+                manifest {
+                    attribute(name: "Class-Path", value: "../../Heroes.jar")
+                }
+            }
+
+            ant.delete(file: infopath)
+        }
+
+        ant.delete(file: "build/heroes-" + pack + ".zip")
+
+        ant.zip(destfile: "build/heroes-" + pack + ".zip") {
+            fileset(dir: "build/" + pack) {
+                include(name: "*.jar")
+            }
+        }
+
+        ant.delete(dir: "bin/" + srcpath)
+        ant.delete(dir: "build/" + pack)
+    }
 }
