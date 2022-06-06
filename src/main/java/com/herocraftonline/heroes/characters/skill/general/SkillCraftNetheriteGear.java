@@ -115,6 +115,11 @@ public class SkillCraftNetheriteGear extends PassiveSkill {
                 event.setResult(null);
                 //event.getInventory().setResult(null);
             }
+
+            //If we are at this point then craft is a success, replace with MMOItem todo
+            if(plugin.getServer().getPluginManager().getPlugin("MMOItems") != null) {
+
+            }
         }
     }
 //

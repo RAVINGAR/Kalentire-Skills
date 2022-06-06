@@ -861,8 +861,8 @@ abstract class CompilePackTask extends DefaultTask {
                 , encoding: "utf-8"
                 , fork: "yes"
                 , classpath: project.configurations.packClasspath.asPath
-                , source: 17
-                , target: 17)
+                , source: 16
+                , target: 16)
 
         ant.delete(dir: "bin/" + pack)
 
