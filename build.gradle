@@ -772,6 +772,7 @@ tasks.register("remastered", CompilePackTask) {
             "Shuriken",
             "Shurikens",
             "SiphonBlood",
+            "SmeltCopper",
             "SmeltGold",
             "SmeltIron",
             "Smite",
