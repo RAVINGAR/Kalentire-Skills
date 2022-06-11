@@ -62,7 +62,7 @@ public class SkillTransmuteOre extends ActiveSkill {
         ItemStack item = NMSHandler.getInterface().getItemInMainHand(player.getInventory());
 
         if (SkillConfigManager.getUseSetting(hero, this, "require-furnace", false) && player.getTargetBlock(null, 3).getType() != Material.FURNACE) {
-            player.sendMessage("You must have a furnace targetted to transmute ores!");
+            player.sendMessage("You must have a furnace targeted to transmute ores!");
             return SkillResult.FAIL;
         }
         // List all items this hero can transmute
@@ -72,7 +72,7 @@ public class SkillTransmuteOre extends ActiveSkill {
             itemSet.remove(set.node());
         }
 
-        if (item == null || !itemSet.contains(item.getType().getKey().getKey())) {
+        if (item == null || !itemSet.contains(item.getType().getKey().getKey().toUpperCase())) {
             player.sendMessage("You can't transmute that item!");
             return SkillResult.INVALID_TARGET_NO_MSG;
         }
