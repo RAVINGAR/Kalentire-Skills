@@ -91,11 +91,11 @@ public class SkillBloodUnion extends PassiveSkill implements Listenable {
 
         @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
         public void onSkillDamage(SkillDamageEvent event) {
-            if (!(event.getDamager() instanceof Player) || !event.getSkill().isType(SkillType.ABILITY_PROPERTY_MAGICAL))
+            if (!(event.getDamager().getEntity() instanceof Player) || !event.getSkill().isType(SkillType.ABILITY_PROPERTY_MAGICAL))
                 return;
 
             // Make sure the hero has this skill
-            Hero hero = plugin.getCharacterManager().getHero((Player) event.getDamager());
+            Hero hero = plugin.getCharacterManager().getHero((Player) event.getDamager().getEntity());
             if (skill.hasPassive(hero)) {
                 healHeroParty(hero, event.getDamage());
             }
