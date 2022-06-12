@@ -69,9 +69,15 @@ public class SkillMining extends PassiveSkill {
             boolean isStone = false;
             switch (block.getType()) {
                 case IRON_ORE:
+                case DEEPSLATE_IRON_ORE:
                     dropMaterial = Material.RAW_IRON;
                     break;
+                case COPPER_ORE:
+                case DEEPSLATE_COPPER_ORE:
+                    dropMaterial = Material.RAW_COPPER;
+                    break;
                 case GOLD_ORE:
+                case DEEPSLATE_GOLD_ORE:
                     dropMaterial = Material.RAW_GOLD;
                     break;
                 case DIAMOND_ORE:
