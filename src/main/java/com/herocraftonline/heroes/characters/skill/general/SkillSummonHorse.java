@@ -8,18 +8,25 @@ import org.bukkit.entity.Player;
 import com.herocraftonline.heroes.Heroes;
 import com.herocraftonline.heroes.characters.skill.skills.SkillBaseSummonEntity;
 
+import java.util.Arrays;
+import java.util.List;
+import java.util.Random;
+
 public class SkillSummonHorse extends SkillBaseSummonEntity {
 
     public SkillSummonHorse(Heroes plugin) {
         super(plugin, "SummonHorse");
-        setDescription("100% chance to spawn 1 horse, $2% for 2, and $3% for 3.");
+        setDescription("100% chance to spawn 1 Horse, Donkey or Mule, $2% for 2, and $3% for 3.");
         setUsage("/skill horse");
         setIdentifiers("skill summonhorse", "skill horse");
     }
 
     @Override
     protected EntityType getEntityType(Block targetBlock) {
-        return EntityType.HORSE;
+        List<EntityType> horses = Arrays.asList(EntityType.HORSE, EntityType.MULE, EntityType.DONKEY);
+        Random rand = new Random();
+
+        return horses.get(rand.nextInt(horses.size()));
     }
     
     @Override
