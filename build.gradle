@@ -780,6 +780,7 @@ tasks.register("remastered", CompilePackTask) {
             "SoulLeech",
             "SummonArrow",
             "SummonBat",
+            "SummonBee",
             "SummonCat",
             "SummonChicken",
             "SummonCow",
