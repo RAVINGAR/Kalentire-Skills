@@ -56,7 +56,7 @@ public class SkillFlash extends ActiveSkill {
     public SkillResult use(Hero hero, String[] args) {
         Player player = hero.getPlayer();
         Location loc = player.getLocation();
-        if (loc.getBlockY() > loc.getWorld().getMaxHeight() || loc.getBlockY() < 1) {
+        if (loc.getBlockY() > loc.getWorld().getMaxHeight() || loc.getBlockY() < loc.getWorld().getMinHeight() + 1) {
             player.sendMessage("The void prevents you from flashing!");
             return SkillResult.FAIL;
         }
