@@ -31,7 +31,7 @@ public class SkillFaith extends PassiveSkill implements Listenable {
         double healMultiplier = SkillConfigManager.getUseSettingDouble(hero, this, "heal-multiplier", false);
         return getDescription()
                 .replace("$1", Util.decFormat.format(manaMultiplier * 100))
-                .replace("$2", Util.decFormat.format((1 - healMultiplier) * 100));
+                .replace("$2", Util.decFormat.format((healMultiplier - 1) * 100));
     }
 
     @Override
