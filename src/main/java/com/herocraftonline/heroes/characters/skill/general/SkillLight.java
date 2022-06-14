@@ -8,13 +8,16 @@ import com.herocraftonline.heroes.characters.effects.EffectType;
 import com.herocraftonline.heroes.characters.effects.PeriodicExpirableEffect;
 import com.herocraftonline.heroes.characters.skill.*;
 import com.herocraftonline.heroes.chat.ChatComponents;
+import com.herocraftonline.heroes.util.Util;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.Sound;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
+import org.bukkit.block.data.BlockData;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
+import org.bukkit.event.block.BlockDamageAbortEvent;
 
 import java.util.EnumSet;
 import java.util.Set;
@@ -23,69 +26,8 @@ public class SkillLight extends ActiveSkill {
 
     private String applyText;
     private String expireText;
-    
-    public static Set<Material> allowedBlocks = EnumSet.noneOf(Material.class);
-    static {
-        allowedBlocks.add(Material.DIRT);
-        allowedBlocks.add(Material.GRASS);
-        allowedBlocks.add(Material.STONE);
-        allowedBlocks.add(Material.COBBLESTONE);
-        allowedBlocks.add(Material.ACACIA_LOG);
-        allowedBlocks.add(Material.BIRCH_LOG);
-        allowedBlocks.add(Material.DARK_OAK_LOG);
-        allowedBlocks.add(Material.JUNGLE_LOG);
-        allowedBlocks.add(Material.OAK_LOG);
-        allowedBlocks.add(Material.SPRUCE_LOG);
-        allowedBlocks.add(Material.ACACIA_WOOD);
-        allowedBlocks.add(Material.BIRCH_WOOD);
-        allowedBlocks.add(Material.DARK_OAK_WOOD);
-        allowedBlocks.add(Material.JUNGLE_WOOD);
-        allowedBlocks.add(Material.OAK_WOOD);
-        allowedBlocks.add(Material.SPRUCE_WOOD);
-        allowedBlocks.add(Material.ACACIA_PLANKS);
-        allowedBlocks.add(Material.BIRCH_PLANKS);
-        allowedBlocks.add(Material.DARK_OAK_PLANKS);
-        allowedBlocks.add(Material.JUNGLE_PLANKS);
-        allowedBlocks.add(Material.OAK_PLANKS);
-        allowedBlocks.add(Material.SPRUCE_PLANKS);
-        allowedBlocks.add(Material.NETHERRACK);
-        allowedBlocks.add(Material.SOUL_SAND);
-        allowedBlocks.add(Material.SOUL_SOIL);
-        allowedBlocks.add(Material.SANDSTONE);
-        allowedBlocks.add(Material.GLASS);
-        allowedBlocks.add(Material.WHITE_WOOL);
-        allowedBlocks.add(Material.BLACK_WOOL);
-        allowedBlocks.add(Material.BLUE_WOOL);
-        allowedBlocks.add(Material.BROWN_WOOL);
-        allowedBlocks.add(Material.CYAN_WOOL);
-        allowedBlocks.add(Material.GRAY_WOOL);
-        allowedBlocks.add(Material.GREEN_WOOL);
-        allowedBlocks.add(Material.LIGHT_BLUE_WOOL);
-        allowedBlocks.add(Material.LIGHT_GRAY_WOOL);
-        allowedBlocks.add(Material.LIME_WOOL);
-        allowedBlocks.add(Material.MAGENTA_WOOL);
-        allowedBlocks.add(Material.ORANGE_WOOL);
-        allowedBlocks.add(Material.PINK_WOOL);
-        allowedBlocks.add(Material.PURPLE_WOOL);
-        allowedBlocks.add(Material.RED_WOOL);
-        allowedBlocks.add(Material.YELLOW_WOOL);
-        //FIXME I don't want to add all this shit
-        //allowedBlocks.add(Material.DOUBLE_STEP);
-        allowedBlocks.add(Material.BRICK);
-        allowedBlocks.add(Material.OBSIDIAN);
-        allowedBlocks.add(Material.NETHER_BRICK);
-        allowedBlocks.add(Material.MOSSY_COBBLESTONE);
-        allowedBlocks.add(Material.ANDESITE);
-        allowedBlocks.add(Material.DIORITE);
-        allowedBlocks.add(Material.GRANITE);
-        allowedBlocks.add(Material.PODZOL);
-//        allowedBlocks.add(Material.WARPED_NYLIUM); // add these?
-//        allowedBlocks.add(Material.CRIMSON_NYLIUM);
 
-        //FIXME This whole skill seems really unnecessary and honestly extremely difficult to implement
-        //properly. I would say it's honestly just not worth it since it would probably cause a large
-        //amount of lag and the use of deprecated methods -RAVINGAR
-    }
+    private final BlockData newBlock = Material.GLOWSTONE.createBlockData();
 
     public SkillLight(Heroes plugin) {
         super(plugin, "Light");
@@ -136,8 +78,7 @@ public class SkillLight extends ActiveSkill {
     public class LightEffect extends PeriodicExpirableEffect {
 
         private Location lastLoc = null;
-        private Byte lastData = null;
-        private Material lastMat = null;
+        private BlockData lastBlock = null;
 
         public LightEffect(Skill skill, Player applier, long period, long duration) {
             super(skill, "Light", applier, period, duration);
@@ -152,11 +93,11 @@ public class SkillLight extends ActiveSkill {
             Player p = hero.getPlayer();
             broadcast(p.getLocation(), "    " + applyText, p.getName());
             Block thisBlock = p.getLocation().getBlock().getRelative(BlockFace.DOWN);
-            if (allowedBlocks.contains(thisBlock.getType())) {
+
+            if (!Util.transparentBlocks.contains(thisBlock.getType())) {
                 lastLoc = thisBlock.getLocation();
-                lastMat = thisBlock.getType();
-                lastData = thisBlock.getData();
-                p.sendBlockChange(lastLoc, Material.GLOWSTONE, (byte) 0);
+                lastBlock = thisBlock.getBlockData();
+                p.sendBlockChange(lastLoc, newBlock);
             }
         }
 
@@ -164,18 +105,20 @@ public class SkillLight extends ActiveSkill {
         public void tickHero(Hero hero) {
             Player p = hero.getPlayer();
             Block thisBlock = p.getLocation().getBlock().getRelative(BlockFace.DOWN);
-            if (thisBlock.getLocation().equals(lastLoc)) {
-                return;
-            } else if (allowedBlocks.contains(thisBlock.getType())) {
+            if (!thisBlock.getLocation().equals(lastLoc)) {
+
                 if (lastLoc != null) {
-                    p.sendBlockChange(lastLoc, lastMat, lastData);
+                    p.sendBlockChange(lastLoc, lastBlock);
                 }
-                lastLoc = thisBlock.getLocation();
-                lastMat = thisBlock.getType();
-                lastData = thisBlock.getData();
-                p.sendBlockChange(lastLoc, Material.GLOWSTONE, (byte) 0);
-            } else if (lastLoc != null) {
-                p.sendBlockChange(lastLoc, lastMat, lastData);
+
+                if (!Util.transparentBlocks.contains(thisBlock.getType())) {
+
+                    lastLoc = thisBlock.getLocation();
+                    lastBlock = thisBlock.getBlockData();
+
+                    p.sendBlockChange(lastLoc, newBlock);
+                }
+
             }
         }
 
@@ -185,7 +128,7 @@ public class SkillLight extends ActiveSkill {
             Player p = hero.getPlayer();
             broadcast(p.getLocation(), "    " + expireText, p.getName());
             if (lastLoc != null) {
-                p.sendBlockChange(lastLoc, lastMat, lastData);
+                p.sendBlockChange(lastLoc, lastBlock);
             }
         }
 
