@@ -30,7 +30,7 @@ public class SkillHolyInspiration extends PassiveSkill {
     @Override
     public String getDescription(Hero hero) {
         double healMultiplier = SkillConfigManager.getUseSettingDouble(hero, this, "heal-multiplier", false);
-        return getDescription().replace("$1", Util.decFormat.format((1 - healMultiplier) * 100));
+        return getDescription().replace("$1", Util.decFormat.format((healMultiplier - 1) * 100));
     }
 
     @Override
