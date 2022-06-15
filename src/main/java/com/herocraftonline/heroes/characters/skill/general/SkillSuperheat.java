@@ -70,37 +70,33 @@ public class SkillSuperheat extends ActiveSkill {
             if (hero.hasEffect("Superheat")) {
                 final Block block = event.getBlock();
                 switch (block.getType()) {
-                    case IRON_ORE:
-                    case DEEPSLATE_IRON_ORE:
+                    case IRON_ORE, DEEPSLATE_IRON_ORE -> {
                         event.setCancelled(true);
                         block.setType(Material.AIR);
                         block.getWorld().dropItem(block.getLocation(), new ItemStack(Material.IRON_INGOT, 1));
-                        break;
-                    case COPPER_ORE:
-                    case DEEPSLATE_COPPER_ORE:
+                    }
+                    case COPPER_ORE, DEEPSLATE_COPPER_ORE -> {
                         event.setCancelled(true);
                         block.setType(Material.AIR);
                         block.getWorld().dropItem(block.getLocation(), new ItemStack(Material.COPPER_INGOT, 1));
-                        break;
-                    case GOLD_ORE:
-                    case DEEPSLATE_GOLD_ORE:
+                    }
+                    case GOLD_ORE, DEEPSLATE_GOLD_ORE -> {
                         event.setCancelled(true);
                         block.setType(Material.AIR);
                         block.getWorld().dropItem(block.getLocation(), new ItemStack(Material.GOLD_INGOT, 1));
-                        break;
-                    case SAND:
+                    }
+                    case SAND -> {
                         event.setCancelled(true);
                         block.setType(Material.AIR);
                         block.getWorld().dropItem(block.getLocation(), new ItemStack(Material.GLASS, 1));
-                        break;
-                    case COBBLESTONE:
+                    }
+                    case STONE, COBBLESTONE -> {
                         event.setCancelled(true);
                         block.setType(Material.AIR);
                         block.getWorld().dropItem(block.getLocation(), new ItemStack(Material.STONE, 1));
-                        break;
-                    default:
-                        break;
-
+                    }
+                    default -> {
+                    }
                 }
             }
         }
