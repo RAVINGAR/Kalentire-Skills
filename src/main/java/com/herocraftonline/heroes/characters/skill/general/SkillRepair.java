@@ -105,20 +105,20 @@ public class SkillRepair extends ActiveSkill {
             try {
                 itemSlotNumber = Integer.parseInt(args[0]);
             } catch (final NumberFormatException e){
-                Messaging.sendSkillMessage(player, "That is not a valid slot number (0-8).");
+                player.sendMessage("That is not a valid slot number (0-8).");
                 return SkillResult.INVALID_TARGET_NO_MSG;
             }
 
             // Support only hotbar slots
             if (itemSlotNumber > 8){
-                Messaging.sendSkillMessage(player, "That is not a valid hotbar slot number (0-8).");
+                player.sendMessage("That is not a valid hotbar slot number (0-8).");
                 return SkillResult.INVALID_TARGET_NO_MSG;
             }
 
             is = player.getInventory().getItem(itemSlotNumber);
         }
         if(is == null) {
-            Messaging.sendSkillMessage(player, "You cannot repair nothing");
+            player.sendMessage("You cannot repair nothing");
             return SkillResult.FAIL;
         }
         Material isType = is.getType();
@@ -127,18 +127,18 @@ public class SkillRepair extends ActiveSkill {
         final ItemMeta itemMeta = is.getItemMeta();
 
         if (level == -1 || reagent == null || !(itemMeta instanceof Damageable)) { // note implies itemMeta == null
-            Messaging.sendSkillMessage(player, "You are not holding a repairable tool.");
+            player.sendMessage("You are not holding a repairable tool.");
             return SkillResult.FAIL;
         }
 
         if (hero.getHeroLevel(this) < level) {
-            Messaging.sendSkillMessage(player, "You must be level " + level + " to repair " + MaterialUtil.getFriendlyName(isType));
+            player.sendMessage("You must be level " + level + " to repair " + MaterialUtil.getFriendlyName(isType));
             return new SkillResult(ResultType.LOW_LEVEL, false);
         }
         //if (is.getDurability() == 0) {
 
         if (((Damageable)itemMeta).getDamage() == 0) {
-            Messaging.sendSkillMessage(player, "That item is already at full durability!");
+            player.sendMessage( "That item is already at full durability!");
             return SkillResult.INVALID_TARGET_NO_MSG;
         }
 
@@ -159,7 +159,7 @@ public class SkillRepair extends ActiveSkill {
         if (repairCost > 0) {
             if (reagent == Material.OAK_PLANKS) {
                 //Handle all wood variants as a reagent
-                List<Material> woodMaterials = new ArrayList<Material>();
+                List<Material> woodMaterials = new ArrayList<>();
                 woodMaterials.add(Material.OAK_PLANKS);
                 woodMaterials.add(Material.BIRCH_PLANKS);
                 woodMaterials.add(Material.SPRUCE_PLANKS);
@@ -339,6 +339,7 @@ public class SkillRepair extends ActiveSkill {
             case DIAMOND_CHESTPLATE, DIAMOND_LEGGINGS, DIAMOND_BOOTS, DIAMOND_HELMET -> SkillConfigManager.getUseSetting(hero, this, "diamond-armor", 1, true);
             case DIAMOND_SWORD, DIAMOND_AXE -> SkillConfigManager.getUseSetting(hero, this, "diamond-weapons", 1, true);
             case DIAMOND_HOE, DIAMOND_PICKAXE, DIAMOND_SHOVEL -> SkillConfigManager.getUseSetting(hero, this, "diamond-tools", 1, true);
+            case NETHERITE_CHESTPLATE, NETHERITE_LEGGINGS, NETHERITE_BOOTS, NETHERITE_HELMET -> SkillConfigManager.getUseSetting(hero, this, "netherite-armor", 1, true);
             case NETHERITE_SWORD, NETHERITE_AXE -> SkillConfigManager.getUseSetting(hero, this, "netherite-weapons", 1, true);
             case NETHERITE_HOE, NETHERITE_PICKAXE, NETHERITE_SHOVEL -> SkillConfigManager.getUseSetting(hero, this, "netherite-tools", 1, true);
             case LEATHER_BOOTS, LEATHER_CHESTPLATE, LEATHER_HELMET, LEATHER_LEGGINGS -> SkillConfigManager.getUseSetting(hero, this, "leather-armor", 1, true);
