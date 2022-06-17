@@ -29,7 +29,7 @@ public class SkillDesecration extends SkillBaseGroundEffect {
 
 	public SkillDesecration(Heroes plugin) {
 		super(plugin, "Desecration");
-		setDescription("Marks the ground with unholy power, dealing $1 damage every $2 second(s) for $3 second(s) within $4 blocks blocks to the side and $5 blocks up and down (cylinder). " +
+		setDescription("Marks the ground with unholy power, dealing $1 damage every $2 second(s) for $3 second(s) within $4 blocks to the side and $5 blocks up and down (cylinder). " +
 				"Enemies within the area are slowed.");
 		setUsage("/skill desecration");
 		setIdentifiers("skill desecration");
