@@ -641,6 +641,7 @@ tasks.register("remastered", CompilePackTask) {
             "Decay",
             "Deconstruct",
             "DefenceInNumbers",
+            "Desecration",
             "Despair",
             "DevourMagic",
             "Disarm",
