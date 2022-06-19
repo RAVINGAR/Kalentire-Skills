@@ -21,7 +21,7 @@ public class SkillSmeltCopper extends ActiveSkill {
 
     public SkillSmeltCopper(Heroes plugin) {
         super(plugin, "SmeltCopper");
-        setDescription("You can turn Copper ore into a gold ingot with a $1 percent chance of getting an extra ingot");
+        setDescription("You can turn copper ore into a copper ingot with a $1 percent chance of getting an extra ingot");
         setUsage("/skill smeltcopper");
         setIdentifiers("skill smeltcopper");
         setArgumentRange(0, 0);
