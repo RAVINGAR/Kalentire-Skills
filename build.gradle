@@ -620,6 +620,7 @@ tasks.register("remastered", CompilePackTask) {
             "BoneSpear",
             "BoomingVoice",
             "Breed",
+            "Camouflage",
             "Cauldron",
             "Cauterize",
             "ChainLightning",
