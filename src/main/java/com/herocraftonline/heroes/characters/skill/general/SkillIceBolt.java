@@ -23,7 +23,7 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Map.Entry;
 
-public class SkillIcebolt extends ActiveSkill {
+public class SkillIceBolt extends ActiveSkill {
 
     private Map<Snowball, Long> snowballs = new LinkedHashMap<Snowball, Long>(100) {
         private static final long serialVersionUID = 4632858378318784263L;
@@ -36,8 +36,8 @@ public class SkillIcebolt extends ActiveSkill {
     private String applyText;
     private String expireText;
     
-    public SkillIcebolt(Heroes plugin) {
-        super(plugin, "Icebolt");
+    public SkillIceBolt(Heroes plugin) {
+        super(plugin, "IceBolt");
         setDescription("You launch a ball of ice that deals $1 damage to your target and slows them for $2 second(s).");
         setUsage("/skill icebolt");
         setArgumentRange(0, 0);
