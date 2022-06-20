@@ -24,12 +24,8 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
-import org.bukkit.event.inventory.InventoryClickEvent;
-import org.bukkit.event.inventory.InventoryCloseEvent;
-import org.bukkit.event.inventory.InventoryType;
 import org.bukkit.event.inventory.PrepareSmithingEvent;
 import org.bukkit.inventory.ItemStack;
-import org.bukkit.inventory.meta.ItemMeta;
 
 import java.util.*;
 import java.util.logging.Level;
@@ -127,70 +123,40 @@ public class SkillCraftNetheriteGear extends PassiveSkill {
                         + MaterialUtil.getFriendlyName(resultType) + "!");
                 event.setResult(null);
                 return;
-                //event.getInventory().setResult(null);
             }
 
-            upgradables.put(event.getView().getPlayer().getUniqueId(), event.getInventory().getItem(0));
 
-            ItemStack hidden = new ItemStack(result.getType());
-            ItemMeta meta = hidden.getItemMeta();
-            meta.setDisplayName(ChatColor.RED + "???");
-            List<String> lore = new ArrayList<>();
-            lore.add(ChatColor.GRAY + "Unidentified item!");
-            lore.add(ChatColor.GRAY + "Upgrade this item to upgrade stats");
-            meta.setLore(lore);
-            hidden.setItemMeta(meta);
-            event.setResult(hidden);
-            //If we are at this point then craft is a success, replace with MMOItem todo
-        }
+            ItemStack original = event.getInventory().getItem(0);
 
-        @EventHandler
-        public void onInventoryClose(InventoryCloseEvent event) {
-            if(event.getInventory().getType() == InventoryType.SMITHING) {
-                upgradables.remove(event.getPlayer().getUniqueId());
+            Material material = Material.matchMaterial(original.getType().getKey().getKey().replaceAll("diamond_", "netherite_"));
+            if(material != null) {
+                original.setType(material);
             }
-        }
-
-        @EventHandler
-        public void onInventoryClick(InventoryClickEvent event) {
-            //Reference https://paste.denizenscript.com/View/97562
-            if(event.isCancelled()) {
-                return;
+            else {
+                hero.getPlayer().closeInventory();
+                hero.getPlayer().sendMessage(ChatColor.RED + "You could not forge that item!");
+                event.setResult(null);
             }
-            if(event.getInventory().getType() == InventoryType.SMITHING && plugin.getServer().getPluginManager().getPlugin("MMOItems") != null) {
-                if(event.getSlotType() == InventoryType.SlotType.RESULT) {
-                    ItemStack original = upgradables.remove(event.getView().getPlayer().getUniqueId());
 
-                    Material material = Material.matchMaterial(original.getType().getKey().getKey().replaceAll("DIAMOND_", "NETHERITE_"));
-                    if(material != null) {
-                        original.setType(material);
-                    }
-                    else {
-                        event.setCancelled(true);
-                        return;
-                    }
-
-                    NBTItem nbtItem = NBTItem.get(original);
-                    if(nbtItem.hasType()) {
-                        Type type = MMOItems.plugin.getTypes().get(nbtItem.getType());
-                        String typeName = type.getName();
-                        MMOItem item = null;
-                        if(typeName.equalsIgnoreCase("SWORD") || typeName.equalsIgnoreCase("AXE") || typeName.equalsIgnoreCase("TOOL") || typeName.equalsIgnoreCase("SPEAR") || typeName.equalsIgnoreCase("STAFF")) {
-                            item =  upgradeWeaponMMOItem(nbtItem);
-                        }
-                        else if(typeName.equalsIgnoreCase("ARMOR")) {
-                            item = upgradeArmorMMOItem(nbtItem);
-                        }
-                        else {
-                            return;
-                        }
-
-                        NBTItem result = item.newBuilder().buildNBT();
-                        event.setCurrentItem(result.toItem());
-
-                    }
+            NBTItem nbtItem = NBTItem.get(original);
+            if(nbtItem.hasType()) {
+                Type type = MMOItems.plugin.getTypes().get(nbtItem.getType());
+                String typeName = type.getName();
+                MMOItem item;
+                if(typeName.equalsIgnoreCase("SWORD") || typeName.equalsIgnoreCase("AXE") || typeName.equalsIgnoreCase("TOOL") || typeName.equalsIgnoreCase("SPEAR") || typeName.equalsIgnoreCase("STAFF")) {
+                    item =  upgradeWeaponMMOItem(nbtItem);
                 }
+                else if(typeName.equalsIgnoreCase("ARMOR")) {
+                    item = upgradeArmorMMOItem(nbtItem);
+                }
+                else {
+                    return;
+                }
+
+                NBTItem newItem = item.newBuilder().buildNBT();
+                event.getInventory().setResult(newItem.toItem());
             }
+            //If we are at this point then craft is a success, replace with MMOItem todo
         }
 
         private MMOItem upgradeWeaponMMOItem(NBTItem item) {

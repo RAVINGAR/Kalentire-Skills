@@ -7,6 +7,8 @@ import com.herocraftonline.heroes.characters.skill.SkillConfigManager;
 import com.herocraftonline.heroes.chat.ChatComponents;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
+import org.bukkit.GameMode;
+import org.bukkit.Material;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -14,6 +16,8 @@ import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.inventory.InventoryOpenEvent;
 import org.bukkit.event.inventory.InventoryType;
+import org.bukkit.event.inventory.PrepareAnvilEvent;
+import org.bukkit.inventory.ItemStack;
 
 public class SkillAnvilUse extends PassiveSkill {
 
@@ -60,6 +64,30 @@ public class SkillAnvilUse extends PassiveSkill {
             if (!skill.hasPassive(hero)) {
                 event.setCancelled(true);
                 hero.getPlayer().sendMessage(denyMessage);
+            }
+        }
+
+        @EventHandler(priority = EventPriority.MONITOR)
+        public void onPrepareAnvilCraft(PrepareAnvilEvent event) {
+            Player player = (Player) event.getView().getPlayer();
+            if(player.getGameMode() == GameMode.CREATIVE) {
+                return;
+            }
+            if(event.getInventory().getItem(1).getType() == Material.ENCHANTED_BOOK) {
+                event.setResult(null);
+                player.sendMessage(ChatComponents.GENERIC_SKILL + ChatColor.GRAY + "You are not proficient to enchant with enchanted books!");
+            }
+
+            ItemStack result = event.getResult();
+            ItemStack original = event.getInventory().getItem(0);
+            if(original != null && result != null) {
+                String name = original.getItemMeta().getDisplayName();
+                String newName = result.getItemMeta().getDisplayName();
+                if(!name.equals(newName)) {
+                    event.setResult(null);
+                    player.sendMessage(ChatComponents.GENERIC_SKILL + ChatColor.GRAY + "You cannot rename items!");
+                    player.closeInventory();
+                }
             }
         }
 

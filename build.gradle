@@ -709,6 +709,7 @@ tasks.register("remastered", CompilePackTask) {
             "HolyInspiration",
             "HolyStrike",
             "IceRune",
+            "IceBolt",
             "Illusionist",
             "ImbueRunestone",
             "Impale",
