@@ -2,7 +2,6 @@ package com.herocraftonline.heroes.characters.skill.general;
 
 import com.herocraftonline.heroes.Heroes;
 import com.herocraftonline.heroes.api.SkillResult;
-import com.herocraftonline.heroes.attributes.AttributeType;
 import com.herocraftonline.heroes.characters.CharacterTemplate;
 import com.herocraftonline.heroes.characters.Hero;
 import com.herocraftonline.heroes.characters.Monster;
@@ -27,7 +26,6 @@ import org.bukkit.util.Vector;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.logging.Level;
 
 public class SkillFlood extends ActiveSkill {
 	private boolean ncpEnabled = false;
@@ -116,7 +114,7 @@ public class SkillFlood extends ActiveSkill {
 					{
 						targetLocation.getWorld().playSound(targetLocation, Sound.WEATHER_RAIN, 0.6F, 0.7F);
 						//targetLocation.getWorld().spigot().playEffect(targetLocation.add(0, 1.0, 0), Effect.SPLASH, 0, 0, (float) radius / 2, (float) radius / 2, (float) radius / 2, 0.0F, 150, 32);
-						targetLocation.getWorld().spawnParticle(Particle.WATER_SPLASH, targetLocation.add(0, 1, 0), 150, radius / 2f, radius / 2f, radius / 2f, 0, true);
+						targetLocation.getWorld().spawnParticle(Particle.WATER_SPLASH, targetLocation.add(0, 1, 0), 150, radius / 2f, radius / 2f, radius / 2f, 0);
 						//targetLocation.getWorld().spigot().playEffect(targetLocation.add(0, 1.0, 0), Effect.TILE_BREAK, Material.WATER.getId(), 0, (float) radius / 2, (float) radius / 2, (float) radius / 2, 0.0F, 100, 32);
 						//targetLocation.getWorld().spawnParticle(Particle.BLOCK_CRACK, targetLocation.add(0, 1, 0), 100, radius / 2f, radius / 2f, radius / 2f, 0, Bukkit.createBlockData(Material.WATER), true);
 
@@ -146,7 +144,7 @@ public class SkillFlood extends ActiveSkill {
 							//target.getWorld().spigot().playEffect(target.getLocation().add(0, 0.3, 0), Effect.TILE_BREAK, Material.WATER.getId(), 0, 0.4F, 0.7F, 0.4F, 0.3F, 25, 32);
 							//target.getWorld().spawnParticle(Particle.BLOCK_CRACK, target.getLocation().add(0, 0.3, 0), 25, 0.4, 0.7, 0.4, 0.3, Bukkit.createBlockData(Material.WATER), true);
 							//target.getWorld().spigot().playEffect(target.getLocation().add(0, 0.3, 0), Effect.CRIT, 0, 0, 0.4F, 0.7F, 0.4F, 0.7F, 25, 32);
-							target.getWorld().spawnParticle(Particle.CRIT, target.getLocation().add(0, 0.3, 0), 25, 0.4, 0.7, 0.4, 0.7, true);
+							target.getWorld().spawnParticle(Particle.CRIT, target.getLocation().add(0, 0.3, 0), 25, 0.4, 0.7, 0.4, 0.7);
 
 							addSpellTarget(target, hero);
 							damageEntity(target, player, damage, DamageCause.MAGIC);

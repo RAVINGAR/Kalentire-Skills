@@ -193,30 +193,10 @@ public class SkillJudgement extends ActiveSkill implements Listener
                 ((Hero) targAle).heal(damageToTarget * healingPerDamageTaken);
 //                p.sendMessage("DEBUG: Healed " + ((Hero) targAle).getPlayer().getName()
 //                        + " (" + (damageToTarget * healingPerDamageTaken) + " amount)");
-            }
-            else {
-                addSpellTarget(target, ap);
-                damageEntity(target, p, damagedByTarget * damagePerDamageDealt, EntityDamageEvent.DamageCause.MAGIC, false);
-//                p.sendMessage("DEBUG: Damaged " + target.getName() + " (" + target.getCustomName() + ") by "
-//                        + (damagedByTarget * damagePerDamageDealt) + " damage");
-            }
-
-            // FIXME Looks like it actually does get used
-//            MovingParticle.createMovingParticle(target.getLocation().add(0, 2.5, 0), Effect.FIREWORKS_SPARK, 0, 0, 0.5F, 1.5F, 0.5F,
-//                    0.0F, -0.1F, 0.0F, 0.0F, -0.2F, 0.0F, 125, 128, false, false);
-            target.getWorld().strikeLightningEffect(target.getLocation());
-            //target.getWorld().spigot().playEffect(target.getLocation().add(0, 1, 0), Effect.FIREWORKS_SPARK, 0, 0, 0.5F, 0.5F, 0.5F, 0.1F, 55, 128);
-            target.getWorld().spawnParticle(Particle.FIREWORKS_SPARK, target.getLocation().add(0, 1, 0), 55, 0.5, 0.5, 0.5, 0.1, true);
-            //target.getWorld().spigot().playEffect(target.getLocation().add(0, 1, 0), (isAlly ? Effect.HAPPY_VILLAGER : Effect.PARTICLE_SMOKE), 0, 0, 0.5F, 0.5F, 0.5F, 0.0F, 55, 128);
-            target.getWorld().spawnParticle((isAlly ? Particle.VILLAGER_HAPPY : Particle.VILLAGER_ANGRY), target.getLocation().add(0, 1, 0), 55, 0.5, 0.5, 0.5, 0, true);
-            target.getWorld().playSound(target.getLocation(), Sound.ENTITY_LIGHTNING_BOLT_THUNDER, 1.0F, 2.0F);
-            if (isAlly)
-            {
                 target.sendMessage("    " + ChatComponents.GENERIC_SKILL + "The divines heal a portion of your injuries.");
                 new BukkitRunnable() {
                     int ticks = 0;
                     int maxTicks = 5;
-                    Random rand = new Random();
                     public void run() {
                         if (ticks == maxTicks) cancel();
                         target.getWorld().playSound(target.getLocation(), Sound.ENTITY_EXPERIENCE_ORB_PICKUP, 0.3F, 0.1F + (0.2F * ticks));
@@ -225,11 +205,25 @@ public class SkillJudgement extends ActiveSkill implements Listener
                 }.runTaskTimer(plugin, 0, 1);
             }
             else {
+                addSpellTarget(target, ap);
+                damageEntity(target, p, damagedByTarget * damagePerDamageDealt, EntityDamageEvent.DamageCause.MAGIC, 0.2f);
+//                p.sendMessage("DEBUG: Damaged " + target.getName() + " (" + target.getCustomName() + ") by "
+//                        + (damagedByTarget * damagePerDamageDealt) + " damage");
                 target.getWorld().playSound(target.getLocation(), Sound.ENTITY_BLAZE_AMBIENT, 1.0F, 0.5F);
                 if (target instanceof Player){
                     target.sendMessage("    " + ChatComponents.GENERIC_SKILL + "Divine judgement has been passed upon you!");
                 }
             }
+
+            // FIXME Looks like it actually does get used
+//            MovingParticle.createMovingParticle(target.getLocation().add(0, 2.5, 0), Effect.FIREWORKS_SPARK, 0, 0, 0.5F, 1.5F, 0.5F,
+//                    0.0F, -0.1F, 0.0F, 0.0F, -0.2F, 0.0F, 125, 128, false, false);
+            target.getWorld().strikeLightningEffect(target.getLocation());
+            //target.getWorld().spigot().playEffect(target.getLocation().add(0, 1, 0), Effect.FIREWORKS_SPARK, 0, 0, 0.5F, 0.5F, 0.5F, 0.1F, 55, 128);
+            target.getWorld().spawnParticle(Particle.FIREWORKS_SPARK, target.getLocation().add(0, 1, 0), 55, 0.5, 0.5, 0.5, 0.1);
+            //target.getWorld().spigot().playEffect(target.getLocation().add(0, 1, 0), (isAlly ? Effect.HAPPY_VILLAGER : Effect.PARTICLE_SMOKE), 0, 0, 0.5F, 0.5F, 0.5F, 0.0F, 55, 128);
+            target.getWorld().spawnParticle((isAlly ? Particle.VILLAGER_HAPPY : Particle.VILLAGER_ANGRY), target.getLocation().add(0, 1, 0), 55, 0.5, 0.5, 0.5, 0);
+            target.getWorld().playSound(target.getLocation(), Sound.ENTITY_LIGHTNING_BOLT_THUNDER, 1.0F, 2.0F);
         }
 
         return SkillResult.NORMAL;

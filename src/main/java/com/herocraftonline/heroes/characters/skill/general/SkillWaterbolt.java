@@ -94,7 +94,7 @@ public class SkillWaterbolt extends ActiveSkill
 				{
 					bolts.remove(theWaterbolt);
 					//theWaterbolt.getWorld().spigot().playEffect(theWaterbolt.getLocation(), Effect.SPLASH, 0, 0, 0.3F, 0.3F, 0.3F, 0.5F, 65, 64);
-					theWaterbolt.getWorld().spawnParticle(Particle.WATER_SPLASH, theWaterbolt.getLocation(), 65, 0.3, 0.3, 0.3, 0.5, true);
+					theWaterbolt.getWorld().spawnParticle(Particle.WATER_SPLASH, theWaterbolt.getLocation(), 65, 0.3, 0.3, 0.3, 0.5);
 					//theWaterbolt.getWorld().spigot().playEffect(theWaterbolt.getLocation(), Effect.TILE_BREAK, Material.WATER.getId(), 0, 0.3F, 0.3F, 0.3F, 0.0F, 35, 64);
 					theWaterbolt.getWorld().spawnParticle(Particle.BLOCK_CRACK, theWaterbolt.getLocation(), 35, 0.3, 0.3, 0.3, 0, Bukkit.createBlockData(Material.WATER), true);
 					theWaterbolt.getWorld().playSound(theWaterbolt.getLocation(), Sound.ENTITY_GENERIC_SPLASH, 1.0F, 1.3F);
@@ -110,7 +110,7 @@ public class SkillWaterbolt extends ActiveSkill
 			{
 				if (theWaterbolt.isDead()) cancel();
 				//theWaterbolt.getWorld().spigot().playEffect(theWaterbolt.getLocation(), Effect.SPLASH, 0, 0, 0.3F, 0.3F, 0.3F, 0.1F, 45, 64);
-				theWaterbolt.getWorld().spawnParticle(Particle.WATER_SPLASH, theWaterbolt.getLocation(), 45, 0.3, 0.3, 0.3, 0.1, true);
+				theWaterbolt.getWorld().spawnParticle(Particle.WATER_SPLASH, theWaterbolt.getLocation(), 45, 0.3, 0.3, 0.3, 0.1);
 				//theWaterbolt.getWorld().spigot().playEffect(theWaterbolt.getLocation(), Effect.TILE_BREAK, Material.WATER.getId(), 0, 0.1F, 0.1F, 0.1F, 0.0F, 25, 64);
 				theWaterbolt.getWorld().spawnParticle(Particle.BLOCK_CRACK, theWaterbolt.getLocation(), 25, 0.1, 0.1, 0.1, 0, Bukkit.createBlockData(Material.WATER), true);
 			}
@@ -225,7 +225,7 @@ public class SkillWaterbolt extends ActiveSkill
 			}
 
 			//snowball.getWorld().spigot().playEffect(snowball.getLocation(), Effect.SPLASH, 0, 0, 0.3F, 0.3F, 0.3F, 0.5F, 65, 64);
-			snowball.getWorld().spawnParticle(Particle.WATER_SPLASH, snowball.getLocation(), 65, 0.3, 0.3, 0.3, 0.5, true);
+			snowball.getWorld().spawnParticle(Particle.WATER_SPLASH, snowball.getLocation(), 65, 0.3, 0.3, 0.3, 0.5);
 			//snowball.getWorld().spigot().playEffect(snowball.getLocation(), Effect.TILE_BREAK, Material.WATER.getId(), 0, 0.3F, 0.3F, 0.3F, 0.0F, 35, 64);
 			snowball.getWorld().spawnParticle(Particle.BLOCK_CRACK, snowball.getLocation(), 35, 0.3, 0.3, 0.3, 0, Bukkit.createBlockData(Material.WATER), true);
 			snowball.getWorld().playSound(snowball.getLocation(), Sound.ENTITY_GENERIC_SPLASH, 1.0F, 1.3F);

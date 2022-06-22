@@ -121,7 +121,7 @@ public class SkillPlaguedWater extends ActiveSkill
 						//loc.getWorld().spigot().playEffect(loc, Effect.TILE_BREAK, Material.WATER.getId(), 0, 0.2F, 0.2F, 0.2F, 0.5F, 35, 25);
 						loc.getWorld().spawnParticle(Particle.BLOCK_CRACK, loc, 35, 0.2, 0.2, 0.2, 0.5, Bukkit.createBlockData(Material.WATER), true);
 						//loc.getWorld().spigot().playEffect(loc, Effect.SPLASH, 0, 0, 0.2F, 0.2F, 0.2F, 0.5F, 55, 25);
-						loc.getWorld().spawnParticle(Particle.WATER_SPLASH, loc, 55, 0.2, 0.2, 0.2, 0.5, true);
+						loc.getWorld().spawnParticle(Particle.WATER_SPLASH, loc, 55, 0.2, 0.2, 0.2, 0.5);
 						loc.getWorld().playSound(loc, Sound.ENTITY_GENERIC_SPLASH, 1.0F, 0.8F);
 						ticks++;
 					}

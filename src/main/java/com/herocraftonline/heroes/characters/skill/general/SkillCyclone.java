@@ -349,9 +349,9 @@ public class SkillCyclone extends ActiveSkill
 					int index = rand.nextInt(waterburstLocs.size());
 					Location loc = waterburstLocs.get(index).clone().setDirection(new Vector(0, 1, 0));
 					//loc.getWorld().spigot().playEffect(loc, Effect.TILE_BREAK, Material.WATER.getId(), 0, 0.2F, 0.2F, 0.2F, 0.5F, 3, 25);
-					loc.getWorld().spawnParticle(Particle.BLOCK_CRACK, loc, 3, 0.2, 0.2, 0.2, 0.5, Bukkit.createBlockData(Material.WATER), true);
+					loc.getWorld().spawnParticle(Particle.BLOCK_CRACK, loc, 3, 0.2, 0.2, 0.2, 0.5, Bukkit.createBlockData(Material.WATER));
 					//loc.getWorld().spigot().playEffect(loc, Effect.SPLASH, 0, 0, 0.2F, 0.2F, 0.2F, 0.5F, 15, 25);
-					loc.getWorld().spawnParticle(Particle.WATER_SPLASH, loc, 15, 0.2, 0.2, 0.2, 0.5, true);
+					loc.getWorld().spawnParticle(Particle.WATER_SPLASH, loc, 15, 0.2, 0.2, 0.2, 0.5);
 					loc.getWorld().playSound(loc, Sound.ENTITY_GENERIC_SPLASH, 1.0F, 0.8F);
 					ticks++;
 				}
