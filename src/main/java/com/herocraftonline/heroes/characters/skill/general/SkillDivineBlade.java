@@ -9,7 +9,6 @@ import com.herocraftonline.heroes.characters.Hero;
 import com.herocraftonline.heroes.characters.effects.ExpirableEffect;
 import com.herocraftonline.heroes.characters.skill.*;
 import com.herocraftonline.heroes.chat.ChatComponents;
-import org.bukkit.Bukkit;
 import org.bukkit.Particle;
 import org.bukkit.Sound;
 import org.bukkit.configuration.ConfigurationSection;
@@ -21,15 +20,17 @@ import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 import org.bukkit.scheduler.BukkitRunnable;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.HashMap;
 import java.util.Random;
 import java.util.UUID;
 
-public class SkillDivineBlade extends ActiveSkill implements Listener
+public class SkillDivineBlade extends ActiveSkill implements Listenable
 {
-    public static final String EFFECT_NAME = "Divine Blade";
-    public static final String BLIND_EFFECT_NAME = "Divine Blindness";
+    private Listener listener;
+    public static final String EFFECT_NAME = "DivineBlade";
+    public static final String BLIND_EFFECT_NAME = "DivineBlindness";
     private HashMap<UUID, Long> hitTimes = new HashMap<>();
     public SkillDivineBlade(Heroes plugin)
     {
@@ -40,7 +41,7 @@ public class SkillDivineBlade extends ActiveSkill implements Listener
         setIdentifiers("skill divineblade", "skill dblade");
         setArgumentRange(0, 0);
         setTypes(SkillType.BUFFING, SkillType.HEALING);
-        Bukkit.getPluginManager().registerEvents(this, plugin);
+        listener = new DivineBladeListener(this);
     }
 
     public String getDescription(Hero ap)
@@ -100,53 +101,67 @@ public class SkillDivineBlade extends ActiveSkill implements Listener
         return SkillResult.NORMAL;
     }
 
-    @EventHandler
-    public void healOnHit(WeaponDamageEvent e)
-    {
-        if (!(e.getDamager() instanceof Hero) || !(e.getEntity() instanceof LivingEntity)) return;
-        Hero ap = (Hero) e.getDamager();
-        LivingEntity ent = (LivingEntity) e.getEntity();
-        if (!ap.hasEffect(EFFECT_NAME)) return;
-        if (!ap.getHeroClass().isAllowedWeapon(ap.getPlayer().getInventory().getItemInMainHand().getType())) return;
-        if (hitTimes.get(ap.getPlayer().getUniqueId()) != null && hitTimes.get(ap.getPlayer().getUniqueId()) > System.currentTimeMillis()) return;
+    @NotNull
+    @Override
+    public Listener getListener() {
+        return listener;
+    }
 
-        double radius = SkillConfigManager.getUseSetting(ap, this, SkillSetting.RADIUS, 6, true);
+    public class DivineBladeListener implements Listener {
+
+        private Skill skill;
+        public DivineBladeListener(Skill skill) {
+            this.skill = skill;
+        }
+
+        @EventHandler
+        public void healOnHit(WeaponDamageEvent e)
+        {
+            if (!(e.getDamager() instanceof Hero ap) || !(e.getEntity() instanceof LivingEntity ent)) return;
+            if (!ap.hasEffect(EFFECT_NAME)) return;
+            if (!ap.getHeroClass().isAllowedWeapon(ap.getPlayer().getInventory().getItemInMainHand().getType())) return;
+            if (hitTimes.get(ap.getPlayer().getUniqueId()) != null && hitTimes.get(ap.getPlayer().getUniqueId()) > System.currentTimeMillis()) return;
+
+            double radius = SkillConfigManager.getUseSetting(ap, skill, SkillSetting.RADIUS, 6, true);
 //        ap.getPlayer().getWorld().spigot().playEffect(ap.getPlayer().getLocation().add(0, 0.2, 0), Effect.INSTANT_SPELL, 0, 0,
 //                2.0F, 0.1F, 2.0F, 0.5F, 75, 128);
 //        ap.getPlayer().getWorld().spigot().playEffect(ap.getPlayer().getLocation().add(0, 0.2, 0), Effect.INSTANT_SPELL, 0, 0,
 //                2.0F, 0.1F, 2.0F, 0.5F, 75, 128);
-        ap.getPlayer().getWorld().spawnParticle(Particle.SPELL_INSTANT, ap.getPlayer().getLocation().add(0, 0.2, 0), 75, 2, 0.1, 2, 0.5, null,true);
-        ap.getPlayer().getWorld().spawnParticle(Particle.SPELL_INSTANT, ap.getPlayer().getLocation().add(0, 0.2, 0), 75, 2, 0.1, 2, 0.5, null,true);
-        ap.getPlayer().getWorld().playSound(ap.getPlayer().getLocation(), Sound.BLOCK_CHORUS_FLOWER_GROW, 5.0F, 2.0F);
+            ap.getPlayer().getWorld().spawnParticle(Particle.SPELL_INSTANT, ap.getPlayer().getLocation().add(0, 0.2, 0), 75, 2, 0.1, 2, 0.5);
+            ap.getPlayer().getWorld().spawnParticle(Particle.SPELL_INSTANT, ap.getPlayer().getLocation().add(0, 0.2, 0), 75, 2, 0.1, 2, 0.5);
+            ap.getPlayer().getWorld().playSound(ap.getPlayer().getLocation(), Sound.BLOCK_CHORUS_FLOWER_GROW, 5.0F, 2.0F);
 
-        double healing = SkillConfigManager.getUseSetting(ap, this, SkillSetting.HEALING, 10, true) +
-                (SkillConfigManager.getUseSetting(ap, this, SkillSetting.HEALING_INCREASE_PER_WISDOM, 0.3, true)
-                        * ap.getAttributeValue(AttributeType.WISDOM));
+            double healing = SkillConfigManager.getUseSetting(ap, skill, SkillSetting.HEALING, 10, true) +
+                    (SkillConfigManager.getUseSetting(ap, skill, SkillSetting.HEALING_INCREASE_PER_WISDOM, 0.3, true)
+                            * ap.getAttributeValue(AttributeType.WISDOM));
 
-        if (ap.hasParty())
-            for (Hero ally : ap.getParty().getMembers()) {
-                if (!ally.getPlayer().getWorld().equals(ap.getPlayer().getWorld())) continue;
-                if (ally.getPlayer().getLocation().distance(ap.getPlayer().getLocation()) <= radius) ally.heal(healing);
+            if (ap.hasParty())
+                for (Hero ally : ap.getParty().getMembers()) {
+                    if (!ally.getPlayer().getWorld().equals(ap.getPlayer().getWorld())) continue;
+                    if (ally.getPlayer().getLocation().distance(ap.getPlayer().getLocation()) <= radius) ally.heal(healing);
+                }
+            else ap.heal(healing);
+
+
+            if(ap.hasEffect("Radiance")) {
+                long blindDuration = SkillConfigManager.getUseSetting(ap, skill, "blind-duration", 2000, true);
+                CharacterTemplate ale = plugin.getCharacterManager().getCharacter(ent);
+                ale.addEffect(new DivineBlindnessStatus(skill, ap.getPlayer(), blindDuration));
             }
-        else ap.heal(healing);
 
+            long triggerInterval = SkillConfigManager.getUseSetting(ap, skill, "trigger-interval", 500, true);
+            hitTimes.put(ap.getPlayer().getUniqueId(), System.currentTimeMillis() + triggerInterval);
+        }
 
-        long blindDuration = SkillConfigManager.getUseSetting(ap, this, "blind-duration", 2000, true);
-        CharacterTemplate ale = plugin.getCharacterManager().getCharacter(ent);
-        ale.addEffect(new DivineBlindnessStatus(this, ap.getPlayer(), blindDuration));
-
-        long triggerInterval = SkillConfigManager.getUseSetting(ap, this, "trigger-interval", 500, true);
-        hitTimes.put(ap.getPlayer().getUniqueId(), System.currentTimeMillis() + triggerInterval);
-    }
-
-    @EventHandler
-    public void onDisconnect(PlayerQuitEvent e)
-    {
-        hitTimes.remove(e.getPlayer().getUniqueId());
+        @EventHandler
+        public void onDisconnect(PlayerQuitEvent e)
+        {
+            hitTimes.remove(e.getPlayer().getUniqueId());
+        }
     }
 
 
-    public class DivineBladeStatus extends ExpirableEffect
+    public static class DivineBladeStatus extends ExpirableEffect
     {
         public DivineBladeStatus(Skill skill, Player applier, long duration)
         {
@@ -181,7 +196,7 @@ public class SkillDivineBlade extends ActiveSkill implements Listener
         {
             super.applyToHero(ap);
             final Player player = ap.getPlayer();
-            player.addPotionEffect(new PotionEffect(PotionEffectType.CONFUSION, (int) getDuration() / 50, 4, true, false));
+            player.addPotionEffect(new PotionEffect(PotionEffectType.BLINDNESS, (int) getDuration() / 50, 4, true, false));
             broadcast(ap.getPlayer().getLocation(), ChatComponents.GENERIC_SKILL + ap.getName() + " is blinded!");
         }
 

@@ -620,8 +620,8 @@ tasks.register("remastered", CompilePackTask) {
             "BoneSpear",
             "BoomingVoice",
             "Breed",
-            "Cauldron",
             "Cauterize",
+            "Camouflage",
             "ChainLightning",
             "Chakra",
             "Chant",
@@ -666,10 +666,12 @@ tasks.register("remastered", CompilePackTask) {
             "DreadAura",
             "DualWield",
             "EarthernFury",
+            "EarthWall",
             "Empathy",
             "EnderPearls",
             "EngulfingTotem",
             "Entangle",
+            "Envenom",
             "Eviscerate",
             "Evocation",
             "Excavate",
@@ -721,6 +723,8 @@ tasks.register("remastered", CompilePackTask) {
             "HolySteed",
             "IceRune",
             "IceBolt",
+            "IceVolley",
+            "Ire",
             "Illusionist",
             "ImbueRunestone",
             "Impale",
@@ -847,6 +851,28 @@ tasks.register("remastered", CompilePackTask) {
             "Woodcutting",
             "WindGale",
             "YggdrasilsTouch"]
+}
+
+tasks.register("dev", CompilePackTask) {
+    pack = "dev"
+    skills = [
+            "Judgement",
+            "Radiance",
+            "Cyclone",
+            "PlaguedWater",
+            "Flood",
+            "Tsunami",
+            "DivineBlade",
+            "EarthWall",
+            "Camouflage",
+            "HeroicThrow",
+            "Skeleton",
+            "NoxiousMinion",
+            "Minion",
+            "Ire",
+            "EarthernFury",
+            "Gust",
+            "ManaShield"]
 }
 
 abstract class CompilePackTask extends DefaultTask {

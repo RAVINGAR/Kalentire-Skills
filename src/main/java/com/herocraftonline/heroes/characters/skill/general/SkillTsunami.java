@@ -2,7 +2,6 @@ package com.herocraftonline.heroes.characters.skill.general;
 
 import com.herocraftonline.heroes.Heroes;
 import com.herocraftonline.heroes.api.SkillResult;
-import com.herocraftonline.heroes.attributes.AttributeType;
 import com.herocraftonline.heroes.characters.Hero;
 import com.herocraftonline.heroes.characters.skill.ActiveSkill;
 import com.herocraftonline.heroes.characters.skill.SkillConfigManager;
@@ -22,7 +21,6 @@ import org.bukkit.util.Vector;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
-import java.util.logging.Level;
 
 public class SkillTsunami extends ActiveSkill {
 
@@ -163,42 +161,24 @@ public class SkillTsunami extends ActiveSkill {
 
             // If no caster or player are set, the effect will still play, because why not. Still won't move anywhere with 0 config, but minor issues
             if(caster != null && casterPlayer != null) {
-                final Collection<Entity> nearbyEntities = loc.getWorld().getNearbyEntities(loc1, 1, 1, 1);
+                final Collection<Entity> nearbyEntities = loc.getWorld().getNearbyEntities(loc1, 2, 2, 2);
 
                 // Move back to main thread to do damage
-                Bukkit.getScheduler().runTaskLater(plugin, new Runnable() {
-                    @Override
-                    public void run() {
-                        //FIXME remove this debug
-                        // couldn't get any messages, must be a issue getting to this.
-//                        String entitiesString = "none";
-//                        if (nearbyEntities.size() > 0) {
-//                            StringBuilder entitiesStringBuilder = new StringBuilder();
-//                            for (Entity entity : nearbyEntities) {
-//                                entitiesStringBuilder.append(entity.getName()).append(", ");
-//                            }
-//                            entitiesString = entitiesStringBuilder.toString();
-//                        }
-//                        Heroes.log(Level.INFO, entitiesString);
-
-                        for (Entity ent : nearbyEntities) {
-                            if (ent instanceof LivingEntity && ent != casterPlayer && !hitTargets.contains(ent)) {
-                                LivingEntity lEnt = (LivingEntity) ent;
-
-                                if (!damageCheck(casterPlayer, lEnt)) {
-                                    continue;
-                                }
-
-                                addSpellTarget(lEnt, caster);
-                                damageEntity(lEnt, casterPlayer, damage);
-
-                                if(knockup) {
-                                    lEnt.setVelocity(new Vector(0, knockupVelocity, 0).add(addVector.clone().multiply(knockupMultiplier)));
-                                    lEnt.setFallDistance(-512);
-                                }
-
-                                hitTargets.add(lEnt);
+                Bukkit.getScheduler().runTaskLater(plugin, () -> {
+                    for (Entity ent : nearbyEntities) {
+                        if (ent instanceof LivingEntity lEnt && ent != casterPlayer && !hitTargets.contains(ent)) {
+                            if (!damageCheck(casterPlayer, lEnt)) {
+                                continue;
                             }
+                            addSpellTarget(lEnt, caster);
+                            damageEntity(lEnt, casterPlayer, damage);
+
+                            if(knockup) {
+                                lEnt.setVelocity(new Vector(0, knockupVelocity, 0).add(addVector.clone().multiply(knockupMultiplier)));
+                                lEnt.setFallDistance(-512);
+                            }
+
+                            hitTargets.add(lEnt);
                         }
                     }
                 }, 1);
