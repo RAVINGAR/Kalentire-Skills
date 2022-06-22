@@ -10,7 +10,6 @@ import com.herocraftonline.heroes.characters.skill.SkillSetting;
 import com.herocraftonline.heroes.characters.skill.SkillType;
 import com.herocraftonline.heroes.nms.NMSHandler;
 import com.herocraftonline.heroes.util.MaterialUtil;
-import com.herocraftonline.heroes.util.Messaging;
 import com.herocraftonline.heroes.util.Util;
 import io.lumine.mythic.lib.api.item.NBTItem;
 import net.Indyuce.mmoitems.api.interaction.util.DurabilityItem;
@@ -219,12 +218,10 @@ public class SkillRepair extends ActiveSkill {
             DurabilityItem durabilityItem = new DurabilityItem(hero.getPlayer(), is);
             durabilityItem.addDurability(durabilityItem.getMaxDurability());
             //Repair currently works in that it will always repair to the max
-            hero.getPlayer().sendMessage("Repairing in here!");
             ItemMeta result = durabilityItem.toItem().getItemMeta();
             is.setItemMeta(result);
         }
         else {
-            hero.getPlayer().sendMessage("Repairing out here!");
             Util.repairItem(plugin, is, itemMeta);
         }
 
