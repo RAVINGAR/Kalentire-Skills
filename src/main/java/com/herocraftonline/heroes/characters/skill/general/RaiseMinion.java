@@ -10,8 +10,10 @@ import com.herocraftonline.heroes.characters.effects.common.SummonEffect;
 import com.herocraftonline.heroes.characters.skill.*;
 import com.herocraftonline.heroes.chat.ChatComponents;
 import io.lumine.mythic.api.exceptions.InvalidMobTypeException;
+import io.lumine.mythic.api.mobs.GenericCaster;
 import io.lumine.mythic.bukkit.MythicBukkit;
 import io.lumine.mythic.bukkit.adapters.BukkitEntity;
+import io.lumine.mythic.bukkit.adapters.BukkitPlayer;
 import io.lumine.mythic.core.mobs.ActiveMob;
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -84,6 +86,9 @@ public class RaiseMinion extends ActiveSkill implements Listenable {
                 localLocation.getWorld().spawnParticle(Particle.WARPED_SPORE, localLocation.add(0, 0.5, 0), 40, 1, 1, 1, 0.5);
                 localLocation.getWorld().spawnParticle(Particle.CLOUD, localLocation.add(0, 0, 0), 10, 1, 1, 1, 0.5);
                 LivingEntity summon = (LivingEntity) MythicBukkit.inst().getAPIHelper().spawnMythicMob(SkillConfigManager.getUseSetting(paramHero, this, "mythic-mob-type", "NecroDemon"), localLocation);
+                ActiveMob mob = MythicBukkit.inst().getMobManager().getActiveMob(summon.getUniqueId()).get();
+                mob.setParent(new GenericCaster(new BukkitPlayer(localPlayer)));
+
                 CharacterTemplate localCreature = plugin.getCharacterManager().getCharacter(summon);
                 long l = SkillConfigManager.getUseSetting(paramHero, this, SkillSetting.DURATION, 60000, false);
                 localCreature.addEffect(new SummonEffect(this, l, paramHero, this.expireText));
