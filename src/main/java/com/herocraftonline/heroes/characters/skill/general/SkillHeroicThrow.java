@@ -8,6 +8,7 @@ import com.herocraftonline.heroes.characters.Hero;
 import com.herocraftonline.heroes.characters.effects.EffectType;
 import com.herocraftonline.heroes.characters.effects.ExpirableEffect;
 import com.herocraftonline.heroes.characters.skill.*;
+import com.herocraftonline.heroes.integrations.citizens.CitizensHero;
 import fr.neatmonster.nocheatplus.checks.CheckType;
 import fr.neatmonster.nocheatplus.hooks.NCPExemptionManager;
 import org.bukkit.Bukkit;
@@ -62,12 +63,14 @@ public class SkillHeroicThrow extends TargettedSkill {
         int damage = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE, 5, false);
         if(target.equals(player)) {
        	 return SkillResult.INVALID_TARGET_NO_MSG;
-       }
+        }
+        CharacterTemplate targetCT = plugin.getCharacterManager().getCharacter(target);
+        if(targetCT instanceof CitizensHero) {
+            return SkillResult.INVALID_TARGET;
+        }
        
         broadcastExecuteText(hero, target);
         damageEntity(target, player, damage,DamageCause.ENTITY_ATTACK);
-      
-        
 
         // Let's bypass the nocheat issues...
         if (ncpEnabled) {
@@ -77,7 +80,6 @@ public class SkillHeroicThrow extends TargettedSkill {
                     long duration = SkillConfigManager.getUseSetting(hero, this, "ncp-exemption-duration", 1500, false);
                     if (duration > 0) {
                         NCPExemptionEffect ncpExemptEffect = new NCPExemptionEffect(this, targetPlayer, duration);
-                        CharacterTemplate targetCT = plugin.getCharacterManager().getCharacter(target);
                         targetCT.addEffect(ncpExemptEffect);
                     }
                 }
@@ -95,18 +97,12 @@ public class SkillHeroicThrow extends TargettedSkill {
 
         boolean weakenVelocity = false;
         switch (mat) {
-            case WATER:
-            case LAVA:
-            case SOUL_SAND:
-                weakenVelocity = true;
-                break;
-            default:
-                break;
+            case WATER, LAVA, SOUL_SAND -> weakenVelocity = true;
+            default -> {}
         }
         long sfDuration = SkillConfigManager.getUseSetting(hero, this, "safefall-duration", 1500, false);
 
-        	CharacterTemplate targetCT = plugin.getCharacterManager().getCharacter(target);
-        	targetCT.addEffect(new SafeFallEffect(this, player, sfDuration));
+        targetCT.addEffect(new SafeFallEffect(this, player, sfDuration));
         
         
         double tempVPower = SkillConfigManager.getUseSetting(hero, this, "vertical-power", Double.valueOf(0.25), false);

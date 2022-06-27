@@ -656,6 +656,7 @@ tasks.register("remastered", CompilePackTask) {
             "DivineStun",
             "DivineRuination",
             "DivineBlade",
+            "Dispel",
             "DoomstarRequiem",
             "DragonsBreath",
             "DragonsGift",
@@ -767,6 +768,7 @@ tasks.register("remastered", CompilePackTask) {
             "PrimalTotem",
             "Port",
             "Potion",
+            "Poison",
             "Pulse",
             "Pyromania",
             "QuantumLeap",
@@ -872,6 +874,8 @@ tasks.register("dev", CompilePackTask) {
             "Ire",
             "EarthernFury",
             "Gust",
+            "Dispel",
+            "Poison",
             "ManaShield"]
 }
 
