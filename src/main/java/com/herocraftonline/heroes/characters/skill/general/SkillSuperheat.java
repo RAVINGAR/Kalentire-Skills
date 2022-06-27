@@ -95,6 +95,11 @@ public class SkillSuperheat extends ActiveSkill {
                         block.setType(Material.AIR);
                         block.getWorld().dropItem(block.getLocation(), new ItemStack(Material.STONE, 1));
                     }
+                    case DEEPSLATE, COBBLED_DEEPSLATE -> {
+                        event.setCancelled(true);
+                        block.setType(Material.AIR);
+                        block.getWorld().dropItem(block.getLocation(), new ItemStack(Material.DEEPSLATE, 1));
+                    }
                     default -> {
                     }
                 }
