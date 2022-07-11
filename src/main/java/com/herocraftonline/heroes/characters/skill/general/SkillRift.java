@@ -9,17 +9,13 @@ import com.herocraftonline.heroes.characters.effects.EffectType;
 import com.herocraftonline.heroes.characters.skill.*;
 import com.herocraftonline.heroes.util.GeometryUtil;
 import com.herocraftonline.heroes.util.Util;
-import org.bukkit.Color;
-import org.bukkit.FireworkEffect;
-import org.bukkit.Location;
-import org.bukkit.Particle;
+import org.bukkit.*;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.entity.EntityDamageEvent;
 
-import java.util.ArrayList;
 import java.util.List;
 
 public class SkillRift extends TargettedSkill {
@@ -115,7 +111,7 @@ public class SkillRift extends TargettedSkill {
                 continue;
 
             addSpellTarget(aoeTarget, hero);
-            damageEntity(aoeTarget, player, damage, EntityDamageEvent.DamageCause.MAGIC, false);
+            damageEntity(aoeTarget, player, damage, EntityDamageEvent.DamageCause.MAGIC, 0.0f);
         }
 
         for (double r = 1.0; r < radius * 2; r++) {
@@ -126,6 +122,13 @@ public class SkillRift extends TargettedSkill {
     }
 
     private void playFirework(Location location) {
+        World world = location.getWorld();
+        world.spawnParticle(Particle.GLOW, location, 80, 2, 2, 2, 0.2);
+        world.spawnParticle(Particle.END_ROD, location, 10, 1, 1, 1, 0.5);
+        world.playSound(location, Sound.ENTITY_SHULKER_TELEPORT, 0.8f, 0.4f);
+        world.playSound(location, Sound.ENTITY_BAT_DEATH, 0.6f, 0.4f);
+
+        /*
         FireworkEffect firework = FireworkEffect.builder()
                 .flicker(true)
                 .trail(false)
@@ -135,7 +138,7 @@ public class SkillRift extends TargettedSkill {
                 .withFade(Color.BLACK)
                 .with(FireworkEffect.Type.BURST)
                 .build();
-        VisualEffect.playInstantFirework(firework, location);
+        VisualEffect.playInstantFirework(firework, location);*/
     }
 
     private void purgeTarget(Hero hero, CharacterTemplate targetCT) {

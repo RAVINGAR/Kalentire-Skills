@@ -19,13 +19,13 @@ import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.entity.EntityDamageEvent;
 
-public class SkillCallOfChaos extends SkillBaseSphere {
+public class SkillKiBlast extends SkillBaseSphere {
 
-	public SkillCallOfChaos(Heroes plugin) {
-		super(plugin, "CallOfChaos");
-		setDescription("Call upon the forces of chaos to damage and knock back enemies within $1 blocks for $2 every $3 second(s) for $4 second(s).");
-		setUsage("/skill callofchaos");
-		setIdentifiers("skill callofchaos");
+	public SkillKiBlast(Heroes plugin) {
+		super(plugin, "KiBlast");
+		setDescription("Call upon your ki to damage and knock back enemies within $1 blocks for $2 every $3 second(s) for $4 second(s).");
+		setUsage("/skill kiblast");
+		setIdentifiers("skill kiblast");
 		setArgumentRange(0, 0);
 		setTypes(SkillType.MULTI_GRESSIVE, SkillType.AREA_OF_EFFECT, SkillType.DAMAGING, SkillType.FORCE, SkillType.NO_SELF_TARGETTING, SkillType.SILENCEABLE);
 	}

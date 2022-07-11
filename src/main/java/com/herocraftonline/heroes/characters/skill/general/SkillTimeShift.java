@@ -101,7 +101,7 @@ public class SkillTimeShift extends TargettedSkill {
     private SkillResult deceleratedShift(Player player, Hero hero, LivingEntity target, CharacterTemplate targetCT, int duration, int maxStacks) {
         double speedDecrease = SkillConfigManager.getUseSetting(hero, this, "enemy-percent-speed-decrease", 0.1, false);
 
-        DeceleratedShiftedTime effect = null;
+        DeceleratedShiftedTime effect;
         if (!targetCT.hasEffect(decelEffectName)) {
             effect = new DeceleratedShiftedTime(this, player, duration, speedDecrease, maxStacks);
             targetCT.addEffect(effect);

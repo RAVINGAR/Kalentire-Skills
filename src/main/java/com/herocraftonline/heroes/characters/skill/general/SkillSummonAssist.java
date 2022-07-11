@@ -2,22 +2,14 @@ package com.herocraftonline.heroes.characters.skill.general;
 
 import com.herocraftonline.heroes.Heroes;
 import com.herocraftonline.heroes.api.SkillResult;
-import com.herocraftonline.heroes.characters.CharacterTemplate;
 import com.herocraftonline.heroes.characters.Hero;
 import com.herocraftonline.heroes.characters.Monster;
 import com.herocraftonline.heroes.characters.effects.Effect;
-import com.herocraftonline.heroes.characters.effects.common.SummonEffect;
 import com.herocraftonline.heroes.characters.skill.*;
-import com.herocraftonline.heroes.chat.ChatComponents;
-import io.lumine.mythic.api.exceptions.InvalidMobTypeException;
-import io.lumine.mythic.api.mobs.GenericCaster;
 import io.lumine.mythic.bukkit.MythicBukkit;
 import io.lumine.mythic.bukkit.adapters.BukkitEntity;
-import io.lumine.mythic.bukkit.adapters.BukkitPlayer;
 import io.lumine.mythic.core.mobs.ActiveMob;
-import org.bukkit.Location;
-import org.bukkit.Material;
-import org.bukkit.Particle;
+import org.bukkit.Bukkit;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
@@ -28,25 +20,22 @@ import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.*;
 import org.bukkit.event.player.PlayerQuitEvent;
-import org.bukkit.inventory.ItemStack;
-import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
 import java.util.Optional;
 
-public class RaiseMinion extends ActiveSkill implements Listenable {
+public class SkillSummonAssist extends ActiveSkill {
     private String expireText;
-    private final Listener listener;
 
-    public RaiseMinion(Heroes paramHeroes)
+    public SkillSummonAssist(Heroes paramHeroes)
     {
-        super(paramHeroes, "RaiseMinion");
-        setDescription("Summons an undead creature to fight by your side");
-        setUsage("/skill raiseminion");
+        super(paramHeroes, "SummonAssist");
+        setDescription("Contains API to handle summoned mobs.");
+        setUsage("/skill summonassist");
         setArgumentRange(0, 0);
-        setIdentifiers("skill raiseminion");
+        setIdentifiers("skill summonassist");
         setTypes(SkillType.ABILITY_PROPERTY_DARK, SkillType.SUMMONING, SkillType.SILENCEABLE);
-        listener = new MinionListener(this);
+        Bukkit.getPluginManager().registerEvents(new MinionListener(this),plugin);
     }
 
     @Override
@@ -57,15 +46,6 @@ public class RaiseMinion extends ActiveSkill implements Listenable {
     @Override
     public ConfigurationSection getDefaultConfig() {
         ConfigurationSection node = super.getDefaultConfig();
-
-        node.set(SkillSetting.MAX_DISTANCE.node(), 5);
-        node.set(SkillSetting.DURATION.node(), 60000);
-        node.set("mythic-mob-type", "NecroDemon");
-        node.set(SkillSetting.EXPIRE_TEXT.node(), "The creature returns to it's hellish domain.");
-        node.set("max-summons", 3);
-        node.set(SkillSetting.RADIUS.node(), 7);
-        node.set(SkillSetting.RADIUS_INCREASE_PER_WISDOM.node(), 0.005);
-
         return node;
     }
 
@@ -77,38 +57,7 @@ public class RaiseMinion extends ActiveSkill implements Listenable {
 
     public SkillResult use(Hero paramHero, String[] paramArrayOfString)
     {
-        Player localPlayer = paramHero.getPlayer();
-        if (paramHero.getSummons().size() < SkillConfigManager.getUseSetting(paramHero, this, "max-summons", 3, false))
-        {
-            int i = SkillConfigManager.getUseSetting(paramHero, this, SkillSetting.MAX_DISTANCE, 5, false);
-            Location localLocation = localPlayer.getTargetBlock(null, i).getLocation();
-            try {
-                localLocation.getWorld().spawnParticle(Particle.WARPED_SPORE, localLocation.add(0, 0.5, 0), 40, 1, 1, 1, 0.5);
-                localLocation.getWorld().spawnParticle(Particle.CLOUD, localLocation.add(0, 0, 0), 10, 1, 1, 1, 0.5);
-                LivingEntity summon = (LivingEntity) MythicBukkit.inst().getAPIHelper().spawnMythicMob(SkillConfigManager.getUseSetting(paramHero, this, "mythic-mob-type", "NecroDemon"), localLocation);
-                ActiveMob mob = MythicBukkit.inst().getMobManager().getActiveMob(summon.getUniqueId()).get();
-                mob.setParent(new GenericCaster(new BukkitPlayer(localPlayer)));
-
-                CharacterTemplate localCreature = plugin.getCharacterManager().getCharacter(summon);
-                long l = SkillConfigManager.getUseSetting(paramHero, this, SkillSetting.DURATION, 60000, false);
-                localCreature.addEffect(new SummonEffect(this, l, paramHero, this.expireText));
-                summon.getEquipment().setItemInMainHand(new ItemStack(Material.NETHERITE_SWORD, 1));
-                broadcastExecuteText(paramHero);
-                localPlayer.sendMessage(ChatComponents.GENERIC_SKILL + "A hellish creature rises from the ground");
-            }
-            catch(InvalidMobTypeException e) {
-                return SkillResult.FAIL;
-            }
-            return SkillResult.NORMAL;
-        }
-        localPlayer.sendMessage("You can't control any more skeletons!");
-        return SkillResult.FAIL;
-    }
-
-    @NotNull
-    @Override
-    public Listener getListener() {
-        return listener;
+        return SkillResult.NORMAL;
     }
 
     public class MinionListener implements Listener {
@@ -146,7 +95,7 @@ public class RaiseMinion extends ActiveSkill implements Listenable {
                 return;
             }
             Monster localCreature = plugin.getCharacterManager().getMonster(paramEntityCombustEvent.getEntity().getUniqueId());
-            if (localCreature.isSummonedMob()) {
+            if (localCreature != null && localCreature.isSummonedMob()) {
                 paramEntityCombustEvent.setCancelled(true);
             }
         }
@@ -160,7 +109,7 @@ public class RaiseMinion extends ActiveSkill implements Listenable {
             if ((paramEntityDamageEvent.getEntity() instanceof Player))
             {
                 //If player was attacked
-                Hero hero = RaiseMinion.this.plugin.getCharacterManager().getHero((Player)paramEntityDamageEvent.getEntity());
+                Hero hero = SkillSummonAssist.this.plugin.getCharacterManager().getHero((Player)paramEntityDamageEvent.getEntity());
                 if (hero.getSummons().isEmpty()) {
                     return;
                 }
@@ -220,12 +169,16 @@ public class RaiseMinion extends ActiveSkill implements Listenable {
         public void onEntityDeath(EntityDeathEvent paramEntityDeathEvent)
         {
             Monster local = plugin.getCharacterManager().getMonster(paramEntityDeathEvent.getEntity().getUniqueId());
-            Hero hero = local.getSummoner();
-            new ArrayList<>(hero.getSummons()).forEach(summon -> {
-                if(local.equals(summon)) {
-                    hero.getSummons().remove(summon);
+            if(local != null) {
+                Hero hero = local.getSummoner();
+                if(hero != null) {
+                    new ArrayList<>(hero.getSummons()).forEach(summon -> {
+                        if(local.equals(summon)) {
+                            hero.getSummons().remove(summon);
+                        }
+                    });
                 }
-            });
+            }
         }
 
         @EventHandler(priority=EventPriority.HIGHEST)
@@ -236,6 +189,9 @@ public class RaiseMinion extends ActiveSkill implements Listenable {
             }
             if ((paramEntityTargetEvent.getTarget() instanceof Player)) {
                 Monster entity = plugin.getCharacterManager().getMonster(paramEntityTargetEvent.getEntity().getUniqueId());
+                if(entity == null) {
+                    return;
+                }
                 Hero hero = entity.getSummoner();
                 if(hero != null) {
                     Optional<ActiveMob> mob = getActiveMob(entity.getEntity());
