@@ -6,14 +6,16 @@ import com.herocraftonline.heroes.attributes.AttributeType;
 import com.herocraftonline.heroes.characters.Hero;
 import com.herocraftonline.heroes.characters.effects.EffectType;
 import com.herocraftonline.heroes.characters.effects.common.AttributeIncreaseEffect;
-import com.herocraftonline.heroes.characters.skill.*;
+import com.herocraftonline.heroes.characters.skill.ActiveSkill;
+import com.herocraftonline.heroes.characters.skill.Skill;
+import com.herocraftonline.heroes.characters.skill.SkillConfigManager;
+import com.herocraftonline.heroes.characters.skill.SkillSetting;
+import com.herocraftonline.heroes.characters.skill.SkillType;
 import com.herocraftonline.heroes.chat.ChatComponents;
 import com.herocraftonline.heroes.util.Util;
-
 import org.bukkit.Sound;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
-import org.bukkit.Sound;
 
 public class SkillHonor extends ActiveSkill {
     private String applyText;
@@ -21,7 +23,7 @@ public class SkillHonor extends ActiveSkill {
 
     public SkillHonor(Heroes plugin) {
         super(plugin, "Honor");
-        setDescription("Bring honor unto your nearby party members, increasing their mana regeneration by $1 for $2 minutes.");
+        setDescription("Bring honor unto your nearby party members, increasing their wisdom by $1 for $2 seconds.");
         setArgumentRange(0, 0);
         setUsage("/skill honor");
         setIdentifiers("skill honor");
@@ -30,13 +32,13 @@ public class SkillHonor extends ActiveSkill {
 
     @Override
     public String getDescription(Hero hero) {
-        int duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, 600000, false);
+        int duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, 10000, false);
 
         int conIncrease = SkillConfigManager.getUseSetting(hero, this, "con-increase", 5, false);
         double conIncreaseScaling = SkillConfigManager.getUseSetting(hero, this, "con-increase-per-strength", 0.0, false);
         conIncrease += (int) (conIncreaseScaling * hero.getAttributeValue(AttributeType.STRENGTH));
 
-        String formattedDuration = Util.decFormat.format((duration / 1000.0) / 60.0);   // Convert to minutes.
+        String formattedDuration = Util.decFormat.format((duration / 1000.0));
 
         return getDescription().replace("$1", conIncrease + "").replace("$2", formattedDuration);
     }
@@ -48,7 +50,7 @@ public class SkillHonor extends ActiveSkill {
         node.set(SkillSetting.RADIUS.node(), 10);
         node.set("con-increase", 5);
         node.set("con-increase-per-strength", 0.0);
-        node.set(SkillSetting.DURATION.node(), 180000);
+        node.set(SkillSetting.DURATION.node(), 10000);
         node.set(SkillSetting.APPLY_TEXT.node(), ChatComponents.GENERIC_SKILL + "Honor is bestowed upon you!");
         node.set(SkillSetting.EXPIRE_TEXT.node(), ChatComponents.GENERIC_SKILL + "You are no longer honorable!");
 
@@ -67,10 +69,10 @@ public class SkillHonor extends ActiveSkill {
     public SkillResult use(Hero hero, String[] args) {
         Player player = hero.getPlayer();
 
-        int duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, 600000, false);
-        int conIncrease = SkillConfigManager.getUseSetting(hero, this, "con-increase", 5, false);
-        double conIncreaseScaling = SkillConfigManager.getUseSetting(hero, this, "con-increase-per-strength", 0.0, false);
-        conIncrease += (int) (conIncreaseScaling * hero.getAttributeValue(AttributeType.STRENGTH));
+        int duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, 10000, false);
+        int conIncrease = SkillConfigManager.getUseSetting(hero, this, "wisdom-increase", 5, false);
+        double conIncreaseScaling = SkillConfigManager.getUseSetting(hero, this, "wisdom-increase-per-charisma", 0.0, false);
+        conIncrease += (int) (conIncreaseScaling * hero.getAttributeValue(AttributeType.CHARISMA));
 
         HonorEffect mEffect = new HonorEffect(this, player, duration, conIncrease);
 
@@ -114,7 +116,7 @@ public class SkillHonor extends ActiveSkill {
     public class HonorEffect extends AttributeIncreaseEffect {
 
         public HonorEffect(Skill skill, Player applier, long duration, int conIncrease) {
-            super(skill, "Honor", applier, duration, AttributeType.CONSTITUTION, conIncrease, null, null);
+            super(skill, "Honor", applier, duration, AttributeType.WISDOM, conIncrease, null, null);
 
             types.add(EffectType.DISPELLABLE);
             types.add(EffectType.MAGIC);

@@ -13,6 +13,9 @@ allprojects {
 
     group 'com.herocraftonline.heroes.characters.skill'
     version '1.9.23'
+
+    sourceCompatibility = 16
+    targetCompatibility = 16
 }
 repositories {
     //mavenLocal()
@@ -780,6 +783,7 @@ tasks.register("remastered", CompilePackTask) {
             "RampartVine",
             "Recall",
             "Radiance",
+            "RaiseDemon",
             "RechargeRunestone",
             "RecklessClot",
             "Reckoning",
@@ -809,6 +813,7 @@ tasks.register("remastered", CompilePackTask) {
             "SmeltCopper",
             "SmeltGold",
             "SmeltIron",
+            "SummonAssist",
             "Smite",
             "SmokeBomb",
             "Sneak",
@@ -983,7 +988,11 @@ tasks.register("dev", CompilePackTask) {
             "ConjureElemental",
             "KiBlast",
             "Firebolt",
-            "SummonAssist"
+            "SummonAssist",
+            "Flash",
+            "RecklessFury",
+            "GreatFireball",
+            "LavaLurk"
         ]
 }
 
