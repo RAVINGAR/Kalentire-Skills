@@ -1,7 +1,5 @@
 package com.herocraftonline.heroes.characters.skill.general;
 
-import com.herocraftonline.heroes.chat.ChatComponents;
-import com.herocraftonline.heroes.util.GeometryUtil;
 import com.herocraftonline.heroes.Heroes;
 import com.herocraftonline.heroes.api.SkillResult;
 import com.herocraftonline.heroes.attributes.AttributeType;
@@ -10,10 +8,10 @@ import com.herocraftonline.heroes.characters.skill.ActiveSkill;
 import com.herocraftonline.heroes.characters.skill.SkillConfigManager;
 import com.herocraftonline.heroes.characters.skill.SkillSetting;
 import com.herocraftonline.heroes.characters.skill.SkillType;
-import org.bukkit.Effect;
+import com.herocraftonline.heroes.chat.ChatComponents;
+import com.herocraftonline.heroes.util.GeometryUtil;
 import org.bukkit.Location;
 import org.bukkit.Particle;
-import org.bukkit.Sound;
 import org.bukkit.Sound;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.*;
@@ -21,7 +19,6 @@ import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.util.Vector;
 
-import java.util.ArrayList;
 import java.util.List;
 
 public class SkillSoulreaper extends ActiveSkill {
@@ -103,9 +100,9 @@ public class SkillSoulreaper extends ActiveSkill {
                 List<Location> circle = GeometryUtil.circle(sickle, 16, radius);
                 Location l = circle.get(fxIndex++);
                     //l.getWorld().spigot().playEffect(l, Effect.WITCH_MAGIC, 0, 0, 0.05f, 0.05f, 0.05f, 0.0f, 3, 128);
-                l.getWorld().spawnParticle(Particle.SPELL_WITCH, l, 3, 0.05, 0.05, 0.05, 0, true);
+                l.getWorld().spawnParticle(Particle.SPELL_WITCH, l, 3, 0.05, 0.05, 0.05, 0);
                 if (fxIndex >= circle.size()) fxIndex = 0;
-                if (maxRange == false) { // old fashioned boolean check
+                if (!maxRange) { // old fashioned boolean check
                     sickle.add(directionVector);
                     distTraveled = spawnLoc.distance(sickle);
                     if (distTraveled >= range ||
@@ -113,7 +110,6 @@ public class SkillSoulreaper extends ActiveSkill {
                                     .isSolid()) maxRange = true;
                 } else {
                     ticks++;
-                    player.sendMessage("    " + ChatComponents.GENERIC_SKILL + ticks);
                     if (ticks >= tickDuration) cancel();
                 }
 
@@ -125,13 +121,13 @@ public class SkillSoulreaper extends ActiveSkill {
                     //ghost(test);
 //                    test.getWorld().spigot().playEffect(test.getLocation(), Effect.WITCH_MAGIC, 0, 0, 0.2f, 0.2f, 0.2f, 0.0f,
 //                            25, 128);
-                    test.getWorld().spawnParticle(Particle.SPELL_WITCH, test.getLocation(), 25, 0.2, 0.2, 0.2, 0, true);
+                    test.getWorld().spawnParticle(Particle.SPELL_WITCH, test.getLocation(), 25, 0.2, 0.2, 0.2, 0);
                     for (Entity e : test.getNearbyEntities(radius, radius / 2, radius)) {
                         if (!(e instanceof LivingEntity)) continue;
                         LivingEntity ent = (LivingEntity) e;
                         if (!damageCheck(player, ent)) continue;
                         addSpellTarget(ent, hero);
-                        damageEntity(ent, player, damage, EntityDamageEvent.DamageCause.MAGIC, false);
+                        damageEntity(ent, player, damage, EntityDamageEvent.DamageCause.MAGIC, 0.0f);
                         ent.setNoDamageTicks(damageTicks - 1); // so they can be affected again
                     }
                     test.remove();

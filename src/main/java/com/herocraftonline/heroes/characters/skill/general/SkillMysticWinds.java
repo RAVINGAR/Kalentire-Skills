@@ -36,13 +36,13 @@ public class SkillMysticWinds extends ActiveSkill {
     private static String EffectName = "FloatingMysticWinds";
 
     public SkillMysticWinds(Heroes plugin) {
-        super(plugin, "HealingSpores");
+        super(plugin, "MysticWinds");
         setDescription("Summon $1 healing spores that will float and remain inactive around the caster for up to $2 seconds. " +
                 "If this ability is cast again within that time, it will unleash each stored spore. " +
                 "Each spore will heal $3 damage");
-        setUsage("/skill healingspores");
+        setUsage("/skill mysticwinds");
         setArgumentRange(0, 0);
-        setIdentifiers("skill healingspores");
+        setIdentifiers("skill mysticwinds");
         setTypes(SkillType.ABILITY_PROPERTY_EARTH, SkillType.SILENCEABLE, SkillType.HEALING);
         Bukkit.getServer().getPluginManager().registerEvents(new SkillHeroListener(this), plugin);
     }
@@ -258,10 +258,10 @@ public class SkillMysticWinds extends ActiveSkill {
 
             double heal = this.projectileHeal;
             CharacterTemplate targetCT = plugin.getCharacterManager().getCharacter(target);
-
+            //todo
 
             targetHero.tryHeal(hero, skill, heal);
-            hero.getPlayer().sendMessage("healing: " + heal);
+            //hero.getPlayer().sendMessage("healing: " + heal);
         }
 
 

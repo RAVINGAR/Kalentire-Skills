@@ -2,24 +2,19 @@ package com.herocraftonline.heroes.characters.skill.general;
 
 import com.herocraftonline.heroes.Heroes;
 import com.herocraftonline.heroes.api.SkillResult;
-import com.herocraftonline.heroes.attributes.AttributeType;
 import com.herocraftonline.heroes.characters.Hero;
 import com.herocraftonline.heroes.characters.skill.*;
 import com.herocraftonline.heroes.characters.skill.tools.BasicDamageMissile;
 import com.herocraftonline.heroes.characters.skill.tools.BasicMissile;
 import com.herocraftonline.heroes.util.Util;
-import org.bukkit.*;
-import org.bukkit.block.Block;
+import org.bukkit.Color;
+import org.bukkit.Particle;
+import org.bukkit.Sound;
 import org.bukkit.configuration.ConfigurationSection;
-import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.entity.EntityDamageEvent.DamageCause;
-import org.bukkit.util.BlockIterator;
 import org.bukkit.util.Vector;
-
-import java.util.ArrayList;
-import java.util.List;
 
 public class SkillChaoticVisions extends ActiveSkill {
 
@@ -76,9 +71,9 @@ public class SkillChaoticVisions extends ActiveSkill {
     }
 
     // Note Basic damage Missile internals take care of damage and entity detect radius
-    class ChaoticSpearProjectile extends BasicDamageMissile {
+    static class ChaoticSpearProjectile extends BasicDamageMissile {
         ChaoticSpearProjectile(Heroes plugin, Skill skill, Hero hero) {
-            super(plugin, skill, hero, Particle.SPELL_WITCH, Color.PURPLE, DamageCause.MAGIC);
+            super(plugin, skill, hero, Particle.DRAGON_BREATH, Color.PURPLE, DamageCause.MAGIC);
         }
 
         @Override

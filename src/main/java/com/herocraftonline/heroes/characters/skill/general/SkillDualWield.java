@@ -102,15 +102,10 @@ public class SkillDualWield extends PassiveSkill implements Listenable {
             This skill now works through considering those attributes. It will first calculate the individual
             attributes/damage for the mainhand and use that as the new damage event. Then it will use the offhand damage
             for the offhand attacks.
-
-            The main issue is that WeaponDamageEvent is called AFTER mitigation is already applied. So therefore we
-            have to apply mitigation again.
              */
             CharacterDamageManager manager = plugin.getDamageManager();
 
-            double mitigation = event.getDamage() - event.getRawDamage();
-
-            event.setDamage(manager.getItemStackDamage(hero, mainHand, EquipmentSlot.HAND) - mitigation);
+            event.setDamage(manager.getItemStackDamage(hero, mainHand, EquipmentSlot.HAND));
 
             if(effect.addHit(hero, (LivingEntity) event.getEntity(), offHand)) {
                 hero.removeEffect(effect);

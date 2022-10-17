@@ -88,7 +88,7 @@ public class SkillArcaneStorm extends SkillBaseSphere {
 					if (target instanceof LivingEntity && !target.equals(player)) {
 						LivingEntity livingTarget = (LivingEntity) target;
 						if (damageCheck(player, livingTarget)) {
-							damageEntity(livingTarget, player, damageTick, EntityDamageEvent.DamageCause.MAGIC, true);
+							damageEntity(livingTarget, player, damageTick, EntityDamageEvent.DamageCause.MAGIC, 0.3f);
 						}
 					}
 				}

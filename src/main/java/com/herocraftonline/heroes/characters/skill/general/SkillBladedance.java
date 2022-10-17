@@ -1,13 +1,5 @@
 package com.herocraftonline.heroes.characters.skill.general;
 
-import org.bukkit.Material;
-import org.bukkit.configuration.ConfigurationSection;
-import org.bukkit.entity.Entity;
-import org.bukkit.entity.LivingEntity;
-import org.bukkit.entity.Player;
-import org.bukkit.Sound;
-import org.bukkit.event.entity.EntityDamageEvent.DamageCause;
-
 import com.herocraftonline.heroes.Heroes;
 import com.herocraftonline.heroes.api.SkillResult;
 import com.herocraftonline.heroes.characters.Hero;
@@ -17,6 +9,15 @@ import com.herocraftonline.heroes.characters.skill.SkillType;
 import com.herocraftonline.heroes.characters.skill.TargettedSkill;
 import com.herocraftonline.heroes.nms.NMSHandler;
 import com.herocraftonline.heroes.util.Util;
+import org.bukkit.Material;
+import org.bukkit.Particle;
+import org.bukkit.Sound;
+import org.bukkit.World;
+import org.bukkit.configuration.ConfigurationSection;
+import org.bukkit.entity.Entity;
+import org.bukkit.entity.LivingEntity;
+import org.bukkit.entity.Player;
+import org.bukkit.event.entity.EntityDamageEvent.DamageCause;
 
 public class SkillBladedance extends TargettedSkill {
 
@@ -49,17 +50,23 @@ public class SkillBladedance extends TargettedSkill {
             return SkillResult.FAIL;
         }
 
-        double damage = plugin.getDamageManager().getHighestItemDamage(hero, item);
+        World world = target.getWorld();
+
+        double damage = plugin.getDamageManager().getFlatItemDamage(hero);
         damage *= SkillConfigManager.getUseSetting(hero, this, "damage-multiplier", 1.0, false);
         addSpellTarget(target, hero);
+        world.spawnParticle(Particle.DRIPPING_OBSIDIAN_TEAR, player.getLocation(), 50, 0.5, 0.5, 0.5, 0);
+        world.playSound(player.getLocation(), Sound.ITEM_TRIDENT_THUNDER, 0.8F, 0.7F);
         damageEntity(target, player, damage, DamageCause.ENTITY_ATTACK);
         int radius = SkillConfigManager.getUseSetting(hero, this, SkillSetting.RADIUS, 3, false);
+
         for (Entity entity : target.getNearbyEntities(radius, radius, radius)) {
             if (!(entity instanceof LivingEntity) || !damageCheck(player, (LivingEntity) entity)) {
                 continue;
             }
             addSpellTarget(target, hero);
             damageEntity((LivingEntity) entity, player, damage, DamageCause.ENTITY_ATTACK);
+            world.spawnParticle(Particle.GLOW, entity.getLocation(), 30, 1, 1, 1, 0);
         }
         hero.getPlayer().getWorld().playSound(hero.getPlayer().getLocation(), Sound.ENTITY_PLAYER_HURT , 0.8F, 1.0F);
         broadcastExecuteText(hero, target);

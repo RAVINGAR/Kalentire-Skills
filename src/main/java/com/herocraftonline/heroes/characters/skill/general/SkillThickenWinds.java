@@ -113,7 +113,7 @@ public class SkillThickenWinds extends ActiveSkill
 					int index = rand.nextInt(windLocs.size() + 1);
 					Location loc = windLocs.get(index).clone().setDirection(new Vector(0, 1, 0));
 					//loc.getWorld().spigot().playEffect(loc, Effect.CLOUD, 0, 0, 0.2F, 5.5F, 0.2F, 0.0F, 250, 25);
-					loc.getWorld().spawnParticle(Particle.CLOUD, loc, 250, 0.2, 5.5, 0.2, 0, true);
+					loc.getWorld().spawnParticle(Particle.CLOUD, loc, 250, 0.2, 5.5, 0.2, 0);
 					loc.getWorld().playSound(loc, Sound.ENTITY_ENDER_DRAGON_FLAP, 1.3F, (float) (1 / (ticks + 1)));
 					ticks++;
 				}

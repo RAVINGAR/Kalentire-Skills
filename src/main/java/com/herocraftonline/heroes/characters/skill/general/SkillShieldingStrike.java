@@ -1,7 +1,7 @@
-/*package com.herocraftonline.heroes.characters.skill.general;
+/*
+package com.herocraftonline.heroes.characters.skill.general;
 
 import com.herocraftonline.heroes.GeometryUtil;
-import com.herocraftonline.heroes.util.Messaging;
 import com.herocraftonline.heroes.Heroes;
 import com.herocraftonline.heroes.api.SkillResult;
 import com.herocraftonline.heroes.attributes.AttributeType;
@@ -10,16 +10,19 @@ import com.herocraftonline.heroes.characters.skill.ActiveSkill;
 import com.herocraftonline.heroes.characters.skill.SkillConfigManager;
 import com.herocraftonline.heroes.characters.skill.SkillSetting;
 import com.herocraftonline.heroes.characters.skill.SkillType;
+import com.herocraftonline.heroes.util.Messaging;
 import org.bukkit.Effect;
 import org.bukkit.Location;
 import org.bukkit.Material;
+import org.bukkit.Particle;
 import org.bukkit.Sound;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.entity.EntityDamageEvent;
-import org.bukkit.util.Vector; */
+import org.bukkit.util.Vector;*/
+
 /*
 public class SkillShieldingStrike extends ActiveSkill {
 
@@ -91,6 +94,7 @@ public class SkillShieldingStrike extends ActiveSkill {
         long duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, 8000, true);
 
         player.getWorld().playSound(player.getLocation(), Sound.ENTITY_GENERIC_EXPLODE, 1.0f, 0.5f);
+        player.getWorld().spawnParticle(Particle.BLOCK_CRACK, );
         player.getWorld().spigot().playEffect(player.getLocation().add(0, 0.2, 0), Effect.TILE_BREAK, Material.WOOD.getId(), 0,
                 0.4F, 0.1F, 0.4F, 0.3F, 105, 128);
         broadcastExecuteText(hero);

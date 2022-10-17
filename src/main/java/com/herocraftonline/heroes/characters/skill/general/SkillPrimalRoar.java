@@ -112,21 +112,19 @@ public class SkillPrimalRoar extends ActiveSkill
                     {
                     	targetLocation.getWorld().playSound(targetLocation, Sound.ENTITY_GENERIC_EXPLODE, 0.7F, 1.3F);
                     	//targetLocation.getWorld().spigot().playEffect(targetLocation, Effect.EXPLOSION_LARGE, 0, 0, 0.5F, 0.5F, 0.5F, 0.0F, 5, 20);
-                        targetLocation.getWorld().spawnParticle(Particle.EXPLOSION_LARGE, targetLocation, 5, 0.5, 0.5, 0.5, 0, true);
+                        targetLocation.getWorld().spawnParticle(Particle.EXPLOSION_LARGE, targetLocation, 5, 0.5, 0.5, 0.5, 0);
                     	//targetLocation.getWorld().spigot().playEffect(targetLocation, Effect.NOTE, 0, 0, 0.5F, 0.5F, 0.5F, 0.0F, 25, 20);
-                        targetLocation.getWorld().spawnParticle(Particle.NOTE, targetLocation, 25, 0.5, 0.5, 0.5, 0, true);
+                        targetLocation.getWorld().spawnParticle(Particle.NOTE, targetLocation, 25, 0.5, 0.5, 0.5, 0);
                     	//targetLocation.getWorld().spigot().playEffect(targetLocation, Effect.MAGIC_CRIT, 0, 0, 0.5F, 0.5F, 0.5F, 0.0F, 40, 20);
-                        targetLocation.getWorld().spawnParticle(Particle.CRIT_MAGIC, targetLocation, 40, 0.4, 0.4, 0.4, 0, true);
+                        targetLocation.getWorld().spawnParticle(Particle.CRIT_MAGIC, targetLocation, 40, 0.4, 0.4, 0.4, 0);
                         for (Entity entity : nearbyEntities) 
                         {
-                            if (!(entity instanceof LivingEntity) || hitEnemies.contains(entity) || entity.getLocation().distanceSquared(targetLocation) > radiusSquared)
+                            if (!(entity instanceof LivingEntity target) || hitEnemies.contains(entity) || entity.getLocation().distanceSquared(targetLocation) > radiusSquared)
                                 continue;
 
                             if (!damageCheck(player, (LivingEntity) entity))
                                 continue;
 
-                            LivingEntity target = (LivingEntity) entity;
-                            
                             CharacterTemplate targCT = plugin.getCharacterManager().getCharacter(target);
                             StunEffect stun = new StunEffect(skill, player, stunDuration);
                             targCT.addEffect(stun);
@@ -137,7 +135,7 @@ public class SkillPrimalRoar extends ActiveSkill
                             hitEnemies.add(entity);
                         }
                     }
-                }, numBlocks * delay);
+                }, (long) numBlocks * delay);
 
                 numBlocks++;
             }

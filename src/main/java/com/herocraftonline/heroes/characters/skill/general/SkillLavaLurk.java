@@ -6,11 +6,14 @@ import com.herocraftonline.heroes.characters.Hero;
 import com.herocraftonline.heroes.characters.effects.EffectType;
 import com.herocraftonline.heroes.characters.effects.ExpirableEffect;
 import com.herocraftonline.heroes.characters.effects.common.InvisibleEffect;
-import com.herocraftonline.heroes.characters.skill.*;
+import com.herocraftonline.heroes.characters.skill.ActiveSkill;
+import com.herocraftonline.heroes.characters.skill.Skill;
+import com.herocraftonline.heroes.characters.skill.SkillConfigManager;
+import com.herocraftonline.heroes.characters.skill.SkillSetting;
+import com.herocraftonline.heroes.characters.skill.SkillType;
 import com.herocraftonline.heroes.chat.ChatComponents;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
-import org.bukkit.Material;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
 
@@ -69,10 +72,11 @@ public class SkillLavaLurk extends ActiveSkill {
     public SkillResult use(Hero hero, String[] args) {
         Player player = hero.getPlayer();
         Location loc = player.getLocation();
+        /*
         if (loc.getBlock().getType() != Material.LAVA) {
             player.sendMessage(failText);
             return SkillResult.FAIL;
-        }
+        }*/
 
         long duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, 30000, false);
         long onBreakDuration = SkillConfigManager.getUseSetting(hero, this, "on-break-delayed-fire-resist-duration", 1500, false);
@@ -133,11 +137,12 @@ public class SkillLavaLurk extends ActiveSkill {
                     continue;
                 }
 
+                /*
                 if (newLoc.getBlock().getType() != Material.LAVA) {
                     hero.removeEffect(hero.getEffect(effectName));
                     heroes.remove();
                     continue;
-                }
+                }*/
             }
         }
 

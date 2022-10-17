@@ -7,27 +7,24 @@ import com.herocraftonline.heroes.characters.CharacterTemplate;
 import com.herocraftonline.heroes.characters.Hero;
 import com.herocraftonline.heroes.characters.effects.common.RootEffect;
 import com.herocraftonline.heroes.characters.skill.*;
-import com.herocraftonline.heroes.nms.NMSHandler;
 import com.herocraftonline.heroes.util.Util;
 import org.bukkit.*;
+import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Item;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
-import org.bukkit.Sound;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityDamageEvent;
-import org.bukkit.event.player.PlayerPickupItemEvent;
+import org.bukkit.event.entity.EntityPickupItemEvent;
 import org.bukkit.event.server.PluginDisableEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.util.BlockIterator;
 import org.bukkit.util.Vector;
-import org.bukkit.block.Block;
-import org.bukkit.block.BlockFace;
 
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -40,7 +37,7 @@ public class SkillShadowEdge extends ActiveSkill implements Listener{
     private List<ThrownAxe> axes;
 
     public SkillShadowEdge(Heroes plugin) {
-        super(plugin, "Shadowblade");
+        super(plugin, "ShadowEdge");
         setDescription("Throw out a dagger, when it hits a target you teleport to it.");
         setUsage("/skill ShadowEdge");
         setArgumentRange(0, 0);
@@ -98,7 +95,8 @@ public class SkillShadowEdge extends ActiveSkill implements Listener{
         double axeThrowMultiplierIncrease = SkillConfigManager.getUseSetting(hero, this, "axe-throw-multiplier-per-dexterity", 0.1, false);
         axeThrowMultiplier += axeThrowMultiplierIncrease * hero.getAttributeValue(AttributeType.DEXTERITY);
 
-        final Item dropItem = player.getWorld().dropItem(player.getEyeLocation(), new ItemStack(itemType, 1, (short) (itemType.getMaxDurability() - 1)));
+        final Item dropItem = player.getWorld().dropItem(player.getEyeLocation(), new ItemStack(itemType, 1));
+        dropItem.setPickupDelay(-1);
         dropItem.setVelocity(player.getEyeLocation().getDirection().normalize().multiply(axeThrowMultiplier));
 
         axes.add(new ThrownAxe(dropItem, hero, damage));
@@ -212,16 +210,18 @@ public class SkillShadowEdge extends ActiveSkill implements Listener{
     }
 
     @EventHandler(priority = EventPriority.LOWEST)
-    public void onItemPickup(PlayerPickupItemEvent event) {
-        Item item = event.getItem();
-        for(ThrownAxe axe : axes) {
+    public void onItemPickup(EntityPickupItemEvent event) {
+        if(event.getEntity() instanceof Player player) {
+            Item item = event.getItem();
+            for(ThrownAxe axe : axes) {
 
-            if(axe.getItem().equals(item)) {
-                event.setCancelled(true);
-                Hero hero = axe.getOwner();
+                if(axe.getItem().equals(item)) {
+                    event.setCancelled(true);
+                    Hero hero = axe.getOwner();
 
-                if(event.getPlayer() == hero.getPlayer() && item.getTicksLived() > 3){
-                    item.remove();
+                    if(player == hero.getPlayer() && item.getTicksLived() > 3){
+                        item.remove();
+                    }
                 }
             }
         }

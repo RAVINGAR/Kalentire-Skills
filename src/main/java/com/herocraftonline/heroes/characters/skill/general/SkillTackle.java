@@ -19,7 +19,7 @@ public class SkillTackle extends TargettedSkill {
 
     public SkillTackle(Heroes plugin) {
         super(plugin, "Tackle");
-        setDescription("Teleport towards your target. Damage:$1, Radius:$2, Stun:$3s");
+        setDescription("Teleport towards your target dealing $1 damage and stunning them for $3 second(s).");
         setUsage("/skill tackle");
         setArgumentRange(0, 0);
         setIdentifiers("skill tackle");
@@ -38,46 +38,6 @@ public class SkillTackle extends TargettedSkill {
                 (SkillConfigManager.getUseSetting(hero, this, "duration-increase", 0.0, false) * hero.getHeroLevel(this)))) / 1000;
         duration = duration > 0 ? duration : 0;
         String description = getDescription().replace("$1", damage + "").replace("$2", radius + "").replace("$3", duration + "");
-        
-        //COOLDOWN
-        int cooldown = (SkillConfigManager.getUseSetting(hero, this, SkillSetting.COOLDOWN.node(), 0, false)
-                - SkillConfigManager.getUseSetting(hero, this, SkillSetting.COOLDOWN_REDUCE.node(), 0, false) * hero.getHeroLevel(this)) / 1000;
-        if (cooldown > 0) {
-            description += " CD:" + cooldown + "s";
-        }
-        
-        //MANA
-        int mana = SkillConfigManager.getUseSetting(hero, this, SkillSetting.MANA.node(), 10, false)
-                - (SkillConfigManager.getUseSetting(hero, this, SkillSetting.MANA_REDUCE.node(), 0, false) * hero.getHeroLevel(this));
-        if (mana > 0) {
-            description += " M:" + mana;
-        }
-        
-        //HEALTH_COST
-        int healthCost = SkillConfigManager.getUseSetting(hero, this, SkillSetting.HEALTH_COST, 0, false) - 
-                (SkillConfigManager.getUseSetting(hero, this, SkillSetting.HEALTH_COST_REDUCE, mana, true) * hero.getHeroLevel(this));
-        if (healthCost > 0) {
-            description += " HP:" + healthCost;
-        }
-        
-        //STAMINA
-        int staminaCost = SkillConfigManager.getUseSetting(hero, this, SkillSetting.STAMINA.node(), 0, false)
-                - (SkillConfigManager.getUseSetting(hero, this, SkillSetting.STAMINA_REDUCE.node(), 0, false) * hero.getHeroLevel(this));
-        if (staminaCost > 0) {
-            description += " FP:" + staminaCost;
-        }
-        
-        //DELAY
-        int delay = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DELAY.node(), 0, false) / 1000;
-        if (delay > 0) {
-            description += " W:" + delay + "s";
-        }
-        
-        //EXP
-        int exp = SkillConfigManager.getUseSetting(hero, this, SkillSetting.EXP.node(), 0, false);
-        if (exp > 0) {
-            description += " XP:" + exp;
-        }
         return description;
     }
 
