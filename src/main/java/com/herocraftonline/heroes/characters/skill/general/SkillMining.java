@@ -111,11 +111,7 @@ public class SkillMining extends PassiveSkill {
             if (chance > SkillConfigManager.getUseSetting(hero, skill, SkillSetting.CHANCE_PER_LEVEL, .001, false) * hero.getHeroLevel(skill)) {
                 return;
             }
-            if (dropMaterial == Material.INK_SAC) {
-                block.getWorld().dropItemNaturally(block.getLocation(), new ItemStack(dropMaterial, 1, (short) 0, (byte) 4));
-            } else {
-                block.getWorld().dropItemNaturally(block.getLocation(), new ItemStack(dropMaterial, 1));
-            }
+            block.getWorld().dropItemNaturally(block.getLocation(), new ItemStack(dropMaterial, 1));
         }
 
         private Material getMatFromHeight(Block block) {

@@ -20,6 +20,7 @@ import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.inventory.ItemStack;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Level;
 
@@ -28,6 +29,8 @@ public class SkillBackstab extends ActiveSkill implements Passive, Listenable {
     private final Listener listener;
     private String backstabText;
 
+    private List<Material> validWeapons;
+
     public SkillBackstab(Heroes plugin) {
         super(plugin, "Backstab");
         setDescription("When attacking a target from behind, you $1 an additional $2% damage. While sneaking, your attacks are more precise, and $3 an additional $4% damage.");
@@ -35,7 +38,7 @@ public class SkillBackstab extends ActiveSkill implements Passive, Listenable {
         setArgumentRange(0, 0);
         setIdentifiers("skill backstab");
         setTypes(SkillType.ABILITY_PROPERTY_PHYSICAL, SkillType.AGGRESSIVE, SkillType.UNBINDABLE);
-
+        validWeapons = new ArrayList<>();
         listener = new SkillHeroesListener(this);
     }
 
@@ -85,6 +88,16 @@ public class SkillBackstab extends ActiveSkill implements Passive, Listenable {
     public void init() {
         super.init();
         backstabText = SkillConfigManager.getRaw(this, "backstab-text", "");
+
+        SkillConfigManager.getUseSetting(null, this, "weapons", Util.swords).forEach(str -> {
+            Material material = Material.getMaterial(str.toUpperCase());
+            if(material != null) {
+                validWeapons.add(material);
+            }
+            else {
+                Heroes.log(Level.WARNING, "SkillBackstab: " + str + " is not a valid weapon material name.");
+            }
+        });
     }
 
     public SkillResult use(Hero hero, String[] args) {
@@ -92,39 +105,20 @@ public class SkillBackstab extends ActiveSkill implements Passive, Listenable {
 
         player.sendMessage(ChatColor.RED + "----------[ " + ChatColor.WHITE + "Backstab Damage " + ChatColor.RED + "]----------");
 
-        List<String> weapons = SkillConfigManager.getUseSetting(hero, this, "weapons", Util.swords);
+        final double backstabDamageModifier = SkillConfigManager.getUseSetting(hero, this, "backstab-bonus", 0.85, false)
+                + ((hero.getAttributeValue(AttributeType.DEXTERITY) * SkillConfigManager.getUseSetting(hero, this, "backstab-bonus-increase-per-dexterity", 0.05, false)));
 
-        double backstabDamageModifier = SkillConfigManager.getUseSetting(hero, this, "backstab-bonus", 0.85, false);
-        double backstabDamageModifierIncrease = SkillConfigManager.getUseSetting(hero, this, "backstab-bonus-increase-per-dexterity", 0.85, false);
-        backstabDamageModifier += 1 + (hero.getAttributeValue(AttributeType.DEXTERITY) * backstabDamageModifierIncrease);
+        final double ambushDamageModifier = SkillConfigManager.getUseSetting(hero, this, "ambush-bonus", 0.85, false)
+                + ((hero.getAttributeValue(AttributeType.DEXTERITY) * SkillConfigManager.getUseSetting(hero, this, "ambush-bonus-increase-per-dexterity", 0.05, false)));
 
-        double ambushDamageModifier = SkillConfigManager.getUseSetting(hero, this, "ambush-bonus", 0.85, false);
-        double ambushDamageModifierIncrease = SkillConfigManager.getUseSetting(hero, this, "ambush-bonus-increase-per-dexterity", 0.85, false);
-        ambushDamageModifier += 1 + (hero.getAttributeValue(AttributeType.DEXTERITY) * ambushDamageModifierIncrease);
 
-        double backstabDamage = 0;
-        double ambushDamage = 0;
-        for (String weaponName : weapons) {
-            Material weapon = Material.getMaterial(weaponName);
-            if (weapon == null){
-                Heroes.log(Level.WARNING, "SkillBackstab: " + weaponName + " is not a valid weapon material name.");
-                continue;
-            }
-
-            double baseDamage = 0.0;
-            if (plugin.getDamageManager().getDefaultClassDamage(hero, weapon) == null){
-                Heroes.log(Level.WARNING, "SkillBackstab: " + weaponName + " has no damage set.");
-            } else {
-                baseDamage = plugin.getDamageManager().getDefaultClassDamage(hero, weapon);
-            }
-
-            backstabDamage = baseDamage * backstabDamageModifier;
-            ambushDamage = baseDamage * ambushDamageModifier;
-
-            weaponName = weaponName.replace("_", " ");
-            weaponName = WordUtils.capitalizeFully(weaponName);
-            displayWeaponDamage(player, weaponName, backstabDamage, ambushDamage);
-        }
+        validWeapons.forEach(weapon -> {
+            double baseDamage = plugin.getDamageManager().getDefaultClassDamage(hero, weapon);
+            displayWeaponDamage(player,
+                    WordUtils.capitalizeFully(weapon.getKey().getKey().replaceAll("_", " ")),
+                    baseDamage * backstabDamageModifier,
+                    baseDamage * ambushDamageModifier);
+        });
 
         return SkillResult.NORMAL;
     }
@@ -167,18 +161,17 @@ public class SkillBackstab extends ActiveSkill implements Passive, Listenable {
 
         @EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
         public void onWeaponDamage(WeaponDamageEvent event) {
-            if (!(event.getDamager() instanceof Hero) || !(event.getEntity() instanceof LivingEntity)) {
+            if (!(event.getAttacker() instanceof Hero hero)) {
                 return;
             }
 
-            Hero hero = (Hero) event.getDamager();
             Player player = hero.getPlayer();
-            LivingEntity target = (LivingEntity) event.getEntity();
+            LivingEntity target = event.getDefender().getEntity();
 
             if (hero.canUseSkill(skill)) {
                 ItemStack item = NMSHandler.getInterface().getItemInMainHand(player.getInventory()); // 1.9: Main hand does left click attacks, so main hand only
 
-                if (!SkillConfigManager.getUseSetting(hero, skill, "weapons", Util.swords).contains(item.getType().name())) {
+                if (!validWeapons.contains(item.getType())) {
                     return;
                 }
 
@@ -186,50 +179,29 @@ public class SkillBackstab extends ActiveSkill implements Passive, Listenable {
                     return;
                 }
 
-                double chance = -1;
-                double damageModifier = -1;
+                double chance;
+                double damageModifier;
 
                 // Sneak for ambush, nosneak for backstab.
                 boolean allowVanillaSneaking = SkillConfigManager.getUseSetting(hero, skill, "allow-vanilla-sneaking", false);
                 if (hero.hasEffect("Sneak") || (allowVanillaSneaking && player.isSneaking())) {
                     chance = SkillConfigManager.getUseSetting(hero, skill, "ambush-chance", -1.0, false);
-
-                    damageModifier = SkillConfigManager.getUseSetting(hero, skill, "ambush-bonus", 0.85, false);
-                    double damageModifierIncrease = SkillConfigManager.getUseSetting(hero, skill, "ambush-bonus-increase-per-dexterity", 0.85, false);
-                    damageModifier += 1 + (hero.getAttributeValue(AttributeType.DEXTERITY) * damageModifierIncrease);
+                    damageModifier = SkillConfigManager.getUseSetting(hero, skill, "ambush-bonus", 0.85, false)
+                        + (hero.getAttributeValue(AttributeType.DEXTERITY) * SkillConfigManager.getUseSetting(hero, skill, "ambush-bonus-increase-per-dexterity", 0.05, false));
                 }
                 else {
                     chance = SkillConfigManager.getUseSetting(hero, skill, "backstab-chance", -1.0, false);
-
-                    damageModifier = SkillConfigManager.getUseSetting(hero, skill, "backstab-bonus", 0.85, false);
-                    double damageModifierIncrease = SkillConfigManager.getUseSetting(hero, skill, "backstab-bonus-increase-per-dexterity", 0.85, false);
-                    damageModifier += 1 + (hero.getAttributeValue(AttributeType.DEXTERITY) * damageModifierIncrease);
+                    damageModifier = SkillConfigManager.getUseSetting(hero, skill, "backstab-bonus", 0.85, false)
+                        + (hero.getAttributeValue(AttributeType.DEXTERITY) * SkillConfigManager.getUseSetting(hero, skill, "backstab-bonus-increase-per-dexterity", 0.85, false));
                 }
 
-                boolean backstabbed = true;
-                if (chance < 0)		// If below 1, backstab every time.
+                if (chance < 0 || Util.nextRand() < chance) {
                     event.setDamage((event.getDamage() * damageModifier));
-                else {
-                    if (Util.nextRand() < chance)
-                        event.setDamage((event.getDamage() * damageModifier));
-                    else
-                        backstabbed = false;
-                }
-
-                if (backstabbed) {
-                    //target.getWorld().spigot().playEffect(target.getLocation().add(0, 0.5, 0), Effect.COLOURED_DUST, 0, 0, 0.2F, 0.0F, 0.2F, 0.0F, 30, 16);
                     target.getWorld().spawnParticle(Particle.REDSTONE, target.getLocation().add(0, 0.5, 0), 30, 0.2, 0, 0.2, new Particle.DustOptions(Color.RED, 1));
-                    target.getWorld().playSound(target.getLocation(), Sound.ENTITY_ENDER_DRAGON_HURT, 1.0F, 0.6F);
-//                    if (target instanceof Monster)
-//                        broadcast(player.getLocation(), backstabText.replace("%hero%", player.getName()).replace("%target%", CustomNameManager.getName(target)));
-//                    else if (target instanceof Player)
-//                        broadcast(player.getLocation(), backstabText.replace("%hero%", player.getName()).replace("%target%", target.getName()));
-
-                    if (target instanceof Monster || target instanceof Player) { // Check doesn't seem necessary, only seems to not run for some creatures such as Animals.
-                        String targetName = target instanceof Player ? target.getName() : CustomNameManager.getName(target);
-                        broadcast(player.getLocation(), backstabText.replace("%hero%", player.getName())
-                                .replace("%target%", targetName));
-                    }
+                    target.getWorld().playSound(target.getLocation(), Sound.ENTITY_ENDER_DRAGON_HURT, 0.8F, 0.6F);
+                    String targetName = target instanceof Player ? target.getName() : CustomNameManager.getName(target);
+                    broadcast(player.getLocation(), backstabText.replace("%hero%", player.getName())
+                            .replace("%target%", targetName));
                 }
             }
         }

@@ -870,6 +870,14 @@ tasks.register("remastered", CompilePackTask) {
             "YggdrasilsTouch"]
 }
 
+tasks.register("dev", CompilePackTask) {
+    pack = "dev"
+    skills = [
+            "Mining",
+            "Backstab"
+    ]
+}
+
 tasks.register("kalentire", CompilePackTask) {
     pack = "kalentire"
     skills = [
@@ -1000,17 +1008,6 @@ tasks.register("kalentire", CompilePackTask) {
             "RecklessFury",
             "GreatFireball",
             "LavaLurk"
-    ]
-}
-
-tasks.register("dev", CompilePackTask) {
-    pack = "dev"
-    skills = [
-            "Conditioning",
-            "Reflect",
-            "Entomb",
-            "Encase",
-            "ActiveLifeSteal"
         ]
 }
 
