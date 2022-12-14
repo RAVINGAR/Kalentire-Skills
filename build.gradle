@@ -874,6 +874,14 @@ tasks.register("remastered", CompilePackTask) {
 tasks.register("dev", CompilePackTask) {
     pack = "dev"
     skills = [
+            "Mining",
+            "Backstab"
+    ]
+}
+
+tasks.register("kalentire", CompilePackTask) {
+    pack = "kalentire"
+    skills = [
             "Bloodbath",
             "Maim",
             "NumbingRage",
