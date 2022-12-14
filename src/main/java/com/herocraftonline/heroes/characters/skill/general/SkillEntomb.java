@@ -7,33 +7,49 @@ import com.herocraftonline.heroes.characters.Hero;
 import com.herocraftonline.heroes.characters.Monster;
 import com.herocraftonline.heroes.characters.effects.EffectType;
 import com.herocraftonline.heroes.characters.effects.ExpirableEffect;
-import com.herocraftonline.heroes.characters.skill.*;
-import com.herocraftonline.heroes.util.Util;
-import org.bukkit.Bukkit;
+import com.herocraftonline.heroes.characters.skill.Listenable;
+import com.herocraftonline.heroes.characters.skill.Skill;
+import com.herocraftonline.heroes.characters.skill.SkillConfigManager;
+import com.herocraftonline.heroes.characters.skill.SkillSetting;
+import com.herocraftonline.heroes.characters.skill.SkillType;
+import com.herocraftonline.heroes.characters.skill.TargettedSkill;
+import com.herocraftonline.heroes.chat.ChatComponents;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.World;
 import org.bukkit.block.Block;
-import org.bukkit.block.BlockFace;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
-import org.bukkit.event.HandlerList;
 import org.bukkit.event.Listener;
-import org.bukkit.event.block.*;
+import org.bukkit.event.block.BlockBreakEvent;
+import org.bukkit.event.block.BlockFromToEvent;
+import org.bukkit.event.block.BlockPistonExtendEvent;
+import org.bukkit.event.block.BlockPistonRetractEvent;
+import org.bukkit.event.block.BlockSpreadEvent;
+import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.hanging.HangingBreakEvent;
 import org.bukkit.event.server.PluginDisableEvent;
 import org.bukkit.material.Attachable;
-import org.bukkit.util.BlockIterator;
+import org.bukkit.scheduler.BukkitScheduler;
 import org.bukkit.util.BoundingBox;
-import org.bukkit.util.Vector;
+import org.jetbrains.annotations.NotNull;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.HashSet;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Random;
+import java.util.Set;
 
-public class SkillEntomb extends TargettedSkill {
+public class SkillEntomb extends TargettedSkill implements Listenable{
+    private BukkitScheduler scheduler;
+    private final SkillBlockListener listener = new SkillBlockListener();
     private static final Random random = new Random(System.currentTimeMillis());
     private static final List<Material> blockTypes = Arrays.asList(
         Material.STONE,
@@ -45,75 +61,87 @@ public class SkillEntomb extends TargettedSkill {
         Material.GRANITE
     );
 
+    public static final String ENTOMB_EFFECT = "Entombed";
+
     private String applyText;
     private String expireText;
 
     public SkillEntomb(Heroes plugin) {
         super(plugin, "Entomb");
-        setDescription("Attempt to Entomb a player for $1 second(s).");
+        this.scheduler = plugin.getServer().getScheduler();
+        setDescription("Entombs a target for $1 second(s). Dealing $2 damage if the effect is not interrupted.");
         setUsage("/skill entomb");
         setArgumentRange(0, 0);
         setIdentifiers("skill entomb");
         setTypes(SkillType.ABILITY_PROPERTY_EARTH, SkillType.SILENCEABLE, SkillType.BLOCK_CREATING, SkillType.MULTI_GRESSIVE);
     }
 
+    @Override
     public ConfigurationSection getDefaultConfig() {
         ConfigurationSection node = super.getDefaultConfig();
 
         node.set(SkillSetting.RADIUS.node(), 3);
         node.set(SkillSetting.MAX_DISTANCE.node(), 12);
         node.set(SkillSetting.DURATION.node(), 5000);
-//        node.set(SkillSetting.APPLY_TEXT.node(), ChatComponents.GENERIC_SKILL + "%hero% conjures a wall of Water!");
-//        node.set(SkillSetting.EXPIRE_TEXT.node(), ChatComponents.GENERIC_SKILL + "%hero%'s wall has crumbled");
+        node.set(SkillSetting.DAMAGE.node(), 0);
+        node.set(SkillSetting.DAMAGE_INCREASE.node(), 0);
+        node.set(SkillSetting.APPLY_TEXT.node(), ChatComponents.GENERIC_SKILL + "%hero% has been entombed!");
+        node.set(SkillSetting.EXPIRE_TEXT.node(), ChatComponents.GENERIC_SKILL + "%hero% is no longer entombed!");
 
         return node;
     }
 
-    public String getDescription(Hero hero) {
-        //int height = SkillConfigManager.getUseSetting(hero, this, "height", 3, false) * 2;
-        //int width = SkillConfigManager.getUseSetting(hero, this, "width", 2, false) * 2;
-//        int maxDist = SkillConfigManager.getUseSetting(hero, this, SkillSetting.MAX_DISTANCE, 12, false);
-
-        return getDescription();//.replace("$1", maxDist + "");//.replace("$2", width + "").replace("$3", height + "");
+    @Override
+    public void init() {
+        super.init();
+        applyText = SkillConfigManager.getRaw(this, SkillSetting.APPLY_TEXT, "%hero% has been entombed!").replace("%hero%", "$1");
+        expireText = SkillConfigManager.getRaw(this, SkillSetting.EXPIRE_TEXT, "%hero% is no longer entombed!").replace("%hero%", "$1");
     }
 
-    //@Override
-//    public void init() {
-//        super.init();
-//
-//        applyText = SkillConfigManager.getRaw(this, SkillSetting.APPLY_TEXT, ChatComponents.GENERIC_SKILL + "%hero% creates an entomb!").replace("%hero%", "$1");
-//        expireText = SkillConfigManager.getRaw(this, SkillSetting.EXPIRE_TEXT, ChatComponents.GENERIC_SKILL + "%hero%'s entomb has vanished").replace("%hero%", "$1");
-//    }
+    @Override
+    public String getDescription(Hero hero) {
+        int duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, 5000, false);
+        double damage = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE, 0.0, false)
+                + (SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE_INCREASE, 0.0, false) * hero.getHeroLevel(this));
+        return getDescription().replace("$1", String.valueOf(duration)).replace("$2", String.valueOf(damage));
+    }
 
     @Override
     public SkillResult use(Hero hero, LivingEntity targetEnt, String[] strings) {
         Player player = hero.getPlayer();
-        World world = player.getWorld();
 
-        int maxDist = SkillConfigManager.getUseSetting(hero, this, SkillSetting.MAX_DISTANCE, 12, false);
         int radius = SkillConfigManager.getUseSetting(hero, this, SkillSetting.RADIUS, 4, false);
         long duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, 5000, false);
+        double damage = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE, 0.0, false)
+                + (SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE_INCREASE, 0.0, false) * hero.getHeroLevel(this));
 
         if (!(damageCheck(player, targetEnt)))
             return SkillResult.INVALID_TARGET_NO_MSG;
 
-        ExpirableEffect effect = new EntombedEffect(this, player, duration, radius);
+        ExpirableEffect effect = new EntombedEffect(this, player, duration, radius, damage);
         CharacterTemplate character = plugin.getCharacterManager().getCharacter(targetEnt);
         character.addEffect(effect);
 
         return SkillResult.NORMAL;
     }
 
+    @NotNull
+    @Override
+    public Listener getListener() {
+        return listener;
+    }
+
     public class EntombedEffect extends ExpirableEffect {
         private final int radius;
+        private final double damage;
 
-        private Set<Block> blocksToLock = new HashSet<Block>();
-        private Set<Block> changedBlocks = new HashSet<Block>();
-        private SkillBlockListener listener = new SkillBlockListener();
+        private final Set<Block> blocksToLock = new HashSet<Block>();
+        private final Set<Block> changedBlocks = new HashSet<Block>();
 
-        public EntombedEffect(Skill skill, Player applier, long duration, int radius) {
-            super(skill, "Entombed", applier, duration);
+        public EntombedEffect(Skill skill, Player applier, long duration, int radius, double damage) {
+            super(skill, ENTOMB_EFFECT, applier, duration, applyText, expireText);
             this.radius = radius;
+            this.damage = damage;
 
             types.add(EffectType.HARMFUL);
             types.add(EffectType.EARTH);
@@ -122,23 +150,27 @@ public class SkillEntomb extends TargettedSkill {
 
         public void applyToMonster(Monster monster) {
             super.applyToMonster(monster);
-            Bukkit.getServer().getPluginManager().registerEvents(listener, plugin);
-            EntombTarget(monster.getEntity());
+            entombTarget(monster);
         }
 
         public void applyToHero(Hero hero) {
             super.applyToHero(hero);
-            Bukkit.getServer().getPluginManager().registerEvents(listener, plugin);
-            EntombTarget(hero.getPlayer());
+            entombTarget(hero);
         }
 
-        private void EntombTarget(LivingEntity origignalTarget) {
-            Location location = origignalTarget.getLocation();
+        private void entombTarget(CharacterTemplate character) {
+            LivingEntity target = character.getEntity();
+            scheduler.scheduleSyncDelayedTask(plugin, () -> {
+                if(character.hasEffect(ENTOMB_EFFECT)) {
+                    damageEntity(target, applier, damage, EntityDamageEvent.DamageCause.MAGIC, 0.0f);
+                }
+            }, getDuration() / 1000 * 20);
+            Location location = target.getLocation();
             World world = location.getWorld();
             Set<BoundingBox> hangingBlockBoxes = new HashSet<>();
             Collection<Entity> nearbyEntities = world.getNearbyEntities(location, radius, radius, radius);
             for(Entity entity : nearbyEntities) {
-                if (entity == origignalTarget)
+                if (entity == target)
                     continue;
                 if (entity instanceof Attachable)
                     hangingBlockBoxes.add(entity.getBoundingBox());
@@ -154,6 +186,7 @@ public class SkillEntomb extends TargettedSkill {
                 block.setType(blockTypes.get(randomIndex));
                 changedBlocks.add(block);
             }
+            listener.trackedEffects.add(this);
         }
 
         @Override
@@ -189,107 +222,84 @@ public class SkillEntomb extends TargettedSkill {
             return circleBlocks;
         }
 
-        private Block SafelyIterateFromBlock(Block block, Vector direction, int maxDist, int requiredUpwardFreeSpace) {
-            Block validFinalBlock = null;
-            BlockIterator iter = null;
-            try {
-                iter = new BlockIterator(block.getWorld(), block.getLocation().toVector(), direction, 0, maxDist);
-            } catch (IllegalStateException e) {
-                return null;
-            }
-
-            Block currentBlock;
-            while (iter.hasNext()) {
-                currentBlock = iter.next();
-                Material currentBlockType = currentBlock.getType();
-                if (!currentBlock.isEmpty())
-                    break;
-
-                validFinalBlock = currentBlock;
-                boolean cannotGoAnyHigher = false;
-
-                int i = 0;
-                Block currentAboveBlock = currentBlock;
-                while (i < requiredUpwardFreeSpace) {
-                    currentAboveBlock = currentAboveBlock.getRelative(BlockFace.UP);
-                    if (!Util.transparentBlocks.contains(currentAboveBlock.getType())) {
-                        cannotGoAnyHigher = true;
-                        break;
-                    }
-                    i++;
-                }
-                if (cannotGoAnyHigher)
-                    break;
-            }
-            if (validFinalBlock == null)
-                return null;
-            return validFinalBlock;
-        }
-
         private void revertBlocks() {
-            try {
-                for (Block block : changedBlocks) {
-                    block.setType(Material.AIR);
-                }
-            } catch(Exception e) {
-                // Eat the exception
-            }
-            changedBlocks.clear();
-            blocksToLock.clear();
-            HandlerList.unregisterAll(listener);
+            clearBlocks();
+            listener.trackedEffects.remove(this);
         }
 
-        public class SkillBlockListener implements Listener {
-            @EventHandler(priority = EventPriority.MONITOR)
-            public void onPluginDisable(PluginDisableEvent e) {
-                if (e.getPlugin() != plugin) {
-                    return;
-                }
-                revertBlocks();
+        private void clearBlocks() {
+            for (Block block : changedBlocks) {
+                block.setType(Material.AIR);
             }
+            //changedBlocks.clear(); might cause concurrency issues
+            //blocksToLock.clear();
+        }
+    }
 
-            @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
-            public void onBlockPlace(BlockSpreadEvent event) {
-                Block block = event.getBlock();
-                if (block != null && blocksToLock.contains(block)) {
-                    event.setCancelled(true);
-                }
-            }
+    public class SkillBlockListener implements Listener {
+        private final List<EntombedEffect> trackedEffects = new LinkedList<>();
 
-            @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
-            public void onBlockBreak(BlockBreakEvent event) {
-                Block block = event.getBlock();
-                if (block != null && blocksToLock.contains(block)) {
-                    event.setCancelled(true);
+        public SkillBlockListener() {
+
+        }
+
+        public boolean isBlockLocked(Block block) {
+            for(EntombedEffect effect : trackedEffects) {
+                if(effect.blocksToLock.contains(block)) {
+                    return true;
                 }
             }
+            return false;
+        }
 
-            @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
-            public void onBlockFromTo(BlockFromToEvent event) {
-                Block fromBlock = event.getBlock();
-                Block toBlock = event.getToBlock();
-                if (blocksToLock.contains(toBlock) || blocksToLock.contains(fromBlock))
-                    event.setCancelled(true);
-            }
 
-            @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
-            public void onBlockPistonRetract(BlockPistonRetractEvent event) {
-                if (event.getBlocks().stream().anyMatch(blocksToLock::contains))
-                    event.setCancelled(true);
+        @EventHandler(priority = EventPriority.MONITOR)
+        public void onPluginDisable(PluginDisableEvent e) {
+            if (e.getPlugin() != plugin) {
+                return;
             }
+            trackedEffects.forEach(EntombedEffect::clearBlocks);
+        }
 
-            @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
-            public void onHangingBreak(HangingBreakEvent event) {
-                Block block = event.getEntity().getLocation().getBlock();
-                if (block != null && blocksToLock.contains(block))
-                    event.setCancelled(true);
+        @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
+        public void onBlockPlace(BlockSpreadEvent event) {
+            if (isBlockLocked(event.getBlock())) {
+                event.setCancelled(true);
             }
+        }
 
-            @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
-            public void onBlockPistonExtend(BlockPistonExtendEvent event) {
-                if (event.getBlocks().stream().anyMatch(blocksToLock::contains))
-                    event.setCancelled(true);
+        @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
+        public void onBlockBreak(BlockBreakEvent event) {
+            if (isBlockLocked(event.getBlock())) {
+                event.setCancelled(true);
             }
+        }
+
+        @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
+        public void onBlockFromTo(BlockFromToEvent event) {
+            Block fromBlock = event.getBlock();
+            Block toBlock = event.getToBlock();
+            if (isBlockLocked(toBlock) || isBlockLocked(fromBlock))
+                event.setCancelled(true);
+        }
+
+        @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
+        public void onBlockPistonRetract(BlockPistonRetractEvent event) {
+            if (event.getBlocks().stream().anyMatch(this::isBlockLocked))
+                event.setCancelled(true);
+        }
+
+        @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
+        public void onHangingBreak(HangingBreakEvent event) {
+            Block block = event.getEntity().getLocation().getBlock();
+            if (isBlockLocked(block))
+                event.setCancelled(true);
+        }
+
+        @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
+        public void onBlockPistonExtend(BlockPistonExtendEvent event) {
+            if (event.getBlocks().stream().anyMatch(this::isBlockLocked))
+                event.setCancelled(true);
         }
     }
 }

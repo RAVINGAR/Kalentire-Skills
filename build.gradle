@@ -14,8 +14,8 @@ allprojects {
     group 'com.herocraftonline.heroes.characters.skill'
     version '1.9.25'
 
-    sourceCompatibility = 16
-    targetCompatibility = 16
+    sourceCompatibility = JavaVersion.VERSION_16
+    targetCompatibility = JavaVersion.VERSION_16
 }
 repositories {
     //mavenLocal()
@@ -187,7 +187,6 @@ tasks.register("public1", CompilePackTask) {
             "Reborn",
             "Recall",
             "Regrowth",
-            "Repair",
             "Revive",
             "Root",
             "Safefall",
@@ -871,9 +870,10 @@ tasks.register("remastered", CompilePackTask) {
             "YggdrasilsTouch"]
 }
 
-tasks.register("dev", CompilePackTask) {
-    pack = "dev"
+tasks.register("kalentire", CompilePackTask) {
+    pack = "kalentire"
     skills = [
+            "Bandage",
             "Bloodbath",
             "Maim",
             "NumbingRage",
@@ -1000,6 +1000,17 @@ tasks.register("dev", CompilePackTask) {
             "RecklessFury",
             "GreatFireball",
             "LavaLurk"
+    ]
+}
+
+tasks.register("dev", CompilePackTask) {
+    pack = "dev"
+    skills = [
+            "Conditioning",
+            "Reflect",
+            "Entomb",
+            "Encase",
+            "ActiveLifeSteal"
         ]
 }
 

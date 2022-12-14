@@ -1,31 +1,34 @@
 package com.herocraftonline.heroes.characters.skill.general;
 
-import org.bukkit.Bukkit;
-import org.bukkit.configuration.ConfigurationSection;
-import org.bukkit.entity.LivingEntity;
-import org.bukkit.entity.Player;
-import org.bukkit.Sound;
-import org.bukkit.event.EventHandler;
-import org.bukkit.event.EventPriority;
-import org.bukkit.event.Listener;
-import org.bukkit.event.entity.EntityDamageEvent.DamageCause;
-
 import com.herocraftonline.heroes.Heroes;
 import com.herocraftonline.heroes.api.SkillResult;
+import com.herocraftonline.heroes.api.events.HeroesDamageEvent;
+import com.herocraftonline.heroes.api.events.ProjectileDamageEvent;
+import com.herocraftonline.heroes.api.events.SkillDamageEvent;
 import com.herocraftonline.heroes.api.events.WeaponDamageEvent;
 import com.herocraftonline.heroes.characters.CharacterTemplate;
 import com.herocraftonline.heroes.characters.Hero;
 import com.herocraftonline.heroes.characters.effects.EffectType;
 import com.herocraftonline.heroes.characters.effects.ExpirableEffect;
 import com.herocraftonline.heroes.characters.skill.ActiveSkill;
+import com.herocraftonline.heroes.characters.skill.Listenable;
 import com.herocraftonline.heroes.characters.skill.Skill;
 import com.herocraftonline.heroes.characters.skill.SkillConfigManager;
 import com.herocraftonline.heroes.characters.skill.SkillSetting;
 import com.herocraftonline.heroes.characters.skill.SkillType;
 import com.herocraftonline.heroes.util.Util;
+import org.bukkit.configuration.ConfigurationSection;
+import org.bukkit.entity.LivingEntity;
+import org.bukkit.entity.Player;
+import org.bukkit.event.EventHandler;
+import org.bukkit.event.EventPriority;
+import org.bukkit.event.Listener;
+import org.bukkit.event.entity.EntityDamageEvent;
+import org.bukkit.scheduler.BukkitScheduler;
+import org.jetbrains.annotations.NotNull;
 
-public class SkillReflect extends ActiveSkill {
-
+public class SkillReflect extends ActiveSkill implements Listenable {
+    private final Listener listener;
     private String applyText;
     private String expireText;
 
@@ -36,7 +39,7 @@ public class SkillReflect extends ActiveSkill {
         setArgumentRange(0, 0);
         setIdentifiers("skill reflect");
         setTypes(SkillType.FORCE, SkillType.SILENCEABLE, SkillType.BUFFING);
-        Bukkit.getServer().getPluginManager().registerEvents(new SkillHeroListener(this), plugin);
+        listener = new SkillHeroListener(this);
     }
 
     @Override
@@ -67,6 +70,12 @@ public class SkillReflect extends ActiveSkill {
         return SkillResult.NORMAL;
     }
 
+    @NotNull
+    @Override
+    public Listener getListener() {
+        return listener;
+    }
+
     public class ReflectEffect extends ExpirableEffect {
 
         private final double reflectAmount;
@@ -78,22 +87,18 @@ public class SkillReflect extends ActiveSkill {
             this.types.add(EffectType.BENEFICIAL);
         }
 
-        public double getReflectAmount() {
-            return reflectAmount;
-        }
-
         @Override
         public void applyToHero(Hero hero) {
             super.applyToHero(hero);
             Player player = hero.getPlayer();
-            broadcast(player.getLocation(), "    " + applyText, player.getName());
+            broadcast(player.getLocation(), applyText, player.getName());
         }
 
         @Override
         public void removeFromHero(Hero hero) {
             super.removeFromHero(hero);
             Player player = hero.getPlayer();
-            broadcast(player.getLocation(), "    " + expireText, player.getName());
+            broadcast(player.getLocation(), expireText, player.getName());
         }
 
     }
@@ -101,6 +106,7 @@ public class SkillReflect extends ActiveSkill {
     public class SkillHeroListener implements Listener {
 
         private final Skill skill;
+        private final BukkitScheduler scheduler = plugin.getServer().getScheduler();
 
         public SkillHeroListener(Skill skill) {
             this.skill = skill;
@@ -108,14 +114,45 @@ public class SkillReflect extends ActiveSkill {
 
         @EventHandler(priority = EventPriority.MONITOR)
         public void onWeaponDamage(WeaponDamageEvent event) {
-            if (event.isCancelled() || !(event.getEntity() instanceof LivingEntity)) {
+            if (event.isCancelled()) {
                 return;
             }
-            CharacterTemplate character = plugin.getCharacterManager().getCharacter((LivingEntity) event.getEntity());
+            handleEvent(event);
+        }
+
+        @EventHandler(priority = EventPriority.MONITOR)
+        public void onSkillDamage(SkillDamageEvent event) {
+            if (event.isCancelled()) {
+                return;
+            }
+            handleEvent(event);
+        }
+
+        @EventHandler(priority = EventPriority.MONITOR)
+        public void onProjectileDamage(ProjectileDamageEvent event) {
+            if (event.isCancelled()) {
+                return;
+            }
+            handleEvent(event);
+        }
+
+        private void handleEvent(HeroesDamageEvent event) {
+            CharacterTemplate character = event.getDefender();
             if (character.hasEffect("Reflect")) {
-                double damage = event.getDamage() * ((ReflectEffect) character.getEffect("Reflect")).reflectAmount;
-                plugin.getDamageManager().addSpellTarget(event.getDamager().getEntity(), character, skill);
-                damageEntity(event.getDamager().getEntity(), character.getEntity(), damage, DamageCause.MAGIC);
+                double damage = event.getDamage() * (1 - ((ReflectEffect) character.getEffect("Reflect")).reflectAmount);
+                event.setDamage(Math.max(0, event.getDamage() - damage));
+
+                if(event.getDamage() < 1) {
+                    event.setCancelled(true);
+                }
+                LivingEntity attacker = event.getAttacker().getEntity();
+                scheduler.runTask(plugin, () -> {
+                    if(!event.getAttacker().hasEffect("Reflect") && damage > 0) {
+                        plugin.getDamageManager().addSpellTarget(attacker, character, skill);
+                        damageEntity(attacker, character.getEntity(), damage, EntityDamageEvent.DamageCause.MAGIC);
+                    }
+                });
+
             }
         }
     }

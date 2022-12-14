@@ -4,15 +4,15 @@ import com.herocraftonline.heroes.Heroes;
 import com.herocraftonline.heroes.api.SkillResult;
 import com.herocraftonline.heroes.attributes.AttributeType;
 import com.herocraftonline.heroes.characters.Hero;
-import com.herocraftonline.heroes.characters.skill.*;
-
-import org.bukkit.Effect;
+import com.herocraftonline.heroes.characters.skill.SkillConfigManager;
+import com.herocraftonline.heroes.characters.skill.SkillSetting;
+import com.herocraftonline.heroes.characters.skill.SkillType;
+import com.herocraftonline.heroes.characters.skill.TargettedSkill;
 import org.bukkit.Particle;
 import org.bukkit.Sound;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
-import org.bukkit.Sound;
 import org.bukkit.event.entity.EntityDamageEvent.DamageCause;
 
 public class SkillArcaneblast extends TargettedSkill {
@@ -59,9 +59,9 @@ public class SkillArcaneblast extends TargettedSkill {
 
         //public void playEffect(Location location, Effect effect,  id,  data,  offsetX,  offsetY,  offsetZ,  speed,  particleCount,  radius)
         //target.getWorld().spigot().playEffect(target.getLocation(), Effect.EXPLOSION, 1, 1, 0F, 1F, 0F, 10F, 200, 10);
-        target.getWorld().spawnParticle(Particle.EXPLOSION_NORMAL, 200, 0, 1, 0, 10);
+        target.getWorld().spawnParticle(Particle.EXPLOSION_NORMAL, target.getLocation(), 3);
         //target.getWorld().spigot().playEffect(target.getLocation(), Effect.EXPLOSION_LARGE, 1, 1, 0F, 1F, 0F, 0.1F, 10, 10);
-        target.getWorld().spawnParticle(Particle.EXPLOSION_LARGE, 10, 0, 1, 0, 0.1);
+        target.getWorld().spawnParticle(Particle.ELECTRIC_SPARK, target.getLocation(), 14);
         target.getWorld().playSound(target.getLocation(), Sound.ENTITY_FIREWORK_ROCKET_LARGE_BLAST, 7.0F, 0.5F);
         target.getWorld().playSound(target.getLocation(), Sound.ENTITY_GENERIC_EXPLODE, 7.0F, 1.0F);
         
