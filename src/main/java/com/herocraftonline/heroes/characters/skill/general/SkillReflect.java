@@ -5,6 +5,7 @@ import com.herocraftonline.heroes.api.SkillResult;
 import com.herocraftonline.heroes.api.events.HeroesDamageEvent;
 import com.herocraftonline.heroes.api.events.ProjectileDamageEvent;
 import com.herocraftonline.heroes.api.events.SkillDamageEvent;
+import com.herocraftonline.heroes.api.events.SkillUseEvent;
 import com.herocraftonline.heroes.api.events.WeaponDamageEvent;
 import com.herocraftonline.heroes.characters.CharacterTemplate;
 import com.herocraftonline.heroes.characters.Hero;
@@ -46,6 +47,7 @@ public class SkillReflect extends ActiveSkill implements Listenable {
     public ConfigurationSection getDefaultConfig() {
         ConfigurationSection node = super.getDefaultConfig();
         node.set(SkillSetting.DURATION.node(), 5000);
+        node.set("grants-immunity", false);
         node.set("reflected-amount", 0.5);
         node.set(SkillSetting.APPLY_TEXT.node(), "%hero% put up a reflective shield!");
         node.set(SkillSetting.EXPIRE_TEXT.node(), "%hero% lost his reflective shield!");
@@ -65,7 +67,8 @@ public class SkillReflect extends ActiveSkill implements Listenable {
 
         int duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, 5000, false);
         double reflectAmount = SkillConfigManager.getUseSetting(hero, this, "reflected-amount", 0.5, false);
-        hero.addEffect(new ReflectEffect(this, hero.getPlayer(), duration, reflectAmount));
+        boolean grantsImmunity = SkillConfigManager.getUseSetting(hero, this, "grants-immunity", false);
+        hero.addEffect(new ReflectEffect(this, hero.getPlayer(), duration, reflectAmount, grantsImmunity));
 
         return SkillResult.NORMAL;
     }
@@ -79,10 +82,12 @@ public class SkillReflect extends ActiveSkill implements Listenable {
     public class ReflectEffect extends ExpirableEffect {
 
         private final double reflectAmount;
+        private final boolean grantsImmunity;
 
-        public ReflectEffect(Skill skill, Player applier, long duration, double reflectAmount) {
+        public ReflectEffect(Skill skill, Player applier, long duration, double reflectAmount, boolean grantsImmunity) {
             super(skill, "Reflect", applier, duration);
             this.reflectAmount = reflectAmount;
+            this.grantsImmunity = grantsImmunity;
             this.types.add(EffectType.DISPELLABLE);
             this.types.add(EffectType.BENEFICIAL);
         }
@@ -112,47 +117,47 @@ public class SkillReflect extends ActiveSkill implements Listenable {
             this.skill = skill;
         }
 
-        @EventHandler(priority = EventPriority.MONITOR)
+        @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
         public void onWeaponDamage(WeaponDamageEvent event) {
-            if (event.isCancelled()) {
-                return;
-            }
             handleEvent(event);
         }
 
-        @EventHandler(priority = EventPriority.MONITOR)
+        @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
         public void onSkillDamage(SkillDamageEvent event) {
-            if (event.isCancelled()) {
-                return;
+            CharacterTemplate character = event.getDefender();
+            if(character.hasEffect("Reflect")) {
+                ReflectEffect effect = (((ReflectEffect) character.getEffect("Reflect")));
+                double damage = event.getDamage() * effect.reflectAmount;
+                event.setDamage(effect.grantsImmunity ? 0 : Math.max(0, event.getDamage() - damage));
+
+                if(event.getDamage() == 0) {
+                    event.setCancelled(true);
+                }
             }
-            handleEvent(event);
         }
 
-        @EventHandler(priority = EventPriority.MONITOR)
+        @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
         public void onProjectileDamage(ProjectileDamageEvent event) {
-            if (event.isCancelled()) {
-                return;
-            }
             handleEvent(event);
         }
 
         private void handleEvent(HeroesDamageEvent event) {
             CharacterTemplate character = event.getDefender();
             if (character.hasEffect("Reflect")) {
-                double damage = event.getDamage() * (1 - ((ReflectEffect) character.getEffect("Reflect")).reflectAmount);
-                event.setDamage(Math.max(0, event.getDamage() - damage));
+                ReflectEffect effect = (((ReflectEffect) character.getEffect("Reflect")));
+                double damage = event.getDamage() * effect.reflectAmount;
+                event.setDamage(effect.grantsImmunity ? 0 : Math.max(0, event.getDamage() - damage));
 
-                if(event.getDamage() < 1) {
+                if(event.getDamage() == 0) {
                     event.setCancelled(true);
                 }
                 LivingEntity attacker = event.getAttacker().getEntity();
-                scheduler.runTask(plugin, () -> {
-                    if(!event.getAttacker().hasEffect("Reflect") && damage > 0) {
+                if(!plugin.getCharacterManager().getCharacter(attacker).hasEffect("Reflect") && damage > 0) {
+                    scheduler.scheduleSyncDelayedTask(plugin, () -> {
                         plugin.getDamageManager().addSpellTarget(attacker, character, skill);
                         damageEntity(attacker, character.getEntity(), damage, EntityDamageEvent.DamageCause.MAGIC);
-                    }
-                });
-
+                    });
+                }
             }
         }
     }

@@ -121,8 +121,8 @@ public class SkillWeb extends TargettedSkill {
             types.add(EffectType.HARMFUL);
 
             if (rootDuration > 0) {
-                addPotionEffect(new PotionEffect(PotionEffectType.SLOW, (int) ((rootDuration / 1000.0) * 20), 127), false);      // Max slowness is 127
-                addPotionEffect(new PotionEffect(PotionEffectType.JUMP, (int) ((rootDuration / 1000.0) * 20), 128), false);      // Max negative jump boost
+                addPotionEffect(new PotionEffect(PotionEffectType.SLOW, (int) ((rootDuration / 1000.0) * 20), 127));      // Max slowness is 127
+                addPotionEffect(new PotionEffect(PotionEffectType.JUMP, (int) ((rootDuration / 1000.0) * 20), 128));      // Max negative jump boost
             }
         }
 

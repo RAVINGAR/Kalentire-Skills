@@ -873,8 +873,10 @@ tasks.register("remastered", CompilePackTask) {
 tasks.register("dev", CompilePackTask) {
     pack = "dev"
     skills = [
-            "Mining",
-            "Backstab"
+            "SkillAssassinsGuile",
+            "SkillDarts",
+            "SkillDeadlyToxins",
+            "SkillSerratedEdge"
     ]
 }
 
@@ -1024,7 +1026,7 @@ abstract class CompilePackTask extends DefaultTask {
     @TaskAction
     def compile() {
         def src = "bin/" + pack
-        def srcpath = "com/herocraftonline/heroes/characters/skill/general"
+        def srcpath = "com/herocraftonline/heroes/characters/skill/kalentire"
 
         ant.mkdir(dir: "bin")
         ant.mkdir(dir: "dist")
@@ -1070,7 +1072,7 @@ abstract class CompilePackTask extends DefaultTask {
             def classname = f.name.replaceAll(".class", "")
             def infopath = "bin/skill.info"
             ant.echo(message: src + "/" + classname)
-            ant.echo(file: infopath, message: "main-class: com.herocraftonline.heroes.characters.skill.general" + "." + classname + ",version: " + version)
+            ant.echo(file: infopath, message: "main-class: com.herocraftonline.heroes.characters.skill.kalentire" + "." + classname + ",version: " + version)
             ant.jar(jarfile: "build/" + pack + "/" + classname + ".jar", basedir: "bin", includes: srcpath + "/" + classname + "*.class, skill.info") {
                 manifest {
                     attribute(name: "Class-Path", value: "../../Heroes.jar")

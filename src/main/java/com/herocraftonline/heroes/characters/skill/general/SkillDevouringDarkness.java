@@ -156,7 +156,7 @@ public class SkillDevouringDarkness extends ActiveSkill {
 
             int slowDuration = SkillConfigManager.getUseSetting(hero, skill, "darkness-slow-duration", 1500, false);
 
-            int maxTargets =SkillConfigManager.getUseSetting(hero, skill, "max-targets", 0, false);
+            int maxTargets = SkillConfigManager.getUseSetting(hero, skill, "max-targets", 0, false);
             int targetsHit = 0;
             for (Entity entity : player.getNearbyEntities(radius, radius, radius)) {
                 // Check to see if we've exceeded the max targets

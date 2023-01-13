@@ -1,4 +1,4 @@
-package com.herocraftonline.heroes.characters.skill.unusedskills;
+package com.herocraftonline.heroes.characters.skill.general;
 
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
@@ -9,6 +9,7 @@ import org.bukkit.Sound;
 import org.bukkit.Sound;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Entity;
+import org.bukkit.entity.Item;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.Sound;
@@ -81,13 +82,10 @@ public class SkillThrowAxe extends TargettedSkill {
         damage += damageIncrease * hero.getAttributeValue(AttributeType.STRENGTH);
 
         Vector vector  = target.getLocation().toVector().subtract(player.getLocation().toVector()).normalize();
-        final Entity axe = player.getLocation().getWorld().dropItemNaturally(player.getLocation(), new ItemStack(Material.STONE_AXE, 1, (short) 1));
+        final Item axe = player.getLocation().getWorld().dropItemNaturally(player.getLocation(), new ItemStack(Material.STONE_AXE, 1));
+        axe.setPickupDelay(32767);
         axe.setVelocity(vector.multiply(3.5));
-        Bukkit.getScheduler().scheduleSyncDelayedTask(plugin, new Runnable() {
-            public void run() {
-                axe.remove();
-            }
-        }, 10);
+        Bukkit.getScheduler().scheduleSyncDelayedTask(plugin, axe::remove, 10);
 
         addSpellTarget(target, hero);
         damageEntity(target, player, damage, EntityDamageEvent.DamageCause.ENTITY_ATTACK);
@@ -95,8 +93,8 @@ public class SkillThrowAxe extends TargettedSkill {
         broadcastExecuteText(hero, target);
 
         //player.getWorld().spigot().playEffect(target.getLocation().add(0, 0.5, 0), org.bukkit.Effect.CRIT, 0, 0, 0, 0, 0, 1, 25, 16);
-        player.getWorld().spawnParticle(Particle.CRIT, target.getLocation().add(0, 0.5, 0), 25, 0, 0, 0, 1);
-        player.getWorld().playEffect(player.getLocation(), org.bukkit.Effect.BLAZE_SHOOT, 3);
+        player.getWorld().spawnParticle(Particle.CRIT, target.getLocation().add(0, 0.5, 0), 25, 0, 0, 0);
+        player.getWorld().playSound(player.getLocation(), Sound.ENTITY_BLAZE_SHOOT, 0.6F, 1.1F);
         player.getWorld().playSound(player.getLocation(), Sound.ENTITY_ARROW_SHOOT, 0.8F, 1.0F);
 
         return SkillResult.NORMAL;

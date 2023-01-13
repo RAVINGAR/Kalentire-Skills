@@ -90,11 +90,6 @@ public class SkillLavaLurk extends ActiveSkill implements Listenable {
         Player player = hero.getPlayer();
         Location loc = player.getLocation();
 
-        if (loc.getBlock().getType() != Material.LAVA) {
-            player.sendMessage(failText);
-            return SkillResult.FAIL;
-        }
-
         long duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, 30000, false);
         long onBreakDuration = SkillConfigManager.getUseSetting(hero, this, "on-break-delayed-fire-resist-duration", 1500, false);
 
@@ -121,6 +116,7 @@ public class SkillLavaLurk extends ActiveSkill implements Listenable {
             this.onBreakFireResistDuration = onBreakFireResistDuration;
 
             types.add(EffectType.RESIST_FIRE);
+            types.add(EffectType.INVISIBILITY);
         }
 
         @Override
@@ -151,7 +147,7 @@ public class SkillLavaLurk extends ActiveSkill implements Listenable {
                 }
                 World world = player.getWorld();
                 world.playSound(player.getLocation(), Sound.ENTITY_BLAZE_DEATH, 0.7F, 0.8F);
-                world.spawnParticle(Particle.SMALL_FLAME, player.getLocation(), 24, 3, 2, 3);
+                world.spawnParticle(Particle.SMALL_FLAME, player.getLocation(), 24, 0.15, 1, 0.15);
             }
         }
     }
@@ -180,7 +176,7 @@ public class SkillLavaLurk extends ActiveSkill implements Listenable {
                 Location newLoc = hero.getPlayer().getLocation();
                 World world = newLoc.getWorld();
                 //todo mayb do thing where like there are two particles for eyes
-                world.spawnParticle(Particle.FLAME, oldLoc, 24, 1, 2, 1);
+                world.spawnParticle(Particle.FLAME, oldLoc, 24, 0.15, 1, 0.15);
                 if (newLoc.getBlock().getType() == Material.WATER) {
                     hero.removeEffect(hero.getEffect(effectName));
                     heroes.remove();
