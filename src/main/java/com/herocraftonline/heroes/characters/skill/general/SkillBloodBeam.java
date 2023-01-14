@@ -71,7 +71,7 @@ public class SkillBloodBeam extends SkillBaseBeam {
 			public void handle(Hero hero, LivingEntity target, Beam.PointData pointData) {
 				if (damageCheck(hero.getPlayer(), target)) {
 					double beamDamage = SkillConfigManager.getScaledUseSettingDouble(hero, skill, SkillSetting.DAMAGE, false);
-					damageEntity(target, hero.getPlayer(), beamDamage, EntityDamageEvent.DamageCause.MAGIC, false);
+					damageEntity(target, hero.getPlayer(), beamDamage, EntityDamageEvent.DamageCause.MAGIC, 0.0f);
 
 					// Just increase union only once (for the first target only)
 					if (!alreadyIncreasedBloodUnion) {

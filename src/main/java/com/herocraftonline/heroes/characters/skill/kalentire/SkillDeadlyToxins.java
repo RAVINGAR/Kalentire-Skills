@@ -2,6 +2,7 @@ package com.herocraftonline.heroes.characters.skill.kalentire;
 
 import com.herocraftonline.heroes.Heroes;
 import com.herocraftonline.heroes.api.SkillResult;
+import com.herocraftonline.heroes.characters.CharacterTemplate;
 import com.herocraftonline.heroes.characters.Hero;
 import com.herocraftonline.heroes.characters.Monster;
 import com.herocraftonline.heroes.characters.effects.EffectType;
@@ -11,10 +12,20 @@ import com.herocraftonline.heroes.characters.skill.Skill;
 import com.herocraftonline.heroes.characters.skill.SkillConfigManager;
 import com.herocraftonline.heroes.characters.skill.SkillSetting;
 import com.herocraftonline.heroes.characters.skill.SkillType;
+import org.bukkit.Bukkit;
+import org.bukkit.Location;
+import org.bukkit.Material;
+import org.bukkit.Particle;
+import org.bukkit.block.data.BlockData;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.event.entity.EntityDamageEvent.DamageCause;
 
 public class SkillDeadlyToxins extends ActiveSkill {
+
+	private final String applyText = "§c%target% has been poisoned by a deadly toxin!";
+	private final String expireText = "§c%target% has recovered from the deadly toxin!";
+
+	private final BlockData data;
 	public SkillDeadlyToxins(Heroes plugin) {
 		super(plugin, "DeadlyToxins");
 		setDescription("You prepare an ailment to poison your weapons which expires after $1 second(s), also extending any previous preparations by $1 second(s)." +
@@ -24,6 +35,8 @@ public class SkillDeadlyToxins extends ActiveSkill {
 		setUsage("/skill deadlytoxins");
 		setIdentifiers("skill deadlytoxins");
 		setTypes(SkillType.BUFFING, SkillType.DAMAGING, SkillType.ABILITY_PROPERTY_POISON);
+
+		data = Bukkit.createBlockData(Material.SLIME_BLOCK);
 	}
 
 	@Override
@@ -44,8 +57,8 @@ public class SkillDeadlyToxins extends ActiveSkill {
 		node.set(SkillSetting.DURATION.node(), 7000);
 		node.set(SkillSetting.DAMAGE_TICK.node(), 5);
 		node.set(SkillSetting.APPLY_TEXT.node(), "§7You poison your weapons!");
-		node.set("toxin-apply-text", "You have been poisoned by a deadly toxin!");
-		node.set("toxin-expire-text", "You are no longer poisoned.");
+		node.set("toxin-apply-text", applyText);
+		node.set("toxin-expire-text", expireText);
 
 		return node;		
 	}
@@ -56,8 +69,8 @@ public class SkillDeadlyToxins extends ActiveSkill {
 		double damage = SkillConfigManager.getScaledUseSettingDouble(hero, this, SkillSetting.DAMAGE_TICK, 5, false);
 
 		String apply = SkillConfigManager.getUseSetting(hero, this, SkillSetting.APPLY_TEXT, "You poison your weapons!");
-		String toxinApply = SkillConfigManager.getUseSetting(hero, this, "toxin-apply-text", "§7You have been poisoned by a deadly toxin!").replace("%hero%", hero.getName());
-		String toxinExpire = SkillConfigManager.getUseSetting(hero, this, "toxin-expire-text", "§7You are no longer poisoned.");
+		String toxinApply = SkillConfigManager.getUseSetting(hero, this, "toxin-apply-text", applyText);
+		String toxinExpire = SkillConfigManager.getUseSetting(hero, this, "toxin-expire-text", expireText);
 
 		DeadlyToxinsEffect toxinEffect = new DeadlyToxinsEffect(this, hero, duration, damage, toxinApply, toxinExpire);
 		plugin.getServer().getPluginManager().callEvent(new SkillAssassinsGuile.EffectPreparationEvent(hero, toxinEffect, duration, apply));
@@ -81,14 +94,19 @@ public class SkillDeadlyToxins extends ActiveSkill {
 
 		@Override
 		public void tickMonster(Monster monster) {
-			addSpellTarget(monster.getEntity(), applier);
-			damageEntity(monster.getEntity(), applier.getPlayer(), dmg, DamageCause.POISON, 0.0f);
+			tickBoth(monster);
 		}
 
 		@Override
 		public void tickHero(Hero hero) {
-			addSpellTarget(hero.getEntity(), applier);
-			damageEntity(hero.getEntity(), applier.getPlayer(), dmg, DamageCause.POISON, 0.0f);
+			tickBoth(hero);
+		}
+
+		private void tickBoth(CharacterTemplate character) {
+			Location location = character.getEntity().getLocation().add(0, 1, 0);
+			location.getWorld().spawnParticle(Particle.BLOCK_CRACK, location, 4, 0.1, 0.1, 0.1, data);
+			addSpellTarget(character.getEntity(), applier);
+			damageEntity(character.getEntity(), applier.getPlayer(), dmg, DamageCause.POISON, 0.0f);
 		}
 	}
 }

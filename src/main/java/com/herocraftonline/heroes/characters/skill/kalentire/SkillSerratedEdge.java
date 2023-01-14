@@ -17,9 +17,6 @@ import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 
 public class SkillSerratedEdge extends ActiveSkill {
-
-    private String applyText = "§7You are bleeding!";
-    private String expireText;
     private String useText = "§7You sharpened your weapons!";
 
     public SkillSerratedEdge(Heroes plugin) {
@@ -38,14 +35,12 @@ public class SkillSerratedEdge extends ActiveSkill {
         final ConfigurationSection node = super.getDefaultConfig();
         node.set(SkillSetting.DURATION.node(), 10000);
         node.set(SkillSetting.USE_TEXT.node(), useText);
-        node.set(SkillSetting.APPLY_TEXT.node(), applyText);
         return node;
     }
 
     @Override
     public void init() {
         super.init();
-        this.applyText = SkillConfigManager.getRaw(this, SkillSetting.APPLY_TEXT.node(), applyText);
         this.useText = SkillConfigManager.getRaw(this, SkillSetting.USE_TEXT.node(), useText);
     }
 
@@ -61,7 +56,7 @@ public class SkillSerratedEdge extends ActiveSkill {
     @Override
     public SkillResult use(Hero hero, String[] strings) {
         long duration = SkillConfigManager.getScaledUseSettingInt(hero, this, SkillSetting.DURATION, 10000, false);
-        SkillAssassinsGuile.EffectPreparationEvent effect = new SkillAssassinsGuile.EffectPreparationEvent(hero, new SerratedEdgeEffect(this, hero.getPlayer(), duration), duration, applyText);
+        SkillAssassinsGuile.EffectPreparationEvent effect = new SkillAssassinsGuile.EffectPreparationEvent(hero, new SerratedEdgeEffect(this, hero.getPlayer(), duration), duration, useText);
         plugin.getServer().getPluginManager().callEvent(effect);
 
         return SkillResult.NORMAL;

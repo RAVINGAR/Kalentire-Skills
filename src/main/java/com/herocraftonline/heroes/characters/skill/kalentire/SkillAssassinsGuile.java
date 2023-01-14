@@ -83,7 +83,7 @@ public class SkillAssassinsGuile extends PassiveSkill implements Listenable {
         @Override
         public int removeStacks(int amount) {
             int removed = super.removeStacks(amount);
-            for(int i = 0; i < removed; i++) {
+            for(int i = 0; i < removed && i < stackedEffects.size(); i++) {
                 stackedEffects.pop();
             }
             return removed;
