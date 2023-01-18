@@ -18,6 +18,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
+import org.checkerframework.checker.units.qual.C;
 
 import javax.annotation.Nullable;
 import java.util.ArrayList;
@@ -30,7 +31,6 @@ import java.util.List;
 public class SkillArtOfWar extends PassiveSkill implements Listenable {
 
     private static final String highlightedTargetEffectName = "ArtOfWarHighlightedTarget";
-    private boolean glowApiLoaded;
     private String newTargetText;
     private final Listener listener;
 
@@ -39,7 +39,7 @@ public class SkillArtOfWar extends PassiveSkill implements Listenable {
         setDescription("Every $1 seconds, randomly mark a target in $2 radius for $3% increased melee damage");
         setTypes(SkillType.ABILITY_PROPERTY_PHYSICAL, SkillType.BUFFING, SkillType.AREA_OF_EFFECT);
 
-        glowApiLoaded = false;
+        boolean glowApiLoaded = false;
 //        if (Bukkit.getServer().getPluginManager().getPlugin("XGlow") != null) {
 //            glowApiLoaded = true;
 //        } else {
@@ -109,22 +109,20 @@ public class SkillArtOfWar extends PassiveSkill implements Listenable {
 
         @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
         public void onWeaponDamage(WeaponDamageEvent event) {
-            if (event.getDamage() == 0 || !(event.getEntity() instanceof LivingEntity) || !(event.getDamager() instanceof Hero))
-                return;
-            // Check attacked mob was the highlighted target
-            LivingEntity entity = (LivingEntity) event.getEntity();
-            final CharacterTemplate character = plugin.getCharacterManager().getCharacter(entity);
-            if (!character.hasEffect(highlightedTargetEffectName))
-                return;
+            if(event.getAttacker() instanceof Hero) {
+                final CharacterTemplate character = event.getDefender();
+                if (!character.hasEffect(highlightedTargetEffectName))
+                    return;
 
-            // Check attacker has this passive
-            final Hero attackerHero = (Hero) event.getDamager();
-            if (!attackerHero.hasEffect(skill.getName()))
-                return;
+                // Check attacker has this passive
+                final Hero attackerHero = (Hero) event.getAttacker();
+                if (!attackerHero.hasEffect(skill.getName()))
+                    return;
 
-            final ArtOfWarPeriodicPassiveEffect passiveEffect = (ArtOfWarPeriodicPassiveEffect) attackerHero.getEffect(skill.getName());
-            assert passiveEffect != null;
-            event.setDamage(event.getDamage() * passiveEffect.getDamageMultiplier());
+                final ArtOfWarPeriodicPassiveEffect passiveEffect = (ArtOfWarPeriodicPassiveEffect) attackerHero.getEffect(skill.getName());
+                assert passiveEffect != null;
+                event.setDamage(event.getDamage() * passiveEffect.getDamageMultiplier());
+            }
         }
     }
 

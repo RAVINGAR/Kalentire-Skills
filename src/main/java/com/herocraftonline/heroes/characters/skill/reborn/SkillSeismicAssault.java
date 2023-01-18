@@ -41,11 +41,9 @@ public class SkillSeismicAssault extends SkillBaseBlockWave {
 		int height = SkillConfigManager.getUseSetting(hero, this, HEIGHT_NODE, 3, false);
 
 
-		double damage = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE, 100d, false);
-		double damageIncrease = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE_INCREASE_PER_STRENGTH, 1d, false);
-		final double totalDamage = damage + hero.getAttributeValue(AttributeType.STRENGTH) * damageIncrease;
+		double damage = SkillConfigManager.getScaledUseSettingDouble(hero, this, SkillSetting.DAMAGE, 100d, false);
 
-		final long duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, 4000, false);
+		final long duration = SkillConfigManager.getScaledUseSettingInt(hero, this, SkillSetting.DURATION, 4000, false);
 
 		return getDescription()
 				.replace("$1", Util.decFormat.format(waveArc))
@@ -54,7 +52,7 @@ public class SkillSeismicAssault extends SkillBaseBlockWave {
 				.replace("$4", "" + height)
 				.replace("$5", Util.largeDecFormat.format(expansionRate))
 				.replace("$6", "" + hitLimit)
-				.replace("$7", Util.decFormat.format(totalDamage))
+				.replace("$7", Util.decFormat.format(damage))
 				.replace("$8", Util.decFormat.format((double) duration / 1000));
 	}
 
@@ -69,7 +67,6 @@ public class SkillSeismicAssault extends SkillBaseBlockWave {
 		config.set(LAUNCH_FORCE_NODE, 0.2);
 		config.set(HIT_LIMIT_NODE, 1);
 		config.set(SkillSetting.DAMAGE.node(), 100.0);
-		config.set(SkillSetting.DAMAGE_INCREASE_PER_STRENGTH.node(), 0.0);
 		config.set(SkillSetting.DURATION.node(), 4000);
 
 		return config;
@@ -78,16 +75,14 @@ public class SkillSeismicAssault extends SkillBaseBlockWave {
 	@Override
 	public SkillResult use(final Hero hero, String[] strings) {
 
-		double damage = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE, 100d, false);
-		double damageIncrease = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE_INCREASE_PER_STRENGTH, 1.0, false);
-		final double totalDamage = damage + hero.getAttributeValue(AttributeType.STRENGTH) * damageIncrease;
+		double damage = SkillConfigManager.getScaledUseSettingDouble(hero, this, SkillSetting.DAMAGE, 100d, false);
 		final long duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, 4000, false);
 
 		castBlockWave(hero, hero.getPlayer().getLocation().getBlock(), new WaveTargetAction() {
 			@Override
 			public void onTarget(Hero hero, LivingEntity target, Location center) {
 				if (damageCheck(hero.getPlayer(), target)) {
-					damageEntity(target, hero.getPlayer(), totalDamage, EntityDamageEvent.DamageCause.MAGIC, false);
+					damageEntity(target, hero.getPlayer(), damage, EntityDamageEvent.DamageCause.MAGIC, 0.0f);
 
 					CharacterTemplate targetCt = plugin.getCharacterManager().getCharacter(target);
 

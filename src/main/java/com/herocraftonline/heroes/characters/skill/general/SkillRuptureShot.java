@@ -82,8 +82,9 @@ public class SkillRuptureShot extends ActiveSkill implements Listenable {
         private int manaDrain;
 
         public ArrowRupture(Skill skill, long period, long duration, double tickDamage, Player applier, int sDrain, int mDrain) {
-            super(skill, "ArrowRupture", applier, period, duration, tickDamage);
+            super(skill, "ArrowRupture", applier, period, duration, tickDamage, applyText, expireText);
             this.types.add(EffectType.BLEED);
+            this.types.add(EffectType.DAMAGING);
             staminaDrain = sDrain;
             manaDrain = mDrain;
             //addPotionEffect(new PotionEffect(PotionEffectType.WITHER, (int) (duration / 1000) * 20, 0)); fixme well theres no such thing as 'fake' effects anymore
@@ -105,34 +106,6 @@ public class SkillRuptureShot extends ActiveSkill implements Listenable {
             } else {
                 hero.setStamina(0);
             }
-        }
-
-        @Override
-        public void applyToMonster(Monster monster) {
-            super.applyToMonster(monster);
-            broadcast(monster.getEntity().getLocation(), "    " + applyText, CustomNameManager.getName(monster), applier.getName());
-        }
-
-        @Override
-        public void applyToHero(Hero hero) {
-            super.applyToHero(hero);
-            Player player = hero.getPlayer();
-            broadcast(player.getLocation(), "    " + applyText, player.getName(), applier.getName());
-            Messaging.sendSkillMessage(player, "You feel your essence being ruptured..");
-        }
-
-        @Override
-        public void removeFromMonster(Monster monster) {
-            super.removeFromMonster(monster);
-            broadcast(monster.getEntity().getLocation(), "    " + expireText, CustomNameManager.getName(monster));
-        }
-
-        @Override
-        public void removeFromHero(Hero hero) {
-            super.removeFromHero(hero);
-            Player player = hero.getPlayer();
-            broadcast(player.getLocation(), "    " + expireText, player.getName());
-            Messaging.sendSkillMessage(player, "You no longer feel that you are being ruptured");
         }
     }
 
