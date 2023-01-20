@@ -1,4 +1,4 @@
-package com.herocraftonline.heroes.characters.skill.kalentire;
+package com.herocraftonline.heroes.characters.skill.general;
 
 import com.herocraftonline.heroes.Heroes;
 import com.herocraftonline.heroes.api.events.HeroesDamageEvent;
@@ -35,7 +35,7 @@ public class SkillAssassinsGuile extends PassiveSkill implements Listenable {
     private String expireText = "§7Your preparations have expired!";
     private int maxStacks = 3;
 
-    public SkillAssassinsGuile(Heroes plugin) {
+    public SkillAssassinsGuile(final Heroes plugin) {
         super(plugin, "AssassinsGuile");
         setDescription("Preparing a poison, bleed or slow creates a preparation stack. This means your next physical attack" +
                 "of any kind will apply the last prepared effect to the hit target and will consume the stack. You can stack" +
@@ -46,7 +46,7 @@ public class SkillAssassinsGuile extends PassiveSkill implements Listenable {
     }
 
     @Override
-    public String getDescription(Hero hero) {
+    public String getDescription(final Hero hero) {
         return getDescription().replace("$1", "" + SkillConfigManager.getScaledUseSettingInt(hero, this, "max-stacks", true));
     }
 
@@ -59,7 +59,7 @@ public class SkillAssassinsGuile extends PassiveSkill implements Listenable {
 
     @Override
     public ConfigurationSection getDefaultConfig() {
-        ConfigurationSection node = super.getDefaultConfig();
+        final ConfigurationSection node = super.getDefaultConfig();
 
         node.set("max-stacks", 3);
         node.set(SkillSetting.EXPIRE_TEXT.node(), "§7Your preparations have expired!");
@@ -75,15 +75,16 @@ public class SkillAssassinsGuile extends PassiveSkill implements Listenable {
 
     public static class AssassinEffect extends StackingEffect {
         private final ConcurrentLinkedDeque<ExpirableEffect> stackedEffects;
-        public AssassinEffect(Skill skill, Player applier, int maxStacks, String applyText, String expireText) {
+
+        public AssassinEffect(final Skill skill, final Player applier, final int maxStacks, final String applyText, final String expireText) {
             super(skill, EFFECT_NAME, applier, maxStacks, true, applyText, expireText);
             this.stackedEffects = new ConcurrentLinkedDeque<>();
         }
 
         @Override
-        public int removeStacks(int amount) {
-            int removed = super.removeStacks(amount);
-            for(int i = 0; i < removed && i < stackedEffects.size(); i++) {
+        public int removeStacks(final int amount) {
+            final int removed = super.removeStacks(amount);
+            for (int i = 0; i < removed && i < stackedEffects.size(); i++) {
                 stackedEffects.pop();
             }
             return removed;
@@ -91,76 +92,28 @@ public class SkillAssassinsGuile extends PassiveSkill implements Listenable {
 
         @Override
         public int removeAllStacks() {
-            int removed = super.removeAllStacks();
+            final int removed = super.removeAllStacks();
             stackedEffects.clear();
             return removed;
         }
 
         /**
          * Gets the last added effect which may or may not be null. Then removes 1 stack from this effect
+         *
          * @return The last stack (nullable)
          */
         @Nullable
         public Effect consumeLastEffect() {
-            ExpirableEffect effect = stackedEffects.pollFirst();
-            if(effect != null) {
+            final ExpirableEffect effect = stackedEffects.pollFirst();
+            if (effect != null) {
                 // If the effect is dispellable, then its duration can be modified!
-                EffectStack.Entry entry = AssassinEffect.this.effectStack.getLast();
-                if(entry != null) {
+                final EffectStack.Entry entry = AssassinEffect.this.effectStack.getLast();
+                if (entry != null) {
                     effect.setDuration(entry.getRemainingTime());
                 }
             }
             removeStack();
             return effect;
-        }
-    }
-
-    public class AssassinsGuileListener implements Listener {
-        private final SkillAssassinsGuile skill;
-        public AssassinsGuileListener(SkillAssassinsGuile skill) {
-            this.skill = skill;
-        }
-
-        @EventHandler
-        public void onQueueEffect(EffectPreparationEvent event) {
-            final Hero applier = event.applier;
-            final long duration = event.duration;
-
-            int i = applier.addEffectStacks(EFFECT_NAME, skill, applier.getPlayer(), duration, 1,
-                    () -> new AssassinEffect(skill, applier.getPlayer(), maxStacks, "", expireText));
-            if(i > 0) {
-                applier.getPlayer().sendMessage(event.applyText);
-                AssassinEffect effect = (AssassinEffect) applier.getEffect(EFFECT_NAME);
-                if(effect == null) {
-                    Heroes.log(Level.WARNING, "Could not add assassin effect as effect was not added when it should have been!");
-                    return;
-                }
-                effect.stackedEffects.push(event.effect);
-            }
-            else {
-                applier.getPlayer().sendMessage("§7You cannot prepare anything more!");
-            }
-        }
-
-        @EventHandler
-        public void onWeaponHit(WeaponDamageEvent event) {
-            handleDamageEvent(event);
-        }
-
-        @EventHandler
-        public void onProjectileHit(ProjectileDamageEvent event) {
-            handleDamageEvent(event);
-        }
-
-        private void handleDamageEvent(HeroesDamageEvent event) {
-            if (event.getAttacker() instanceof Hero) {
-                Hero hero = (Hero) event.getAttacker();
-                AssassinEffect effect = (AssassinEffect) hero.getEffect(EFFECT_NAME);
-                Effect toApply = effect == null ? null : effect.consumeLastEffect();
-                if (toApply != null) {
-                    event.getDefender().addEffect(toApply);
-                }
-            }
         }
     }
 
@@ -172,20 +125,69 @@ public class SkillAssassinsGuile extends PassiveSkill implements Listenable {
         private final long duration;
         private final String applyText;
 
-        public EffectPreparationEvent(Hero applier, ExpirableEffect wrappedEffect, long duration, String applyText) {
+        public EffectPreparationEvent(final Hero applier, final ExpirableEffect wrappedEffect, final long duration, final String applyText) {
             this.applier = applier;
             this.effect = wrappedEffect;
             this.duration = duration;
             this.applyText = applyText;
         }
 
+        public static HandlerList getHandlerList() {
+            return handlers;
+        }
+
         @Override
         public HandlerList getHandlers() {
             return handlers;
         }
+    }
 
-        public static HandlerList getHandlerList() {
-            return handlers;
+    public class AssassinsGuileListener implements Listener {
+        private final SkillAssassinsGuile skill;
+
+        public AssassinsGuileListener(final SkillAssassinsGuile skill) {
+            this.skill = skill;
+        }
+
+        @EventHandler
+        public void onQueueEffect(final EffectPreparationEvent event) {
+            final Hero applier = event.applier;
+            final long duration = event.duration;
+
+            final int i = applier.addEffectStacks(EFFECT_NAME, skill, applier.getPlayer(), duration, 1,
+                    () -> new AssassinEffect(skill, applier.getPlayer(), maxStacks, "", expireText));
+            if (i > 0) {
+                applier.getPlayer().sendMessage(event.applyText);
+                final AssassinEffect effect = (AssassinEffect) applier.getEffect(EFFECT_NAME);
+                if (effect == null) {
+                    Heroes.log(Level.WARNING, "Could not add assassin effect as effect was not added when it should have been!");
+                    return;
+                }
+                effect.stackedEffects.push(event.effect);
+            } else {
+                applier.getPlayer().sendMessage("§7You cannot prepare anything more!");
+            }
+        }
+
+        @EventHandler
+        public void onWeaponHit(final WeaponDamageEvent event) {
+            handleDamageEvent(event);
+        }
+
+        @EventHandler
+        public void onProjectileHit(final ProjectileDamageEvent event) {
+            handleDamageEvent(event);
+        }
+
+        private void handleDamageEvent(final HeroesDamageEvent event) {
+            if (event.getAttacker() instanceof Hero) {
+                final Hero hero = (Hero) event.getAttacker();
+                final AssassinEffect effect = (AssassinEffect) hero.getEffect(EFFECT_NAME);
+                final Effect toApply = effect == null ? null : effect.consumeLastEffect();
+                if (toApply != null) {
+                    event.getDefender().addEffect(toApply);
+                }
+            }
         }
     }
 }

@@ -872,18 +872,16 @@ tasks.register("remastered", CompilePackTask) {
 
 tasks.register("dev", CompilePackTask) {
     pack = "dev"
-    packGroup = "kalentire"
-    skills = [
-            "AssassinsGuile",
-            "Darts",
-            "DeadlyToxins",
-            "SerratedEdge"
-    ]
+    skills = []
 }
 
 tasks.register("kalentire", CompilePackTask) {
     pack = "kalentire"
     skills = [
+            "AssassinsGuile",
+            "Darts",
+            "DeadlyToxins",
+            "SerratedEdge",
             "Bandage",
             "Bloodbath",
             "Maim",

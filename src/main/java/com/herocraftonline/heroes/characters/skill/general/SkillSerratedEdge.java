@@ -1,4 +1,4 @@
-package com.herocraftonline.heroes.characters.skill.kalentire;
+package com.herocraftonline.heroes.characters.skill.general;
 
 import com.herocraftonline.heroes.Heroes;
 import com.herocraftonline.heroes.api.SkillResult;
@@ -17,7 +17,7 @@ import org.bukkit.entity.Player;
 public class SkillSerratedEdge extends ActiveSkill {
     private String useText = "§7You sharpened your weapons!";
 
-    public SkillSerratedEdge(Heroes plugin) {
+    public SkillSerratedEdge(final Heroes plugin) {
         super(plugin, "SerratedEdge");
         this.setDescription("You serrate your weapons enhancing their effectiveness for $3 second(s), also extending any previous preparations by $3 second(s). " +
                 "Any target hit will suffer a bleeding stack dealing $1 damage per bleed every $2 second(s) over $3 second(s)." +
@@ -43,7 +43,7 @@ public class SkillSerratedEdge extends ActiveSkill {
     }
 
     @Override
-    public String getDescription(Hero hero) {
+    public String getDescription(final Hero hero) {
         final int duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, 10000, false);
         return this.getDescription()
                 .replace("$1", Heroes.properties.standardEffectBleedingDamagePerStack + "")
@@ -52,9 +52,9 @@ public class SkillSerratedEdge extends ActiveSkill {
     }
 
     @Override
-    public SkillResult use(Hero hero, String[] strings) {
-        long duration = SkillConfigManager.getScaledUseSettingInt(hero, this, SkillSetting.DURATION, 10000, false);
-        SkillAssassinsGuile.EffectPreparationEvent effect = new SkillAssassinsGuile.EffectPreparationEvent(hero, new SerratedEdgeEffect(this, hero.getPlayer(), duration), duration, useText);
+    public SkillResult use(final Hero hero, final String[] strings) {
+        final long duration = SkillConfigManager.getScaledUseSettingInt(hero, this, SkillSetting.DURATION, 10000, false);
+        final SkillAssassinsGuile.EffectPreparationEvent effect = new SkillAssassinsGuile.EffectPreparationEvent(hero, new SerratedEdgeEffect(this, hero.getPlayer(), duration), duration, useText);
         plugin.getServer().getPluginManager().callEvent(effect);
 
         return SkillResult.NORMAL;
@@ -64,13 +64,13 @@ public class SkillSerratedEdge extends ActiveSkill {
     public static class SerratedEdgeEffect extends ExpirableEffect {
         private final long duration; //This means that the duration of the applied stack can never be actually changed
 
-        public SerratedEdgeEffect(Skill skill, Player applier, long duration) {
+        public SerratedEdgeEffect(final Skill skill, final Player applier, final long duration) {
             super(skill, "SerratedEdgeEffect", applier, duration);
             this.duration = duration;
         }
 
         @Override
-        public void apply(CharacterTemplate character) {
+        public void apply(final CharacterTemplate character) {
             BleedingEffect.applyStack(character, skill, applier, duration);
             character.removeEffect(this); // immediately remove!
         }

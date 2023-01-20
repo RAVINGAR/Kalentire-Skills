@@ -1,4 +1,4 @@
-package com.herocraftonline.heroes.characters.skill.kalentire;
+package com.herocraftonline.heroes.characters.skill.general;
 
 import com.herocraftonline.heroes.Heroes;
 import com.herocraftonline.heroes.api.SkillResult;
@@ -43,15 +43,12 @@ import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 
 public class SkillDarts extends ActiveSkill implements Passive {
-    private final DartRunner runner;
-
-    private final BukkitScheduler scheduler;
-
     private final static String META = "dart-armour-stand";
-
+    private final DartRunner runner;
+    private final BukkitScheduler scheduler;
     private final Map<UUID, ArmorStand> mountedArmourStands;
 
-    public SkillDarts(Heroes plugin) {
+    public SkillDarts(final Heroes plugin) {
         super(plugin, "Darts");
         setDescription("Throw a dart dealing $1 damage at a range of $2 blocks. This dart will consume the last preparation" +
                 "applying its effects for the remaining duration of the stack.");
@@ -66,8 +63,8 @@ public class SkillDarts extends ActiveSkill implements Passive {
 
         plugin.getServer().getPluginManager().registerEvents(new Listener() {
             @EventHandler
-            public void onPluginDisable(PluginDisableEvent event) {
-                if(plugin.getName().equalsIgnoreCase("Heroes")) {
+            public void onPluginDisable(final PluginDisableEvent event) {
+                if (plugin.getName().equalsIgnoreCase("Heroes")) {
                     mountedArmourStands.values().forEach(Entity::remove);
                 }
             }
@@ -76,7 +73,7 @@ public class SkillDarts extends ActiveSkill implements Passive {
 
     @Override
     public ConfigurationSection getDefaultConfig() {
-        ConfigurationSection node = super.getDefaultConfig();
+        final ConfigurationSection node = super.getDefaultConfig();
 
         node.set(SkillSetting.MAX_DISTANCE.node(), 6);
         node.set(SkillSetting.MAX_DISTANCE_INCREASE_PER_DEXTERITY.node(), 0.5);
@@ -87,34 +84,34 @@ public class SkillDarts extends ActiveSkill implements Passive {
     }
 
     @Override
-    public String getDescription(Hero hero) {
+    public String getDescription(final Hero hero) {
         double damage = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE, 12, false);
-        double damageIncrease = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE_INCREASE_PER_STRENGTH, 0.5, false);
+        final double damageIncrease = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE_INCREASE_PER_STRENGTH, 0.5, false);
         damage += (int) (damageIncrease * hero.getAttributeValue(AttributeType.STRENGTH));
 
         double distance = SkillConfigManager.getUseSetting(hero, this, SkillSetting.MAX_DISTANCE, 6, false);
-        double distanceIncrease = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE_INCREASE_PER_DEXTERITY, 0.5, false);
+        final double distanceIncrease = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE_INCREASE_PER_DEXTERITY, 0.5, false);
         distance += (int) (distanceIncrease * hero.getAttributeValue(AttributeType.DEXTERITY));
 
         return getDescription().replace("$1", "" + damage).replace("$2", "" + distance);
     }
 
     @Override
-    public SkillResult use(Hero hero, String[] strings) {
+    public SkillResult use(final Hero hero, final String[] strings) {
 
         double damage = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE, 12, false);
-        double damageIncrease = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE_INCREASE_PER_STRENGTH, 0.5, false);
+        final double damageIncrease = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE_INCREASE_PER_STRENGTH, 0.5, false);
         damage += (int) (damageIncrease * hero.getAttributeValue(AttributeType.STRENGTH));
 
         double distance = SkillConfigManager.getUseSetting(hero, this, SkillSetting.MAX_DISTANCE, 6, false);
-        double distanceIncrease = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE_INCREASE_PER_DEXTERITY, 0.5, false);
+        final double distanceIncrease = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE_INCREASE_PER_DEXTERITY, 0.5, false);
         distance += (distanceIncrease * hero.getAttributeValue(AttributeType.DEXTERITY));
 
-        Player player = hero.getPlayer();
+        final Player player = hero.getPlayer();
 
-        ArmorStand dart = getArmourStand(player);
+        final ArmorStand dart = getArmourStand(player);
 
-        Location eyeLocation = player.getEyeLocation();
+        final Location eyeLocation = player.getEyeLocation();
 
         throwArmourStand(player, eyeLocation, dart, distance);
 
@@ -123,24 +120,24 @@ public class SkillDarts extends ActiveSkill implements Passive {
         player.getWorld().playSound(eyeLocation, Sound.ITEM_ARMOR_EQUIP_LEATHER, SoundCategory.PLAYERS, 1.0F, 1.1f);
         player.getWorld().playSound(eyeLocation, Sound.ITEM_TRIDENT_THROW, SoundCategory.PLAYERS, 0.9F, 0.8f);
 
-        SkillAssassinsGuile.AssassinEffect effect = (SkillAssassinsGuile.AssassinEffect) hero.getEffect(SkillAssassinsGuile.EFFECT_NAME);
-        Effect lastEffect = effect == null ? null : effect.consumeLastEffect();
-        DartThrow dartThrow = new DartThrow(hero, dart, damage, lastEffect, 5000);
+        final SkillAssassinsGuile.AssassinEffect effect = (SkillAssassinsGuile.AssassinEffect) hero.getEffect(SkillAssassinsGuile.EFFECT_NAME);
+        final Effect lastEffect = effect == null ? null : effect.consumeLastEffect();
+        final DartThrow dartThrow = new DartThrow(hero, dart, damage, lastEffect, 5000);
         runner.throwList.put(dart.getUniqueId(), dartThrow);
 
         return SkillResult.NORMAL;
     }
 
     @NotNull
-    public ArmorStand getArmourStand(Player player) {
-        UUID uuid = player.getUniqueId();
+    public ArmorStand getArmourStand(final Player player) {
+        final UUID uuid = player.getUniqueId();
         ArmorStand dart = mountedArmourStands.get(uuid);
-        if(dart == null) {
-            Location eyeLocation = player.getEyeLocation();
+        if (dart == null) {
+            final Location eyeLocation = player.getEyeLocation();
             dart = (ArmorStand) eyeLocation.getWorld().spawnEntity(eyeLocation.subtract(0, 5, 0), EntityType.ARMOR_STAND);
             dart.setInvisible(true);
             dart.setMarker(true);
-            for(EquipmentSlot slot : EquipmentSlot.values()) {
+            for (final EquipmentSlot slot : EquipmentSlot.values()) {
                 dart.addEquipmentLock(slot, ArmorStand.LockType.ADDING_OR_CHANGING);
                 dart.addEquipmentLock(slot, ArmorStand.LockType.REMOVING_OR_CHANGING);
             }
@@ -156,44 +153,43 @@ public class SkillDarts extends ActiveSkill implements Passive {
         return dart;
     }
 
-    public void throwArmourStand(Player player, Location eyeLocation, ArmorStand dart, double distance) {
+    public void throwArmourStand(final Player player, final Location eyeLocation, final ArmorStand dart, final double distance) {
         mountedArmourStands.remove(player.getUniqueId());
         player.removePassenger(dart);
         dart.setMarker(false);
         dart.teleport(eyeLocation.clone().subtract(0, 2, 0));
         dart.setRotation(eyeLocation.getYaw() + 90, eyeLocation.getPitch());
         dart.getEquipment().setItemInMainHand(new ItemStack(Material.TIPPED_ARROW));
-        Vector direction = eyeLocation.getDirection();
+        final Vector direction = eyeLocation.getDirection();
         direction.multiply(distance / -5);
-        Vector initialVelocity = dart.getVelocity();
+        final Vector initialVelocity = dart.getVelocity();
 
         // TODO these velocity calculations are wrong! The dart should always be thrown in the direction the player is looking!
-        Vector velocity = new Vector(initialVelocity.getX() / 2.0D - direction.getX(),
+        final Vector velocity = new Vector(initialVelocity.getX() / 2.0D - direction.getX(),
                 initialVelocity.getY() / -1.0D,
-                initialVelocity.getZ() / 2.0D -direction.getZ());
+                initialVelocity.getZ() / 2.0D - direction.getZ());
         dart.setVelocity(velocity);
     }
 
     @Override
-    public void tryApplying(Hero hero) {
-        if(hero.canUseSkill(this)) {
+    public void tryApplying(final Hero hero) {
+        if (hero.canUseSkill(this)) {
             apply(hero);
-        }
-        else {
+        } else {
             unapply(hero);
         }
     }
 
     @Override
-    public void apply(Hero hero) {
-        Player player = hero.getPlayer();
+    public void apply(final Hero hero) {
+        final Player player = hero.getPlayer();
         getArmourStand(player);
     }
 
     @Override
-    public void unapply(Hero hero) {
-        ArmorStand stand = mountedArmourStands.remove(hero.getPlayer().getUniqueId());
-        if(stand != null) {
+    public void unapply(final Hero hero) {
+        final ArmorStand stand = mountedArmourStands.remove(hero.getPlayer().getUniqueId());
+        if (stand != null) {
             stand.remove();
         }
     }
@@ -208,9 +204,9 @@ public class SkillDarts extends ActiveSkill implements Passive {
 
         @Override
         public void run() {
-            List<DartThrow> toBeRemoved = new ArrayList<>();
+            final List<DartThrow> toBeRemoved = new ArrayList<>();
             throwList.values().forEach((dart) -> {
-                if(dart.tick()) {
+                if (dart.tick()) {
                     toBeRemoved.add(dart);
                 }
             });
@@ -229,7 +225,7 @@ public class SkillDarts extends ActiveSkill implements Passive {
 
         private final long readyTime;
 
-        public DartThrow(Hero thrower, Entity dart, double damage, @Nullable Effect effect, long expiry) {
+        public DartThrow(final Hero thrower, final Entity dart, final double damage, @Nullable final Effect effect, final long expiry) {
             this.thrower = thrower;
             this.damage = damage;
             this.dart = dart;
@@ -238,18 +234,18 @@ public class SkillDarts extends ActiveSkill implements Passive {
         }
 
         public boolean tick() {
-            Location location = dart.getLocation();
+            final Location location = dart.getLocation();
             location.getWorld().spawnParticle(Particle.CRIT_MAGIC, location, 3, 0.05, 0.05, 0.05, 0);
-            if(dart.isOnGround()) {
+            if (dart.isOnGround()) {
                 return true;
             }
-            if(System.currentTimeMillis() > readyTime) {
+            if (System.currentTimeMillis() > readyTime) {
                 return true;
             }
-            List<Entity> entities = dart.getNearbyEntities(0.5, 0.5, 0.5);
-            for(Entity entity : entities) {
-                if(!entity.getUniqueId().equals(thrower.getEntity().getUniqueId())) {
-                    if(entity instanceof LivingEntity) {
+            final List<Entity> entities = dart.getNearbyEntities(0.5, 0.5, 0.5);
+            for (final Entity entity : entities) {
+                if (!entity.getUniqueId().equals(thrower.getEntity().getUniqueId())) {
+                    if (entity instanceof LivingEntity) {
                         doDamage((LivingEntity) entity);
                         return true;
                     }
@@ -258,11 +254,11 @@ public class SkillDarts extends ActiveSkill implements Passive {
             return false;
         }
 
-        public void doDamage(LivingEntity target) {
+        public void doDamage(final LivingEntity target) {
             scheduler.scheduleSyncDelayedTask(plugin, () -> {
-                if(damageCheck(thrower.getPlayer(), target)) {
-                    if(effect != null) {
-                        CharacterTemplate character = plugin.getCharacterManager().getCharacter(target);
+                if (damageCheck(thrower.getPlayer(), target)) {
+                    if (effect != null) {
+                        final CharacterTemplate character = plugin.getCharacterManager().getCharacter(target);
                         character.addEffect(effect);
                     }
                     addSpellTarget(target, thrower);
