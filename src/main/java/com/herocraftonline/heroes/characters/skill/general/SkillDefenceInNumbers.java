@@ -122,7 +122,7 @@ public class SkillDefenceInNumbers extends PassiveSkill implements Listenable {
 
     public class DefenceInNumbersEffect extends PeriodicEffect {
 
-        boolean protectAllies;
+        final boolean protectAllies;
 
         public DefenceInNumbersEffect(Skill skill, String name, Player applier, boolean protectAllies, long period, String applyText, String removeText) {
             super(skill, name, applier, period, applyText, removeText);
@@ -200,7 +200,7 @@ public class SkillDefenceInNumbers extends PassiveSkill implements Listenable {
 
     public class DefenceInNumbersListener implements Listener {
 
-        private Skill skill;
+        private final Skill skill;
 
         public DefenceInNumbersListener(Skill skill) {
             this.skill = skill;
@@ -319,7 +319,7 @@ public class SkillDefenceInNumbers extends PassiveSkill implements Listenable {
 
     public class DefenceInNumbersAllyEffect extends ExpirableEffect {
 
-        private double incomingMultiplier;
+        private final double incomingMultiplier;
 
         public DefenceInNumbersAllyEffect(Skill skill, String name, Player applier, double incomingMultiplier,
                                           long duration, String applyText, String expireText) {

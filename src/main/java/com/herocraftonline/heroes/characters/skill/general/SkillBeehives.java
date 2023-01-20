@@ -47,8 +47,7 @@ public class SkillBeehives extends PassiveSkill {
     }
 
     public ConfigurationSection getDefaultConfig() {
-        ConfigurationSection node = super.getDefaultConfig();
-        return node;
+        return super.getDefaultConfig();
     }
 
     public class SkillListener implements Listener {

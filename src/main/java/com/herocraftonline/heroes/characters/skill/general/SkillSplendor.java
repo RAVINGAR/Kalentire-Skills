@@ -35,7 +35,7 @@ public class SkillSplendor extends TargettedSkill {
     @Override
     public String getDescription(Hero h) {
         long duration = SkillConfigManager.getUseSetting(h, this, SkillSetting.DURATION, 600000, false);
-        duration += SkillConfigManager.getUseSetting(h, this, SkillSetting.DURATION_INCREASE_PER_LEVEL, 1000, false) * h.getHeroLevel(this);
+        duration += (long) SkillConfigManager.getUseSetting(h, this, SkillSetting.DURATION_INCREASE_PER_LEVEL, 1000, false) * h.getHeroLevel(this);
         int chaIncrease = SkillConfigManager.getUseSetting(h, this, "cha-increase", 15, false);
         
         return getDescription()
@@ -71,7 +71,7 @@ public class SkillSplendor extends TargettedSkill {
         Player player = hero.getPlayer();
         
         long duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, 600000, false);
-        duration += SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION_INCREASE_PER_LEVEL, 1000, false) * hero.getHeroLevel(this);
+        duration += (long) SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION_INCREASE_PER_LEVEL, 1000, false) * hero.getHeroLevel(this);
         int chaIncrease = SkillConfigManager.getUseSetting(hero, this, "cha-increase", 15, false);
         
         AttributeIncreaseEffect aEffect = new AttributeIncreaseEffect(this, "SplendorChaIncreaseEffect", player, duration, AttributeType.CHARISMA, chaIncrease, applyText, expireText);
@@ -83,11 +83,10 @@ public class SkillSplendor extends TargettedSkill {
         }
         new BukkitRunnable() {
             
-            private Location location = target.getLocation();
+            private final Location location = target.getLocation();
 
             private double time = 0;
 
-            @SuppressWarnings("deprecation")
             @Override
             public void run() {
                 if (time < 1.0) {

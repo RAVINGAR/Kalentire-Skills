@@ -8,7 +8,6 @@ import org.bukkit.block.Block;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
-import org.bukkit.Sound;
 import org.bukkit.entity.Villager;
 import org.bukkit.entity.Villager.Profession;
 
@@ -51,7 +50,7 @@ public class SkillSummonVillager extends SkillBaseSummonEntity {
         return villager;
     }
     
-    private Profession getProfession(String args[]) {
+    private Profession getProfession(String[] args) {
         Profession profession = null;
 
         if (args.length > 0) {

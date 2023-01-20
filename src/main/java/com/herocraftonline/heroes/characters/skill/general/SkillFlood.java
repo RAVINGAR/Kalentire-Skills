@@ -94,7 +94,7 @@ public class SkillFlood extends ActiveSkill {
 		int delay = SkillConfigManager.getUseSetting(hero, this, "wave-delay", 2, false);
 
 		final List<Entity> nearbyEntities = player.getNearbyEntities(distance * 2, distance, distance * 2);
-		final List<Entity> hitEnemies = new ArrayList<Entity>();
+		final List<Entity> hitEnemies = new ArrayList<>();
 
 		int numBlocks = 0;
 
@@ -108,18 +108,15 @@ public class SkillFlood extends ActiveSkill {
 			if (Util.transparentBlocks.contains(tempBlockType)) {
 				final Location targetLocation = tempBlock.getLocation().clone().add(new Vector(.5, 0, .5));
 
-				Bukkit.getScheduler().scheduleSyncDelayedTask(plugin, new Runnable()
-				{
-					public void run() 
-					{
-						targetLocation.getWorld().playSound(targetLocation, Sound.WEATHER_RAIN, 0.6F, 0.7F);
-						//targetLocation.getWorld().spigot().playEffect(targetLocation.add(0, 1.0, 0), Effect.SPLASH, 0, 0, (float) radius / 2, (float) radius / 2, (float) radius / 2, 0.0F, 150, 32);
-						targetLocation.getWorld().spawnParticle(Particle.WATER_SPLASH, targetLocation.add(0, 1, 0), 150, radius / 2f, radius / 2f, radius / 2f, 0);
-						//targetLocation.getWorld().spigot().playEffect(targetLocation.add(0, 1.0, 0), Effect.TILE_BREAK, Material.WATER.getId(), 0, (float) radius / 2, (float) radius / 2, (float) radius / 2, 0.0F, 100, 32);
-						//targetLocation.getWorld().spawnParticle(Particle.BLOCK_CRACK, targetLocation.add(0, 1, 0), 100, radius / 2f, radius / 2f, radius / 2f, 0, Bukkit.createBlockData(Material.WATER), true);
+				Bukkit.getScheduler().scheduleSyncDelayedTask(plugin, () -> {
+					targetLocation.getWorld().playSound(targetLocation, Sound.WEATHER_RAIN, 0.6F, 0.7F);
+					//targetLocation.getWorld().spigot().playEffect(targetLocation.add(0, 1.0, 0), Effect.SPLASH, 0, 0, (float) radius / 2, (float) radius / 2, (float) radius / 2, 0.0F, 150, 32);
+					targetLocation.getWorld().spawnParticle(Particle.WATER_SPLASH, targetLocation.add(0, 1, 0), 150, radius / 2f, radius / 2f, radius / 2f, 0);
+					//targetLocation.getWorld().spigot().playEffect(targetLocation.add(0, 1.0, 0), Effect.TILE_BREAK, Material.WATER.getId(), 0, (float) radius / 2, (float) radius / 2, (float) radius / 2, 0.0F, 100, 32);
+					//targetLocation.getWorld().spawnParticle(Particle.BLOCK_CRACK, targetLocation.add(0, 1, 0), 100, radius / 2f, radius / 2f, radius / 2f, 0, Bukkit.createBlockData(Material.WATER), true);
 
-						//FIXME remove this debug
-						// couldn't get any messages, must be a issue getting to this.
+					//FIXME remove this debug
+					// couldn't get any messages, must be a issue getting to this.
 //						String entitiesString = "none";
 //						if (nearbyEntities.size() > 0) {
 //							StringBuilder entitiesStringBuilder = new StringBuilder();
@@ -130,63 +127,62 @@ public class SkillFlood extends ActiveSkill {
 //						}
 //						Heroes.log(Level.INFO, entitiesString);
 
-						for (Entity entity : nearbyEntities) {
-							if (!(entity instanceof LivingEntity) || hitEnemies.contains(entity) || entity.getLocation().distanceSquared(targetLocation) > radiusSquared)
-								continue;
+					for (Entity entity : nearbyEntities) {
+						if (!(entity instanceof LivingEntity) || hitEnemies.contains(entity) || entity.getLocation().distanceSquared(targetLocation) > radiusSquared)
+							continue;
 
-							if (!damageCheck(player, (LivingEntity) entity))
-								continue;
+						if (!damageCheck(player, (LivingEntity) entity))
+							continue;
 
-							LivingEntity target = (LivingEntity) entity;
-							
-							target.getWorld().playSound(target.getLocation(), Sound.ENTITY_GENERIC_SPLASH, 1.0F, 1.0F);
-							target.getWorld().playSound(target.getLocation(), Sound.ENTITY_PLAYER_HURT, 1.0F, 1.0F);
-							//target.getWorld().spigot().playEffect(target.getLocation().add(0, 0.3, 0), Effect.TILE_BREAK, Material.WATER.getId(), 0, 0.4F, 0.7F, 0.4F, 0.3F, 25, 32);
-							//target.getWorld().spawnParticle(Particle.BLOCK_CRACK, target.getLocation().add(0, 0.3, 0), 25, 0.4, 0.7, 0.4, 0.3, Bukkit.createBlockData(Material.WATER), true);
-							//target.getWorld().spigot().playEffect(target.getLocation().add(0, 0.3, 0), Effect.CRIT, 0, 0, 0.4F, 0.7F, 0.4F, 0.7F, 25, 32);
-							target.getWorld().spawnParticle(Particle.CRIT, target.getLocation().add(0, 0.3, 0), 25, 0.4, 0.7, 0.4, 0.7);
+						LivingEntity target = (LivingEntity) entity;
 
-							addSpellTarget(target, hero);
-							damageEntity(target, player, damage, DamageCause.MAGIC);
-							
-							if (target.getFireTicks() > 0) {
-								//FIXME This effect is a sound but why is it played like a particle.
-								//target.getWorld().spigot().playEffect(target.getLocation(), Effect.EXTINGUISH, 0, 0, 0.5F, 1.0F, 0.5F, 0.2F, 25, 16);
-								target.getWorld().playSound(target.getLocation(), Sound.BLOCK_FIRE_EXTINGUISH, 1.0F, 1.0F);
-								target.setFireTicks(0);
-							}
-							
-							CharacterTemplate targCT = plugin.getCharacterManager().getCharacter(target);
-							targCT.addEffect(new SaturatedEffect(skill, player, 5000));
-							
-							Location playerLoc = player.getLocation();
-							Location targetLoc = target.getLocation();
+						target.getWorld().playSound(target.getLocation(), Sound.ENTITY_GENERIC_SPLASH, 1.0F, 1.0F);
+						target.getWorld().playSound(target.getLocation(), Sound.ENTITY_PLAYER_HURT, 1.0F, 1.0F);
+						//target.getWorld().spigot().playEffect(target.getLocation().add(0, 0.3, 0), Effect.TILE_BREAK, Material.WATER.getId(), 0, 0.4F, 0.7F, 0.4F, 0.3F, 25, 32);
+						//target.getWorld().spawnParticle(Particle.BLOCK_CRACK, target.getLocation().add(0, 0.3, 0), 25, 0.4, 0.7, 0.4, 0.3, Bukkit.createBlockData(Material.WATER), true);
+						//target.getWorld().spigot().playEffect(target.getLocation().add(0, 0.3, 0), Effect.CRIT, 0, 0, 0.4F, 0.7F, 0.4F, 0.7F, 25, 32);
+						target.getWorld().spawnParticle(Particle.CRIT, target.getLocation().add(0, 0.3, 0), 25, 0.4, 0.7, 0.4, 0.7);
 
-							double xDir = targetLoc.getX() - playerLoc.getX();
-							double zDir = targetLoc.getZ() - playerLoc.getZ();
-							double magnitude = Math.sqrt(xDir * xDir + zDir * zDir);
+						addSpellTarget(target, hero);
+						damageEntity(target, player, damage, DamageCause.MAGIC);
 
-							xDir = xDir / magnitude * hPower;
-							zDir = zDir / magnitude * hPower;
+						if (target.getFireTicks() > 0) {
+							//FIXME This effect is a sound but why is it played like a particle.
+							//target.getWorld().spigot().playEffect(target.getLocation(), Effect.EXTINGUISH, 0, 0, 0.5F, 1.0F, 0.5F, 0.2F, 25, 16);
+							target.getWorld().playSound(target.getLocation(), Sound.BLOCK_FIRE_EXTINGUISH, 1.0F, 1.0F);
+							target.setFireTicks(0);
+						}
 
-							if (ncpEnabled)	{
-								if (target instanceof Player) {
-									Player targetPlayer = (Player) target;
-									Hero targetHero = plugin.getCharacterManager().getHero(targetPlayer);
-									if (!targetPlayer.isOp()) {
-										long ncpDuration = SkillConfigManager.getUseSetting(hero, skill, "ncp-exemption-duration", 500, false);
-										NCPExemptionEffect ncpExemptEffect = new NCPExemptionEffect(skill, targetPlayer, ncpDuration);
-										targetHero.addEffect(ncpExemptEffect);
-									}
+						CharacterTemplate targCT = plugin.getCharacterManager().getCharacter(target);
+						targCT.addEffect(new SaturatedEffect(skill, player, 5000));
+
+						Location playerLoc = player.getLocation();
+						Location targetLoc = target.getLocation();
+
+						double xDir = targetLoc.getX() - playerLoc.getX();
+						double zDir = targetLoc.getZ() - playerLoc.getZ();
+						double magnitude = Math.sqrt(xDir * xDir + zDir * zDir);
+
+						xDir = xDir / magnitude * hPower;
+						zDir = zDir / magnitude * hPower;
+
+						if (ncpEnabled)	{
+							if (target instanceof Player) {
+								Player targetPlayer = (Player) target;
+								Hero targetHero = plugin.getCharacterManager().getHero(targetPlayer);
+								if (!targetPlayer.isOp()) {
+									long ncpDuration = SkillConfigManager.getUseSetting(hero, skill, "ncp-exemption-duration", 500, false);
+									NCPExemptionEffect ncpExemptEffect = new NCPExemptionEffect(skill, targetPlayer, ncpDuration);
+									targetHero.addEffect(ncpExemptEffect);
 								}
 							}
-
-							target.setVelocity(new Vector(xDir, vPower, zDir));
-
-							hitEnemies.add(entity);
 						}
+
+						target.setVelocity(new Vector(xDir, vPower, zDir));
+
+						hitEnemies.add(entity);
 					}
-				}, numBlocks * delay);
+				}, (long) numBlocks * delay);
 
 				numBlocks++;
 			}
@@ -196,7 +192,7 @@ public class SkillFlood extends ActiveSkill {
 		return SkillResult.NORMAL;
 	}
 	
-	private class NCPExemptionEffect extends ExpirableEffect {
+	private static class NCPExemptionEffect extends ExpirableEffect {
 
 		public NCPExemptionEffect(Skill skill, Player applier, long duration) {
 			super(skill, "NCPExemptionEffect_MOVING", applier, duration);
@@ -219,7 +215,7 @@ public class SkillFlood extends ActiveSkill {
 		}
 	}
 	
-	public class SaturatedEffect extends ExpirableEffect {
+	public static class SaturatedEffect extends ExpirableEffect {
 		public SaturatedEffect(Skill skill, Player applier, long duration) {
 			super(skill, "Saturated", applier, duration);
 		}
@@ -251,7 +247,7 @@ public class SkillFlood extends ActiveSkill {
 	
 	public class SaturatedListener implements Listener {
 		@SuppressWarnings("unused")
-		private Skill skill;
+		private final Skill skill;
 		public SaturatedListener(Skill skill) {
 			this.skill = skill;
 		}

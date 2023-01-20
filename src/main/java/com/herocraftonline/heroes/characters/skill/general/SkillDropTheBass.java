@@ -14,14 +14,13 @@ import com.herocraftonline.heroes.util.Util;
 import org.bukkit.*;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
-import org.bukkit.Sound;
 
 import java.util.ArrayList;
 import java.util.List;
 
 public class SkillDropTheBass extends ActiveSkill {
 
-    private Song skillSong;
+    private final Song skillSong;
 
     public SkillDropTheBass(Heroes plugin) {
         super(plugin, "DropTheBass");
@@ -72,7 +71,7 @@ public class SkillDropTheBass extends ActiveSkill {
 
         double increment = (2 * Math.PI) / particleAmount;
 
-        ArrayList<Location> locations = new ArrayList<Location>();
+        ArrayList<Location> locations = new ArrayList<>();
 
         for (int i = 0; i < particleAmount; i++)
         {
@@ -98,10 +97,9 @@ public class SkillDropTheBass extends ActiveSkill {
         int radius = SkillConfigManager.getUseSetting(hero, this, SkillSetting.RADIUS.node(), 15, false);
 
         List<Location> circle = circle(player.getLocation(), 72, radius);
-        for (int i = 0; i < circle.size(); i++)
-        {
+        for (Location location : circle) {
             //player.getWorld().spigot().playEffect(circle(player.getLocation(), 72, radius).get(i), org.bukkit.Effect.NOTE, 0, 0, 0, 0.2F, 0, 1, 1, 20);
-            player.getWorld().spawnParticle(Particle.NOTE, circle.get(i), 1, 0, 0.2, 0, 1);
+            player.getWorld().spawnParticle(Particle.NOTE, location, 1, 0, 0.2, 0, 1);
         }
 
         double radiusSquared = Math.pow(radius, 2);

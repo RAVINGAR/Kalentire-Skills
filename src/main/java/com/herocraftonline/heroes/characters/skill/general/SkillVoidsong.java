@@ -2,7 +2,6 @@ package com.herocraftonline.heroes.characters.skill.general;
 
 import com.herocraftonline.heroes.Heroes;
 import com.herocraftonline.heroes.api.SkillResult;
-import com.herocraftonline.heroes.attributes.AttributeType;
 import com.herocraftonline.heroes.characters.Hero;
 import com.herocraftonline.heroes.characters.effects.common.SilenceEffect;
 import com.herocraftonline.heroes.characters.skill.ActiveSkill;
@@ -59,7 +58,7 @@ public class SkillVoidsong extends ActiveSkill {
 
     public static ArrayList<Location> helix(Location center, double height, double radius, double particleInterval)
     {
-        ArrayList<Location> locations = new ArrayList<Location>();
+        ArrayList<Location> locations = new ArrayList<>();
 
         for (double y = 0; y <= height; y += particleInterval)
         {

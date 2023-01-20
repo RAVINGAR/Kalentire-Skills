@@ -5,7 +5,6 @@ import org.bukkit.FireworkEffect;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
-import org.bukkit.Sound;
 
 import com.herocraftonline.heroes.Heroes;
 import com.herocraftonline.heroes.api.SkillResult;
@@ -21,7 +20,7 @@ import com.herocraftonline.heroes.characters.skill.VisualEffect;
 
 public class SkillPray extends TargettedSkill {
     // This is for Firework Effects
-    public VisualEffect fplayer = new VisualEffect();
+    public final VisualEffect fplayer = new VisualEffect();
     public SkillPray(Heroes plugin) {
         super(plugin, "Pray");
         setDescription("You restore $1 health to your target.");
@@ -75,8 +74,6 @@ public class SkillPray extends TargettedSkill {
         // this is our fireworks shit
         try {
             fplayer.playFirework(player.getWorld(), target.getLocation().add(0,1.5,0), FireworkEffect.builder().flicker(false).trail(true).with(FireworkEffect.Type.BALL).withColor(Color.MAROON).withFade(Color.WHITE).build());
-        } catch (IllegalArgumentException e) {
-            e.printStackTrace();
         } catch (Exception e) {
             e.printStackTrace();
         }

@@ -3,14 +3,16 @@ package com.herocraftonline.heroes.characters.skill.general;
 import com.herocraftonline.heroes.Heroes;
 import com.herocraftonline.heroes.api.SkillResult;
 import com.herocraftonline.heroes.api.events.HeroRegainHealthEvent;
-import com.herocraftonline.heroes.attributes.AttributeType;
 import com.herocraftonline.heroes.characters.CharacterTemplate;
 import com.herocraftonline.heroes.characters.Hero;
 import com.herocraftonline.heroes.characters.Monster;
 import com.herocraftonline.heroes.characters.effects.EffectType;
 import com.herocraftonline.heroes.characters.effects.PeriodicDamageEffect;
-import com.herocraftonline.heroes.characters.effects.common.SoundEffect;
-import com.herocraftonline.heroes.characters.skill.*;
+import com.herocraftonline.heroes.characters.skill.Skill;
+import com.herocraftonline.heroes.characters.skill.SkillConfigManager;
+import com.herocraftonline.heroes.characters.skill.SkillSetting;
+import com.herocraftonline.heroes.characters.skill.SkillType;
+import com.herocraftonline.heroes.characters.skill.TargettedSkill;
 import com.herocraftonline.heroes.chat.ChatComponents;
 import com.herocraftonline.heroes.util.Util;
 import org.bukkit.Location;
@@ -24,7 +26,7 @@ public class SkillSoulLeech extends TargettedSkill {
     private String applyText;
     private String expireText;
 
-    public SkillSoulLeech(Heroes plugin) {
+    public SkillSoulLeech(final Heroes plugin) {
         super(plugin, "SoulLeech");
         setDescription("Leech the soul of your target, dealing $1 damage over $2 second(s). After expiring, the " +
                 "effect will restore your health for $3% of the damage dealt.");
@@ -36,22 +38,22 @@ public class SkillSoulLeech extends TargettedSkill {
     }
 
     @Override
-    public String getDescription(Hero hero) {
-        int duration = SkillConfigManager.getUseSettingInt(hero, this, SkillSetting.DURATION, false);
-        int period = SkillConfigManager.getUseSettingInt(hero, this, SkillSetting.PERIOD, false);
+    public String getDescription(final Hero hero) {
+        final int duration = SkillConfigManager.getUseSettingInt(hero, this, SkillSetting.DURATION, false);
+        final int period = SkillConfigManager.getUseSettingInt(hero, this, SkillSetting.PERIOD, false);
 
-        double damage = SkillConfigManager.getScaledUseSettingDouble(hero, this, SkillSetting.DAMAGE_TICK, false);
-        double healMult = SkillConfigManager.getUseSettingDouble(hero, this, "heal-mult", false);
+        final double damage = SkillConfigManager.getScaledUseSettingDouble(hero, this, SkillSetting.DAMAGE_TICK, false);
+        final double healMult = SkillConfigManager.getUseSettingDouble(hero, this, "heal-mult", false);
 
         return getDescription()
-                .replace("$1", Util.decFormat.format(damage * ((double)duration / period)))
+                .replace("$1", Util.decFormat.format(damage * ((double) duration / period)))
                 .replace("$2", Util.decFormat.format(duration / 1000.0))
                 .replace("$3", Util.decFormat.format(healMult * 100.0));
     }
 
     @Override
     public ConfigurationSection getDefaultConfig() {
-        ConfigurationSection config = super.getDefaultConfig();
+        final ConfigurationSection config = super.getDefaultConfig();
 
         config.set(SkillSetting.MAX_DISTANCE.node(), 8);
         config.set(SkillSetting.DAMAGE_TICK.node(), 14.0);
@@ -73,28 +75,28 @@ public class SkillSoulLeech extends TargettedSkill {
         super.init();
 
         applyText = SkillConfigManager.getRaw(this, SkillSetting.APPLY_TEXT,
-                ChatComponents.GENERIC_SKILL + "%target% is having their soul leeched by %hero%")
-                .replace("%target%", "$1").replace("%hero%", "$2");
+                        ChatComponents.GENERIC_SKILL + "%target% is having their soul leeched by %hero%")
+                .replace("%target%", "$1").replace("$target$", "$1").replace("%hero%", "$2").replace("$hero$", "$2");
         expireText = SkillConfigManager.getRaw(this, SkillSetting.EXPIRE_TEXT,
-                ChatComponents.GENERIC_SKILL + "%target%'s soul is no longer being leeched.").replace("%target%", "$1");
+                ChatComponents.GENERIC_SKILL + "%target%'s soul is no longer being leeched.").replace("%target%", "$1").replace("$target$", "$1");
     }
 
     @Override
-    public SkillResult use(Hero hero, LivingEntity target, String[] args) {
-        Player player = hero.getPlayer();
+    public SkillResult use(final Hero hero, final LivingEntity target, final String[] args) {
+        final Player player = hero.getPlayer();
 
-        int duration = SkillConfigManager.getUseSettingInt(hero, this, SkillSetting.DURATION, false);
-        int period = SkillConfigManager.getUseSettingInt(hero, this, SkillSetting.PERIOD, false);
+        final int duration = SkillConfigManager.getUseSettingInt(hero, this, SkillSetting.DURATION, false);
+        final int period = SkillConfigManager.getUseSettingInt(hero, this, SkillSetting.PERIOD, false);
 
-        double damage = SkillConfigManager.getScaledUseSettingDouble(hero, this, SkillSetting.DAMAGE_TICK, false);
-        double healMult = SkillConfigManager.getUseSettingDouble(hero, this, "heal-mult", false);
+        final double damage = SkillConfigManager.getScaledUseSettingDouble(hero, this, SkillSetting.DAMAGE_TICK, false);
+        final double healMult = SkillConfigManager.getUseSettingDouble(hero, this, "heal-mult", false);
 
-        float soundVolume = (float) SkillConfigManager.getUseSetting(hero, this, "volume", 0.8F, false);
-        float soundPitch = (float) SkillConfigManager.getUseSetting(hero, this, "pitch", 1.0F, false);
+        final float soundVolume = (float) SkillConfigManager.getUseSetting(hero, this, "volume", 0.8F, false);
+        final float soundPitch = (float) SkillConfigManager.getUseSetting(hero, this, "pitch", 1.0F, false);
 
         broadcastExecuteText(hero, target);
 
-        CharacterTemplate targetCT = plugin.getCharacterManager().getCharacter(target);
+        final CharacterTemplate targetCT = plugin.getCharacterManager().getCharacter(target);
         targetCT.addEffect(new SoulLeechEffect(this, player, period, duration, damage, healMult, soundVolume, soundPitch));
 
         return SkillResult.NORMAL;
@@ -103,11 +105,11 @@ public class SkillSoulLeech extends TargettedSkill {
     public class SoulLeechEffect extends PeriodicDamageEffect {
         private final float soundVolume;
         private final float soundPitch;
-        private double healMult;
+        private final double healMult;
         private double totalDamage = 0;
 
-        public SoulLeechEffect(Skill skill, Player applier, long period, long duration, double tickDamage,
-                               double healMult, float soundVolume, float soundPitch) {
+        public SoulLeechEffect(final Skill skill, final Player applier, final long period, final long duration, final double tickDamage,
+                               final double healMult, final float soundVolume, final float soundPitch) {
             super(skill, "SoulLeeched", applier, period, duration, tickDamage, applyText, expireText);
             types.add(EffectType.HARMFUL);
             types.add(EffectType.DARK);
@@ -119,19 +121,19 @@ public class SkillSoulLeech extends TargettedSkill {
         }
 
         @Override
-        public void removeFromMonster(Monster monster) {
+        public void removeFromMonster(final Monster monster) {
             super.removeFromMonster(monster);
             healApplier();
         }
 
         @Override
-        public void removeFromHero(Hero hero) {
+        public void removeFromHero(final Hero hero) {
             super.removeFromHero(hero);
             healApplier();
         }
 
         @Override
-        public void tickMonster(Monster monster) {
+        public void tickMonster(final Monster monster) {
             super.tickMonster(monster);
 
             final LivingEntity entity = monster.getEntity();
@@ -145,7 +147,7 @@ public class SkillSoulLeech extends TargettedSkill {
         }
 
         @Override
-        public void tickHero(Hero hero) {
+        public void tickHero(final Hero hero) {
             super.tickHero(hero);
             final Player player = hero.getPlayer();
             if (player.isDead() || player.getHealth() <= 0) {
@@ -158,16 +160,16 @@ public class SkillSoulLeech extends TargettedSkill {
         }
 
         private void healApplier() {
-            Hero hero = plugin.getCharacterManager().getHero(applier);
+            final Hero hero = plugin.getCharacterManager().getHero(applier);
 
-            HeroRegainHealthEvent hrhEvent = new HeroRegainHealthEvent(hero, totalDamage * healMult, skill);
+            final HeroRegainHealthEvent hrhEvent = new HeroRegainHealthEvent(hero, totalDamage * healMult, skill);
             plugin.getServer().getPluginManager().callEvent(hrhEvent);
             if (!hrhEvent.isCancelled()) {
                 hero.heal(hrhEvent.getDelta());
             }
         }
 
-        private void playSound(Location location) {
+        private void playSound(final Location location) {
             if (soundVolume > 0) {
                 location.getWorld().playSound(location, Sound.ENTITY_BAT_DEATH, soundVolume, soundPitch);
             }

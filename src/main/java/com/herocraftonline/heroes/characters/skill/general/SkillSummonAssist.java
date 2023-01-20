@@ -45,8 +45,7 @@ public class SkillSummonAssist extends ActiveSkill {
 
     @Override
     public ConfigurationSection getDefaultConfig() {
-        ConfigurationSection node = super.getDefaultConfig();
-        return node;
+        return super.getDefaultConfig();
     }
 
     public void init()
@@ -61,7 +60,7 @@ public class SkillSummonAssist extends ActiveSkill {
     }
 
     public class MinionListener implements Listener {
-        private Skill skill;
+        private final Skill skill;
 
         public MinionListener(Skill skill) {
             this.skill = skill;
@@ -103,7 +102,7 @@ public class SkillSummonAssist extends ActiveSkill {
         @EventHandler(priority=EventPriority.MONITOR)
         public void onEntityDamage(EntityDamageEvent paramEntityDamageEvent)
         {
-            if ((paramEntityDamageEvent.isCancelled()) || (!(paramEntityDamageEvent instanceof EntityDamageByEntityEvent entityDamageByEntityEvent))) {
+            if ((paramEntityDamageEvent.isCancelled()) || (!(paramEntityDamageEvent instanceof EntityDamageByEntityEvent))) {
                 return;
             }
             if ((paramEntityDamageEvent.getEntity() instanceof Player))
@@ -114,9 +113,10 @@ public class SkillSummonAssist extends ActiveSkill {
                     return;
                 }
 
-                Entity damager = entityDamageByEntityEvent.getDamager();
-                if(damager instanceof Projectile proj) {
-                    damager = (Entity) proj.getShooter();
+                EntityDamageByEntityEvent event = (EntityDamageByEntityEvent) paramEntityDamageEvent;
+                Entity damager = event.getDamager();
+                if(damager instanceof Projectile) {
+                    damager = (Entity) ((Projectile)damager).getShooter();
                 }
                 Entity finalDamager = damager;
                 hero.getSummons().forEach(summon -> {
@@ -134,16 +134,17 @@ public class SkillSummonAssist extends ActiveSkill {
             }
             else if ((paramEntityDamageEvent.getEntity() instanceof LivingEntity))
             {
+                EntityDamageByEntityEvent event = (EntityDamageByEntityEvent) paramEntityDamageEvent;
                 //Player attacks a mob
-                Entity damager = entityDamageByEntityEvent.getDamager();
+                Entity damager = event.getDamager();
                 Hero hero = null;
-                if(damager instanceof Player player) {
-                    hero = skill.plugin.getCharacterManager().getHero(player);
+                if(damager instanceof Player) {
+                    hero = skill.plugin.getCharacterManager().getHero((Player)damager);
                 }
-                else if (damager instanceof Projectile projectilej) {
-                    Entity source = (Entity) projectilej.getShooter();
-                    if(source instanceof Player player) {
-                        hero = skill.plugin.getCharacterManager().getHero(player);
+                else if (damager instanceof Projectile) {
+                    Entity source = (Entity) ((Projectile)damager).getShooter();
+                    if(source instanceof Player) {
+                        hero = skill.plugin.getCharacterManager().getHero((Player) source);
                     }
                 }
                 Entity target = paramEntityDamageEvent.getEntity();

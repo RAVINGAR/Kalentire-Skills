@@ -57,7 +57,7 @@ public class SkillInfernoFlash extends ActiveSkill {
 
    		double increment = (2 * Math.PI) / particleAmount;
 
-   		ArrayList<Location> locations = new ArrayList<Location>();
+   		ArrayList<Location> locations = new ArrayList<>();
 
    		for (int i = 0; i < particleAmount; i++)
    		{
@@ -141,11 +141,10 @@ public class SkillInfernoFlash extends ActiveSkill {
             teleport.setYaw(loc.getYaw());
 
             ArrayList<Location> locations = circle(player.getLocation(), 72, 1.5);
-            for (int i = 0; i < locations.size(); i++)
-    		{
-    			//player.getWorld().spigot().playEffect(locations.get(i), org.bukkit.Effect.FLAME, 0, 0, 0, 1.2F, 0, 0, 6, 16);
-                player.getWorld().spawnParticle(Particle.FLAME, locations.get(i), 6, 0, 1.2, 0, 0);
-    		}
+            for (Location location : locations) {
+                //player.getWorld().spigot().playEffect(locations.get(i), org.bukkit.Effect.FLAME, 0, 0, 0, 1.2F, 0, 0, 6, 16);
+                player.getWorld().spawnParticle(Particle.FLAME, location, 6, 0, 1.2, 0, 0);
+            }
             //teleport.getWorld().spigot().playEffect(teleport, Effect.FLAME, 0, 0, 0.5F, 0.5F, 0.5F, 0.5F, 45, 16);
             player.getWorld().spawnParticle(Particle.FLAME, teleport, 45, 0.5, 0.5, 0.5, 0.5);
             player.teleport(teleport);

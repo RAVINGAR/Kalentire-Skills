@@ -1,16 +1,5 @@
 package com.herocraftonline.heroes.characters.skill.general;
 
-import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
-import org.bukkit.Sound;
-import org.bukkit.configuration.ConfigurationSection;
-import org.bukkit.entity.LivingEntity;
-import org.bukkit.entity.Player;
-import org.bukkit.Sound;
-import org.bukkit.event.EventHandler;
-import org.bukkit.event.EventPriority;
-import org.bukkit.event.Listener;
-
 import com.herocraftonline.heroes.Heroes;
 import com.herocraftonline.heroes.api.SkillResult;
 import com.herocraftonline.heroes.api.events.SkillDamageEvent;
@@ -27,6 +16,15 @@ import com.herocraftonline.heroes.characters.skill.SkillType;
 import com.herocraftonline.heroes.characters.skill.TargettedSkill;
 import com.herocraftonline.heroes.chat.ChatComponents;
 import com.herocraftonline.heroes.util.Util;
+import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
+import org.bukkit.Sound;
+import org.bukkit.configuration.ConfigurationSection;
+import org.bukkit.entity.LivingEntity;
+import org.bukkit.entity.Player;
+import org.bukkit.event.EventHandler;
+import org.bukkit.event.EventPriority;
+import org.bukkit.event.Listener;
 
 public class SkillProvoke extends TargettedSkill {
 
@@ -34,7 +32,7 @@ public class SkillProvoke extends TargettedSkill {
     private String expireText;
     private String provokeText;
 
-    public SkillProvoke(Heroes plugin) {
+    public SkillProvoke(final Heroes plugin) {
         super(plugin, "Provoke");
         setDescription("Provoke your target for $1 second(s). Provoked targets gain $2% increased damage against you, but also take an additional $3% damage from all incoming physical attacks.");
         setUsage("/skill provoke");
@@ -45,22 +43,24 @@ public class SkillProvoke extends TargettedSkill {
         Bukkit.getServer().getPluginManager().registerEvents(new SkillHeroListener(), plugin);
     }
 
-    public String getDescription(Hero hero) {
+    @Override
+    public String getDescription(final Hero hero) {
 
-        int duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, 30000, false);
+        final int duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, 30000, false);
 
-        double outgoingIncrease = SkillConfigManager.getUseSetting(hero, this, "outgoing-damage-increase-percent", 0.25, false);
-        double incomingIncrease = SkillConfigManager.getUseSetting(hero, this, "incoming-damage-increase-percent", 0.35, false);
+        final double outgoingIncrease = SkillConfigManager.getUseSetting(hero, this, "outgoing-damage-increase-percent", 0.25, false);
+        final double incomingIncrease = SkillConfigManager.getUseSetting(hero, this, "incoming-damage-increase-percent", 0.35, false);
 
-        String formattedDuration = Util.decFormat.format(duration / 1000.0);
-        String formattedOutgoingIncrease = Util.decFormat.format(outgoingIncrease * 100);
-        String formattedIncomingIncrease = Util.decFormat.format(incomingIncrease * 100);
+        final String formattedDuration = Util.decFormat.format(duration / 1000.0);
+        final String formattedOutgoingIncrease = Util.decFormat.format(outgoingIncrease * 100);
+        final String formattedIncomingIncrease = Util.decFormat.format(incomingIncrease * 100);
 
         return getDescription().replace("$1", formattedDuration).replace("$3", formattedOutgoingIncrease).replace("$2", formattedIncomingIncrease);
     }
 
+    @Override
     public ConfigurationSection getDefaultConfig() {
-        ConfigurationSection node = super.getDefaultConfig();
+        final ConfigurationSection node = super.getDefaultConfig();
 
         node.set(SkillSetting.MAX_DISTANCE.node(), 4);
         node.set(SkillSetting.DURATION.node(), 6000);
@@ -74,26 +74,28 @@ public class SkillProvoke extends TargettedSkill {
         return node;
     }
 
+    @Override
     public void init() {
         super.init();
 
-        applyText = SkillConfigManager.getRaw(this, SkillSetting.APPLY_TEXT, ChatComponents.GENERIC_SKILL + "%target% was provoked by %hero%!").replace("%target%", "$1").replace("%hero%", "$2");
-        expireText = SkillConfigManager.getRaw(this, SkillSetting.EXPIRE_TEXT, ChatComponents.GENERIC_SKILL + "%target% is no longer provoked!").replace("%target%", "$1").replace("%hero%", "$2");
+        applyText = SkillConfigManager.getRaw(this, SkillSetting.APPLY_TEXT, ChatComponents.GENERIC_SKILL + "%target% was provoked by %hero%!").replace("%target%", "$1").replace("$target$", "$1").replace("%hero%", "$2").replace("$hero$", "$2");
+        expireText = SkillConfigManager.getRaw(this, SkillSetting.EXPIRE_TEXT, ChatComponents.GENERIC_SKILL + "%target% is no longer provoked!").replace("%target%", "$1").replace("$target$", "$1").replace("%hero%", "$2").replace("$hero$", "$2");
         provokeText = SkillConfigManager.getRaw(this, "provoke-text", "%hero% is provoking you!");
     }
 
-    public SkillResult use(Hero hero, LivingEntity target, String[] args) {
+    @Override
+    public SkillResult use(final Hero hero, final LivingEntity target, final String[] args) {
 
-        Player player = hero.getPlayer();
+        final Player player = hero.getPlayer();
 
         broadcastExecuteText(hero, target);
 
-        int duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, 30000, false);
-        int period = SkillConfigManager.getUseSetting(hero, this, "provoke-message-speed", 1000, false);
-        double incomingDamageIncrease = SkillConfigManager.getUseSetting(hero, this, "incoming-damage-increase-percent", 0.25, false);
-        double outgoingDamageIncrease = SkillConfigManager.getUseSetting(hero, this, "outgoing-damage-increase-percent", 0.25, false);
+        final int duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, 30000, false);
+        final int period = SkillConfigManager.getUseSetting(hero, this, "provoke-message-speed", 1000, false);
+        final double incomingDamageIncrease = SkillConfigManager.getUseSetting(hero, this, "incoming-damage-increase-percent", 0.25, false);
+        final double outgoingDamageIncrease = SkillConfigManager.getUseSetting(hero, this, "outgoing-damage-increase-percent", 0.25, false);
 
-        ProvokeEffect effect = new ProvokeEffect(this, player, period, duration, incomingDamageIncrease, outgoingDamageIncrease);
+        final ProvokeEffect effect = new ProvokeEffect(this, player, period, duration, incomingDamageIncrease, outgoingDamageIncrease);
 
         plugin.getCharacterManager().getCharacter(target).addEffect(effect);
 
@@ -104,22 +106,23 @@ public class SkillProvoke extends TargettedSkill {
 
     public class SkillHeroListener implements Listener {
 
-        public SkillHeroListener() {}
+        public SkillHeroListener() {
+        }
 
         @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
-        public void onSkillDamage(SkillDamageEvent event) {
+        public void onSkillDamage(final SkillDamageEvent event) {
 
             // Handle outgoing
-            CharacterTemplate attackerCT = event.getDamager();
+            final CharacterTemplate attackerCT = event.getDamager();
             if (attackerCT.hasEffect("Provoked")) {
                 if (event.getEntity() instanceof Player) {
-                    Player defenderPlayer = (Player) event.getEntity();
+                    final Player defenderPlayer = (Player) event.getEntity();
 
-                    ProvokeEffect pEffect = (ProvokeEffect) attackerCT.getEffect("Provoked");
+                    final ProvokeEffect pEffect = (ProvokeEffect) attackerCT.getEffect("Provoked");
 
                     if (pEffect.getApplier().equals(defenderPlayer)) {
-                        double damageIncreasePercent = 1 + pEffect.getOutgoingDamageIncrease();
-                        double newDamage = damageIncreasePercent * event.getDamage();
+                        final double damageIncreasePercent = 1 + pEffect.getOutgoingDamageIncrease();
+                        final double newDamage = damageIncreasePercent * event.getDamage();
                         event.setDamage(newDamage);
                     }
                 }
@@ -127,46 +130,47 @@ public class SkillProvoke extends TargettedSkill {
 
             // Handle incoming
             if (event.getSkill().isType(SkillType.ABILITY_PROPERTY_PHYSICAL) && event.getSkill().isType(SkillType.DAMAGING)) {
-                CharacterTemplate defenderCT = plugin.getCharacterManager().getCharacter((LivingEntity) event.getEntity());
+                final CharacterTemplate defenderCT = plugin.getCharacterManager().getCharacter((LivingEntity) event.getEntity());
                 if (defenderCT.hasEffect("Provoked")) {
-                    ProvokeEffect fEffect = (ProvokeEffect) defenderCT.getEffect("Provoked");
+                    final ProvokeEffect fEffect = (ProvokeEffect) defenderCT.getEffect("Provoked");
 
-                    double damageIncreasePercent = 1 + fEffect.getIncomingDamageIncrease();
-                    double newDamage = damageIncreasePercent * event.getDamage();
+                    final double damageIncreasePercent = 1 + fEffect.getIncomingDamageIncrease();
+                    final double newDamage = damageIncreasePercent * event.getDamage();
                     event.setDamage(newDamage);
                 }
             }
         }
 
         @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
-        public void onWeaponDamage(WeaponDamageEvent event) {
+        public void onWeaponDamage(final WeaponDamageEvent event) {
 
             // Handle outgoing
-            CharacterTemplate attackerCT = event.getDamager();
+            final CharacterTemplate attackerCT = event.getDamager();
             if (attackerCT.hasEffect("Provoked")) {
                 if (event.getEntity() instanceof Player) {
-                    Player defenderPlayer = (Player) event.getEntity();
+                    final Player defenderPlayer = (Player) event.getEntity();
 
-                    ProvokeEffect pEffect = (ProvokeEffect) attackerCT.getEffect("Provoked");
+                    final ProvokeEffect pEffect = (ProvokeEffect) attackerCT.getEffect("Provoked");
 
                     if (pEffect.getApplier().equals(defenderPlayer)) {
-                        double damageIncreasePercent = 1 + pEffect.getOutgoingDamageIncrease();
-                        double newDamage = damageIncreasePercent * event.getDamage();
+                        final double damageIncreasePercent = 1 + pEffect.getOutgoingDamageIncrease();
+                        final double newDamage = damageIncreasePercent * event.getDamage();
                         event.setDamage(newDamage);
                     }
                 }
             }
 
-            if (!(event.getEntity() instanceof LivingEntity))
+            if (!(event.getEntity() instanceof LivingEntity)) {
                 return;
+            }
 
             // Handle incoming
-            CharacterTemplate defenderCT = plugin.getCharacterManager().getCharacter((LivingEntity) event.getEntity());
+            final CharacterTemplate defenderCT = plugin.getCharacterManager().getCharacter((LivingEntity) event.getEntity());
             if (defenderCT.hasEffect("Provoked")) {
-                ProvokeEffect pEffect = (ProvokeEffect) defenderCT.getEffect("Provoked");
+                final ProvokeEffect pEffect = (ProvokeEffect) defenderCT.getEffect("Provoked");
 
-                double damageIncreasePercent = 1 + pEffect.getIncomingDamageIncrease();
-                double newDamage = damageIncreasePercent * event.getDamage();
+                final double damageIncreasePercent = 1 + pEffect.getIncomingDamageIncrease();
+                final double newDamage = damageIncreasePercent * event.getDamage();
                 event.setDamage(newDamage);
             }
         }
@@ -176,7 +180,7 @@ public class SkillProvoke extends TargettedSkill {
         private double incomingDamageIncrease;
         private double outgoingDamageIncrease;
 
-        public ProvokeEffect(Skill skill, Player applier, long period, long duration, double incomingDamageIncrease, double outgoingDamageIncrease) {
+        public ProvokeEffect(final Skill skill, final Player applier, final long period, final long duration, final double incomingDamageIncrease, final double outgoingDamageIncrease) {
             super(skill, "Provoked", applier, period, duration, applyText, expireText); //TODO Implicit broadcast() call - may need changes?
 
             types.add(EffectType.PHYSICAL);
@@ -187,20 +191,21 @@ public class SkillProvoke extends TargettedSkill {
         }
 
         @Override
-        public void tickHero(Hero hero) {
-            Player player = hero.getPlayer();
+        public void tickHero(final Hero hero) {
+            final Player player = hero.getPlayer();
 
             player.sendMessage(provokeText.replace("%hero%", ChatColor.BOLD + applier.getName() + ChatColor.RESET));
         }
 
         @Override
-        public void tickMonster(Monster monster) {}
+        public void tickMonster(final Monster monster) {
+        }
 
         public double getIncomingDamageIncrease() {
             return incomingDamageIncrease;
         }
 
-        public void setIncomingDamageIncrease(double incomingDamageIncrease) {
+        public void setIncomingDamageIncrease(final double incomingDamageIncrease) {
             this.incomingDamageIncrease = incomingDamageIncrease;
         }
 
@@ -208,7 +213,7 @@ public class SkillProvoke extends TargettedSkill {
             return outgoingDamageIncrease;
         }
 
-        public void setOutgoingDamageIncrease(double outgoingDamageIncrease) {
+        public void setOutgoingDamageIncrease(final double outgoingDamageIncrease) {
             this.outgoingDamageIncrease = outgoingDamageIncrease;
         }
     }

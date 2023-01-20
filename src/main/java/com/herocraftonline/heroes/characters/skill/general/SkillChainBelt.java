@@ -13,8 +13,8 @@ import org.bukkit.entity.Player;
 
 public class SkillChainBelt extends PassiveSkill {
 
-    public static String skillName = "ChainBelt";
-    public static String effectName = "ChainBelt";
+    public static final String skillName = "ChainBelt";
+    public static final String effectName = "ChainBelt";
 
     public SkillChainBelt(Heroes plugin) {
         super(plugin, "ChainBelt");
@@ -87,7 +87,7 @@ public class SkillChainBelt extends PassiveSkill {
         effect.displayChainCountMessage();
     }
 
-    public class ChainBeltEffect extends PeriodicEffect {
+    public static class ChainBeltEffect extends PeriodicEffect {
         private int maxChains;
         private int chainCount;
         private int lossOnOvercap;

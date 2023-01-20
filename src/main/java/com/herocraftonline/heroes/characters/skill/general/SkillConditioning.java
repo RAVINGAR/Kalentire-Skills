@@ -45,9 +45,11 @@ public class SkillConditioning extends PassiveSkill implements Listenable {
         return listener;
     }
 
-    private record ConditioningListener(
-            SkillConditioning skill) implements Listener {
-
+    public static class ConditioningListener implements Listener {
+        private final SkillConditioning skill;
+        public ConditioningListener(SkillConditioning skill) {
+            this.skill = skill;
+        }
         @EventHandler(priority = EventPriority.MONITOR)
         public void onEntityDamage(EntityDamageEvent event) {
             if ((!event.isCancelled() && event.getCause() == EntityDamageEvent.DamageCause.ENTITY_ATTACK && event.getEntity() instanceof Player && event.getDamage() >= 1.0D) || (!event.isCancelled() && event.getCause() == EntityDamageEvent.DamageCause.PROJECTILE && event.getEntity() instanceof Player && event.getDamage() >= 1.0D) || (!event.isCancelled() && event.getCause() == EntityDamageEvent.DamageCause.THORNS && event.getEntity() instanceof Player && event.getDamage() >= 1.0D)) {

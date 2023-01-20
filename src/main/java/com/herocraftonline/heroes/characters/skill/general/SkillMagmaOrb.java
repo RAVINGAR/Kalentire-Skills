@@ -3,12 +3,16 @@ package com.herocraftonline.heroes.characters.skill.general;
 import com.herocraftonline.heroes.Heroes;
 import com.herocraftonline.heroes.api.SkillResult;
 import com.herocraftonline.heroes.characters.Hero;
-import com.herocraftonline.heroes.characters.skill.*;
+import com.herocraftonline.heroes.characters.skill.ActiveSkill;
+import com.herocraftonline.heroes.characters.skill.Skill;
+import com.herocraftonline.heroes.characters.skill.SkillConfigManager;
+import com.herocraftonline.heroes.characters.skill.SkillSetting;
+import com.herocraftonline.heroes.characters.skill.SkillType;
 import com.herocraftonline.heroes.characters.skill.tools.Missile;
-import de.slikey.effectlib.Effect;
-import de.slikey.effectlib.EffectManager;
-import de.slikey.effectlib.EffectType;
-import de.slikey.effectlib.util.RandomUtils;
+import com.herocraftonline.heroes.libs.slikey.effectlib.Effect;
+import com.herocraftonline.heroes.libs.slikey.effectlib.EffectManager;
+import com.herocraftonline.heroes.libs.slikey.effectlib.EffectType;
+import com.herocraftonline.heroes.libs.slikey.effectlib.util.RandomUtils;
 import org.bukkit.Color;
 import org.bukkit.Location;
 import org.bukkit.Particle;
@@ -28,7 +32,7 @@ public class SkillMagmaOrb extends ActiveSkill {
     private static final Color FIRE_ORANGE = Color.fromRGB(226, 88, 34);
     private static final Color FIRE_RED = Color.fromRGB(236, 60, 30);
 
-    public SkillMagmaOrb(Heroes plugin) {
+    public SkillMagmaOrb(final Heroes plugin) {
         super(plugin, "MagmaOrb");
         setDescription("Conjure up a projectile of pure fire. The orb seeks out nearby entities and lasts for $1 second(s). "
                 + "Targets hit by the magmaOrb are launched upwards and dealt $2 damage");
@@ -39,14 +43,14 @@ public class SkillMagmaOrb extends ActiveSkill {
     }
 
     @Override
-    public String getDescription(Hero hero) {
-        int damage = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE, 80, false);
+    public String getDescription(final Hero hero) {
+        final int damage = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE, 80, false);
         return getDescription().replace("$1", damage + "");
     }
 
     @Override
     public ConfigurationSection getDefaultConfig() {
-        ConfigurationSection config = super.getDefaultConfig();
+        final ConfigurationSection config = super.getDefaultConfig();
         config.set(SkillSetting.DAMAGE.node(), 75);
         config.set(SkillSetting.RADIUS.node(), 4.0);
         config.set(SkillSetting.DELAY.node(), 1000);
@@ -57,26 +61,25 @@ public class SkillMagmaOrb extends ActiveSkill {
     }
 
     @Override
-    public void onWarmup(Hero hero) {
+    public void onWarmup(final Hero hero) {
         super.onWarmup(hero);
 
-        int warmupTime = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DELAY, 1, false);
-        int warmupTicks = warmupTime / 50;
+        final int warmupTime = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DELAY, 1, false);
+        final int warmupTicks = warmupTime / 50;
 
-        double radius = SkillConfigManager.getUseSetting(hero, this, "projectile-radius", 4.0, false) * 2;  // Double it for the warmup visual
-        double decreasePerTick = radius / warmupTicks;
+        final double radius = SkillConfigManager.getUseSetting(hero, this, "projectile-radius", 4.0, false) * 2;  // Double it for the warmup visual
+        final double decreasePerTick = radius / warmupTicks;
 
-        final EffectManager effectManager = new EffectManager(plugin);
-        MagmaOrbVisualEffect vEffect = new MagmaOrbVisualEffect(effectManager, radius, decreasePerTick);
+        final MagmaOrbVisualEffect vEffect = new MagmaOrbVisualEffect(effectLib, radius, decreasePerTick);
         vEffect.setLocation(hero.getPlayer().getLocation());
-        effectManager.start(vEffect);
+        effectLib.start(vEffect);
     }
 
     @Override
-    public SkillResult use(Hero hero, String[] args) {
-        Player player = hero.getPlayer();
+    public SkillResult use(final Hero hero, final String[] args) {
+        final Player player = hero.getPlayer();
 
-        MagmaOrbMissile missile = new MagmaOrbMissile(hero, this);
+        final MagmaOrbMissile missile = new MagmaOrbMissile(hero, this);
         missile.fireMissile();
 
         broadcastExecuteText(hero);
@@ -84,99 +87,21 @@ public class SkillMagmaOrb extends ActiveSkill {
         return SkillResult.NORMAL;
     }
 
-    class MagmaOrbMissile extends Missile {
-
-        private final Hero hero;
-        private final Player player;
-        private final double damage;
-        private final double damageRadius;
-
-        final EffectManager effectManager = new EffectManager(plugin);
-        final MagmaOrbVisualEffect vEffect;
-
-        MagmaOrbMissile(Hero hero, Skill skill) {
-            this.hero = hero;
-            this.player = hero.getPlayer();
-            this.damage = SkillConfigManager.getUseSetting(hero, skill, SkillSetting.DAMAGE, 75.0, false);
-            this.damageRadius = SkillConfigManager.getUseSetting(hero, skill, SkillSetting.RADIUS, 6.0, false);
-
-            double projRadius = SkillConfigManager.getUseSetting(hero, skill, "projectile-radius", 2.0, false);
-
-            setGravity(SkillConfigManager.getUseSetting(hero, skill, "projectile-gravity", 14.7045, false));
-            setDrag(SkillConfigManager.getUseSetting(hero, skill, "projectile-drag", 0, false));
-            setMass(SkillConfigManager.getUseSetting(hero, skill, "projectile-mass", 5, false));
-            setEntityDetectRadius(projRadius);
-
-            Location playerLoc = player.getEyeLocation();
-            Vector direction = playerLoc.getDirection().normalize();
-            Vector offset = direction.multiply(1.5);
-            Location missileLoc = playerLoc.add(offset);
-            setLocationAndSpeed(missileLoc, SkillConfigManager.getUseSetting(hero, skill, "projectile-velocity", 12.0, false));
-
-            vEffect = new MagmaOrbVisualEffect(effectManager, projRadius, 0);
-        }
-
-        protected void onStart() {
-            vEffect.setLocation(getLocation());
-            effectManager.start(vEffect);
-        }
-
-        protected void onTick() {
-            vEffect.setLocation(getLocation());
-        }
-
-        protected void onFinalTick() {
-            effectManager.dispose();
-        }
-
-        protected boolean onCollideWithEntity(Entity entity) {
-            if (!(entity instanceof LivingEntity) || entity.equals(player) || !damageCheck(player, (LivingEntity) entity))
-                return false;
-            return true;
-        }
-
-        @Override
-        protected void onBlockHit(Block block, Vector hitPoint, BlockFace hitFace, Vector hitForce) {
-            applyDamageAoE();
-        }
-
-        @Override
-        protected void onEntityHit(Entity entity, Vector hitOrigin, Vector hitForce) {
-            applyDamageAoE();
-        }
-
-        private void applyDamageAoE() {
-            Collection<Entity> nearbyEnts = getWorld().getNearbyEntities(getLocation(), this.damageRadius, this.damageRadius, this.damageRadius);
-            for (Entity ent : nearbyEnts) {
-                if (!(ent instanceof LivingEntity))
-                    continue;
-
-                LivingEntity target = (LivingEntity) ent;
-                if (!damageCheck(player, target))
-                    continue;
-
-                addSpellTarget(target, hero);
-                damageEntity(target, player, this.damage, EntityDamageEvent.DamageCause.MAGIC);
-            }
-        }
-    }
-
-    class MagmaOrbVisualEffect extends Effect {
-        private Particle primaryParticle;
-        private Color primaryColor;
+    static class MagmaOrbVisualEffect extends Effect {
+        private final Particle primaryParticle;
+        private final Color primaryColor;
+        private final double primaryYOffset;
+        private final int primaryParticleCount;
+        private final double primaryRadiusDecrease;
+        private final Particle secondaryParticle;
+        private final Color secondaryColor;
+        private final double secondaryYOffset;
+        private final int secondaryParticleCount;
+        private final double secondaryRadiusDecrease;
         private double primaryRadius;
-        private double primaryYOffset;
-        private int primaryParticleCount;
-        private double primaryRadiusDecrease;
-
-        private Particle secondaryParticle;
-        private Color secondaryColor;
         private double secondaryRadius;
-        private double secondaryYOffset;
-        private int secondaryParticleCount;
-        private double secondaryRadiusDecrease;
 
-        MagmaOrbVisualEffect(EffectManager effectManager, double radius, double decreasePerTick) {
+        MagmaOrbVisualEffect(final EffectManager effectManager, final double radius, final double decreasePerTick) {
             super(effectManager);
 
             this.period = 1;
@@ -198,41 +123,125 @@ public class SkillMagmaOrb extends ActiveSkill {
             this.secondaryParticleCount = 75;
         }
 
+        @Override
         public void onRun() {
-            if (primaryRadiusDecrease != 0.0D)
+            if (primaryRadiusDecrease != 0.0D) {
                 this.primaryRadius -= primaryRadiusDecrease;
-            if (primaryRadius > 0)
+            }
+            if (primaryRadius > 0) {
                 displaySphere(this.primaryRadius, this.primaryYOffset, this.primaryParticle, this.primaryColor, this.primaryParticleCount);
+            }
 
             displayCenter();
 
-            if (secondaryRadiusDecrease != 0.0D)
+            if (secondaryRadiusDecrease != 0.0D) {
                 this.secondaryRadius -= secondaryRadiusDecrease;
-            if (secondaryRadius > 0)
+            }
+            if (secondaryRadius > 0) {
                 displaySphere(this.secondaryRadius, this.secondaryYOffset, this.secondaryParticle, this.secondaryColor, this.secondaryParticleCount);
+            }
         }
 
-        private double secondaryRadiusMultiplier(double radiusValue) {
+        private double secondaryRadiusMultiplier(final double radiusValue) {
             return radiusValue * 1.2;
         }
 
         private void displayCenter() {
-            Location location = this.getLocation();
-            Vector vector = new Vector(0.0D, primaryYOffset, 0.0D);
+            final Location location = this.getLocation();
+            final Vector vector = new Vector(0.0D, primaryYOffset, 0.0D);
             location.add(vector);
             this.display(Particle.LAVA, location);
             location.subtract(vector);
         }
 
-        private void displaySphere(double radiusToUse, double yOffset, Particle particle, Color color, int particleCount) {
-            Location location = this.getLocation();
+        private void displaySphere(final double radiusToUse, final double yOffset, final Particle particle, final Color color, final int particleCount) {
+            final Location location = this.getLocation();
             location.add(0.0D, yOffset, 0.0D);
 
-            for(int i = 0; i < particleCount; ++i) {
-                Vector vector = RandomUtils.getRandomVector().multiply(radiusToUse);
+            for (int i = 0; i < particleCount; ++i) {
+                final Vector vector = RandomUtils.getRandomVector().multiply(radiusToUse);
                 location.add(vector);
                 this.display(particle, location, color);
                 location.subtract(vector);
+            }
+        }
+    }
+
+    class MagmaOrbMissile extends Missile {
+
+        final MagmaOrbVisualEffect vEffect;
+        private final Hero hero;
+        private final Player player;
+        private final double damage;
+        private final double damageRadius;
+
+        MagmaOrbMissile(final Hero hero, final Skill skill) {
+            this.hero = hero;
+            this.player = hero.getPlayer();
+            this.damage = SkillConfigManager.getUseSetting(hero, skill, SkillSetting.DAMAGE, 75.0, false);
+            this.damageRadius = SkillConfigManager.getUseSetting(hero, skill, SkillSetting.RADIUS, 6.0, false);
+
+            final double projRadius = SkillConfigManager.getUseSetting(hero, skill, "projectile-radius", 2.0, false);
+
+            setGravity(SkillConfigManager.getUseSetting(hero, skill, "projectile-gravity", 14.7045, false));
+            setDrag(SkillConfigManager.getUseSetting(hero, skill, "projectile-drag", 0, false));
+            setMass(SkillConfigManager.getUseSetting(hero, skill, "projectile-mass", 5, false));
+            setEntityDetectRadius(projRadius);
+
+            final Location playerLoc = player.getEyeLocation();
+            final Vector direction = playerLoc.getDirection().normalize();
+            final Vector offset = direction.multiply(1.5);
+            final Location missileLoc = playerLoc.add(offset);
+            setLocationAndSpeed(missileLoc, SkillConfigManager.getUseSetting(hero, skill, "projectile-velocity", 12.0, false));
+
+            vEffect = new MagmaOrbVisualEffect(effectLib, projRadius, 0);
+        }
+
+        @Override
+        protected void onStart() {
+            vEffect.setLocation(getLocation());
+            effectLib.start(vEffect);
+        }
+
+        @Override
+        protected void onTick() {
+            vEffect.setLocation(getLocation());
+        }
+
+        @Override
+        protected void onFinalTick() {
+            vEffect.cancel();
+        }
+
+        @Override
+        protected boolean onCollideWithEntity(final Entity entity) {
+            return entity instanceof LivingEntity && !entity.equals(player) && damageCheck(player, (LivingEntity) entity);
+        }
+
+        @Override
+        protected void onBlockHit(final Block block, final Vector hitPoint, final BlockFace hitFace, final Vector hitForce) {
+            applyDamageAoE();
+        }
+
+        @Override
+        protected void onEntityHit(final Entity entity, final Vector hitOrigin, final Vector hitForce) {
+            applyDamageAoE();
+        }
+
+        private void applyDamageAoE() {
+            final Collection<Entity> nearbyEnts = getWorld().getNearbyEntities(getLocation(), this.damageRadius, this.damageRadius, this.damageRadius);
+            for (final Entity ent : nearbyEnts) {
+                if (!(ent instanceof LivingEntity)) {
+                    continue;
+                }
+
+                final LivingEntity target = (LivingEntity) ent;
+                if (!damageCheck(player, target)) {
+                    continue;
+                }
+
+                addSpellTarget(target, hero);
+                damageEntity(target, player, this.damage, EntityDamageEvent.DamageCause.MAGIC);
             }
         }
     }

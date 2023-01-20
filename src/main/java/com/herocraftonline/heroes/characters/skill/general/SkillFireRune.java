@@ -101,11 +101,10 @@ public class SkillFireRune extends ActiveSkill {
         player.getWorld().playSound(player.getLocation(), Sound.ENTITY_WITHER_AMBIENT, 0.5F, 1.0F);
 
         List<Location> circle = GeometryUtil.circle(player.getLocation(), 36, 1.5);
-        for (int i = 0; i < circle.size(); i++)
-		{
-        	//player.getWorld().spigot().playEffect(circle(player.getLocation().add(0, 1, 0), 36, 1.5).get(i), org.bukkit.Effect.FLAME, 0, 0, 0.0F, 0.0F, 0.0F, 0.0F, 1, 16);
-            player.getWorld().spawnParticle(Particle.FLAME, circle.get(i), 1, 0, 0, 0, 0);
-		}
+        for (Location location : circle) {
+            //player.getWorld().spigot().playEffect(circle(player.getLocation().add(0, 1, 0), 36, 1.5).get(i), org.bukkit.Effect.FLAME, 0, 0, 0.0F, 0.0F, 0.0F, 0.0F, 1, 16);
+            player.getWorld().spawnParticle(Particle.FLAME, location, 1, 0, 0, 0, 0);
+        }
 
         return SkillResult.NORMAL;
     }
@@ -132,39 +131,35 @@ public class SkillFireRune extends ActiveSkill {
             if (!(targEnt instanceof LivingEntity))
                 return;
 
-            Bukkit.getServer().getScheduler().scheduleSyncDelayedTask(plugin, new Runnable()
-            {
-                public void run()
-                {
-                    if (!(damageCheck(hero.getPlayer(), (LivingEntity) targEnt)))
-                        return;
+            Bukkit.getServer().getScheduler().scheduleSyncDelayedTask(plugin, () -> {
+                if (!(damageCheck(hero.getPlayer(), (LivingEntity) targEnt)))
+                    return;
 
-                    Player player = hero.getPlayer();
+                Player player = hero.getPlayer();
 
-                    // Prep variables
-                    CharacterTemplate targCT = skill.plugin.getCharacterManager().getCharacter((LivingEntity) targEnt);
+                // Prep variables
+                CharacterTemplate targCT = skill.plugin.getCharacterManager().getCharacter((LivingEntity) targEnt);
 
-                    double damage = SkillConfigManager.getUseSetting(hero, skill, SkillSetting.DAMAGE, 55, false);
-                    double damageIncrease = SkillConfigManager.getUseSetting(hero, skill, SkillSetting.DAMAGE_INCREASE_PER_INTELLECT, 0.875, false);
-                    damage += (damageIncrease * hero.getAttributeValue(AttributeType.INTELLECT));
+                double damage = SkillConfigManager.getUseSetting(hero, skill, SkillSetting.DAMAGE, 55, false);
+                double damageIncrease = SkillConfigManager.getUseSetting(hero, skill, SkillSetting.DAMAGE_INCREASE_PER_INTELLECT, 0.875, false);
+                damage += (damageIncrease * hero.getAttributeValue(AttributeType.INTELLECT));
 
-                    String applyText = SkillConfigManager.getRaw(skill, SkillSetting.APPLY_TEXT, "%target% has been burned by a Rune of Fire!");
+                String applyText = SkillConfigManager.getRaw(skill, SkillSetting.APPLY_TEXT, "%target% has been burned by a Rune of Fire!");
 
-                    // Damage the target
-                    addSpellTarget((LivingEntity) targEnt, hero);
-                    damageEntity((LivingEntity) targEnt, hero.getPlayer(), damage, DamageCause.MAGIC, 0.0F);
-                    
-                    //targEnt.getWorld().spigot().playEffect(targEnt.getLocation().add(0, 0.5, 0), Effect.FLAME, 0, 0, 0, 0, 0, 1.5F, 45, 16);
-                    targEnt.getWorld().spawnParticle(Particle.FLAME, targEnt.getLocation(), 45, 0, 0, 0, 1.5);
+                // Damage the target
+                addSpellTarget((LivingEntity) targEnt, hero);
+                damageEntity((LivingEntity) targEnt, hero.getPlayer(), damage, DamageCause.MAGIC, 0.0F);
 
-                    // Announce that the player has been hit with the skill
-                    broadcast(targEnt.getLocation(), "    " + applyText.replace("%target%", CustomNameManager.getName(targCT)));
+                //targEnt.getWorld().spigot().playEffect(targEnt.getLocation().add(0, 0.5, 0), Effect.FLAME, 0, 0, 0, 0, 0, 1.5F, 45, 16);
+                targEnt.getWorld().spawnParticle(Particle.FLAME, targEnt.getLocation(), 45, 0, 0, 0, 1.5);
 
-                    // Play Effects
-                    //Util.playClientEffect(player, "enchantmenttable", new Vector(0, 0, 0), 1F, 10, true);
-                    player.getWorld().spawnParticle(Particle.ENCHANTMENT_TABLE, player.getEyeLocation(), 10, 0.5, 0.3, 0.5, 1F);
-                    player.getWorld().playSound(player.getLocation(), Sound.ENTITY_GENERIC_BURN, 0.5F, 1.0F);
-                }
+                // Announce that the player has been hit with the skill
+                broadcast(targEnt.getLocation(), "    " + applyText.replace("%target%", CustomNameManager.getName(targCT)));
+
+                // Play Effects
+                //Util.playClientEffect(player, "enchantmenttable", new Vector(0, 0, 0), 1F, 10, true);
+                player.getWorld().spawnParticle(Particle.ENCHANTMENT_TABLE, player.getEyeLocation(), 10, 0.5, 0.3, 0.5, 1F);
+                player.getWorld().playSound(player.getLocation(), Sound.ENTITY_GENERIC_BURN, 0.5F, 1.0F);
             }, (long) (0.1 * 20));
 
         }

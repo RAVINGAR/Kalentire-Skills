@@ -8,7 +8,6 @@ import org.bukkit.Material;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
-import org.bukkit.Sound;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
@@ -29,7 +28,7 @@ import com.herocraftonline.heroes.util.Util;
 public class SkillFireArmor extends PassiveSkill {
 
     private String igniteText;
-    private List<String> defaultArmors = new ArrayList<String>();
+    private final List<String> defaultArmors = new ArrayList<>();
 
     public SkillFireArmor(Heroes plugin) {
         super(plugin, "FireArmor");

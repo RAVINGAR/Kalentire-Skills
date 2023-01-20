@@ -3,14 +3,23 @@ package com.herocraftonline.heroes.characters.skill.general;
 import com.herocraftonline.heroes.Heroes;
 import com.herocraftonline.heroes.api.SkillResult;
 import com.herocraftonline.heroes.attributes.AttributeType;
+import com.herocraftonline.heroes.characters.CharacterManager;
 import com.herocraftonline.heroes.characters.Hero;
 import com.herocraftonline.heroes.characters.Monster;
 import com.herocraftonline.heroes.characters.effects.EffectType;
 import com.herocraftonline.heroes.characters.effects.PeriodicExpirableEffect;
-import com.herocraftonline.heroes.characters.skill.*;
+import com.herocraftonline.heroes.characters.skill.Skill;
+import com.herocraftonline.heroes.characters.skill.SkillConfigManager;
+import com.herocraftonline.heroes.characters.skill.SkillSetting;
+import com.herocraftonline.heroes.characters.skill.SkillType;
+import com.herocraftonline.heroes.characters.skill.TargettedSkill;
 import com.herocraftonline.heroes.chat.ChatComponents;
 import com.herocraftonline.heroes.util.Util;
-import org.bukkit.*;
+import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
+import org.bukkit.Location;
+import org.bukkit.Particle;
+import org.bukkit.Sound;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
@@ -25,7 +34,7 @@ public class SkillRupture extends TargettedSkill {
     private String applyText;
     private String expireText;
 
-    public SkillRupture(Heroes plugin) {
+    public SkillRupture(final Heroes plugin) {
         super(plugin, "Rupture");
         setDescription("Deal a mighty blow to your target, dealing $1 physical damage and causing them to be wounded for the next $2 second(s). Wounded targets will take $3 bleeding damage for every block that they move during the duration.");   // If a target is dealt more than $4 damage from bleeding, the effect will be removed, and the target will be slowed for $5 second(s).");
         setUsage("/skill rupture");
@@ -37,25 +46,25 @@ public class SkillRupture extends TargettedSkill {
     }
 
     @Override
-    public String getDescription(Hero hero) {
+    public String getDescription(final Hero hero) {
         double damage = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE, 30, false);
-        double damageIncrease = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE_INCREASE_PER_STRENGTH, 0.7, false);
+        final double damageIncrease = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE_INCREASE_PER_STRENGTH, 0.7, false);
         damage += damageIncrease * hero.getAttributeValue(AttributeType.STRENGTH);
 
-        int duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, 17500, false);
+        final int duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, 17500, false);
 
-        double damagePerDistance = SkillConfigManager.getUseSetting(hero, this, "damage-per-distance-moved", (double) 10, false);
+        final double damagePerDistance = SkillConfigManager.getUseSetting(hero, this, "damage-per-distance-moved", (double) 10, false);
 
-        String formattedDamage = Util.decFormat.format(damage);
-        String formatteddamagePerDistance = Util.decFormat.format(damagePerDistance);
-        String formattedDuration = Util.decFormat.format(duration / 1000.0);
+        final String formattedDamage = Util.decFormat.format(damage);
+        final String formatteddamagePerDistance = Util.decFormat.format(damagePerDistance);
+        final String formattedDuration = Util.decFormat.format(duration / 1000.0);
 
         return getDescription().replace("$1", formattedDamage).replace("$2", formattedDuration).replace("$3", formatteddamagePerDistance);
     }
 
     @Override
     public ConfigurationSection getDefaultConfig() {
-        ConfigurationSection node = super.getDefaultConfig();
+        final ConfigurationSection node = super.getDefaultConfig();
 
         node.set(SkillSetting.MAX_DISTANCE.node(), 4);
         node.set(SkillSetting.DAMAGE.node(), 40);
@@ -74,18 +83,18 @@ public class SkillRupture extends TargettedSkill {
     public void init() {
         super.init();
 
-        applyText = SkillConfigManager.getRaw(this, SkillSetting.APPLY_TEXT, ChatComponents.GENERIC_SKILL + "%target% is wounded deeply!").replace("%target%", "$1");
-        expireText = SkillConfigManager.getRaw(this, SkillSetting.EXPIRE_TEXT, ChatComponents.GENERIC_SKILL + "%target% is no longer wounded.").replace("%target%", "$1");
+        applyText = SkillConfigManager.getRaw(this, SkillSetting.APPLY_TEXT, ChatComponents.GENERIC_SKILL + "%target% is wounded deeply!").replace("%target%", "$1").replace("$target$", "$1");
+        expireText = SkillConfigManager.getRaw(this, SkillSetting.EXPIRE_TEXT, ChatComponents.GENERIC_SKILL + "%target% is no longer wounded.").replace("%target%", "$1").replace("$target$", "$1");
     }
 
     @Override
-    public SkillResult use(Hero hero, LivingEntity target, String[] args) {
-        Player player = hero.getPlayer();
+    public SkillResult use(final Hero hero, final LivingEntity target, final String[] args) {
+        final Player player = hero.getPlayer();
 
         broadcastExecuteText(hero, target);
 
         double damage = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE, 30, false);
-        double damageIncrease = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE_INCREASE_PER_STRENGTH, 0.7, false);
+        final double damageIncrease = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE_INCREASE_PER_STRENGTH, 0.7, false);
         damage += damageIncrease * hero.getAttributeValue(AttributeType.STRENGTH);
 
         // Damage the target
@@ -93,11 +102,11 @@ public class SkillRupture extends TargettedSkill {
         damageEntity(target, player, damage, DamageCause.ENTITY_ATTACK);
 
         // Apply our effect
-        int duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, 17500, false);
-        int period = SkillConfigManager.getUseSetting(hero, this, SkillSetting.PERIOD, 2500, false);
+        final int duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, 17500, false);
+        final int period = SkillConfigManager.getUseSetting(hero, this, SkillSetting.PERIOD, 2500, false);
 
-        double damagePerDistance = SkillConfigManager.getUseSetting(hero, this, "damage-per-distance-moved", (double) 10, false);
-        double distancePerDamage = SkillConfigManager.getUseSetting(hero, this, "distance-per-damage", 2.0, false);
+        final double damagePerDistance = SkillConfigManager.getUseSetting(hero, this, "damage-per-distance-moved", (double) 10, false);
+        final double distancePerDamage = SkillConfigManager.getUseSetting(hero, this, "distance-per-damage", 2.0, false);
 
         plugin.getCharacterManager().getCharacter(target).addEffect(new RuptureBleedEffect(this, player, period, duration, damagePerDistance, distancePerDamage));
 
@@ -110,26 +119,31 @@ public class SkillRupture extends TargettedSkill {
 
     public class SkillEntityListener implements Listener {
 
-        public SkillEntityListener() {}
+        public SkillEntityListener() {
+        }
 
         @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
-        public void onPlayerTeleport(PlayerTeleportEvent event) {
-            Hero hero = plugin.getCharacterManager().getHero(event.getPlayer());
+        public void onPlayerTeleport(final PlayerTeleportEvent event) {
+            final CharacterManager manager = plugin.getCharacterManager();
+            if (manager.containsHero(event.getPlayer())) {
+                final Hero hero = manager.getHero(event.getPlayer());
 
-            if (hero.hasEffect("RuptureBleed")) {
-                RuptureBleedEffect rbEffect = (RuptureBleedEffect) hero.getEffect("RuptureBleed");
-                rbEffect.setLastLoc(event.getTo());
+                if (hero.hasEffect("RuptureBleed")) {
+                    final RuptureBleedEffect rbEffect = (RuptureBleedEffect) hero.getEffect("RuptureBleed");
+                    rbEffect.setLastLoc(event.getTo());
+                }
             }
+
         }
     }
 
     public class RuptureBleedEffect extends PeriodicExpirableEffect {
 
-        private double damagePerDistance;
-        private double distancePerDamage;
+        private final double damagePerDistance;
+        private final double distancePerDamage;
         private Location lastLoc;
 
-        public RuptureBleedEffect(Skill skill, Player applier, long period, long duration, double damagePerDistance, double distancePerDamage) {
+        public RuptureBleedEffect(final Skill skill, final Player applier, final long period, final long duration, final double damagePerDistance, final double distancePerDamage) {
             super(skill, "RuptureBleed", applier, period, duration, applyText, expireText);
 
             types.add(EffectType.BLEED);
@@ -141,30 +155,30 @@ public class SkillRupture extends TargettedSkill {
         }
 
         @Override
-        public void applyToHero(Hero hero) {
+        public void applyToHero(final Hero hero) {
             super.applyToHero(hero);
 
             setLastLoc(hero.getPlayer().getLocation());
         }
 
         @Override
-        public void applyToMonster(Monster monster) {
+        public void applyToMonster(final Monster monster) {
             super.applyToMonster(monster);
 
             setLastLoc(monster.getEntity().getLocation());
         }
 
         @Override
-        public void tickHero(Hero hero) {
-            Player player = hero.getPlayer();
-            Location location = player.getLocation();
+        public void tickHero(final Hero hero) {
+            final Player player = hero.getPlayer();
+            final Location location = player.getLocation();
 
-            int distance = (int) Math.floor(getLastLoc().distance(location));
+            final int distance = (int) Math.floor(getLastLoc().distance(location));
 
             if (distance > distancePerDamage) {
-                Hero applierHero = plugin.getCharacterManager().getHero(getApplier());
+                final Hero applierHero = plugin.getCharacterManager().getHero(getApplier());
 
-                double damage = (distance / distancePerDamage) * damagePerDistance;
+                final double damage = (distance / distancePerDamage) * damagePerDistance;
 
                 // Damage the target
                 addSpellTarget(hero.getEntity(), applierHero);
@@ -177,16 +191,16 @@ public class SkillRupture extends TargettedSkill {
         }
 
         @Override
-        public void tickMonster(Monster monster) {
-            LivingEntity monsterLE = monster.getEntity();
-            Location location = monsterLE.getLocation();
+        public void tickMonster(final Monster monster) {
+            final LivingEntity monsterLE = monster.getEntity();
+            final Location location = monsterLE.getLocation();
 
-            int distance = (int) Math.floor(getLastLoc().distance(location));
+            final int distance = (int) Math.floor(getLastLoc().distance(location));
 
             if (distance > distancePerDamage) {
-                Hero applierHero = plugin.getCharacterManager().getHero(getApplier());
+                final Hero applierHero = plugin.getCharacterManager().getHero(getApplier());
 
-                double damage = (distance / distancePerDamage) * damagePerDistance;
+                final double damage = (distance / distancePerDamage) * damagePerDistance;
 
                 // Damage the target
                 addSpellTarget(monsterLE, applierHero);
@@ -200,7 +214,7 @@ public class SkillRupture extends TargettedSkill {
             return lastLoc;
         }
 
-        public void setLastLoc(Location lastLoc) {
+        public void setLastLoc(final Location lastLoc) {
             this.lastLoc = lastLoc;
         }
     }

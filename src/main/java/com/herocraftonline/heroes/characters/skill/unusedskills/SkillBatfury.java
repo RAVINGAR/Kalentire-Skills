@@ -33,7 +33,7 @@ import com.herocraftonline.heroes.util.Util;
 
 public class SkillBatfury extends TargettedSkill implements Listener {
 
-    public final Set<Bat> skillBats = new HashSet<Bat>();
+    public final Set<Bat> skillBats = new HashSet<>();
 	
     private long skillBatKillTick;
 
@@ -107,7 +107,7 @@ public class SkillBatfury extends TargettedSkill implements Listener {
         }
 
         int amount = getAmountFor(hero);
-        List<Bat> spawnedBats = new ArrayList<Bat>();
+        List<Bat> spawnedBats = new ArrayList<>();
 
         Location targetLoc = target.getLocation();
         for (int i = 0; i < amount; i++) {
@@ -120,7 +120,7 @@ public class SkillBatfury extends TargettedSkill implements Listener {
         skillBats.addAll(spawnedBats);
         int despawnDelay = getDespawnDelayFor(hero);
 		Timer timer = new Timer();
-		timer.schedule(new BatFlightTimer(spawnedBats, target,despawnDelay), 0, 125);
+		timer.schedule(new BatFlightTimer(spawnedBats, target, despawnDelay), 0, 125);
         broadcastExecuteText(hero, target);
         return SkillResult.NORMAL;
     }
@@ -163,11 +163,12 @@ public class SkillBatfury extends TargettedSkill implements Listener {
 	//	Note this can be set to swarm target instead.
 	//
 	//
-	public class BatFlightTimer extends TimerTask{
+	public static class BatFlightTimer extends TimerTask{
 			
 			private final List<Bat> bats;
 			private final LivingEntity target;
-			private int despawnDelay, expires;
+			private final int despawnDelay;
+        private int expires;
 			
 			double x,y,z;
 			double angle = 0;

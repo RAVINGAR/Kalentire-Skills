@@ -32,7 +32,7 @@ public class SkillPoisonArrow extends ActiveSkill {
     private String applyText;
     private String expireText;
 
-    public SkillPoisonArrow(Heroes plugin) {
+    public SkillPoisonArrow(final Heroes plugin) {
         super(plugin, "PoisonArrow");
         this.setDescription("Your arrows will poison their target dealing $1 damage over $2 second(s), each arrow will drain $3 mana.");
         this.setUsage("/skill parrow");
@@ -58,13 +58,13 @@ public class SkillPoisonArrow extends ActiveSkill {
     @Override
     public void init() {
         super.init();
-        this.setUseText("%hero% imbues their arrows with poison!".replace("%hero%", "$1"));
-        this.applyText = SkillConfigManager.getRaw(this, SkillSetting.APPLY_TEXT, "%target% is poisoned!").replace("%target%", "$1");
-        this.expireText = SkillConfigManager.getRaw(this, SkillSetting.EXPIRE_TEXT, "%target% has recovered from the poison!").replace("%target%", "$1");
+        this.setUseText("%hero% imbues their arrows with poison!".replace("%hero%", "$1").replace("$hero$", "$1"));
+        this.applyText = SkillConfigManager.getRaw(this, SkillSetting.APPLY_TEXT, "%target% is poisoned!").replace("%target%", "$1").replace("$target$", "$1");
+        this.expireText = SkillConfigManager.getRaw(this, SkillSetting.EXPIRE_TEXT, "%target% has recovered from the poison!").replace("%target%", "$1").replace("$target$", "$1");
     }
 
     @Override
-    public SkillResult use(Hero hero, String[] args) {
+    public SkillResult use(final Hero hero, final String[] args) {
         if (hero.hasEffect("PoisonArrowBuff")) {
             hero.removeEffect(hero.getEffect("PoisonArrowBuff"));
             return SkillResult.SKIP_POST_USAGE;
@@ -74,47 +74,57 @@ public class SkillPoisonArrow extends ActiveSkill {
         return SkillResult.NORMAL;
     }
 
+    @Override
+    public String getDescription(final Hero hero) {
+        final int duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, 10000, false);
+        final int period = SkillConfigManager.getUseSetting(hero, this, SkillSetting.PERIOD, 2000, false);
+        double damage = SkillConfigManager.getUseSetting(hero, this, "tick-damage", 1, false);
+        final int mana = SkillConfigManager.getUseSetting(hero, this, "mana-per-shot", 1, true);
+        damage = (damage * duration) / period;
+        return this.getDescription().replace("$1", damage + "").replace("$2", (duration / 1000) + "").replace("$3", mana + "");
+    }
+
+    public static class PoisonArrowBuff extends ImbueEffect {
+
+        public PoisonArrowBuff(final Skill skill) {
+            super(skill, "PoisonArrowBuff");
+            this.types.add(EffectType.POISON);
+            this.setDescription("poison");
+        }
+    }
+
     public class ArrowPoison extends PeriodicDamageEffect {
 
-        public ArrowPoison(Skill skill, long period, long duration, double tickDamage, Player applier) {
+        public ArrowPoison(final Skill skill, final long period, final long duration, final double tickDamage, final Player applier) {
             super(skill, "ArrowPoison", applier, period, duration, tickDamage);
             this.types.add(EffectType.POISON);
             this.addPotionEffect(new PotionEffect(PotionEffectType.POISON, (int) (20 * duration / 1000), 0), true);
         }
 
         @Override
-        public void applyToMonster(Monster monster) {
+        public void applyToMonster(final Monster monster) {
             super.applyToMonster(monster);
             this.broadcast(monster.getEntity().getLocation(), SkillPoisonArrow.this.applyText, CustomNameManager.getName(monster).toLowerCase());
         }
 
         @Override
-        public void applyToHero(Hero hero) {
+        public void applyToHero(final Hero hero) {
             super.applyToHero(hero);
             final Player player = hero.getPlayer();
             this.broadcast(player.getLocation(), SkillPoisonArrow.this.applyText, player.getDisplayName());
         }
 
         @Override
-        public void removeFromMonster(Monster monster) {
+        public void removeFromMonster(final Monster monster) {
             super.removeFromMonster(monster);
             this.broadcast(monster.getEntity().getLocation(), SkillPoisonArrow.this.expireText, CustomNameManager.getName(monster).toLowerCase());
         }
 
         @Override
-        public void removeFromHero(Hero hero) {
+        public void removeFromHero(final Hero hero) {
             super.removeFromHero(hero);
             final Player player = hero.getPlayer();
             this.broadcast(player.getLocation(), SkillPoisonArrow.this.expireText, player.getDisplayName());
-        }
-    }
-
-    public class PoisonArrowBuff extends ImbueEffect {
-
-        public PoisonArrowBuff(Skill skill) {
-            super(skill, "PoisonArrowBuff");
-            this.types.add(EffectType.POISON);
-            this.setDescription("poison");
         }
     }
 
@@ -122,12 +132,12 @@ public class SkillPoisonArrow extends ActiveSkill {
 
         private final Skill skill;
 
-        public SkillDamageListener(Skill skill) {
+        public SkillDamageListener(final Skill skill) {
             this.skill = skill;
         }
 
         @EventHandler(priority = EventPriority.MONITOR)
-        public void onEntityDamage(EntityDamageEvent event) {
+        public void onEntityDamage(final EntityDamageEvent event) {
             if (event.isCancelled() || !(event.getEntity() instanceof LivingEntity) || !(event instanceof EntityDamageByEntityEvent)) {
                 return;
             }
@@ -156,7 +166,7 @@ public class SkillPoisonArrow extends ActiveSkill {
         }
 
         @EventHandler(priority = EventPriority.MONITOR)
-        public void onEntityShootBow(EntityShootBowEvent event) {
+        public void onEntityShootBow(final EntityShootBowEvent event) {
             if (event.isCancelled() || !(event.getEntity() instanceof Player) || !(event.getProjectile() instanceof Arrow)) {
                 return;
             }
@@ -170,15 +180,5 @@ public class SkillPoisonArrow extends ActiveSkill {
                 }
             }
         }
-    }
-
-    @Override
-    public String getDescription(Hero hero) {
-        final int duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, 10000, false);
-        final int period = SkillConfigManager.getUseSetting(hero, this, SkillSetting.PERIOD, 2000, false);
-        double damage = SkillConfigManager.getUseSetting(hero, this, "tick-damage", 1, false);
-        final int mana = SkillConfigManager.getUseSetting(hero, this, "mana-per-shot", 1, true);
-        damage = (damage * duration) / period;
-        return this.getDescription().replace("$1", damage + "").replace("$2", (duration / 1000) + "").replace("$3", mana + "");
     }
 }

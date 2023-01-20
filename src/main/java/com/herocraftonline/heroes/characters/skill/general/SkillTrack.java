@@ -81,8 +81,8 @@ public class SkillTrack extends ActiveSkill {
         return SkillResult.NORMAL;
     }
 
-    public class TrackingEffect extends PeriodicExpirableEffect {
-        private Player target;
+    public static class TrackingEffect extends PeriodicExpirableEffect {
+        private final Player target;
 
         public TrackingEffect(Skill skill, Player applier, long period, long duration, Player target) {
             super(skill, "Tracking", applier, period, duration, null, null);

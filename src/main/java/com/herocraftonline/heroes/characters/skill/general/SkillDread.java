@@ -6,7 +6,12 @@ import com.herocraftonline.heroes.characters.CharacterTemplate;
 import com.herocraftonline.heroes.characters.Hero;
 import com.herocraftonline.heroes.characters.effects.EffectType;
 import com.herocraftonline.heroes.characters.effects.ExpirableEffect;
-import com.herocraftonline.heroes.characters.skill.*;
+import com.herocraftonline.heroes.characters.skill.Listenable;
+import com.herocraftonline.heroes.characters.skill.PassiveSkill;
+import com.herocraftonline.heroes.characters.skill.Skill;
+import com.herocraftonline.heroes.characters.skill.SkillConfigManager;
+import com.herocraftonline.heroes.characters.skill.SkillSetting;
+import com.herocraftonline.heroes.characters.skill.SkillType;
 import com.herocraftonline.heroes.util.Util;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.LivingEntity;
@@ -23,11 +28,11 @@ import java.util.Collections;
 
 public class SkillDread extends PassiveSkill implements Listenable {
     private static final String dreadDebuffEffectName = "DreadDebuff";
+    private final Listener listener;
     private String debuffApplyText;
     private String debuffExpireText;
-    private final Listener listener;
 
-    public SkillDread(Heroes plugin) {
+    public SkillDread(final Heroes plugin) {
         super(plugin, "Dread");
         setDescription("$1% chance on attack to apply a debuff on target which reduces their damage output by $2% for " +
                 "$3 second(s)");
@@ -36,10 +41,10 @@ public class SkillDread extends PassiveSkill implements Listenable {
     }
 
     @Override
-    public String getDescription(Hero hero) {
-        double chance = SkillConfigManager.getScaledUseSettingDouble(hero, this, SkillSetting.CHANCE, false);
-        double damageMultiplier = SkillConfigManager.getUseSettingDouble(hero, this, "damage-multiplier", true);
-        int duration = SkillConfigManager.getUseSettingInt(hero, this, SkillSetting.DURATION, false);
+    public String getDescription(final Hero hero) {
+        final double chance = SkillConfigManager.getScaledUseSettingDouble(hero, this, SkillSetting.CHANCE, false);
+        final double damageMultiplier = SkillConfigManager.getUseSettingDouble(hero, this, "damage-multiplier", true);
+        final int duration = SkillConfigManager.getUseSettingInt(hero, this, SkillSetting.DURATION, false);
 
         return getDescription()
                 .replace("$1", Util.decFormat.format(chance * 100))
@@ -49,7 +54,7 @@ public class SkillDread extends PassiveSkill implements Listenable {
 
     @Override
     public ConfigurationSection getDefaultConfig() {
-        ConfigurationSection config = super.getDefaultConfig();
+        final ConfigurationSection config = super.getDefaultConfig();
         config.set(SkillSetting.APPLY_TEXT.node(), "");
         config.set(SkillSetting.UNAPPLY_TEXT.node(), "");
         config.set("debuff-apply-text", "todo dread debuff applied to %target%");
@@ -66,9 +71,9 @@ public class SkillDread extends PassiveSkill implements Listenable {
         super.init();
 
         this.debuffApplyText = SkillConfigManager.getRaw(this, "debuff-apply-text", "")
-                .replace("%target%", "$1").replace("%hero%", "$2");
+                .replace("%target%", "$1").replace("$target$", "$1").replace("%hero%", "$2").replace("$hero$", "$2");
         this.debuffExpireText = SkillConfigManager.getRaw(this, "debuff-expire-text", "")
-                .replace("%target%", "$1").replace("%hero%", "$2");
+                .replace("%target%", "$1").replace("$target$", "$1").replace("%hero%", "$2").replace("$hero$", "$2");
     }
 
     @Override
@@ -77,41 +82,45 @@ public class SkillDread extends PassiveSkill implements Listenable {
     }
 
     public class SkillHeroListener implements Listener {
-        private PassiveSkill skill;
+        private final PassiveSkill skill;
 
-        public SkillHeroListener(PassiveSkill skill) {
+        public SkillHeroListener(final PassiveSkill skill) {
             this.skill = skill;
         }
 
         @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
-        public void onWeaponDamage(WeaponDamageEvent event) {
-            if (event.getDamage() == 0 || !(event.getDamager() instanceof Hero) || !(event.getEntity() instanceof LivingEntity))
+        public void onWeaponDamage(final WeaponDamageEvent event) {
+            if (event.getDamage() == 0 || !(event.getDamager() instanceof Hero) || !(event.getEntity() instanceof LivingEntity)) {
                 return;
+            }
 
             final Hero attacker = (Hero) event.getDamager();
-            if (!skill.hasPassive(attacker))
+            if (!skill.hasPassive(attacker)) {
                 return;
+            }
 
-            double chance = SkillConfigManager.getScaledUseSettingDouble(attacker, skill, SkillSetting.CHANCE, false);
+            final double chance = SkillConfigManager.getScaledUseSettingDouble(attacker, skill, SkillSetting.CHANCE, false);
             if (Util.nextRand() < chance) {
                 // apply debuff to target
-                final LivingEntity defenderEntity = (LivingEntity)event.getEntity();
+                final LivingEntity defenderEntity = (LivingEntity) event.getEntity();
                 final CharacterTemplate defenderC = plugin.getCharacterManager().getCharacter(defenderEntity);
 
-                double damageMultiplier = SkillConfigManager.getUseSettingDouble(attacker, skill, "damage-multiplier", true);
-                int duration = SkillConfigManager.getUseSettingInt(attacker, skill, SkillSetting.DURATION, false);
+                final double damageMultiplier = SkillConfigManager.getUseSettingDouble(attacker, skill, "damage-multiplier", true);
+                final int duration = SkillConfigManager.getUseSettingInt(attacker, skill, SkillSetting.DURATION, false);
                 defenderC.addEffect(new DreadDebuffEffect(skill, attacker.getPlayer(), duration, damageMultiplier));
             }
         }
 
         @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
-        public void onReduceWeaponDamage(WeaponDamageEvent event) {
-            if (event.getDamage() == 0 || !(event.getDamager() instanceof Hero))
+        public void onReduceWeaponDamage(final WeaponDamageEvent event) {
+            if (event.getDamage() == 0 || !(event.getDamager() instanceof Hero)) {
                 return;
+            }
 
             final Hero attacker = (Hero) event.getDamager();
-            if (!attacker.hasEffect(dreadDebuffEffectName))
+            if (!attacker.hasEffect(dreadDebuffEffectName)) {
                 return;
+            }
 
             final DreadDebuffEffect debuffEffect = (DreadDebuffEffect) attacker.getEffect(dreadDebuffEffectName);
             assert debuffEffect != null;
@@ -123,7 +132,7 @@ public class SkillDread extends PassiveSkill implements Listenable {
     public class DreadDebuffEffect extends ExpirableEffect {
         private final double outputDamageMultiplier;
 
-        public DreadDebuffEffect(Skill skill, Player applier, long duration, double outputDamageMultiplier) {
+        public DreadDebuffEffect(final Skill skill, final Player applier, final long duration, final double outputDamageMultiplier) {
             super(skill, dreadDebuffEffectName, applier, duration, debuffApplyText, debuffExpireText);
 
             Collections.addAll(types, EffectType.HARMFUL, EffectType.PHYSICAL, EffectType.DARK);

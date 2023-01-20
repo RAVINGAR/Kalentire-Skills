@@ -2,11 +2,8 @@ package com.herocraftonline.heroes.characters.skill.general;
 
 import java.util.List;
 
-import org.bukkit.Effect;
 import org.bukkit.Location;
 import org.bukkit.Particle;
-import org.bukkit.Sound;
-import org.bukkit.Sound;
 import org.bukkit.block.Block;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Entity;
@@ -145,14 +142,7 @@ public class SkillFireblast extends ActiveSkill {
                 final double x = xDir / magnitude * horizontalPower;
                 final double z = zDir / magnitude * horizontalPower;
 
-                NCPUtils.applyExemptions(target, new NCPFunction() {
-
-                    @Override
-                    public void execute()
-                    {
-                        target.setVelocity(new Vector(x, veticalPower, z));
-                    }
-                }, Lists.newArrayList("MOVING"), SkillConfigManager.getUseSetting(hero, this, "ncp-exemption-duration", 500, false));
+                NCPUtils.applyExemptions(target, () -> target.setVelocity(new Vector(x, veticalPower, z)), Lists.newArrayList("MOVING"), SkillConfigManager.getUseSetting(hero, this, "ncp-exemption-duration", 500, false));
 
                 break;       // Only hit 1 target.
             }

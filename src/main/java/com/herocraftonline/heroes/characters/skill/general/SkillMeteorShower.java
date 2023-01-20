@@ -30,8 +30,8 @@ import java.util.Random;
 
 public class SkillMeteorShower extends ActiveSkill implements Listener
 {
-	private ArrayList<Player> showers = new ArrayList<Player>();
-	private HashMap<FallingBlock, Player> meteors = new HashMap<FallingBlock, Player>();
+	private final ArrayList<Player> showers = new ArrayList<>();
+	private final HashMap<FallingBlock, Player> meteors = new HashMap<>();
 	
 	public SkillMeteorShower(Heroes plugin)
 	{
@@ -79,7 +79,7 @@ public class SkillMeteorShower extends ActiveSkill implements Listener
 
 		double increment = (2 * Math.PI) / particleAmount;
 
-		ArrayList<Location> locations = new ArrayList<Location>();
+		ArrayList<Location> locations = new ArrayList<>();
 
 		for (int i = 0; i < particleAmount; i++)
 		{
@@ -98,7 +98,7 @@ public class SkillMeteorShower extends ActiveSkill implements Listener
 		final int radius = SkillConfigManager.getUseSetting(hero, this, SkillSetting.RADIUS, 12, false);
 		int distance = SkillConfigManager.getUseSetting(hero, this, SkillSetting.MAX_DISTANCE, 20, false);
 
-		ArrayList<Location> meteorLocs = new ArrayList<Location>();
+		ArrayList<Location> meteorLocs = new ArrayList<>();
 
 		Player player = hero.getPlayer();
 
@@ -120,7 +120,7 @@ public class SkillMeteorShower extends ActiveSkill implements Listener
 
 		new BukkitRunnable()
 		{
-			private Random rand = new Random();
+			private final Random rand = new Random();
 			private int meteorCount = 0;
 
 			public void run()

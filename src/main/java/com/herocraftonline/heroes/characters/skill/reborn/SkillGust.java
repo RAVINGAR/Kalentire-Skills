@@ -8,7 +8,6 @@ import org.bukkit.block.BlockFace;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
-import org.bukkit.Sound;
 import org.bukkit.event.entity.EntityDamageEvent.DamageCause;
 
 import com.herocraftonline.heroes.Heroes;
@@ -92,14 +91,7 @@ public class SkillGust extends TargettedSkill {
 
         final Vector pushUpVector = new Vector(0, vPower, 0);
         // Let's bypass the nocheat issues...
-        NCPUtils.applyExemptions(target, new NCPFunction() {
-
-            @Override
-            public void execute()
-            {
-                target.setVelocity(pushUpVector);
-            }
-        }, Lists.newArrayList("MOVING"), SkillConfigManager.getUseSetting(hero, this, "ncp-exemption-duration", 1500, false));
+        NCPUtils.applyExemptions(target, () -> target.setVelocity(pushUpVector), Lists.newArrayList("MOVING"), SkillConfigManager.getUseSetting(hero, this, "ncp-exemption-duration", 1500, false));
 
         final double xDir = targetLoc.getX() - playerLoc.getX();
         final double zDir = targetLoc.getZ() - playerLoc.getZ();
@@ -115,13 +107,11 @@ public class SkillGust extends TargettedSkill {
 
         // Push them "up" first. THEN we can push them away.
         double delay = SkillConfigManager.getUseSetting(hero, this, "push-delay", 0.2, false);
-        Bukkit.getScheduler().scheduleSyncDelayedTask(plugin, new Runnable() {
-            public void run() {
-                // Push them away
-                //double yDir = player.getVelocity().getY();
-                Vector pushVector = new Vector(xDir, 0, zDir).normalize().multiply(hPower).setY(vPower);
-                target.setVelocity(pushVector);
-            }
+        Bukkit.getScheduler().scheduleSyncDelayedTask(plugin, () -> {
+            // Push them away
+            //double yDir = player.getVelocity().getY();
+            Vector pushVector = new Vector(xDir, 0, zDir).normalize().multiply(hPower).setY(vPower);
+            target.setVelocity(pushVector);
         }, (long) (delay * 20));
 
         broadcastExecuteText(hero, target);

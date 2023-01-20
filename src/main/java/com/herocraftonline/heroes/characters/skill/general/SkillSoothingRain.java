@@ -8,11 +8,8 @@ import com.herocraftonline.heroes.characters.Monster;
 import com.herocraftonline.heroes.characters.effects.EffectType;
 import com.herocraftonline.heroes.characters.effects.PeriodicExpirableEffect;
 import com.herocraftonline.heroes.characters.skill.*;
-import org.bukkit.Effect;
 import org.bukkit.Location;
 import org.bukkit.Particle;
-import org.bukkit.Sound;
-import org.bukkit.Sound;
 import org.bukkit.entity.Player;
 import org.bukkit.Sound;
 import org.bukkit.scheduler.BukkitRunnable;
@@ -59,7 +56,7 @@ public class SkillSoothingRain extends ActiveSkill
         return SkillResult.NORMAL;
     }
 
-	public class SoothingRainEffect extends PeriodicExpirableEffect 
+	public static class SoothingRainEffect extends PeriodicExpirableEffect
 	{
 		private final int radius;
 		private final int manaHealedPerTick;
@@ -91,8 +88,7 @@ public class SkillSoothingRain extends ActiveSkill
 				{ 
 					private double time = 0;
 
-					@SuppressWarnings("deprecation")
-					public void run() 
+					public void run()
 					{
 						Location location = p.getLocation();
 						if (time < 1.6) 
@@ -112,8 +108,7 @@ public class SkillSoothingRain extends ActiveSkill
 				{ 
 					private int effectTicks = 0;
 
-					@SuppressWarnings("deprecation")
-					public void run() 
+					public void run()
 					{
 						Location location = p.getLocation();
 						if (effectTicks < 16) 

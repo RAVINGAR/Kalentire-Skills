@@ -1,7 +1,6 @@
 package com.herocraftonline.heroes.characters.skill.unusedskills;
 
 import org.bukkit.Bukkit;
-import org.bukkit.Sound;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
 import org.bukkit.Sound;
@@ -98,7 +97,7 @@ public class SkillBladegrasp extends ActiveSkill {
 
     public class SkillEntityListener implements Listener {
 
-        private Skill skill;
+        private final Skill skill;
 
         SkillEntityListener(Skill skill) {
             this.skill = skill;

@@ -50,14 +50,11 @@ public class SkillTumble extends PassiveSkill implements Listenable {
 
                 final double fallDamage = fallDistance;
 
-                NCPUtils.applyExemptions(event.getEntity(), new NCPFunction() {
-                    @Override
-                    public void execute() {
-                        if (fallDamage <= 0) {
-                            event.setCancelled(true);
-                        } else {
-                            event.setDamage(fallDamage);
-                        }
+                NCPUtils.applyExemptions(event.getEntity(), () -> {
+                    if (fallDamage <= 0) {
+                        event.setCancelled(true);
+                    } else {
+                        event.setDamage(fallDamage);
                     }
                 }, Lists.newArrayList("MOVING"), SkillConfigManager.getUseSetting(hero, skill, "ncp-exemption-duration", 0, false));
             }

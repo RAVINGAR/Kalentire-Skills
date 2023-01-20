@@ -15,7 +15,6 @@ import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
-import org.bukkit.Sound;
 import org.bukkit.event.entity.EntityDamageEvent.DamageCause;
 
 public class SkillSonicBoom extends ActiveSkill {
@@ -93,7 +92,7 @@ public class SkillSonicBoom extends ActiveSkill {
         double damage = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE.node(), 0, false);
         damage += SkillConfigManager.getUseSetting(hero, this, "damage-increase", 0, false) * hero.getHeroLevel(this);
         long duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION.node(), 10000, false);
-        duration += SkillConfigManager.getUseSetting(hero, this, "duration-increase", 0, false) * hero.getHeroLevel(this);
+        duration += (long) SkillConfigManager.getUseSetting(hero, this, "duration-increase", 0, false) * hero.getHeroLevel(this);
         final Player player = hero.getPlayer();
         boolean hit = false;
         for (final Entity e : player.getNearbyEntities(radius, radius, radius)) {

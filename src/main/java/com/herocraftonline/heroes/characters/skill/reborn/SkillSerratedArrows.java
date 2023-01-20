@@ -51,7 +51,7 @@ public class SkillSerratedArrows extends PassiveSkill {
     }
 
     public class SkillDamageListener implements Listener {
-        private Skill skill;
+        private final Skill skill;
         SkillDamageListener(Skill skill) {
             this.skill = skill;
         }
@@ -133,7 +133,7 @@ public class SkillSerratedArrows extends PassiveSkill {
         }
     }
 
-    private class SerratedArrowsHitEffect extends ExpirableEffect {
+    private static class SerratedArrowsHitEffect extends ExpirableEffect {
         private int hitCount = 1;
 
         SerratedArrowsHitEffect(Skill skill, String name, Player applier, long duration) {

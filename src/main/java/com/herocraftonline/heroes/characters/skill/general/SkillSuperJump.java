@@ -114,12 +114,7 @@ public class SkillSuperJump extends ActiveSkill {
 
         long exemptionDuration = SkillConfigManager.getUseSetting(hero, this, "ncp-exemption-duration", 1500, false);
         if (exemptionDuration > 0) {
-            NCPUtils.applyExemptions(player, new NCPFunction() {
-                @Override
-                public void execute() {
-                    applyJumpVelocity(player, velocity);
-                }
-            }, Lists.newArrayList("MOVING"), exemptionDuration);
+            NCPUtils.applyExemptions(player, () -> applyJumpVelocity(player, velocity), Lists.newArrayList("MOVING"), exemptionDuration);
         } else {
             applyJumpVelocity(player, velocity);
         }
@@ -142,7 +137,7 @@ public class SkillSuperJump extends ActiveSkill {
         player.setFallDistance(-8f);
     }
 
-    private class JumpEffect extends SafeFallEffect {
+    private static class JumpEffect extends SafeFallEffect {
         JumpEffect(Skill skill, Player applier, long duration) {
             super(skill, applier, duration, null, null);
 

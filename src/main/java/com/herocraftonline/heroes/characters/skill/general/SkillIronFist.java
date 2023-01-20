@@ -133,13 +133,7 @@ public class SkillIronFist extends ActiveSkill {
             final double y = individualVPower;
 
             // Let's bypass the nocheat issues...
-            NCPUtils.applyExemptions(target, new NCPFunction() {
-
-                @Override
-                public void execute() {
-                    target.setVelocity(new Vector(x, y, z));
-                }
-            }, Lists.newArrayList("MOVING"), SkillConfigManager.getUseSetting(hero, this, "ncp-exemption-duration", 500, false));
+            NCPUtils.applyExemptions(target, () -> target.setVelocity(new Vector(x, y, z)), Lists.newArrayList("MOVING"), SkillConfigManager.getUseSetting(hero, this, "ncp-exemption-duration", 500, false));
 
             SlowEffect sEffect = new SlowEffect(this, player, duration, slowAmplifier, null, null);
             sEffect.types.add(EffectType.DISPELLABLE);
@@ -149,9 +143,9 @@ public class SkillIronFist extends ActiveSkill {
 
         for (double r = 1; r < 5 * 2; r++) {
             List<Location> particleLocations = GeometryUtil.circle(player.getLocation(), 72, r / 2);
-            for (int i = 0; i < particleLocations.size(); i++) {
+            for (Location particleLocation : particleLocations) {
                 // player.getWorld().spigot().playEffect(particleLocations.get(i).add(0, 0.1, 0), Effect.TILE_BREAK, player.getLocation().getBlock().getRelative(BlockFace.DOWN).getType().getId(), 0, 0, 0.3F, 0, 0.1F, 2, 16);
-                player.getWorld().spawnParticle(Particle.BLOCK_CRACK, particleLocations.get(i).add(0, 0.1, 0), 2, 0, 0.3, 0, 0.1, player.getLocation().getBlock().getRelative(BlockFace.DOWN).getBlockData());
+                player.getWorld().spawnParticle(Particle.BLOCK_CRACK, particleLocation.add(0, 0.1, 0), 2, 0, 0.3, 0, 0.1, player.getLocation().getBlock().getRelative(BlockFace.DOWN).getBlockData());
             }
         }
 

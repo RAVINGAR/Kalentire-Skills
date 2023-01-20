@@ -6,12 +6,10 @@ import java.util.Set;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.Particle;
-import org.bukkit.Sound;
 import org.bukkit.block.BlockFace;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
 import org.bukkit.Sound;
-import org.bukkit.Effect;
 import org.bukkit.util.Vector;
 
 import com.google.common.collect.Lists;
@@ -117,15 +115,10 @@ public class SkillLeap extends ActiveSkill {
         velocity.multiply(new Vector(hPower, 1, hPower));
 
         // Let's bypass the nocheat issues...
-        NCPUtils.applyExemptions(player, new NCPFunction() {
-
-            @Override
-            public void execute()
-            {
-                // Jump!
-                player.setVelocity(velocity);
-                player.setFallDistance(-8f);
-            }
+        NCPUtils.applyExemptions(player, () -> {
+            // Jump!
+            player.setVelocity(velocity);
+            player.setFallDistance(-8f);
         }, Lists.newArrayList("MOVING"), SkillConfigManager.getUseSetting(hero, this, "ncp-exemption-duration", 2000, false));
 
         player.getWorld().playSound(player.getLocation(), Sound.ENTITY_ENDER_DRAGON_FLAP, 7.0F, 1.0F);

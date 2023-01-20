@@ -16,7 +16,6 @@ import com.sk89q.worldguard.bukkit.WorldGuardPlugin;
 import com.sk89q.worldguard.protection.flags.Flags;
 import com.sk89q.worldguard.protection.regions.RegionContainer;
 import com.sk89q.worldguard.protection.regions.RegionQuery;
-import org.apache.commons.lang.StringUtils;
 import org.bukkit.*;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
@@ -25,11 +24,11 @@ import java.util.logging.Level;
 
 public class SkillMark extends ActiveSkill {
 
-    private boolean towny = false;
+    private final boolean towny = false;
     private WorldGuardPlugin wgp;
     private boolean worldguard = false;
     private boolean townships = false;
-    protected String skillSettingsName;
+    protected final String skillSettingsName;
 
     protected SkillMark(Heroes plugin, String name) {
         super(plugin, name);
@@ -100,7 +99,8 @@ public class SkillMark extends ActiveSkill {
                 player.sendMessage("Your recall location is improperly set!");
                 return SkillResult.SKIP_POST_USAGE;
             }
-            if (StringUtils.isNotEmpty(skillSettings.getString("server"))) {
+            String str = skillSettings.getString("server");
+            if (str != null && !str.isEmpty()) {
                 player.sendMessage("Your recall is currently marked on " + skillSettings.getString("server") + "," + world.getName() + " at: " + (int) xyzyp[0] + ", " + (int) xyzyp[1] + ", " + (int) xyzyp[2]);
             } else {
                 player.sendMessage("Your recall is currently marked on " + world.getName() + " at: " + (int) xyzyp[0] + ", " + (int) xyzyp[1] + ", " + (int) xyzyp[2]);
@@ -233,8 +233,13 @@ public class SkillMark extends ActiveSkill {
     public static World getValidWorld(ConfigurationSection skillSetting, String playerName) {
         World world = null;
 
-        if (skillSetting != null && StringUtils.isNotEmpty(skillSetting.getString("world"))) {
-            world = Bukkit.getServer().getWorld(skillSetting.getString("world"));
+
+        if (skillSetting != null) {
+            String str = skillSetting.getString("world");
+            if(str != null && !str.isEmpty()) {
+                world = Bukkit.getServer().getWorld(str);
+            }
+
         }
 
         Player player = Bukkit.getPlayer(playerName);

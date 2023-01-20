@@ -16,7 +16,6 @@ import org.bukkit.*;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
-import org.bukkit.Sound;
 import org.bukkit.util.Vector;
 
 public class SkillRally extends TargettedSkill {
@@ -69,33 +68,24 @@ public class SkillRally extends TargettedSkill {
         final Vector pushUpVector = new Vector(0, vPower, 0);
 
         // Let's bypass the nocheat issues...
-        NCPUtils.applyExemptions(player, new NCPFunction() {
-            
-            @Override
-            public void execute()
-            {
-                player.setVelocity(pushUpVector);
-            }
-        }, Lists.newArrayList("MOVING"), SkillConfigManager.getUseSetting(hero, this, "ncp-exemption-duration", 1500, false));
+        NCPUtils.applyExemptions(player, () -> player.setVelocity(pushUpVector), Lists.newArrayList("MOVING"), SkillConfigManager.getUseSetting(hero, this, "ncp-exemption-duration", 1500, false));
 
         final double horizontalDivider = SkillConfigManager.getUseSetting(hero, this, "horizontal-divider", 6, false);
         final double verticalDivider = SkillConfigManager.getUseSetting(hero, this, "vertical-divider", 8, false);
         final double multiplier = SkillConfigManager.getUseSetting(hero, this, "multiplier", 1.2, false);
 
         double delay = SkillConfigManager.getUseSetting(hero, this, "jump-delay", 0.2, false);
-        Bukkit.getScheduler().scheduleSyncDelayedTask(plugin, new Runnable() {
-            public void run() {
-                Location newPlayerLoc = player.getLocation();
-                Location newTargetLoc = target.getLocation();
+        Bukkit.getScheduler().scheduleSyncDelayedTask(plugin, () -> {
+            Location newPlayerLoc = player.getLocation();
+            Location newTargetLoc = target.getLocation();
 
-                double xDir = (newTargetLoc.getX() - newPlayerLoc.getX()) / horizontalDivider;
-                double yDir = (newTargetLoc.getY() - newPlayerLoc.getY()) / verticalDivider;
-                double zDir = (newTargetLoc.getZ() - newPlayerLoc.getZ()) / horizontalDivider;
+            double xDir = (newTargetLoc.getX() - newPlayerLoc.getX()) / horizontalDivider;
+            double yDir = (newTargetLoc.getY() - newPlayerLoc.getY()) / verticalDivider;
+            double zDir = (newTargetLoc.getZ() - newPlayerLoc.getZ()) / horizontalDivider;
 
-                Vector vec = new Vector(xDir, yDir, zDir).multiply(multiplier);
-                player.setVelocity(vec);
-                player.setFallDistance(-8f);
-            }
+            Vector vec = new Vector(xDir, yDir, zDir).multiply(multiplier);
+            player.setVelocity(vec);
+            player.setFallDistance(-8f);
         }, (long) (delay * 20));
 
         

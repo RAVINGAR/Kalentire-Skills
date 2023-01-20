@@ -66,7 +66,7 @@ public class SkillDoomstarRequiem extends ActiveSkill{
 
 		double increment = (2 * Math.PI) / particleAmount;
 
-		ArrayList<Location> locations = new ArrayList<Location>();
+		ArrayList<Location> locations = new ArrayList<>();
 
 		for (int i = 0; i < particleAmount; i++)
 		{
@@ -139,15 +139,7 @@ public class SkillDoomstarRequiem extends ActiveSkill{
 
             // Let's bypass the nocheat issues...
             final Vector velocity = new Vector(xDir, individualVPower, zDir);
-            NCPUtils.applyExemptions(target, new NCPFunction() {
-                
-                @Override
-                public void execute()
-                {
-                    target.setVelocity(velocity);
-                    
-                }
-            }, Lists.newArrayList("MOVING"), SkillConfigManager.getUseSetting(hero, this, "ncp-exemption-duration", 500, false));
+            NCPUtils.applyExemptions(target, () -> target.setVelocity(velocity), Lists.newArrayList("MOVING"), SkillConfigManager.getUseSetting(hero, this, "ncp-exemption-duration", 500, false));
         }
 
         //player.getWorld().playSound(player.getLocation(), Sound.HURT, 1.3F, 0.5F);
@@ -160,11 +152,10 @@ public class SkillDoomstarRequiem extends ActiveSkill{
         for (double r = 1; r < 5 * 2; r++)
 		{
 			ArrayList<Location> particleLocations = circle(player.getLocation(), 72, r / 2);
-			for (int i = 0; i < particleLocations.size(); i++)
-			{
-				//player.getWorld().spigot().playEffect(particleLocations.get(i).add(0, 0.1, 0), Effect.TILE_BREAK, player.getLocation().getBlock().getRelative(BlockFace.DOWN).getType().getId(), 0, 0, 0.3F, 0, 0.1F, 2, 16);
-                player.getWorld().spawnParticle(Particle.BLOCK_CRACK, particleLocations.get(i), 2, 0, 0.3, 0, 0.1, player.getLocation().getBlock().getRelative(BlockFace.DOWN).getBlockData());
-			}
+            for (Location particleLocation : particleLocations) {
+                //player.getWorld().spigot().playEffect(particleLocations.get(i).add(0, 0.1, 0), Effect.TILE_BREAK, player.getLocation().getBlock().getRelative(BlockFace.DOWN).getType().getId(), 0, 0, 0.3F, 0, 0.1F, 2, 16);
+                player.getWorld().spawnParticle(Particle.BLOCK_CRACK, particleLocation, 2, 0, 0.3, 0, 0.1, player.getLocation().getBlock().getRelative(BlockFace.DOWN).getBlockData());
+            }
 		}
 
         return SkillResult.NORMAL;

@@ -5,7 +5,12 @@ import com.herocraftonline.heroes.api.SkillResult;
 import com.herocraftonline.heroes.characters.Hero;
 import com.herocraftonline.heroes.characters.effects.EffectType;
 import com.herocraftonline.heroes.characters.effects.ExpirableEffect;
-import com.herocraftonline.heroes.characters.skill.*;
+import com.herocraftonline.heroes.characters.skill.ActiveSkill;
+import com.herocraftonline.heroes.characters.skill.Listenable;
+import com.herocraftonline.heroes.characters.skill.Skill;
+import com.herocraftonline.heroes.characters.skill.SkillConfigManager;
+import com.herocraftonline.heroes.characters.skill.SkillSetting;
+import com.herocraftonline.heroes.characters.skill.SkillType;
 import com.herocraftonline.heroes.chat.ChatComponents;
 import com.herocraftonline.heroes.util.Util;
 import org.bukkit.Material;
@@ -21,11 +26,11 @@ import org.bukkit.potion.PotionEffectType;
 
 public class SkillExcavate extends ActiveSkill implements Listenable {
 
+    private final Listener listener;
     private String applyText;
     private String expireText;
-    private final Listener listener;
 
-    public SkillExcavate(Heroes plugin) {
+    public SkillExcavate(final Heroes plugin) {
         super(plugin, "Excavate");
         setDescription("You gain a increased digging speed, and instant breaking of dirt for $1 second(s).");
         setUsage("/skill excavate");
@@ -36,18 +41,18 @@ public class SkillExcavate extends ActiveSkill implements Listenable {
     }
 
     @Override
-    public String getDescription(Hero hero) {
+    public String getDescription(final Hero hero) {
         int duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, 0, false);
         duration += (SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION_INCREASE_PER_LEVEL, 100, false) * hero.getHeroLevel(this));
 
-        String formattedDuration = Util.decFormat.format(duration / 1000.0);
+        final String formattedDuration = Util.decFormat.format(duration / 1000.0);
 
         return getDescription().replace("$1", formattedDuration);
     }
 
     @Override
     public ConfigurationSection getDefaultConfig() {
-        ConfigurationSection node = super.getDefaultConfig();
+        final ConfigurationSection node = super.getDefaultConfig();
         node.set("speed-multiplier", 3);
         node.set(SkillSetting.DURATION.node(), 0);
         node.set(SkillSetting.DURATION_INCREASE_PER_LEVEL.node(), 200);
@@ -60,13 +65,13 @@ public class SkillExcavate extends ActiveSkill implements Listenable {
     public void init() {
         super.init();
 
-        applyText = SkillConfigManager.getRaw(this, "apply-text", ChatComponents.GENERIC_SKILL + "%hero% begins excavating!").replace("%hero%", "$1");
-        expireText = SkillConfigManager.getRaw(this, "expire-text", ChatComponents.GENERIC_SKILL + "%hero% is no longer excavating!").replace("%hero%", "$1");
+        applyText = SkillConfigManager.getRaw(this, "apply-text", ChatComponents.GENERIC_SKILL + "%hero% begins excavating!").replace("%hero%", "$1").replace("$hero$", "$1");
+        expireText = SkillConfigManager.getRaw(this, "expire-text", ChatComponents.GENERIC_SKILL + "%hero% is no longer excavating!").replace("%hero%", "$1").replace("$hero$", "$1");
     }
 
     @Override
-    public SkillResult use(Hero hero, String[] args) {
-        Player player = hero.getPlayer();
+    public SkillResult use(final Hero hero, final String[] args) {
+        final Player player = hero.getPlayer();
         broadcastExecuteText(hero);
 
         int duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, 0, false);
@@ -88,48 +93,7 @@ public class SkillExcavate extends ActiveSkill implements Listenable {
         return listener;
     }
 
-    public class ExcavateEffect extends ExpirableEffect {
-
-        public ExcavateEffect(Skill skill, Player applier, long duration, int amplifier) {
-            super(skill, "Excavate", applier, duration);
-            this.types.add(EffectType.DISPELLABLE);
-            this.types.add(EffectType.BENEFICIAL);
-            addPotionEffect(new PotionEffect(PotionEffectType.FAST_DIGGING, (int) (duration / 1000) * 20, amplifier), false);
-        }
-
-        @Override
-        public void applyToHero(Hero hero) {
-            super.applyToHero(hero);
-            Player player = hero.getPlayer();
-            broadcast(player.getLocation(), "    " + applyText, player.getName());
-        }
-
-        @Override
-        public void removeFromHero(Hero hero) {
-            super.removeFromHero(hero);
-            Player player = hero.getPlayer();
-            broadcast(player.getLocation(), "    " + expireText, player.getName());
-        }
-    }
-
-    public class SkillBlockListener implements Listener {
-
-        @EventHandler(priority = EventPriority.HIGHEST)
-        public void onBlockDamage(BlockDamageEvent event) {
-            if (event.isCancelled() || !isExcavatable(event.getBlock().getType())) {
-                return;
-            }
-
-            Hero hero = plugin.getCharacterManager().getHero(event.getPlayer());
-            if (!hero.hasEffect("Excavate"))
-                return;
-
-            //Since this block is excavatable, and the hero has the effect - lets instabreak it
-            event.setInstaBreak(true);
-        }
-    }
-
-    private boolean isExcavatable(Material m) {
+    private boolean isExcavatable(final Material m) {
         switch (m) {
             case DIRT:
             case GRASS:
@@ -139,12 +103,54 @@ public class SkillExcavate extends ActiveSkill implements Listenable {
             case SNOW_BLOCK:
             case SNOW:
             case SOUL_SAND:
-            //FIXME What do here
-            //case SOIL:
+                //FIXME What do here
+                //case SOIL:
             case NETHERRACK:
                 return true;
             default:
                 return false;
+        }
+    }
+
+    public class ExcavateEffect extends ExpirableEffect {
+
+        public ExcavateEffect(final Skill skill, final Player applier, final long duration, final int amplifier) {
+            super(skill, "Excavate", applier, duration);
+            this.types.add(EffectType.DISPELLABLE);
+            this.types.add(EffectType.BENEFICIAL);
+            addPotionEffect(new PotionEffect(PotionEffectType.FAST_DIGGING, (int) (duration / 1000) * 20, amplifier), false);
+        }
+
+        @Override
+        public void applyToHero(final Hero hero) {
+            super.applyToHero(hero);
+            final Player player = hero.getPlayer();
+            broadcast(player.getLocation(), "    " + applyText, player.getName());
+        }
+
+        @Override
+        public void removeFromHero(final Hero hero) {
+            super.removeFromHero(hero);
+            final Player player = hero.getPlayer();
+            broadcast(player.getLocation(), "    " + expireText, player.getName());
+        }
+    }
+
+    public class SkillBlockListener implements Listener {
+
+        @EventHandler(priority = EventPriority.HIGHEST)
+        public void onBlockDamage(final BlockDamageEvent event) {
+            if (event.isCancelled() || !isExcavatable(event.getBlock().getType())) {
+                return;
+            }
+
+            final Hero hero = plugin.getCharacterManager().getHero(event.getPlayer());
+            if (!hero.hasEffect("Excavate")) {
+                return;
+            }
+
+            //Since this block is excavatable, and the hero has the effect - lets instabreak it
+            event.setInstaBreak(true);
         }
     }
 }

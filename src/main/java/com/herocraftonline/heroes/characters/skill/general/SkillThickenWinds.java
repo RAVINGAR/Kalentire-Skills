@@ -11,7 +11,6 @@ import fr.neatmonster.nocheatplus.hooks.NCPExemptionManager;
 import org.bukkit.*;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
-import org.bukkit.Sound;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.util.Vector;
 
@@ -54,8 +53,8 @@ public class SkillThickenWinds extends ActiveSkill
 	{
 		ConfigurationSection node = super.getDefaultConfig();
 
-		node.set(SkillSetting.RADIUS.node(), Integer.valueOf(12));
-		node.set(SkillSetting.DURATION.node(), Integer.valueOf(10000));
+		node.set(SkillSetting.RADIUS.node(), 12);
+		node.set(SkillSetting.DURATION.node(), 10000);
 		node.set(SkillSetting.APPLY_TEXT.node(), " %hero% thickens the winds!");
 		node.set(SkillSetting.EXPIRE_TEXT.node(), " The winds have returned to normal.");
 
@@ -92,7 +91,7 @@ public class SkillThickenWinds extends ActiveSkill
 		else hero.addEffect(new ThickenWindsEffect(this, player, duration, applyText, expireText));
 
 		Location center = player.getLocation().add(0, 0.5, 0);
-		final List<Location> windLocs = new ArrayList<Location>();
+		final List<Location> windLocs = new ArrayList<>();
 
 		for (int i = 1; i <= radius / 4; i++)
 		{
@@ -103,8 +102,8 @@ public class SkillThickenWinds extends ActiveSkill
 		new BukkitRunnable()
 		{
 			private int ticks = 0;
-			private int maxTicks = 5;
-			private Random rand = new Random();
+			private final int maxTicks = 5;
+			private final Random rand = new Random();
 
 			public void run()
 			{
@@ -129,8 +128,8 @@ public class SkillThickenWinds extends ActiveSkill
 
 	private class ThickenWindsEffect extends SafeFallEffect 
 	{
-		private String applyText;
-		private String expireText;
+		private final String applyText;
+		private final String expireText;
 
 		public ThickenWindsEffect(Skill skill, Player applier, long duration, String at, String et) 
 		{

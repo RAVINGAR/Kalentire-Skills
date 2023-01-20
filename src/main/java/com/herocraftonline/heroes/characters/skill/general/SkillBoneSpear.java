@@ -13,7 +13,6 @@ import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
-import org.bukkit.Sound;
 import org.bukkit.event.entity.EntityDamageEvent.DamageCause;
 import org.bukkit.util.BlockIterator;
 import org.bukkit.util.Vector;
@@ -96,36 +95,34 @@ public class SkillBoneSpear extends ActiveSkill {
                 final Location targetLocation = tempBlock.getLocation().clone().add(new Vector(.5, 0, .5));
 
                 // Schedule the action in advance
-                Bukkit.getScheduler().scheduleSyncDelayedTask(plugin, new Runnable() {
-                    public void run() {
-                        //Play effect
-                        //attempting spigot particles
-                        // Why does it play a bunch of crit particles every block the spear travels?
-                        //player.getWorld().spigot().playEffect(player.getLocation().add(0, 0.5, 0), org.bukkit.Effect.CRIT, 0, 0, 0, 0, 0, 1, 25, 16);
-                        player.getWorld().spawnParticle(Particle.CRIT, player.getLocation().add(0, 0.5, 0), 25, 0, 0, 0, 1);
-                        //player.getWorld().spigot().playEffect(targetLocation, org.bukkit.Effect.TILE_BREAK, Material.QUARTZ_BLOCK.getId(), 0, 0.3F, 0.3F, 0.3F, 0.1F, 4, 16);
-                        player.getWorld().spawnParticle(Particle.BLOCK_CRACK, targetLocation, 4, 0.3, 0.3, 0.3, 0.1, Bukkit.createBlockData(Material.QUARTZ_BLOCK));
+                Bukkit.getScheduler().scheduleSyncDelayedTask(plugin, () -> {
+                    //Play effect
+                    //attempting spigot particles
+                    // Why does it play a bunch of crit particles every block the spear travels?
+                    //player.getWorld().spigot().playEffect(player.getLocation().add(0, 0.5, 0), org.bukkit.Effect.CRIT, 0, 0, 0, 0, 0, 1, 25, 16);
+                    player.getWorld().spawnParticle(Particle.CRIT, player.getLocation().add(0, 0.5, 0), 25, 0, 0, 0, 1);
+                    //player.getWorld().spigot().playEffect(targetLocation, org.bukkit.Effect.TILE_BREAK, Material.QUARTZ_BLOCK.getId(), 0, 0.3F, 0.3F, 0.3F, 0.1F, 4, 16);
+                    player.getWorld().spawnParticle(Particle.BLOCK_CRACK, targetLocation, 4, 0.3, 0.3, 0.3, 0.1, Bukkit.createBlockData(Material.QUARTZ_BLOCK));
 
-                        // Check our entity list to see if they are on this specific block at the moment the firework plays
-                        for (Entity entity : nearbyEntities) {
-                            // Ensure that we have a valid entity
-                            if (!(entity instanceof LivingEntity) || hitEnemies.contains(entity) || entity.getLocation().distanceSquared(targetLocation) > radiusSquared)
-                                continue;
+                    // Check our entity list to see if they are on this specific block at the moment the firework plays
+                    for (Entity entity : nearbyEntities) {
+                        // Ensure that we have a valid entity
+                        if (!(entity instanceof LivingEntity) || hitEnemies.contains(entity) || entity.getLocation().distanceSquared(targetLocation) > radiusSquared)
+                            continue;
 
-                            // Check to see if the entity can be damaged
-                            if (!damageCheck(player, (LivingEntity) entity))
-                                continue;
+                        // Check to see if the entity can be damaged
+                        if (!damageCheck(player, (LivingEntity) entity))
+                            continue;
 
-                            // Damage target
-                            LivingEntity target = (LivingEntity) entity;
-                            addSpellTarget(target, hero);
-                            damageEntity(target, player, damage, DamageCause.MAGIC);
+                        // Damage target
+                        LivingEntity target = (LivingEntity) entity;
+                        addSpellTarget(target, hero);
+                        damageEntity(target, player, damage, DamageCause.MAGIC);
 
-                            // Add the target to the hitEntity map to ensure we don't ever hit them again with this specific BoneSpear
-                            hitEnemies.add(entity);
-                        }
+                        // Add the target to the hitEntity map to ensure we don't ever hit them again with this specific BoneSpear
+                        hitEnemies.add(entity);
                     }
-                }, numBlocks * delay);
+                }, (long) numBlocks * delay);
 
                 numBlocks++;
             }

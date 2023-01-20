@@ -81,7 +81,7 @@ public class SkillLockup extends ActiveSkill {
         double hookLeashPower = SkillConfigManager.getUseSetting(hero, this, "hook-leash-power", 1.0, false);
 
         List<Entity> entities = player.getNearbyEntities(radius, radius / 2.0, radius);
-        List<LivingEntity> allies = new ArrayList<LivingEntity>();
+        List<LivingEntity> allies = new ArrayList<>();
         for (Entity entity : entities) {
             if (!(entity instanceof LivingEntity))
                 continue;

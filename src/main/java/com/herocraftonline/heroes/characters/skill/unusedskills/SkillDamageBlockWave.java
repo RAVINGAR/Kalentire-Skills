@@ -15,8 +15,6 @@ import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.util.Vector;
 
 import static com.herocraftonline.heroes.characters.skill.SkillType.*;
-import static com.herocraftonline.heroes.characters.skill.SkillType.SILENCEABLE;
-import static com.herocraftonline.heroes.characters.skill.SkillType.UNINTERRUPTIBLE;
 
 public class SkillDamageBlockWave extends SkillBaseBlockWave {
 
@@ -49,23 +47,19 @@ public class SkillDamageBlockWave extends SkillBaseBlockWave {
 
 	@Override
 	public SkillResult use(Hero hero, String[] strings) {
-		castBlockWave(hero, hero.getPlayer().getLocation().getBlock(), new WaveTargetAction() {
+		castBlockWave(hero, hero.getPlayer().getLocation().getBlock(), (hero1, target, center) -> {
+			if (damageCheck(hero1.getPlayer(), target)) {
+				damageEntity(target, hero1.getPlayer(), 10d, EntityDamageEvent.DamageCause.MAGIC, false);
 
-			@Override
-			public void onTarget(Hero hero, LivingEntity target, Location center) {
-				if (damageCheck(hero.getPlayer(), target)) {
-					damageEntity(target, hero.getPlayer(), 10d, EntityDamageEvent.DamageCause.MAGIC, false);
+				double knockback = SkillConfigManager.getUseSetting(hero1, SkillDamageBlockWave.this, "knockback", 0.5, false);
 
-					double knockback = SkillConfigManager.getUseSetting(hero, SkillDamageBlockWave.this, "knockback", 0.5, false);
-
-					AABB targetAABB = NMSHandler.getInterface().getNMSPhysics().getEntityAABB(target);
-					target.setVelocity(
-							target.getVelocity()
-									.add(targetAABB.getCenter()
-											.subtract(center.toVector())
-											.normalize().multiply(knockback)
-											.add(new Vector(0, 0.25, 0))));
-				}
+				AABB targetAABB = NMSHandler.getInterface().getNMSPhysics().getEntityAABB(target);
+				target.setVelocity(
+						target.getVelocity()
+								.add(targetAABB.getCenter()
+										.subtract(center.toVector())
+										.normalize().multiply(knockback)
+										.add(new Vector(0, 0.25, 0))));
 			}
 		});
 

@@ -55,7 +55,7 @@ public class SkillTelekinesis extends ActiveSkill {
     @Override
     public SkillResult use(Hero hero, String[] args) {
         final Player player = hero.getPlayer();
-        final HashSet<Material> transparent = new HashSet<Material>();
+        final HashSet<Material> transparent = new HashSet<>();
         transparent.add(Material.AIR);
         transparent.add(Material.WATER);
         transparent.add(Material.REDSTONE_TORCH);
@@ -81,15 +81,12 @@ public class SkillTelekinesis extends ActiveSkill {
 
                 // Schedule button turn off (rebounce)
                 long turnOffDelayTicks = block.getType() == Material.STONE_BUTTON ? 10L : 15L;
-                Bukkit.getScheduler().runTaskLater(plugin, new Runnable() {
-                    @Override
-                    public void run() {
-                        BlockState state = block.getState();
-                        Button button = (Button) state.getData();
-                        button.setPowered(false);
-                        state.setData(button);
-                        state.update();
-                    }
+                Bukkit.getScheduler().runTaskLater(plugin, () -> {
+                    BlockState state1 = block.getState();
+                    Button button1 = (Button) state1.getData();
+                    button1.setPowered(false);
+                    state1.setData(button1);
+                    state1.update();
                 }, turnOffDelayTicks);
                 break;
             }

@@ -43,7 +43,7 @@ public class SkillHolyInspiration extends PassiveSkill {
         return config;
     }
 
-    public class SkillHeroListener implements Listener {
+    public static class SkillHeroListener implements Listener {
         private final PassiveSkill skill;
 
         public SkillHeroListener(PassiveSkill skill) {

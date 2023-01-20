@@ -30,11 +30,11 @@ public class SkillMultiShot extends ActiveSkill {
 
     private String expireText;
 
-    private Map<Arrow, Long> multiShots = new LinkedHashMap<Arrow, Long>(100) {
+    private final Map<Arrow, Long> multiShots = new LinkedHashMap<Arrow, Long>(100) {
         private static final long serialVersionUID = 1L;
 
         protected boolean removeEldestEntry(Map.Entry<Arrow, Long> eldest) {
-            return (size() > 60) || (((Long) eldest.getValue()).longValue() + 5000L <= System.currentTimeMillis());
+            return (size() > 60) || ((Long) eldest.getValue() + 5000L <= System.currentTimeMillis());
         }
     };
 
@@ -70,7 +70,7 @@ public class SkillMultiShot extends ActiveSkill {
         node.set("velocity-multiplier", 1.6);
         node.set("multishot-immunity-duration", 500);
 
-        node.set(SkillSetting.DELAY_TEXT.node(), String.valueOf(ChatColor.GRAY + "[" + ChatColor.DARK_GREEN + "Skill" + ChatColor.GRAY + "] %hero% begins to load up arrows!"));
+        node.set(SkillSetting.DELAY_TEXT.node(), ChatColor.GRAY + "[" + ChatColor.DARK_GREEN + "Skill" + ChatColor.GRAY + "] %hero% begins to load up arrows!");
         node.set(SkillSetting.EXPIRE_TEXT.node(), ChatColor.GRAY + "[" + ChatColor.DARK_GREEN + "Skill" + ChatColor.GRAY + "] You are no longer firing multiple arrows.");
 
         return node;
@@ -149,7 +149,7 @@ public class SkillMultiShot extends ActiveSkill {
 
     public class SkillEntityListener implements Listener {
 
-        private Skill skill;
+        private final Skill skill;
 
         public SkillEntityListener(Skill skill) {
             this.skill = skill;

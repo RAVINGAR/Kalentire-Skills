@@ -8,13 +8,15 @@ import com.herocraftonline.heroes.characters.skill.ActiveSkill;
 import com.herocraftonline.heroes.characters.skill.SkillConfigManager;
 import com.herocraftonline.heroes.characters.skill.SkillSetting;
 import com.herocraftonline.heroes.characters.skill.SkillType;
-import com.herocraftonline.heroes.chat.ChatComponents;
 import com.herocraftonline.heroes.util.GeometryUtil;
 import org.bukkit.Location;
 import org.bukkit.Particle;
 import org.bukkit.Sound;
+import org.bukkit.World;
 import org.bukkit.configuration.ConfigurationSection;
-import org.bukkit.entity.*;
+import org.bukkit.entity.Entity;
+import org.bukkit.entity.LivingEntity;
+import org.bukkit.entity.Player;
 import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.util.Vector;
@@ -23,7 +25,7 @@ import java.util.List;
 
 public class SkillSoulreaper extends ActiveSkill {
 
-    public SkillSoulreaper(Heroes plugin) {
+    public SkillSoulreaper(final Heroes plugin) {
         super(plugin, "Soulreaper");
         setDescription("Channeling the souls of the slain, you cast forth a glaive of souls. The glaive flies up " +
                 "to $1 meter(s1) away and remains in a fixed location upon hitting an obstacle or at its maximum range. " +
@@ -35,7 +37,8 @@ public class SkillSoulreaper extends ActiveSkill {
         setTypes(SkillType.DAMAGING, SkillType.ABILITY_PROPERTY_DARK, SkillType.AGGRESSIVE, SkillType.AREA_OF_EFFECT);
     }
 
-    public String getDescription(Hero hero) {
+    @Override
+    public String getDescription(final Hero hero) {
         final double range = SkillConfigManager.getUseSetting(hero, this, SkillSetting.MAX_DISTANCE, 7, true);
         final double damage = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE, 10, true) +
                 (SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE_INCREASE_PER_INTELLECT, 0.5, true) * hero.getAttributeValue(AttributeType.INTELLECT));
@@ -43,8 +46,8 @@ public class SkillSoulreaper extends ActiveSkill {
         final double radius = SkillConfigManager.getUseSetting(hero, this, SkillSetting.RADIUS, 3.5, true);
         final int tickDuration = SkillConfigManager.getUseSetting(hero, this, "hover-ticks", 60, true);
 
-        float secondInterval = damageTicks / 20.0f;
-        float secondDuration = tickDuration / 20.0f;
+        final float secondInterval = damageTicks / 20.0f;
+        final float secondDuration = tickDuration / 20.0f;
 
         return getDescription().replace("$1", range + "")
                 .replace("$2", damage + "")
@@ -57,8 +60,9 @@ public class SkillSoulreaper extends ActiveSkill {
                 .replace("(s4)", secondDuration == 1.0f ? "" : "s");
     }
 
+    @Override
     public ConfigurationSection getDefaultConfig() {
-        ConfigurationSection node = super.getDefaultConfig();
+        final ConfigurationSection node = super.getDefaultConfig();
 
         node.set(SkillSetting.MAX_DISTANCE.node(), 7);
         node.set(SkillSetting.DAMAGE.node(), 10);
@@ -71,7 +75,8 @@ public class SkillSoulreaper extends ActiveSkill {
         return node;
     }
 
-    public SkillResult use(final Hero hero, String[] args) {
+    @Override
+    public SkillResult use(final Hero hero, final String[] args) {
         final Player player = hero.getPlayer();
 
         final double range = SkillConfigManager.getUseSetting(hero, this, SkillSetting.MAX_DISTANCE, 7, true);
@@ -83,10 +88,9 @@ public class SkillSoulreaper extends ActiveSkill {
         final int tickDuration = SkillConfigManager.getUseSetting(hero, this, "hover-ticks", 60, true);
 
         final Location spawnLoc = player.getEyeLocation().clone();
-        final Location sickle = player.getEyeLocation().clone();
+        final Location sickleEye = player.getEyeLocation().clone();
 
-        final Vector directionVector = sickle.getDirection().normalize().divide(new Vector(20, 20, 20));
-        player.sendMessage("    " + ChatComponents.GENERIC_SKILL + directionVector.getX() + " / " + directionVector.getY() + " / " + directionVector.getZ());
+        final Vector directionVector = sickleEye.getDirection().normalize().divide(new Vector(10, 10, 10));
 
         new BukkitRunnable() {
             double distTraveled = 0.0D;
@@ -96,42 +100,61 @@ public class SkillSoulreaper extends ActiveSkill {
 
             int nextDamageTicks = 0;
 
+            Location sickle = sickleEye;
+
+            @Override
             public void run() {
-                List<Location> circle = GeometryUtil.circle(sickle, 16, radius);
-                Location l = circle.get(fxIndex++);
-                    //l.getWorld().spigot().playEffect(l, Effect.WITCH_MAGIC, 0, 0, 0.05f, 0.05f, 0.05f, 0.0f, 3, 128);
-                l.getWorld().spawnParticle(Particle.SPELL_WITCH, l, 3, 0.05, 0.05, 0.05, 0);
-                if (fxIndex >= circle.size()) fxIndex = 0;
+                final List<Location> circle = GeometryUtil.circle(sickle, 16, radius);
+                final Location l = circle.get(fxIndex++);
+                //l.getWorld().spigot().playEffect(l, Effect.WITCH_MAGIC, 0, 0, 0.05f, 0.05f, 0.05f, 0.0f, 3, 128);
+                final World world = sickle.getWorld();
+                world.spawnParticle(Particle.SPELL_WITCH, l, 3, 0.05, 0.05, 0.05, 0);
+                world.spawnParticle(Particle.ELECTRIC_SPARK, l, 12, 0.05, 0.05, 0.05, 0);
+                if (fxIndex >= circle.size()) {
+                    fxIndex = 0;
+                }
                 if (!maxRange) { // old fashioned boolean check
                     sickle.add(directionVector);
                     distTraveled = spawnLoc.distance(sickle);
-                    if (distTraveled >= range ||
-                            sickle.getWorld().getBlockAt(sickle.clone().add(directionVector.multiply(radius))).getType()
-                                    .isSolid()) maxRange = true;
+                    if (distTraveled >= range) {
+                        // check if in air
+                        final Location foundLoc = sickle.clone().add(directionVector.multiply(radius));
+                        int i = 0;
+                        while (world.getBlockAt(foundLoc).getType().isAir() && i++ < 8) {
+                            foundLoc.subtract(0, 1, 0);
+                        }
+                        sickle = foundLoc;
+                        maxRange = true;
+                    } else if (world.getBlockAt(sickle.clone().add(directionVector.multiply(radius))).getType().isSolid()) {
+                        maxRange = true;
+                    }
                 } else {
                     ticks++;
-                    if (ticks >= tickDuration) cancel();
+                    if (ticks >= tickDuration) {
+                        cancel();
+                    }
                 }
 
                 if (nextDamageTicks == 0) {
                     nextDamageTicks = damageTicks;
 
-                    sickle.getWorld().playSound(sickle, Sound.ENTITY_ELDER_GUARDIAN_CURSE, 0.5f, 1.0f); // i have no clue what this sounds like
-                    Snowball test = (Snowball) sickle.getWorld().spawnEntity(sickle, EntityType.SNOWBALL);
-                    //ghost(test);
-//                    test.getWorld().spigot().playEffect(test.getLocation(), Effect.WITCH_MAGIC, 0, 0, 0.2f, 0.2f, 0.2f, 0.0f,
-//                            25, 128);
-                    test.getWorld().spawnParticle(Particle.SPELL_WITCH, test.getLocation(), 25, 0.2, 0.2, 0.2, 0);
-                    for (Entity e : test.getNearbyEntities(radius, radius / 2, radius)) {
-                        if (!(e instanceof LivingEntity)) continue;
-                        LivingEntity ent = (LivingEntity) e;
-                        if (!damageCheck(player, ent)) continue;
+                    sickle.getWorld().playSound(sickle, Sound.ENTITY_ELDER_GUARDIAN_CURSE, 0.5f, 0.9f);
+                    world.spawnParticle(Particle.SPELL_WITCH, sickle, 25, 0.2, 0.2, 0.2, 0);
+                    for (final Entity e : world.getNearbyEntities(sickle, radius, radius, radius)) {
+                        if (!(e instanceof LivingEntity)) {
+                            continue;
+                        }
+                        final LivingEntity ent = (LivingEntity) e;
+                        if (!damageCheck(player, ent)) {
+                            continue;
+                        }
                         addSpellTarget(ent, hero);
                         damageEntity(ent, player, damage, EntityDamageEvent.DamageCause.MAGIC, 0.0f);
                         ent.setNoDamageTicks(damageTicks - 1); // so they can be affected again
                     }
-                    test.remove();
-                } else nextDamageTicks--;
+                } else {
+                    nextDamageTicks--;
+                }
             }
         }.runTaskTimer(plugin, 0, 1);
 

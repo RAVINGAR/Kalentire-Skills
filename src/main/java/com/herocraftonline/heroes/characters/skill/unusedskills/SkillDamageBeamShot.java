@@ -130,15 +130,12 @@ public class SkillDamageBeamShot extends SkillBaseBeamShot {
 					em.disposeOnTermination();
 				}*/
 			}
-		}, new Predicate<Block>() {
-			@Override
-			public boolean test(Block block) {
-				return true;
-				//FIXME Don't care about this skill, is test skill I made to test beam skills way back
+		}, block -> {
+            return true;
+            //FIXME Don't care about this skill, is test skill I made to test beam skills way back
 //				return block.getType() != Material.GLASS && block.getType() !=  Material.STAINED_GLASS &&
 //						block.getType() != Material.THIN_GLASS && block.getType() != Material.STAINED_GLASS_PANE;
-			}
-		}, EnumSet.of(RayCastFlag.BLOCK_IGNORE_NON_SOLID, RayCastFlag.BLOCK_HIGH_DETAIL));
+        }, EnumSet.of(RayCastFlag.BLOCK_IGNORE_NON_SOLID, RayCastFlag.BLOCK_HIGH_DETAIL));
 
 		broadcastExecuteText(hero);
 		return SkillResult.NORMAL;

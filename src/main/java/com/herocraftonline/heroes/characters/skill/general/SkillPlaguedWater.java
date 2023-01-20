@@ -12,7 +12,6 @@ import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
-import org.bukkit.Sound;
 import org.bukkit.event.entity.EntityDamageEvent.DamageCause;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.util.Vector;
@@ -38,7 +37,7 @@ public class SkillPlaguedWater extends ActiveSkill
 	@Override
 	public String getDescription(Hero hero) 
 	{
-		int radius = SkillConfigManager.getUseSetting(hero, this, SkillSetting.RADIUS, Integer.valueOf(8), true);
+		int radius = SkillConfigManager.getUseSetting(hero, this, SkillSetting.RADIUS, 8, true);
 		int period = SkillConfigManager.getUseSetting(hero, this, SkillSetting.PERIOD, 3000, true);
 		int duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, 12000, true);
 
@@ -84,8 +83,8 @@ public class SkillPlaguedWater extends ActiveSkill
 
 	public class PlaguedWaterEffect2 extends PeriodicExpirableEffect
 	{		
-		private Skill skill;
-		final ArrayList<Location> waterburstLocs = new ArrayList<Location>();
+		private final Skill skill;
+		final ArrayList<Location> waterburstLocs = new ArrayList<>();
 
 		public PlaguedWaterEffect2(Skill skill, Player applier, long duration, long period) 
 		{
@@ -101,13 +100,13 @@ public class SkillPlaguedWater extends ActiveSkill
 			
 			final Location pLoc = player.getLocation().add(0, 0.5, 0);
 
-			final int radius = SkillConfigManager.getUseSetting(hero, skill, SkillSetting.RADIUS, Integer.valueOf(8), false);
+			final int radius = SkillConfigManager.getUseSetting(hero, skill, SkillSetting.RADIUS, 8, false);
 
 			new BukkitRunnable()
 			{
 				private int ticks = 0;
-				private int maxTicks = 40;
-				private Random rand = new Random();
+				private final int maxTicks = 40;
+				private final Random rand = new Random();
 
 				public void run()
 				{					
@@ -152,7 +151,7 @@ public class SkillPlaguedWater extends ActiveSkill
 		{
 			Player player = hero.getPlayer();
 			
-			final int radius = SkillConfigManager.getUseSetting(hero, skill, SkillSetting.RADIUS, Integer.valueOf(8), true);
+			final int radius = SkillConfigManager.getUseSetting(hero, skill, SkillSetting.RADIUS, 8, true);
 
 			int period = SkillConfigManager.getUseSetting(hero, skill, SkillSetting.PERIOD, 3000, true);
 

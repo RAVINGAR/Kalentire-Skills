@@ -28,9 +28,9 @@ public class SkillTimeShift extends TargettedSkill {
     private String downShiftApplyText;
     private String downShiftExpireText;
 
-    private String accelEffectName = "AcceleratedShiftedTime";
-    private String decelEffectName = "DeceleratedShiftedTime";
-    private String maxStacksErrorMessage = ChatComponents.GENERIC_SKILL + "Your target is already shifted as far as they can go!";
+    private final String accelEffectName = "AcceleratedShiftedTime";
+    private final String decelEffectName = "DeceleratedShiftedTime";
+    private final String maxStacksErrorMessage = ChatComponents.GENERIC_SKILL + "Your target is already shifted as far as they can go!";
 
     public SkillTimeShift(Heroes plugin) {
         super(plugin, "TimeShift");

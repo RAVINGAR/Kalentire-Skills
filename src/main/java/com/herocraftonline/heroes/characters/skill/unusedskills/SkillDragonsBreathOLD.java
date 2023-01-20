@@ -12,7 +12,6 @@ import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
-import org.bukkit.Sound;
 import org.bukkit.event.entity.EntityDamageEvent.DamageCause;
 import org.bukkit.util.BlockIterator;
 import org.bukkit.util.Vector;
@@ -33,7 +32,7 @@ import com.herocraftonline.heroes.characters.skill.VisualEffect;
 import com.herocraftonline.heroes.util.Util;
 
 public class SkillDragonsBreathOLD extends ActiveSkill {
-    public VisualEffect fplayer = new VisualEffect();
+    public final VisualEffect fplayer = new VisualEffect();
 
     public SkillDragonsBreathOLD(Heroes plugin) {
         super(plugin, "DragonsBreath");
@@ -138,36 +137,29 @@ public class SkillDragonsBreathOLD extends ActiveSkill {
 
                     final Location targetLocation = tempBlock.getLocation().clone().add(new Vector(.5, .5, .5));
 
-                    Bukkit.getScheduler().scheduleSyncDelayedTask(plugin, new Runnable() {
-                        public void run() {
-                            try {
-                                fplayer.playFirework(targetLocation.getWorld(), targetLocation, FireworkEffect.builder().flicker(false).trail(true).with(FireworkEffect.Type.BURST).withColor(Color.MAROON).withFade(Color.ORANGE).build());
-                            }
-                            catch (IllegalArgumentException e) {
-                                e.printStackTrace();
-                            }
-                            catch (Exception e) {
-                                e.printStackTrace();
-                            }
-
-                            final List<Entity> nearbyEntities = player.getNearbyEntities(distance * 2, distance * 2, distance * 2);
-                            for (Entity entity : nearbyEntities) {
-                                // Check to see if the entity can be damaged
-                                if (!(entity instanceof LivingEntity) || entity.getLocation().distance(targetLocation) > radius)
-                                    continue;
-
-                                if (!damageCheck(player, (LivingEntity) entity))
-                                    continue;
-
-                                // Damage target
-                                LivingEntity target = (LivingEntity) entity;
-
-                                addSpellTarget(target, hero);
-                                damageEntity(target, player, damage, DamageCause.MAGIC, false);
-                            }
+                    Bukkit.getScheduler().scheduleSyncDelayedTask(plugin, () -> {
+                        try {
+                            fplayer.playFirework(targetLocation.getWorld(), targetLocation, FireworkEffect.builder().flicker(false).trail(true).with(FireworkEffect.Type.BURST).withColor(Color.MAROON).withFade(Color.ORANGE).build());
+                        } catch (Exception e) {
+                            e.printStackTrace();
                         }
 
-                    }, numBlocks * moveDelay);
+                        final List<Entity> nearbyEntities = player.getNearbyEntities(distance * 2, distance * 2, distance * 2);
+                        for (Entity entity : nearbyEntities) {
+                            // Check to see if the entity can be damaged
+                            if (!(entity instanceof LivingEntity) || entity.getLocation().distance(targetLocation) > radius)
+                                continue;
+
+                            if (!damageCheck(player, (LivingEntity) entity))
+                                continue;
+
+                            // Damage target
+                            LivingEntity target = (LivingEntity) entity;
+
+                            addSpellTarget(target, hero);
+                            damageEntity(target, player, damage, DamageCause.MAGIC, false);
+                        }
+                    }, (long) numBlocks * moveDelay);
 
                     numBlocks++;
                 }

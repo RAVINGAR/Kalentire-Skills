@@ -17,6 +17,7 @@ import org.bukkit.inventory.ItemStack;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
@@ -33,13 +34,13 @@ public class SkillForage extends ActiveSkill {
     @Override
     public ConfigurationSection getDefaultConfig() {
         ConfigurationSection node = super.getDefaultConfig();
-        node.set("forest.items", Arrays.asList("APPLE"));
+        node.set("forest.items", Collections.singletonList("APPLE"));
         node.set("forest.chance", .01);
         node.set("forest.max-found", 3);
         node.set("plains.items", Arrays.asList("WHEAT", "MELON"));
         node.set("plains.chance", .01);
         node.set("plains.max-found", 3);
-        node.set("water.items", Arrays.asList("RAW_FISH"));
+        node.set("water.items", Collections.singletonList("RAW_FISH"));
         node.set("water.chance", .01);
         node.set("water.max-found", 3);
         node.set("swamp.items", Arrays.asList("RED_MUSHROOM", "BROWN_MUSHROOM", "RAW_FISH", "VINE"));
@@ -48,13 +49,13 @@ public class SkillForage extends ActiveSkill {
         node.set("desert.items", Arrays.asList("CACTUS", "SUGAR_CANE"));
         node.set("desert.chance", .005);
         node.set("desert.max-found", 2);
-        node.set("hell.items", Arrays.asList("ROTTEN_FLESH"));
+        node.set("hell.items", Collections.singletonList("ROTTEN_FLESH"));
         node.set("hell.chance", .005);
         node.set("hell.max-found", 1);
-        node.set("sky.items", Arrays.asList("VINE"));
+        node.set("sky.items", Collections.singletonList("VINE"));
         node.set("sky.chance", .01);
         node.set("sky.max-found", 3);
-        node.set("ice.items", Arrays.asList("RAW_FISH"));
+        node.set("ice.items", Collections.singletonList("RAW_FISH"));
         node.set("ice.chance", 0.005D);
         node.set("ice.max-found", 1);
         node.set("mushroom.items", Arrays.asList("RED_MUSHROOM", "BROWN_MUSHROOM", "HUGE_MUSHROOM_1", "HUGE_MUSHROOM_2"));
@@ -85,7 +86,7 @@ public class SkillForage extends ActiveSkill {
         case "SNOWY_MOUNTAINS":
         //case ICE_FLATS:
         //case ICE_MOUNTAINS:
-            materialNames.addAll(SkillConfigManager.getUseSetting(hero, this, "ice.items", new ArrayList<String>()));
+            materialNames.addAll(SkillConfigManager.getUseSetting(hero, this, "ice.items", new ArrayList<>()));
             chance = SkillConfigManager.getUseSetting(hero, this, "ice.chance", .01, false) * hero.getHeroLevel(this);
             maxFinds = SkillConfigManager.getUseSetting(hero, this, "ice.max-found", 3, false);
             break;
@@ -159,7 +160,7 @@ public class SkillForage extends ActiveSkill {
             maxFinds = SkillConfigManager.getUseSetting(hero, this, "sky.max-found", 3, false);
             break;
         default:
-            materialNames.addAll(SkillConfigManager.getUseSetting(hero, this, "default.items", new ArrayList<String>()));
+            materialNames.addAll(SkillConfigManager.getUseSetting(hero, this, "default.items", new ArrayList<>()));
         }
 
         List<Material> materials = new ArrayList<>();

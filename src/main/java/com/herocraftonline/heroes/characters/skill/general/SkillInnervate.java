@@ -1,9 +1,7 @@
 package com.herocraftonline.heroes.characters.skill.general;
 
 import org.bukkit.ChatColor;
-import org.bukkit.Effect;
 import org.bukkit.Particle;
-import org.bukkit.Sound;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
 import org.bukkit.Sound;
@@ -42,7 +40,7 @@ public class SkillInnervate extends ActiveSkill {
     public ConfigurationSection getDefaultConfig() {
         ConfigurationSection node = super.getDefaultConfig();
 
-        node.set("mana-bonus", Double.valueOf(0.75));
+        node.set("mana-bonus", 0.75);
 
         return node;
     }
@@ -53,7 +51,7 @@ public class SkillInnervate extends ActiveSkill {
 
         broadcastExecuteText(hero);
 
-        double manaGainPercent = SkillConfigManager.getUseSetting(hero, this, "mana-bonus", Double.valueOf(0.75), false);
+        double manaGainPercent = SkillConfigManager.getUseSetting(hero, this, "mana-bonus", 0.75, false);
         int manaBonus = (int) Math.floor(hero.getMaxMana() * manaGainPercent);
 
         HeroRegainManaEvent hrmEvent = new HeroRegainManaEvent(hero, manaBonus, this);

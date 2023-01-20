@@ -138,7 +138,7 @@ public class SkillHellgate extends ActiveSkill {
     }
 
     // Tracks the players original location for returning
-    public class HellgateEffect extends Effect {
+    public static class HellgateEffect extends Effect {
 
         private final Location location;
 

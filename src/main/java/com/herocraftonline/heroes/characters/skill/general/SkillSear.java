@@ -11,7 +11,6 @@ import org.bukkit.*;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
-import org.bukkit.Sound;
 
 public class SkillSear extends TargettedSkill
 {
@@ -40,9 +39,7 @@ public class SkillSear extends TargettedSkill
 	public SkillResult use(Hero hero, LivingEntity target, String[] args)
 	{
 		Player player = hero.getPlayer();
-		Hero h = hero;
-		Player p = player;
-		double damage = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE, 10, false);
+        double damage = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE, 10, false);
 		damage += SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE_INCREASE, 0.2, false) * hero.getHeroLevel(this);
 		long duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, 8000, false);
 		
@@ -56,7 +53,7 @@ public class SkillSear extends TargettedSkill
 		target.getWorld().playSound(target.getLocation(), Sound.ENTITY_ZOMBIE_INFECT, 1.2F, 0.85F);
 		
 		CharacterTemplate targCT = plugin.getCharacterManager().getCharacter(target);
-		SearEffect sear = new SearEffect(plugin, this, duration, damage, p, h);
+		SearEffect sear = new SearEffect(plugin, this, duration, damage, player, hero);
 		targCT.addEffect(sear);
 
 		broadcast(player.getLocation(), ChatComponents.GENERIC_SKILL + ChatColor.WHITE + hero.getName() + ChatColor.GRAY + " used " + ChatColor.WHITE + getName() + ChatColor.GRAY + " on " + ChatColor.WHITE + target.getName() + ChatColor.GRAY + "!" );
@@ -72,9 +69,9 @@ public class SkillSear extends TargettedSkill
 		return getDescription().replace("$1", damage + "").replace("$2", formattedDuration);
 	}
 	
-	public class SearEffect extends PeriodicDamageEffect
+	public static class SearEffect extends PeriodicDamageEffect
 	{
-		private Hero applyH;
+		private final Hero applyH;
 		public SearEffect(Heroes plugin, Skill skill, long duration, double damage, Player applier, Hero applyH)
 		{
 			super(skill, "Sear", applier, 2000, duration, damage);

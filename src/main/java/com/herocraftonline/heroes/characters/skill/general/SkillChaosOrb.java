@@ -27,7 +27,7 @@ import java.util.Map.Entry;
 
 public class SkillChaosOrb extends ActiveSkill {
 
-    private Map<EnderPearl, Long> pearls = new LinkedHashMap<EnderPearl, Long>(100) {
+    private final Map<EnderPearl, Long> pearls = new LinkedHashMap<EnderPearl, Long>(100) {
         private static final long serialVersionUID = 4329526013158603250L;
 
         @Override
@@ -95,11 +95,9 @@ public class SkillChaosOrb extends ActiveSkill {
         int ticksBeforeDrop = SkillConfigManager.getUseSetting(hero, this, "ticks-before-drop", 8, false);
         final double yValue = SkillConfigManager.getUseSetting(hero, this, "y-value-drop", 0.4, false);
 
-        Bukkit.getScheduler().scheduleSyncDelayedTask(plugin, new Runnable() {
-            public void run() {
-                if (!pearl.isDead()) {
-                    pearl.setVelocity(pearl.getVelocity().setY(-yValue));
-                }
+        Bukkit.getScheduler().scheduleSyncDelayedTask(plugin, () -> {
+            if (!pearl.isDead()) {
+                pearl.setVelocity(pearl.getVelocity().setY(-yValue));
             }
         }, ticksBeforeDrop);
 

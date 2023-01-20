@@ -8,11 +8,20 @@ import com.herocraftonline.heroes.characters.Hero;
 import com.herocraftonline.heroes.characters.effects.EffectType;
 import com.herocraftonline.heroes.characters.effects.ExpirableEffect;
 import com.herocraftonline.heroes.characters.effects.common.StunEffect;
-import com.herocraftonline.heroes.characters.skill.*;
-import com.herocraftonline.heroes.characters.skill.ncp.NCPFunction;
+import com.herocraftonline.heroes.characters.skill.ActiveSkill;
+import com.herocraftonline.heroes.characters.skill.Skill;
+import com.herocraftonline.heroes.characters.skill.SkillConfigManager;
+import com.herocraftonline.heroes.characters.skill.SkillSetting;
+import com.herocraftonline.heroes.characters.skill.SkillType;
+import com.herocraftonline.heroes.characters.skill.VisualEffect;
 import com.herocraftonline.heroes.characters.skill.ncp.NCPUtils;
 import com.herocraftonline.heroes.chat.ChatComponents;
-import org.bukkit.*;
+import org.bukkit.Bukkit;
+import org.bukkit.Color;
+import org.bukkit.FireworkEffect;
+import org.bukkit.Location;
+import org.bukkit.Material;
+import org.bukkit.Sound;
 import org.bukkit.block.BlockFace;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Arrow;
@@ -33,19 +42,29 @@ import java.util.Set;
 
 public class SkillRetreat extends ActiveSkill {
 
-    private String stunReadyText;
-    private String stunExpireText;
+    private static final Set<Material> requiredMaterials;
 
-    private Map<Arrow, Long> stunArrows = new LinkedHashMap<Arrow, Long>(100) {
+    static {
+        requiredMaterials = new HashSet<>();
+        requiredMaterials.add(Material.WATER);
+        requiredMaterials.add(Material.LAVA);
+        requiredMaterials.add(Material.AIR);
+        requiredMaterials.add(Material.LEGACY_LEAVES);  //TODO: Add every other leaf type maybe?
+        requiredMaterials.add(Material.SOUL_SAND);
+    }
+
+    private final Map<Arrow, Long> stunArrows = new LinkedHashMap<Arrow, Long>(100) {
         private static final long serialVersionUID = 4329526013158603250L;
 
         @Override
-        protected boolean removeEldestEntry(Map.Entry<Arrow, Long> eldest) {
+        protected boolean removeEldestEntry(final Map.Entry<Arrow, Long> eldest) {
             return (size() > 60 || eldest.getValue() + 5000 <= System.currentTimeMillis());
         }
     };
+    private String stunReadyText;
+    private String stunExpireText;
 
-    public SkillRetreat(Heroes plugin) {
+    public SkillRetreat(final Heroes plugin) {
         super(plugin, "Retreat");
         setDescription("Retreat from your enemies, your next arrow will stun your enemy. ");
         setUsage("/skill retreat");
@@ -57,13 +76,13 @@ public class SkillRetreat extends ActiveSkill {
     }
 
     @Override
-    public String getDescription(Hero hero) {
+    public String getDescription(final Hero hero) {
         return getDescription();
     }
 
     @Override
     public ConfigurationSection getDefaultConfig() {
-        ConfigurationSection config = super.getDefaultConfig();
+        final ConfigurationSection config = super.getDefaultConfig();
         config.set(SkillSetting.DURATION.node(), 6000);
         config.set("stun-duration", 1500);
         config.set("horizontal-power", 0.5);
@@ -77,22 +96,22 @@ public class SkillRetreat extends ActiveSkill {
         super.init();
 
         stunReadyText = SkillConfigManager.getRaw(this, SkillSetting.APPLY_TEXT.node(),
-                ChatComponents.GENERIC_SKILL + "%target% is stunned!")
-                .replace("%target%", "$1");
+                        ChatComponents.GENERIC_SKILL + "%target% is stunned!")
+                .replace("%target%", "$1").replace("$target$", "$1");
     }
 
     @Override
-    public SkillResult use(Hero hero, String[] args) {
+    public SkillResult use(final Hero hero, final String[] args) {
         final Player player = hero.getPlayer();
 
         broadcastExecuteText(hero);
 
-        Location playerLoc = player.getLocation();
-        Material belowMat = playerLoc.getBlock().getRelative(BlockFace.DOWN).getType();
+        final Location playerLoc = player.getLocation();
+        final Material belowMat = playerLoc.getBlock().getRelative(BlockFace.DOWN).getType();
 
         performBackflip(hero, player, belowMat);
 
-        long duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, 1500, false);
+        final long duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, 1500, false);
         hero.addEffect(new RetreatBuff(this, player, duration));
 
         player.getWorld().playSound(player.getLocation(), Sound.ENTITY_ENDER_DRAGON_FLAP, 4.0F, 1.0F);
@@ -100,24 +119,13 @@ public class SkillRetreat extends ActiveSkill {
         return SkillResult.NORMAL;
     }
 
-    private static final Set<Material> requiredMaterials;
-
-    static {
-        requiredMaterials = new HashSet<>();
-        requiredMaterials.add(Material.WATER);
-        requiredMaterials.add(Material.LAVA);
-        requiredMaterials.add(Material.AIR);
-        requiredMaterials.add(Material.LEGACY_LEAVES);  //TODO: Add every other leaf type maybe?
-        requiredMaterials.add(Material.SOUL_SAND);
-    }
-
-    private void performBackflip(Hero hero, Player player, Material belowMat) {
+    private void performBackflip(final Hero hero, final Player player, final Material belowMat) {
         // Calculate backflip values
         float pitch = player.getEyeLocation().getPitch();
         if (pitch > 0) {
             pitch = -pitch;
         }
-        float multiplier = (90f + pitch) / 50f;
+        final float multiplier = (90f + pitch) / 50f;
 
         boolean weakenVelocity = false;
         switch (belowMat) {
@@ -132,57 +140,56 @@ public class SkillRetreat extends ActiveSkill {
                 break;
         }
 
-        int dexterity = hero.getAttributeValue(AttributeType.DEXTERITY);
+        final int dexterity = hero.getAttributeValue(AttributeType.DEXTERITY);
 
         double vPower = SkillConfigManager.getUseSetting(hero, this, "vertical-power", 0.5, false);
-        double vPowerIncrease = SkillConfigManager.getUseSetting(hero, this, "vertical-power-increase-per-dexterity", 0.0125, false);
+        final double vPowerIncrease = SkillConfigManager.getUseSetting(hero, this, "vertical-power-increase-per-dexterity", 0.0125, false);
         vPower += dexterity * vPowerIncrease;
 
-        if (vPower > 2.0)
+        if (vPower > 2.0) {
             vPower = 2.0;
+        }
 
-        if (weakenVelocity)
+        if (weakenVelocity) {
             vPower *= 0.75;
+        }
 
         final Vector velocity = player.getVelocity().setY(vPower);
 
-        Vector directionVector = player.getLocation().getDirection();
+        final Vector directionVector = player.getLocation().getDirection();
         directionVector.setY(0);
         directionVector.normalize();
         directionVector.multiply(multiplier);
 
         velocity.add(directionVector);
         double hPower = SkillConfigManager.getUseSetting(hero, this, "horizontal-power", 0.5, false);
-        double hPowerIncrease = SkillConfigManager.getUseSetting(hero, this, "horizontal-power-increase-per-dexterity", 0.0125, false);
+        final double hPowerIncrease = SkillConfigManager.getUseSetting(hero, this, "horizontal-power-increase-per-dexterity", 0.0125, false);
         hPower += dexterity * hPowerIncrease;
 
-        if (weakenVelocity)
+        if (weakenVelocity) {
             hPower *= 0.75;
+        }
 
         velocity.multiply(new Vector(-hPower, 1, -hPower));
 
         // Let's bypass the nocheat issues...
-        NCPUtils.applyExemptions(player, new NCPFunction() {
-
-            @Override
-            public void execute() {
-                // Backflip!
-                player.setVelocity(velocity);
-                player.setFallDistance(-8f);
-            }
+        NCPUtils.applyExemptions(player, () -> {
+            // Backflip!
+            player.setVelocity(velocity);
+            player.setFallDistance(-8f);
         }, Lists.newArrayList("MOVING"), SkillConfigManager.getUseSetting(hero, this, "ncp-exemption-duration", 1000, false));
     }
 
-    public class RetreatBuff extends ExpirableEffect {
+    public static class RetreatBuff extends ExpirableEffect {
 
-        RetreatBuff(Skill skill, Player applier, long duration) {
+        RetreatBuff(final Skill skill, final Player applier, final long duration) {
             super(skill, "RetreatBuff", applier, duration);
 
             types.add(EffectType.BENEFICIAL);
         }
 
         @Override
-        public void removeFromHero(Hero hero) {
+        public void removeFromHero(final Hero hero) {
             super.removeFromHero(hero);
 
         }
@@ -192,18 +199,18 @@ public class SkillRetreat extends ActiveSkill {
 
         private final Skill skill;
 
-        public SkillDamageListener(Skill skill) {
+        public SkillDamageListener(final Skill skill) {
             this.skill = skill;
         }
 
 
         @EventHandler(priority = EventPriority.MONITOR)
-        public void onEntityShootBow(EntityShootBowEvent event) {
+        public void onEntityShootBow(final EntityShootBowEvent event) {
             if (event.isCancelled() || !(event.getEntity() instanceof Player) || !(event.getProjectile() instanceof Arrow)) {
                 return;
             }
 
-            Hero hero = plugin.getCharacterManager().getHero((Player) event.getEntity());
+            final Hero hero = plugin.getCharacterManager().getHero((Player) event.getEntity());
             if (hero.hasEffect("RetreatBuff")) {
                 stunArrows.put((Arrow) event.getProjectile(), System.currentTimeMillis());
                 hero.removeEffect(hero.getEffect("RetreatBuff"));
@@ -212,34 +219,37 @@ public class SkillRetreat extends ActiveSkill {
 
 
         @EventHandler(priority = EventPriority.MONITOR)
-        public void onEntityDamage(EntityDamageEvent event) {
-            if (event.isCancelled() || !(event instanceof EntityDamageByEntityEvent) || !(event.getEntity() instanceof LivingEntity))
+        public void onEntityDamage(final EntityDamageEvent event) {
+            if (event.isCancelled() || !(event instanceof EntityDamageByEntityEvent) || !(event.getEntity() instanceof LivingEntity)) {
                 return;
+            }
 
-            EntityDamageByEntityEvent subEvent = (EntityDamageByEntityEvent) event;
-            if (!(subEvent.getDamager() instanceof Arrow))
+            final EntityDamageByEntityEvent subEvent = (EntityDamageByEntityEvent) event;
+            if (!(subEvent.getDamager() instanceof Arrow)) {
                 return;
+            }
 
-            Arrow arrow = (Arrow) subEvent.getDamager();
-            if (!(arrow.getShooter() instanceof Player) || !stunArrows.containsKey(arrow))
+            final Arrow arrow = (Arrow) subEvent.getDamager();
+            if (!(arrow.getShooter() instanceof Player) || !stunArrows.containsKey(arrow)) {
                 return;
+            }
 
             stunArrows.remove(arrow);
 
-            Player player = (Player) arrow.getShooter();
-            Hero hero = plugin.getCharacterManager().getHero(player);
+            final Player player = (Player) arrow.getShooter();
+            final Hero hero = plugin.getCharacterManager().getHero(player);
 
             // Stun the target
-            long duration = SkillConfigManager.getUseSetting(hero, skill, "stun-duration", 1500, false);
-            StunEffect retreatStunEffect = new StunEffect(skill, player, duration, stunReadyText, stunExpireText);
-            LivingEntity target = (LivingEntity) event.getEntity();
+            final long duration = SkillConfigManager.getUseSetting(hero, skill, "stun-duration", 1500, false);
+            final StunEffect retreatStunEffect = new StunEffect(skill, player, duration, stunReadyText, stunExpireText);
+            final LivingEntity target = (LivingEntity) event.getEntity();
             plugin.getCharacterManager().getCharacter(target).addEffect(retreatStunEffect);
             playParticleEffect(target);
         }
 
-        private void playParticleEffect(LivingEntity target) {
+        private void playParticleEffect(final LivingEntity target) {
 
-            Location location = target.getEyeLocation().clone();
+            final Location location = target.getEyeLocation().clone();
             VisualEffect.playInstantFirework(FireworkEffect.builder()
                     .flicker(true)
                     .trail(false)

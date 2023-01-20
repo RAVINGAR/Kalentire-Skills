@@ -1,11 +1,9 @@
 package com.herocraftonline.heroes.characters.skill.general;
 
-import org.bukkit.Color;
-import org.bukkit.FireworkEffect;
+import org.bukkit.attribute.Attribute;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
-import org.bukkit.Sound;
 
 import com.herocraftonline.heroes.Heroes;
 import com.herocraftonline.heroes.api.SkillResult;
@@ -50,7 +48,7 @@ public class SkillRemedy extends TargettedSkill {
         double hpPlus = SkillConfigManager.getUseSetting(hero, this, SkillSetting.HEALTH, 10, false);
         double targetHealth = target.getHealth();
 
-        if (targetHealth >= target.getMaxHealth()) {
+        if (targetHealth >= target.getAttribute(Attribute.GENERIC_MAX_HEALTH).getValue()) {
             if (player.equals(targetHero.getPlayer())) {
                 player.sendMessage("You are already at full health.");
             } else {

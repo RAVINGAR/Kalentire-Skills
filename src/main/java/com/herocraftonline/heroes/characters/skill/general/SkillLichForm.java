@@ -9,7 +9,11 @@ import com.herocraftonline.heroes.characters.effects.PeriodicEffect;
 import com.herocraftonline.heroes.characters.equipment.EquipMethod;
 import com.herocraftonline.heroes.characters.equipment.EquipmentChangedEvent;
 import com.herocraftonline.heroes.characters.equipment.EquipmentType;
-import com.herocraftonline.heroes.characters.skill.*;
+import com.herocraftonline.heroes.characters.skill.ActiveSkill;
+import com.herocraftonline.heroes.characters.skill.Skill;
+import com.herocraftonline.heroes.characters.skill.SkillConfigManager;
+import com.herocraftonline.heroes.characters.skill.SkillSetting;
+import com.herocraftonline.heroes.characters.skill.SkillType;
 import com.herocraftonline.heroes.chat.ChatComponents;
 import com.herocraftonline.heroes.util.Util;
 import me.libraryaddict.disguise.DisguiseAPI;
@@ -33,14 +37,14 @@ import org.bukkit.potion.PotionEffectType;
 import java.util.logging.Level;
 
 public class SkillLichForm extends ActiveSkill {
-    private static String toggleableEffectName = "LichForm";
+    private static final String toggleableEffectName = "LichForm";
     private static final Material noDisguiseLibTransformMaterial = Material.SKELETON_SKULL;
 
     private boolean disguiseApiLoaded = false;
     private String applyText;
     private String expireText;
 
-    public SkillLichForm(Heroes plugin) {
+    public SkillLichForm(final Heroes plugin) {
         super(plugin, "LichForm");
         setDescription("Transform into a Lich. While in this form, you transfer $1 health into $2 mana every $3 second(s).");
         setUsage("/skill lichform");
@@ -55,10 +59,10 @@ public class SkillLichForm extends ActiveSkill {
     }
 
     @Override
-    public String getDescription(Hero hero) {
-        long period = SkillConfigManager.getUseSetting(hero, this, SkillSetting.PERIOD, 1000, false);
-        double healthCost = SkillConfigManager.getUseSetting(hero, this, "health-drain-per-tick", 10.0, false);
-        int manaPerTick = SkillConfigManager.getUseSetting(hero, this, "mana-per-tick", 15, false);
+    public String getDescription(final Hero hero) {
+        final long period = SkillConfigManager.getUseSetting(hero, this, SkillSetting.PERIOD, 1000, false);
+        final double healthCost = SkillConfigManager.getUseSetting(hero, this, "health-drain-per-tick", 10.0, false);
+        final int manaPerTick = SkillConfigManager.getUseSetting(hero, this, "mana-per-tick", 15, false);
 
         return getDescription()
                 .replace("$1", Util.decFormat.format(healthCost))
@@ -68,7 +72,7 @@ public class SkillLichForm extends ActiveSkill {
 
     @Override
     public ConfigurationSection getDefaultConfig() {
-        ConfigurationSection config = super.getDefaultConfig();
+        final ConfigurationSection config = super.getDefaultConfig();
         config.set(SkillSetting.USE_TEXT.node(), "");
         config.set("health-drain-per-tick", 10.0);
         config.set("mana-per-tick", 15);
@@ -81,17 +85,17 @@ public class SkillLichForm extends ActiveSkill {
     public void init() {
         super.init();
 
-        applyText = SkillConfigManager.getRaw(this, SkillSetting.APPLY_TEXT, ChatComponents.GENERIC_SKILL + "%hero% has become a Lich!").replace("%hero%", "$1");
-        expireText = SkillConfigManager.getRaw(this, SkillSetting.EXPIRE_TEXT, ChatComponents.GENERIC_SKILL + "%hero% is human once more.").replace("%hero%", "$1");
+        applyText = SkillConfigManager.getRaw(this, SkillSetting.APPLY_TEXT, ChatComponents.GENERIC_SKILL + "%hero% has become a Lich!").replace("%hero%", "$1").replace("$hero$", "$1");
+        expireText = SkillConfigManager.getRaw(this, SkillSetting.EXPIRE_TEXT, ChatComponents.GENERIC_SKILL + "%hero% is human once more.").replace("%hero%", "$1").replace("$hero$", "$1");
     }
 
     @Override
-    public SkillResult use(Hero hero, String[] args) {
-        Player player = hero.getPlayer();
+    public SkillResult use(final Hero hero, final String[] args) {
+        final Player player = hero.getPlayer();
 
         broadcastExecuteText(hero);
 
-        long period = SkillConfigManager.getUseSetting(hero, this, SkillSetting.PERIOD, 1000, false);
+        final long period = SkillConfigManager.getUseSetting(hero, this, SkillSetting.PERIOD, 1000, false);
         hero.addEffect(new LichFormEffect(this, player, period));
 
         return SkillResult.NORMAL;
@@ -102,7 +106,7 @@ public class SkillLichForm extends ActiveSkill {
         private double healthCost;
         private int manaGain;
 
-        public LichFormEffect(Skill skill, Player applier, long period) {
+        public LichFormEffect(final Skill skill, final Player applier, final long period) {
             super(skill, toggleableEffectName, applier, period, applyText, expireText);
 
             types.add(EffectType.BENEFICIAL);
@@ -115,9 +119,9 @@ public class SkillLichForm extends ActiveSkill {
         }
 
         @Override
-        public void applyToHero(Hero hero) {
+        public void applyToHero(final Hero hero) {
             super.applyToHero(hero);
-            Player player = hero.getPlayer();
+            final Player player = hero.getPlayer();
 
             this.healthCost = SkillConfigManager.getUseSetting(hero, skill, "health-drain-per-tick", 10.0, false);
             this.manaGain = SkillConfigManager.getUseSetting(hero, skill, "mana-per-tick", 15, false);
@@ -128,12 +132,13 @@ public class SkillLichForm extends ActiveSkill {
                 addSkellySkull(hero, player);
             }
         }
+
         @Override
-        public void tickHero(Hero hero) {
+        public void tickHero(final Hero hero) {
             super.tickHero(hero);
 
-            Player player = hero.getPlayer();
-            double newHealth = player.getHealth() - this.healthCost;
+            final Player player = hero.getPlayer();
+            final double newHealth = player.getHealth() - this.healthCost;
             if (newHealth < 1) {
                 hero.removeEffect(this);
                 return;
@@ -141,22 +146,23 @@ public class SkillLichForm extends ActiveSkill {
 
             player.setHealth(newHealth);
             if (hero.getMana() < hero.getMaxMana()) {
-                HeroRegainManaEvent manaEvent = new HeroRegainManaEvent(hero, manaGain, skill);
+                final HeroRegainManaEvent manaEvent = new HeroRegainManaEvent(hero, manaGain, skill);
                 plugin.getServer().getPluginManager().callEvent(manaEvent);
                 if (!manaEvent.isCancelled()) {
                     hero.setMana(manaEvent.getDelta() + hero.getMana());
 
-                    if (hero.isVerboseMana())
+                    if (hero.isVerboseMana()) {
                         hero.getPlayer().sendMessage(ChatComponents.Bars.mana(hero.getMana(), hero.getMaxMana(), true));
+                    }
                 }
             }
         }
 
         @Override
-        public void removeFromHero(Hero hero) {
+        public void removeFromHero(final Hero hero) {
             super.removeFromHero(hero);
 
-            Player player = hero.getPlayer();
+            final Player player = hero.getPlayer();
             if (disguiseApiLoaded) {
                 removeDisguise(player);
             } else {
@@ -164,12 +170,12 @@ public class SkillLichForm extends ActiveSkill {
             }
         }
 
-        private void disguiseAsSkelly(Player player) {
+        private void disguiseAsSkelly(final Player player) {
             if (DisguiseAPI.isDisguised(player)) {
                 removeDisguise(player);
             }
 
-            MobDisguise disguise = new MobDisguise(DisguiseType.getType(EntityType.SKELETON), true);
+            final MobDisguise disguise = new MobDisguise(DisguiseType.getType(EntityType.SKELETON), true);
             disguise.setKeepDisguiseOnPlayerDeath(false);
             disguise.setEntity(player);
             disguise.setCustomDisguiseName(true); // Is this the same? as disguise.setShowName(true) ?
@@ -181,25 +187,26 @@ public class SkillLichForm extends ActiveSkill {
             disguise.startDisguise();
         }
 
-        private void removeDisguise(Player player) {
-            if (!DisguiseAPI.isDisguised(player))
+        private void removeDisguise(final Player player) {
+            if (!DisguiseAPI.isDisguised(player)) {
                 return;
+            }
 
-            Disguise disguise = DisguiseAPI.getDisguise(player);
+            final Disguise disguise = DisguiseAPI.getDisguise(player);
             disguise.stopDisguise();
             disguise.removeDisguise();
         }
 
-        private void addSkellySkull(Hero hero, Player player) {
-            PlayerInventory inventory = player.getInventory();
+        private void addSkellySkull(final Hero hero, final Player player) {
+            final PlayerInventory inventory = player.getInventory();
 
-            ItemStack transformedHead = new ItemStack(noDisguiseLibTransformMaterial);
-            ItemMeta itemmeta = transformedHead.getItemMeta();
+            final ItemStack transformedHead = new ItemStack(noDisguiseLibTransformMaterial);
+            final ItemMeta itemmeta = transformedHead.getItemMeta();
             itemmeta.setDisplayName("Lich Form");
             itemmeta.setUnbreakable(true);
             transformedHead.setItemMeta(itemmeta);
 
-            EquipmentChangedEvent replaceEvent = new EquipmentChangedEvent(player, EquipMethod.APPLYING_SKILL_EFFECT, EquipmentType.HELMET, inventory.getHelmet(), transformedHead);
+            final EquipmentChangedEvent replaceEvent = new EquipmentChangedEvent(player, EquipMethod.APPLYING_SKILL_EFFECT, EquipmentType.HELMET, inventory.getHelmet(), transformedHead);
             Bukkit.getServer().getPluginManager().callEvent(replaceEvent);
             if (replaceEvent.isCancelled()) {
                 Heroes.log(Level.WARNING, "SkillLichForm: Somebody tried to cancel a EquipmentChangedEvent, and we are ignoring the cancellation.");
@@ -211,13 +218,13 @@ public class SkillLichForm extends ActiveSkill {
             Util.syncInventory(player, plugin);
         }
 
-        private void removeSkellySkull(Player player) {
-            PlayerInventory inventory = player.getInventory();
+        private void removeSkellySkull(final Player player) {
+            final PlayerInventory inventory = player.getInventory();
 
-            ItemStack transformedHead = inventory.getHelmet();
-            ItemStack emptyHelmet = new ItemStack(Material.AIR, 0);
+            final ItemStack transformedHead = inventory.getHelmet();
+            final ItemStack emptyHelmet = new ItemStack(Material.AIR, 0);
 
-            EquipmentChangedEvent replaceEvent = new EquipmentChangedEvent(player, EquipMethod.EXPIRING_SKILL_EFFECT, EquipmentType.HELMET, transformedHead, emptyHelmet);
+            final EquipmentChangedEvent replaceEvent = new EquipmentChangedEvent(player, EquipMethod.EXPIRING_SKILL_EFFECT, EquipmentType.HELMET, transformedHead, emptyHelmet);
             Bukkit.getServer().getPluginManager().callEvent(replaceEvent);
             if (replaceEvent.isCancelled()) {
                 Heroes.log(Level.WARNING, "SkillLichForm: Somebody tried to cancel a EquipmentChangedEvent, and we are ignoring the cancellation.");
@@ -232,12 +239,12 @@ public class SkillLichForm extends ActiveSkill {
     public class SkillEffectListener implements Listener {
         private final Skill skill;
 
-        SkillEffectListener(Skill skill) {
+        SkillEffectListener(final Skill skill) {
             this.skill = skill;
         }
 
         @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
-        public void onEquipmentChanged(EquipmentChangedEvent event) {
+        public void onEquipmentChanged(final EquipmentChangedEvent event) {
             if (event.getType() != EquipmentType.HELMET || event.getOldArmorPiece() == null
                     || event.getOldArmorPiece().getType() != noDisguiseLibTransformMaterial
                     || event.getMethod() == EquipMethod.EXPIRING_SKILL_EFFECT) {
@@ -245,8 +252,9 @@ public class SkillLichForm extends ActiveSkill {
             }
 
             final Hero hero = plugin.getCharacterManager().getHero(event.getPlayer());
-            if (hero.hasEffect(toggleableEffectName))
+            if (hero.hasEffect(toggleableEffectName)) {
                 event.setCancelled(true);
+            }
         }
     }
 }

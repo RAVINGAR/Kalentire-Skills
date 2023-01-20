@@ -28,7 +28,7 @@ import java.util.concurrent.ThreadLocalRandom;
 
 public class SkillFireStream extends ActiveSkill {
 
-    private Map<Snowball, Long> projectiles = new LinkedHashMap<Snowball, Long>(100) {
+    private final Map<Snowball, Long> projectiles = new LinkedHashMap<Snowball, Long>(100) {
         private static final long serialVersionUID = 2329013558608752L;
 
         @Override
@@ -107,26 +107,24 @@ public class SkillFireStream extends ActiveSkill {
         int totalDelayedLaunchLoops = numFireballs / projectilesPerLaunch;
         for (int launchLoopCount = 0; launchLoopCount < totalDelayedLaunchLoops; launchLoopCount++) {
 
-            Bukkit.getScheduler().scheduleSyncDelayedTask(plugin, new Runnable() {
-                public void run() {
+            Bukkit.getScheduler().scheduleSyncDelayedTask(plugin, () -> {
 
-                    for(int launchedThisLoop = 0; launchedThisLoop < projectilesPerLaunch; launchedThisLoop++) {
-                        Snowball projectile = player.launchProjectile(Snowball.class);
+                for(int launchedThisLoop = 0; launchedThisLoop < projectilesPerLaunch; launchedThisLoop++) {
+                    Snowball projectile = player.launchProjectile(Snowball.class);
 
-                        Vector newVelocity = player.getLocation().getDirection().normalize()
-                                .add(new Vector(ThreadLocalRandom.current().nextDouble(randomMin, randomMax), 0, ThreadLocalRandom.current().nextDouble(randomMin, randomMax)))
-                                .multiply(mult);
-                        projectile.setGravity(true);
-                        projectile.setVelocity(newVelocity);
+                    Vector newVelocity = player.getLocation().getDirection().normalize()
+                            .add(new Vector(ThreadLocalRandom.current().nextDouble(randomMin, randomMax), 0, ThreadLocalRandom.current().nextDouble(randomMin, randomMax)))
+                            .multiply(mult);
+                    projectile.setGravity(true);
+                    projectile.setVelocity(newVelocity);
 
-                        projectile.setFireTicks(100);
-                        projectiles.put(projectile, System.currentTimeMillis());
-                        projectile.setShooter(player);
-                    }
-
-                    player.getWorld().playSound(player.getLocation(), Sound.ENTITY_BLAZE_SHOOT, 0.3F, 0.6F);
+                    projectile.setFireTicks(100);
+                    projectiles.put(projectile, System.currentTimeMillis());
+                    projectile.setShooter(player);
                 }
-            }, launchLoopCount * launchDelay);
+
+                player.getWorld().playSound(player.getLocation(), Sound.ENTITY_BLAZE_SHOOT, 0.3F, 0.6F);
+            }, (long) launchLoopCount * launchDelay);
         }
 
         broadcastExecuteText(hero);

@@ -5,7 +5,6 @@ import com.herocraftonline.heroes.api.SkillResult;
 import com.herocraftonline.heroes.characters.Hero;
 import com.herocraftonline.heroes.characters.effects.ExpirableEffect;
 import com.herocraftonline.heroes.characters.skill.*;
-import com.herocraftonline.heroes.chat.ChatComponents;
 import com.herocraftonline.heroes.util.Util;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
@@ -27,7 +26,7 @@ import java.util.Set;
 
 public class SkillOceansCall extends ActiveSkill {
 
-    private Set<Location> globallyManagedLocations = new HashSet<Location>();
+    private final Set<Location> globallyManagedLocations = new HashSet<>();
 
     public SkillOceansCall(Heroes plugin) {
         super(plugin, "OceansCall");
@@ -68,7 +67,7 @@ public class SkillOceansCall extends ActiveSkill {
 
     public class OceanExpireEffect extends ExpirableEffect {
 
-        private Set<Block> changedBlocks = new HashSet<Block>();
+        private final Set<Block> changedBlocks = new HashSet<>();
         private final int radius;
 
         OceanExpireEffect(Skill skill, Player applier, long duration, int radius) {

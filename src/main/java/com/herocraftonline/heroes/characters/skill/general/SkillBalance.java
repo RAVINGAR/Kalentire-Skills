@@ -97,9 +97,7 @@ public class SkillBalance extends ActiveSkill {
             bonusHealthMultiplier *= healthMultiplier;
         }
 
-        Iterator<Hero> applyHealthIterator = heroParty.getMembers().iterator();
-        while (applyHealthIterator.hasNext()) {
-            Hero applyHero = applyHealthIterator.next();
+        for (Hero applyHero : heroParty.getMembers()) {
             Location applyHeroLocation = applyHero.getPlayer().getLocation();
 
             if (skipRangeCheck || isInRange(healerLocation, applyHeroLocation, radiusSquared)) {
@@ -122,9 +120,9 @@ public class SkillBalance extends ActiveSkill {
                 }
                 List<Location> circle = GeometryUtil.circle(applyHero.getPlayer().getLocation().add(0, 0.5, 0), 36, 1.5);
                 for (Location location : circle) {
-        			//applyHero.getPlayer().getWorld().spigot().playEffect(GeometryUtil.circle(applyHero.getPlayer().getLocation().add(0, 0.5, 0), 36, radius / 2.0).get(i), org.bukkit.Effect.INSTANT_SPELL, 0, 0, 0, 0, 0, 0, 16, 16);
-        		    applyHero.getPlayer().getWorld().spawnParticle(Particle.SPELL_INSTANT, location, 16, 0, 0, 0, 0);
-        		}
+                    //applyHero.getPlayer().getWorld().spigot().playEffect(GeometryUtil.circle(applyHero.getPlayer().getLocation().add(0, 0.5, 0), 36, radius / 2.0).get(i), org.bukkit.Effect.INSTANT_SPELL, 0, 0, 0, 0, 0, 0, 16, 16);
+                    applyHero.getPlayer().getWorld().spawnParticle(Particle.SPELL_INSTANT, location, 16, 0, 0, 0, 0);
+                }
             }
         }
         player.getWorld().playSound(healerLocation, Sound.ENTITY_PLAYER_LEVELUP, 0.9F, 1.0F);

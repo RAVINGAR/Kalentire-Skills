@@ -77,7 +77,7 @@ public class SkillArcaneKnowledge extends PassiveSkill {
     }
 
     public class SkillEntityListener implements Listener {
-        private Skill skill;
+        private final Skill skill;
 
         public SkillEntityListener(Skill skill) {
             this.skill = skill;

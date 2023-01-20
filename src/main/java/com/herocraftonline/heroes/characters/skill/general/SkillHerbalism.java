@@ -96,9 +96,9 @@ public class SkillHerbalism extends PassiveSkill {
 //		}
 	}
 
-	public class SkillBlockListener implements Listener {
+	public static class SkillBlockListener implements Listener {
 
-		private Skill skill;
+		private final Skill skill;
 
 		SkillBlockListener(Skill skill) {
 			this.skill = skill;

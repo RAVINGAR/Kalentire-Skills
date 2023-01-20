@@ -8,7 +8,11 @@ import com.herocraftonline.heroes.characters.CustomNameManager;
 import com.herocraftonline.heroes.characters.Hero;
 import com.herocraftonline.heroes.characters.effects.EffectType;
 import com.herocraftonline.heroes.characters.effects.ExpirableEffect;
-import com.herocraftonline.heroes.characters.skill.*;
+import com.herocraftonline.heroes.characters.skill.Skill;
+import com.herocraftonline.heroes.characters.skill.SkillConfigManager;
+import com.herocraftonline.heroes.characters.skill.SkillSetting;
+import com.herocraftonline.heroes.characters.skill.SkillType;
+import com.herocraftonline.heroes.characters.skill.TargettedSkill;
 import com.herocraftonline.heroes.util.Util;
 import org.bukkit.Bukkit;
 import org.bukkit.configuration.ConfigurationSection;
@@ -24,7 +28,7 @@ public class SkillCurse extends TargettedSkill {
     private String expireText;
     private String missText;
 
-    public SkillCurse(Heroes plugin) {
+    public SkillCurse(final Heroes plugin) {
         super(plugin, "Curse");
         setDescription("You curse the target for $1 second(s), giving their attacks a $2% miss chance.");
         setUsage("/skill curse <target>");
@@ -49,7 +53,7 @@ public class SkillCurse extends TargettedSkill {
     }
 
     @Override
-    public String getDescription(Hero hero) {
+    public String getDescription(final Hero hero) {
         final int duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, 10000, false);
         final double chance = SkillConfigManager.getUseSetting(hero, this, "miss-chance", .5, false);
         return getDescription().replace("$1", (duration / 1000) + "").replace("$2", (chance * 100) + "");
@@ -59,12 +63,12 @@ public class SkillCurse extends TargettedSkill {
     public void init() {
         super.init();
         missText = SkillConfigManager.getRaw(this, "miss-text", "%target% misses an attack!");
-        applyText = SkillConfigManager.getRaw(this, SkillSetting.APPLY_TEXT.node(), "%target% has been cursed!").replace("%target%", "$1");
-        expireText = SkillConfigManager.getRaw(this, SkillSetting.EXPIRE_TEXT.node(), "%target% has recovered from the curse!").replace("%target%", "$1");
+        applyText = SkillConfigManager.getRaw(this, SkillSetting.APPLY_TEXT.node(), "%target% has been cursed!").replace("%target%", "$1").replace("$target$", "$1");
+        expireText = SkillConfigManager.getRaw(this, SkillSetting.EXPIRE_TEXT.node(), "%target% has recovered from the curse!").replace("%target%", "$1").replace("$target$", "$1");
     }
 
     @Override
-    public SkillResult use(Hero hero, LivingEntity target, String[] args) {
+    public SkillResult use(final Hero hero, final LivingEntity target, final String[] args) {
         final long duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, 5000, false);
         final double missChance = SkillConfigManager.getUseSetting(hero, this, "miss-chance", .50, false);
         plugin.getCharacterManager().getCharacter(target).addEffect(new CurseEffect(this, hero.getPlayer(), duration, missChance));
@@ -76,7 +80,7 @@ public class SkillCurse extends TargettedSkill {
 
         private final double missChance;
 
-        public CurseEffect(Skill skill, Player applier, long duration, double missChance) {
+        public CurseEffect(final Skill skill, final Player applier, final long duration, final double missChance) {
             super(skill, "Curse", applier, duration, applyText, expireText); //TODO Implicit broadcast() call - may need changes?
             this.missChance = missChance;
             types.add(EffectType.HARMFUL);
@@ -92,14 +96,14 @@ public class SkillCurse extends TargettedSkill {
     public class SkillEventListener implements Listener {
 
         @EventHandler(priority = EventPriority.HIGHEST)
-        public void onWeaponDamage(WeaponDamageEvent event) {
+        public void onWeaponDamage(final WeaponDamageEvent event) {
             if (event.isCancelled() || (event.getDamage() == 0)) {
                 return;
             }
 
-            CharacterTemplate character = event.getDamager();
+            final CharacterTemplate character = event.getDamager();
             if (character.hasEffect("Curse")) {
-                CurseEffect cEffect = (CurseEffect) character.getEffect("Curse");
+                final CurseEffect cEffect = (CurseEffect) character.getEffect("Curse");
                 if (cEffect != null && Util.nextRand() < cEffect.getMissChance()) {
                     event.setCancelled(true);
                     broadcast(character.getEntity().getLocation(), missText.replace("%target%", CustomNameManager.getName(character)));

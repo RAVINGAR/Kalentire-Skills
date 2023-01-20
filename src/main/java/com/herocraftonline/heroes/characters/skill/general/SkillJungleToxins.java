@@ -15,7 +15,6 @@ import org.bukkit.Bukkit;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
-import org.bukkit.Sound;
 import org.bukkit.entity.Wolf;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -80,12 +79,12 @@ public class SkillJungleToxins extends ActiveSkill
 		return SkillResult.NORMAL;
 	}
 
-	public class JTApplierEffect extends ExpirableEffect
+	public static class JTApplierEffect extends ExpirableEffect
 	{
-		private String at1;
-		private String et1;
-		public String at2;
-		public String et2;
+		private final String at1;
+		private final String et1;
+		public final String at2;
+		public final String et2;
 
 		public JTApplierEffect(Skill skill, Player applier, long duration, String at1, String et1, String at2, String et2)
 		{
@@ -111,10 +110,10 @@ public class SkillJungleToxins extends ActiveSkill
 
 	public class JungleToxinsEffect extends PeriodicExpirableEffect
 	{
-		private String aText;
-		private String eText;
-		private Hero applier;
-		private double dmg;
+		private final String aText;
+		private final String eText;
+		private final Hero applier;
+		private final double dmg;
 
 		public JungleToxinsEffect(Skill skill, Hero applier, long duration, double dmgPerTick, String applyText, String expireText)
 		{
@@ -155,7 +154,7 @@ public class SkillJungleToxins extends ActiveSkill
 
 	public class ToxinHitListener implements Listener
 	{
-		private Skill skill;
+		private final Skill skill;
 		public ToxinHitListener(Skill skill)
 		{
 			this.skill = skill;

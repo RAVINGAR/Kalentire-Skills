@@ -52,7 +52,7 @@ public class SkillFishing extends PassiveSkill {
 
     public class SkillPlayerListener implements Listener {
 
-        private Skill skill;
+        private final Skill skill;
 
         SkillPlayerListener(Skill skill) {
             this.skill = skill;

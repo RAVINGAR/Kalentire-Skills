@@ -28,7 +28,7 @@ import org.bukkit.scheduler.BukkitRunnable;
 public class SkillWarsong extends ActiveSkill {
 
     private final String warsongEffectName = "Warsong";
-    private Song skillSong;
+    private final Song skillSong;
 
     private String applyText;
     private String expireText;

@@ -6,7 +6,11 @@ import com.herocraftonline.heroes.attributes.AttributeType;
 import com.herocraftonline.heroes.characters.Hero;
 import com.herocraftonline.heroes.characters.effects.EffectType;
 import com.herocraftonline.heroes.characters.effects.ExpirableEffect;
-import com.herocraftonline.heroes.characters.skill.*;
+import com.herocraftonline.heroes.characters.skill.ActiveSkill;
+import com.herocraftonline.heroes.characters.skill.Skill;
+import com.herocraftonline.heroes.characters.skill.SkillConfigManager;
+import com.herocraftonline.heroes.characters.skill.SkillSetting;
+import com.herocraftonline.heroes.characters.skill.SkillType;
 import com.herocraftonline.heroes.chat.ChatComponents;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
@@ -17,7 +21,6 @@ import org.bukkit.entity.Entity;
 import org.bukkit.entity.ItemFrame;
 import org.bukkit.entity.Painting;
 import org.bukkit.entity.Player;
-import org.bukkit.Sound;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
@@ -31,11 +34,11 @@ import java.util.Set;
 
 public class SkillEarthWall extends ActiveSkill {
 
+    private static final Set<Location> changedBlocks = new HashSet<>();
     private String applyText;
     private String expireText;
-    private static Set<Location> changedBlocks = new HashSet<Location>();
 
-    public SkillEarthWall(Heroes plugin) {
+    public SkillEarthWall(final Heroes plugin) {
         super(plugin, "Earthwall");
         setDescription("Create a wall of Earth up to $1 blocks in front of you.");
         setUsage("/skill earthwall");
@@ -46,8 +49,9 @@ public class SkillEarthWall extends ActiveSkill {
         Bukkit.getServer().getPluginManager().registerEvents(new SkillBlockListener(), plugin);
     }
 
+    @Override
     public ConfigurationSection getDefaultConfig() {
-        ConfigurationSection node = super.getDefaultConfig();
+        final ConfigurationSection node = super.getDefaultConfig();
 
         node.set("height", 4);
         node.set("width", 2);
@@ -61,11 +65,12 @@ public class SkillEarthWall extends ActiveSkill {
         return node;
     }
 
-    public String getDescription(Hero hero) {
+    @Override
+    public String getDescription(final Hero hero) {
         //int height = SkillConfigManager.getUseSetting(hero, this, "height", 3, false) * 2;
         //int width = SkillConfigManager.getUseSetting(hero, this, "width", 2, false) * 2;
         int maxDist = SkillConfigManager.getUseSetting(hero, this, SkillSetting.MAX_DISTANCE, 12, false);
-        double maxDistIncrease = SkillConfigManager.getUseSetting(hero, this, SkillSetting.MAX_DISTANCE_INCREASE_PER_INTELLECT, 0.2, false);
+        final double maxDistIncrease = SkillConfigManager.getUseSetting(hero, this, SkillSetting.MAX_DISTANCE_INCREASE_PER_INTELLECT, 0.2, false);
         maxDist += (int) (hero.getAttributeValue(AttributeType.INTELLECT) * maxDistIncrease);
 
         //String type = SkillConfigManager.getUseSetting(hero, this, "block-type", "DIRT");
@@ -77,35 +82,36 @@ public class SkillEarthWall extends ActiveSkill {
     public void init() {
         super.init();
 
-        applyText = SkillConfigManager.getRaw(this, SkillSetting.APPLY_TEXT, ChatComponents.GENERIC_SKILL + "%hero% conjures a wall of earth!").replace("%hero%", "$1");
-        expireText = SkillConfigManager.getRaw(this, SkillSetting.EXPIRE_TEXT, ChatComponents.GENERIC_SKILL + "%hero%'s wall has crumbled").replace("%hero%", "$1");
+        applyText = SkillConfigManager.getRaw(this, SkillSetting.APPLY_TEXT, ChatComponents.GENERIC_SKILL + "%hero% conjures a wall of earth!").replace("%hero%", "$1").replace("$hero$", "$1");
+        expireText = SkillConfigManager.getRaw(this, SkillSetting.EXPIRE_TEXT, ChatComponents.GENERIC_SKILL + "%hero%'s wall has crumbled").replace("%hero%", "$1").replace("$hero$", "$1");
     }
 
-    public SkillResult use(Hero hero, String[] args) {
-        Player player = hero.getPlayer();
+    @Override
+    public SkillResult use(final Hero hero, final String[] args) {
+        final Player player = hero.getPlayer();
 
-        int height = SkillConfigManager.getUseSetting(hero, this, "height", 4, false);
-        int width = SkillConfigManager.getUseSetting(hero, this, "width", 2, false);
+        final int height = SkillConfigManager.getUseSetting(hero, this, "height", 4, false);
+        final int width = SkillConfigManager.getUseSetting(hero, this, "width", 2, false);
 
         int maxDist = SkillConfigManager.getUseSetting(hero, this, SkillSetting.MAX_DISTANCE, 12, false);
-        double maxDistIncrease = SkillConfigManager.getUseSetting(hero, this, SkillSetting.MAX_DISTANCE_INCREASE_PER_INTELLECT, 0.2, false);
+        final double maxDistIncrease = SkillConfigManager.getUseSetting(hero, this, SkillSetting.MAX_DISTANCE_INCREASE_PER_INTELLECT, 0.2, false);
         maxDist += (int) (hero.getAttributeValue(AttributeType.INTELLECT) * maxDistIncrease);
 
-        long duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, 5000, false);
-        Material setter = Material.valueOf(SkillConfigManager.getUseSetting(hero, this, "block-type", "DIRT"));
+        final long duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, 5000, false);
+        final Material setter = Material.valueOf(SkillConfigManager.getUseSetting(hero, this, "block-type", "DIRT"));
 
-        Block tBlock = player.getTargetBlock((HashSet<Material>)null, maxDist);
+        final Block tBlock = player.getTargetBlock((HashSet<Material>) null, maxDist);
 
-        ShieldWallEffect swEffect = new ShieldWallEffect(this, player, duration, tBlock, width, height, setter);
+        final ShieldWallEffect swEffect = new ShieldWallEffect(this, player, duration, tBlock, width, height, setter);
         hero.addEffect(swEffect);
 
         return SkillResult.NORMAL;
     }
 
-    public class SkillBlockListener implements Listener {
+    public static class SkillBlockListener implements Listener {
 
         @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
-        public void onBlockBreak(BlockBreakEvent event) {
+        public void onBlockBreak(final BlockBreakEvent event) {
             if (changedBlocks.contains(event.getBlock().getLocation())) {
                 event.setCancelled(true);
             }
@@ -116,10 +122,10 @@ public class SkillEarthWall extends ActiveSkill {
         private final Block tBlock;
         private final int width;
         private final int height;
-        private Material setter;
-        private List<Location> locations = new ArrayList<Location>();
+        private final Material setter;
+        private final List<Location> locations = new ArrayList<>();
 
-        public ShieldWallEffect(Skill skill, Player applier, long duration, Block tBlock, int width, int height, Material setter) {
+        public ShieldWallEffect(final Skill skill, final Player applier, final long duration, final Block tBlock, final int width, final int height, final Material setter) {
             super(skill, "EarthWall", applier, duration);
 
             types.add(EffectType.BENEFICIAL);
@@ -131,36 +137,39 @@ public class SkillEarthWall extends ActiveSkill {
             this.setter = setter;
         }
 
-        public void applyToHero(Hero hero) {
+        @Override
+        public void applyToHero(final Hero hero) {
             super.applyToHero(hero);
 
-            Player player = hero.getPlayer();
+            final Player player = hero.getPlayer();
 
             int maxDist = SkillConfigManager.getUseSetting(hero, skill, SkillSetting.MAX_DISTANCE, 12, false);
-            double maxDistIncrease = SkillConfigManager.getUseSetting(hero, skill, SkillSetting.MAX_DISTANCE_INCREASE_PER_INTELLECT, 0.2, false);
+            final double maxDistIncrease = SkillConfigManager.getUseSetting(hero, skill, SkillSetting.MAX_DISTANCE_INCREASE_PER_INTELLECT, 0.2, false);
             maxDist += (int) (hero.getAttributeValue(AttributeType.INTELLECT) * maxDistIncrease);
 
-            List<Entity> entities = player.getNearbyEntities(maxDist * 2, maxDist * 2, maxDist * 2);
-            List<Entity> blockEntities = new ArrayList<>();
-            for (Entity entity : entities) {
-                if (entity instanceof ItemFrame)
+            final List<Entity> entities = player.getNearbyEntities(maxDist * 2, maxDist * 2, maxDist * 2);
+            final List<Entity> blockEntities = new ArrayList<>();
+            for (final Entity entity : entities) {
+                if (entity instanceof ItemFrame) {
                     blockEntities.add(entity);
-                else if (entity instanceof Painting)
+                } else if (entity instanceof Painting) {
                     blockEntities.add(entity);
+                }
             }
 
             if (is_X_Direction(player)) {
                 for (int yDir = 0; yDir < height; yDir++) {
                     for (int xDir = -width; xDir < width + 1; xDir++) {
-                        Block chBlock = tBlock.getRelative(xDir, yDir, 0);
-                        Location location = chBlock.getLocation();
+                        final Block chBlock = tBlock.getRelative(xDir, yDir, 0);
+                        final Location location = chBlock.getLocation();
                         switch (chBlock.getType()) {
                             case SNOW:
                             case AIR:
                                 boolean isBlockEntityBlock = false;
-                                for (Entity blockEntity : blockEntities) {
-                                    if (blockEntity.getLocation().getBlock().equals(chBlock))
+                                for (final Entity blockEntity : blockEntities) {
+                                    if (blockEntity.getLocation().getBlock().equals(chBlock)) {
                                         isBlockEntityBlock = true;
+                                    }
                                 }
                                 if (!isBlockEntityBlock) {
                                     changedBlocks.add(location);
@@ -173,19 +182,19 @@ public class SkillEarthWall extends ActiveSkill {
                         }
                     }
                 }
-            }
-            else {
+            } else {
                 for (int yDir = 0; yDir < height; yDir++) {
                     for (int zDir = -width; zDir < width + 1; zDir++) {
-                        Block chBlock = tBlock.getRelative(0, yDir, zDir);
-                        Location location = chBlock.getLocation();
+                        final Block chBlock = tBlock.getRelative(0, yDir, zDir);
+                        final Location location = chBlock.getLocation();
                         switch (chBlock.getType()) {
                             case SNOW:
                             case AIR:
                                 boolean isBlockEntityBlock = false;
-                                for (Entity blockEntity : blockEntities) {
-                                    if (blockEntity.getLocation().getBlock().equals(chBlock))
+                                for (final Entity blockEntity : blockEntities) {
+                                    if (blockEntity.getLocation().getBlock().equals(chBlock)) {
                                         isBlockEntityBlock = true;
+                                    }
                                 }
                                 if (!isBlockEntityBlock) {
                                     changedBlocks.add(location);
@@ -203,10 +212,11 @@ public class SkillEarthWall extends ActiveSkill {
             broadcast(player.getLocation(), "    " + applyText, player.getName());
         }
 
-        public void removeFromHero(Hero hero) {
+        @Override
+        public void removeFromHero(final Hero hero) {
             super.removeFromHero(hero);
 
-            Player player = hero.getPlayer();
+            final Player player = hero.getPlayer();
 
             revertBlocks();
 
@@ -214,7 +224,7 @@ public class SkillEarthWall extends ActiveSkill {
         }
 
         private void revertBlocks() {
-            for (Location location : locations) {
+            for (final Location location : locations) {
                 location.getBlock().setType(Material.AIR);
                 changedBlocks.remove(location);
             }
@@ -222,12 +232,12 @@ public class SkillEarthWall extends ActiveSkill {
             locations.clear();
         }
 
-        private boolean is_X_Direction(Player player) {
+        private boolean is_X_Direction(final Player player) {
             Vector u = player.getLocation().getDirection();
             u = new Vector(u.getX(), 0.0D, u.getZ()).normalize();
-            Vector v = new Vector(0, 0, -1);
-            double magU = Math.sqrt(Math.pow(u.getX(), 2.0D) + Math.pow(u.getZ(), 2.0D));
-            double magV = Math.sqrt(Math.pow(v.getX(), 2.0D) + Math.pow(v.getZ(), 2.0D));
+            final Vector v = new Vector(0, 0, -1);
+            final double magU = Math.sqrt(Math.pow(u.getX(), 2.0D) + Math.pow(u.getZ(), 2.0D));
+            final double magV = Math.sqrt(Math.pow(v.getX(), 2.0D) + Math.pow(v.getZ(), 2.0D));
             double angle = Math.acos(u.dot(v) / (magU * magV));
             angle = angle * 180.0D / Math.PI;
             angle = Math.abs(angle - 180.0D);

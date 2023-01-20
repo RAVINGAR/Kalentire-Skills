@@ -5,7 +5,6 @@ import com.herocraftonline.heroes.api.SkillResult;
 import com.herocraftonline.heroes.api.events.HeroesDamageEvent;
 import com.herocraftonline.heroes.api.events.ProjectileDamageEvent;
 import com.herocraftonline.heroes.api.events.SkillDamageEvent;
-import com.herocraftonline.heroes.api.events.SkillUseEvent;
 import com.herocraftonline.heroes.api.events.WeaponDamageEvent;
 import com.herocraftonline.heroes.characters.CharacterTemplate;
 import com.herocraftonline.heroes.characters.Hero;
@@ -33,7 +32,7 @@ public class SkillReflect extends ActiveSkill implements Listenable {
     private String applyText;
     private String expireText;
 
-    public SkillReflect(Heroes plugin) {
+    public SkillReflect(final Heroes plugin) {
         super(plugin, "Reflect");
         setDescription("You reflect $1% of all damage back to your attacker for $2 second(s).");
         setUsage("/skill reflect");
@@ -45,7 +44,7 @@ public class SkillReflect extends ActiveSkill implements Listenable {
 
     @Override
     public ConfigurationSection getDefaultConfig() {
-        ConfigurationSection node = super.getDefaultConfig();
+        final ConfigurationSection node = super.getDefaultConfig();
         node.set(SkillSetting.DURATION.node(), 5000);
         node.set("grants-immunity", false);
         node.set("reflected-amount", 0.5);
@@ -57,17 +56,17 @@ public class SkillReflect extends ActiveSkill implements Listenable {
     @Override
     public void init() {
         super.init();
-        applyText = SkillConfigManager.getRaw(this, SkillSetting.APPLY_TEXT, "%hero% put up a reflective shield!").replace("%hero%", "$1");
-        expireText = SkillConfigManager.getRaw(this, SkillSetting.EXPIRE_TEXT, "%hero% lost his reflective shield!").replace("%hero%", "$1");
+        applyText = SkillConfigManager.getRaw(this, SkillSetting.APPLY_TEXT, "%hero% put up a reflective shield!").replace("%hero%", "$1").replace("$hero$", "$1");
+        expireText = SkillConfigManager.getRaw(this, SkillSetting.EXPIRE_TEXT, "%hero% lost his reflective shield!").replace("%hero%", "$1").replace("$hero$", "$1");
     }
 
     @Override
-    public SkillResult use(Hero hero, String[] args) {
+    public SkillResult use(final Hero hero, final String[] args) {
         broadcastExecuteText(hero);
 
-        int duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, 5000, false);
-        double reflectAmount = SkillConfigManager.getUseSetting(hero, this, "reflected-amount", 0.5, false);
-        boolean grantsImmunity = SkillConfigManager.getUseSetting(hero, this, "grants-immunity", false);
+        final int duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, 5000, false);
+        final double reflectAmount = SkillConfigManager.getUseSetting(hero, this, "reflected-amount", 0.5, false);
+        final boolean grantsImmunity = SkillConfigManager.getUseSetting(hero, this, "grants-immunity", false);
         hero.addEffect(new ReflectEffect(this, hero.getPlayer(), duration, reflectAmount, grantsImmunity));
 
         return SkillResult.NORMAL;
@@ -79,12 +78,19 @@ public class SkillReflect extends ActiveSkill implements Listenable {
         return listener;
     }
 
+    @Override
+    public String getDescription(final Hero hero) {
+        final double amount = SkillConfigManager.getUseSetting(hero, this, "reflected-amount", .5, false);
+        final int duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, 5000, false);
+        return getDescription().replace("$1", Util.stringDouble(amount * 100)).replace("$2", duration / 1000 + "");
+    }
+
     public class ReflectEffect extends ExpirableEffect {
 
         private final double reflectAmount;
         private final boolean grantsImmunity;
 
-        public ReflectEffect(Skill skill, Player applier, long duration, double reflectAmount, boolean grantsImmunity) {
+        public ReflectEffect(final Skill skill, final Player applier, final long duration, final double reflectAmount, final boolean grantsImmunity) {
             super(skill, "Reflect", applier, duration);
             this.reflectAmount = reflectAmount;
             this.grantsImmunity = grantsImmunity;
@@ -93,16 +99,16 @@ public class SkillReflect extends ActiveSkill implements Listenable {
         }
 
         @Override
-        public void applyToHero(Hero hero) {
+        public void applyToHero(final Hero hero) {
             super.applyToHero(hero);
-            Player player = hero.getPlayer();
+            final Player player = hero.getPlayer();
             broadcast(player.getLocation(), applyText, player.getName());
         }
 
         @Override
-        public void removeFromHero(Hero hero) {
+        public void removeFromHero(final Hero hero) {
             super.removeFromHero(hero);
-            Player player = hero.getPlayer();
+            final Player player = hero.getPlayer();
             broadcast(player.getLocation(), expireText, player.getName());
         }
 
@@ -113,46 +119,46 @@ public class SkillReflect extends ActiveSkill implements Listenable {
         private final Skill skill;
         private final BukkitScheduler scheduler = plugin.getServer().getScheduler();
 
-        public SkillHeroListener(Skill skill) {
+        public SkillHeroListener(final Skill skill) {
             this.skill = skill;
         }
 
         @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
-        public void onWeaponDamage(WeaponDamageEvent event) {
+        public void onWeaponDamage(final WeaponDamageEvent event) {
             handleEvent(event);
         }
 
         @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
-        public void onSkillDamage(SkillDamageEvent event) {
-            CharacterTemplate character = event.getDefender();
-            if(character.hasEffect("Reflect")) {
-                ReflectEffect effect = (((ReflectEffect) character.getEffect("Reflect")));
-                double damage = event.getDamage() * effect.reflectAmount;
+        public void onSkillDamage(final SkillDamageEvent event) {
+            final CharacterTemplate character = event.getDefender();
+            if (character.hasEffect("Reflect")) {
+                final ReflectEffect effect = (((ReflectEffect) character.getEffect("Reflect")));
+                final double damage = event.getDamage() * effect.reflectAmount;
                 event.setDamage(effect.grantsImmunity ? 0 : Math.max(0, event.getDamage() - damage));
 
-                if(event.getDamage() == 0) {
+                if (event.getDamage() == 0) {
                     event.setCancelled(true);
                 }
             }
         }
 
         @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
-        public void onProjectileDamage(ProjectileDamageEvent event) {
+        public void onProjectileDamage(final ProjectileDamageEvent event) {
             handleEvent(event);
         }
 
-        private void handleEvent(HeroesDamageEvent event) {
-            CharacterTemplate character = event.getDefender();
+        private void handleEvent(final HeroesDamageEvent event) {
+            final CharacterTemplate character = event.getDefender();
             if (character.hasEffect("Reflect")) {
-                ReflectEffect effect = (((ReflectEffect) character.getEffect("Reflect")));
-                double damage = event.getDamage() * effect.reflectAmount;
+                final ReflectEffect effect = (((ReflectEffect) character.getEffect("Reflect")));
+                final double damage = event.getDamage() * effect.reflectAmount;
                 event.setDamage(effect.grantsImmunity ? 0 : Math.max(0, event.getDamage() - damage));
 
-                if(event.getDamage() == 0) {
+                if (event.getDamage() == 0) {
                     event.setCancelled(true);
                 }
-                LivingEntity attacker = event.getAttacker().getEntity();
-                if(!plugin.getCharacterManager().getCharacter(attacker).hasEffect("Reflect") && damage > 0) {
+                final LivingEntity attacker = event.getAttacker().getEntity();
+                if (!plugin.getCharacterManager().getCharacter(attacker).hasEffect("Reflect") && damage > 0) {
                     scheduler.scheduleSyncDelayedTask(plugin, () -> {
                         plugin.getDamageManager().addSpellTarget(attacker, character, skill);
                         damageEntity(attacker, character.getEntity(), damage, EntityDamageEvent.DamageCause.MAGIC);
@@ -160,12 +166,5 @@ public class SkillReflect extends ActiveSkill implements Listenable {
                 }
             }
         }
-    }
-
-    @Override
-    public String getDescription(Hero hero) {
-        double amount = SkillConfigManager.getUseSetting(hero, this, "reflected-amount", .5, false);
-        int duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, 5000, false);
-        return getDescription().replace("$1", Util.stringDouble(amount * 100)).replace("$2", duration / 1000 + "");
     }
 }

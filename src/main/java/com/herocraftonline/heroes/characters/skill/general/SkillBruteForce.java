@@ -14,7 +14,6 @@ import org.bukkit.*;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
-import org.bukkit.Sound;
 import org.bukkit.scheduler.BukkitRunnable;
 
 public class SkillBruteForce extends TargettedSkill {
@@ -33,7 +32,7 @@ public class SkillBruteForce extends TargettedSkill {
     @Override
     public String getDescription(Hero h) {
         long duration = SkillConfigManager.getUseSetting(h, this, SkillSetting.DURATION, 600000, false);
-        duration += SkillConfigManager.getUseSetting(h, this, SkillSetting.DURATION_INCREASE_PER_LEVEL, 1000, false) * h.getHeroLevel(this);
+        duration += (long) SkillConfigManager.getUseSetting(h, this, SkillSetting.DURATION_INCREASE_PER_LEVEL, 1000, false) * h.getHeroLevel(this);
         int strIncrease = SkillConfigManager.getUseSetting(h, this, "str-increase", 15, false);
         
         return getDescription()
@@ -69,7 +68,7 @@ public class SkillBruteForce extends TargettedSkill {
         Player player = hero.getPlayer();
         
         long duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, 600000, false);
-        duration += SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION_INCREASE_PER_LEVEL, 1000, false) * hero.getHeroLevel(this);
+        duration += (long) SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION_INCREASE_PER_LEVEL, 1000, false) * hero.getHeroLevel(this);
         int strIncrease = SkillConfigManager.getUseSetting(hero, this, "str-increase", 15, false);
         
         AttributeIncreaseEffect aEffect = new AttributeIncreaseEffect(this, "BruteForceStrIncreaseEffect", player, duration, AttributeType.STRENGTH, strIncrease, applyText, expireText);
@@ -81,11 +80,10 @@ public class SkillBruteForce extends TargettedSkill {
         }
         new BukkitRunnable() {
             
-            private Location location = target.getLocation();
+            private final Location location = target.getLocation();
 
             private double time = 0;
 
-            @SuppressWarnings("deprecation")
             @Override
             public void run() {
                 if (time < 1.0) {

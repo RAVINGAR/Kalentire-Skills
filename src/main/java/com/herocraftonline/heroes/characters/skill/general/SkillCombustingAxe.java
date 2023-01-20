@@ -7,7 +7,11 @@ import com.herocraftonline.heroes.characters.CustomNameManager;
 import com.herocraftonline.heroes.characters.Hero;
 import com.herocraftonline.heroes.characters.effects.Effect;
 import com.herocraftonline.heroes.characters.effects.common.interfaces.Burning;
-import com.herocraftonline.heroes.characters.skill.*;
+import com.herocraftonline.heroes.characters.skill.PassiveSkill;
+import com.herocraftonline.heroes.characters.skill.Skill;
+import com.herocraftonline.heroes.characters.skill.SkillConfigManager;
+import com.herocraftonline.heroes.characters.skill.SkillType;
+import com.herocraftonline.heroes.characters.skill.VisualEffect;
 import com.herocraftonline.heroes.chat.ChatComponents;
 import com.herocraftonline.heroes.util.Util;
 import org.bukkit.Bukkit;
@@ -26,7 +30,7 @@ public class SkillCombustingAxe extends PassiveSkill {
 
     private String combustText;
 
-    public SkillCombustingAxe(Heroes plugin) {
+    public SkillCombustingAxe(final Heroes plugin) {
         super(plugin, "CombustingAxe");
         setDescription("Axe attacks on burning enemies will combust the target, dealing the remaining burning damage immediately at a $1% rate.");
         setTypes(SkillType.ABILITY_PROPERTY_FIRE, SkillType.DAMAGING);
@@ -34,60 +38,67 @@ public class SkillCombustingAxe extends PassiveSkill {
         Bukkit.getServer().getPluginManager().registerEvents(new SkillHeroListener(this), plugin);
     }
 
-    public String getDescription(Hero hero) {
-        double damageEffectiveness = SkillConfigManager.getUseSetting(hero, this, "damage-effectiveness", 1.0, false);
+    @Override
+    public String getDescription(final Hero hero) {
+        final double damageEffectiveness = SkillConfigManager.getUseSetting(hero, this, "damage-effectiveness", 1.0, false);
 
         return getDescription()
                 .replace("$1", Util.decFormat.format(damageEffectiveness * 100));
     }
 
+    @Override
     public void init() {
         super.init();
 
         combustText = SkillConfigManager.getRaw(this, "combust-text", ChatComponents.GENERIC_SKILL + "%hero%'s axe combusted %target%!")
-                .replace("%hero%", "$1")
-                .replace("%target%", "$2");
+                .replace("%hero%", "$1").replace("$hero$", "$1")
+                .replace("%target%", "$2").replace("$target$", "$2");
     }
 
+    @Override
     public ConfigurationSection getDefaultConfig() {
-        ConfigurationSection config = super.getDefaultConfig();
+        final ConfigurationSection config = super.getDefaultConfig();
         config.set("damage-effectiveness", 1.0);
         config.set("combust-text", ChatComponents.GENERIC_SKILL + "%hero%'s axe combusted %target%!");
         return config;
     }
 
     public class SkillHeroListener implements Listener {
-        private Skill skill;
+        private final Skill skill;
 
-        public SkillHeroListener(Skill skill) {
+        public SkillHeroListener(final Skill skill) {
             this.skill = skill;
         }
 
         @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
-        public void onWeaponDamage(WeaponDamageEvent event) {
-            if (event.getEntity().getFireTicks() <= 0 || !(event.getDamager() instanceof Hero) || !(event.getEntity() instanceof LivingEntity))
+        public void onWeaponDamage(final WeaponDamageEvent event) {
+            if (event.getEntity().getFireTicks() <= 0 || !(event.getDamager() instanceof Hero) || !(event.getEntity() instanceof LivingEntity)) {
                 return;
+            }
 
-            Hero hero = (Hero) event.getDamager();
-            if (!hero.canUseSkill(skill))
+            final Hero hero = (Hero) event.getDamager();
+            if (!hero.canUseSkill(skill)) {
                 return;
+            }
 
-            Player player = hero.getPlayer();
-            ItemStack mainHand = player.getInventory().getItemInMainHand();
-            if (mainHand == null || !Util.axes.contains(mainHand.getType().name()))
+            final Player player = hero.getPlayer();
+            final ItemStack mainHand = player.getInventory().getItemInMainHand();
+            if (mainHand == null || !Util.axes.contains(mainHand.getType().name())) {
                 return;
+            }
 
-            LivingEntity targetLE = (LivingEntity) event.getEntity();
-            CharacterTemplate targetCT = plugin.getCharacterManager().getCharacter(targetLE);
+            final LivingEntity targetLE = (LivingEntity) event.getEntity();
+            final CharacterTemplate targetCT = plugin.getCharacterManager().getCharacter(targetLE);
 
             double damage = 0;
-            double damageEffectiveness = SkillConfigManager.getUseSetting(hero, skill, "damage-effectiveness", 1.0, false);
+            final double damageEffectiveness = SkillConfigManager.getUseSetting(hero, skill, "damage-effectiveness", 1.0, false);
             boolean foundBurningEffect = false;
             for (final Effect effect : targetCT.getEffects()) {
-                if (!(effect instanceof Burning))
+                if (!(effect instanceof Burning)) {
                     continue;
+                }
 
-                Burning burningEffect = (Burning) effect;
+                final Burning burningEffect = (Burning) effect;
                 damage = burningEffect.getRemainingDamage() * damageEffectiveness;
                 targetCT.removeEffect(effect);
                 targetLE.setFireTicks(0);
@@ -99,13 +110,14 @@ public class SkillCombustingAxe extends PassiveSkill {
                 targetLE.setFireTicks(0);
             }
 
-            if (damage <= 0)
+            if (damage <= 0) {
                 return;
+            }
 
             addSpellTarget(targetLE, hero);
             damageEntity(targetLE, hero.getPlayer(), damage, EntityDamageEvent.DamageCause.MAGIC);
 
-            FireworkEffect firework = FireworkEffect.builder()
+            final FireworkEffect firework = FireworkEffect.builder()
                     .flicker(false)
                     .trail(true)
                     .withColor(Color.RED)

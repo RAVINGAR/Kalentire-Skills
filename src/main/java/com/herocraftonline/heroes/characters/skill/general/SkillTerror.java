@@ -6,10 +6,19 @@ import com.herocraftonline.heroes.characters.CharacterTemplate;
 import com.herocraftonline.heroes.characters.Hero;
 import com.herocraftonline.heroes.characters.effects.EffectType;
 import com.herocraftonline.heroes.characters.effects.common.SlowEffect;
-import com.herocraftonline.heroes.characters.skill.*;
+import com.herocraftonline.heroes.characters.skill.ActiveSkill;
+import com.herocraftonline.heroes.characters.skill.Skill;
+import com.herocraftonline.heroes.characters.skill.SkillConfigManager;
+import com.herocraftonline.heroes.characters.skill.SkillSetting;
+import com.herocraftonline.heroes.characters.skill.SkillType;
 import com.herocraftonline.heroes.chat.ChatComponents;
 import com.herocraftonline.heroes.util.Util;
-import org.bukkit.*;
+import org.bukkit.Bukkit;
+import org.bukkit.Color;
+import org.bukkit.Location;
+import org.bukkit.Particle;
+import org.bukkit.Sound;
+import org.bukkit.World;
 import org.bukkit.block.Block;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Entity;
@@ -32,7 +41,7 @@ public class SkillTerror extends ActiveSkill {
     private String applyText;
     private String expireText;
 
-    public SkillTerror(Heroes plugin) {
+    public SkillTerror(final Heroes plugin) {
         super(plugin, "Terror");
         setDescription("You terrify your target, impairing their movement and disabling them for $1 second(s).");
         setUsage("/skill terror");
@@ -43,14 +52,14 @@ public class SkillTerror extends ActiveSkill {
     }
 
     @Override
-    public String getDescription(Hero hero) {
-        int duration = SkillConfigManager.getScaledUseSettingInt(hero, this, SkillSetting.DURATION, false);
+    public String getDescription(final Hero hero) {
+        final int duration = SkillConfigManager.getScaledUseSettingInt(hero, this, SkillSetting.DURATION, false);
         return getDescription().replace("$1", Util.decFormat.format(duration / 1000.0));
     }
 
     @Override
     public ConfigurationSection getDefaultConfig() {
-        ConfigurationSection config = super.getDefaultConfig();
+        final ConfigurationSection config = super.getDefaultConfig();
         config.set(SkillSetting.MAX_DISTANCE.node(), 7);
         config.set("slow-amplifier", 2);
         config.set(SkillSetting.DURATION.node(), 4000);
@@ -67,29 +76,30 @@ public class SkillTerror extends ActiveSkill {
         super.init();
 
         applyText = SkillConfigManager.getRaw(this, SkillSetting.APPLY_TEXT.node(),
-                ChatComponents.GENERIC_SKILL + "%target% is terrified!").replace("%target%", "$1");
+                ChatComponents.GENERIC_SKILL + "%target% is terrified!").replace("%target%", "$1").replace("$target$", "$1");
         expireText = SkillConfigManager.getRaw(this, SkillSetting.EXPIRE_TEXT.node(),
-                ChatComponents.GENERIC_SKILL + "%target% has overcome his fear!").replace("%target%", "$1");
+                ChatComponents.GENERIC_SKILL + "%target% has overcome his fear!").replace("%target%", "$1").replace("$target$", "$1");
     }
 
     @Override
-    public SkillResult use(Hero hero, String[] args) {
+    public SkillResult use(final Hero hero, final String[] args) {
         final Player player = hero.getPlayer();
 
-        int distance = SkillConfigManager.getUseSettingInt(hero, this, SkillSetting.MAX_DISTANCE,  false);
-        BlockIterator blockIterator = getLineBlockIterator(player, distance);
-        if (blockIterator == null)
+        final int distance = SkillConfigManager.getUseSettingInt(hero, this, SkillSetting.MAX_DISTANCE, false);
+        final BlockIterator blockIterator = getLineBlockIterator(player, distance);
+        if (blockIterator == null) {
             return SkillResult.INVALID_TARGET_NO_MSG;
+        }
 
         // Terror Effect properties
-        int slowAmplifier = SkillConfigManager.getUseSettingInt(hero, this, "slow-amplifier", false);
-        int duration = SkillConfigManager.getScaledUseSettingInt(hero, this, SkillSetting.DURATION, false);
+        final int slowAmplifier = SkillConfigManager.getUseSettingInt(hero, this, "slow-amplifier", false);
+        final int duration = SkillConfigManager.getScaledUseSettingInt(hero, this, SkillSetting.DURATION, false);
 
         // Properties for Cone effect
-        boolean isXDirection = is_X_Direction(player);
-        int delay = SkillConfigManager.getUseSettingInt(hero, this, "cone-travel-delay", false);
+        final boolean isXDirection = is_X_Direction(player);
+        final int delay = SkillConfigManager.getUseSettingInt(hero, this, "cone-travel-delay", false);
 
-        double radius = SkillConfigManager.getUseSettingDouble(hero, this, SkillSetting.RADIUS,  false);
+        final double radius = SkillConfigManager.getUseSettingDouble(hero, this, SkillSetting.RADIUS, false);
         final double radiusSquared = radius * radius;
 
         final List<Entity> nearbyEntities = player.getNearbyEntities(distance * 2, distance, distance * 2);
@@ -101,44 +111,46 @@ public class SkillTerror extends ActiveSkill {
         player.getWorld().playSound(player.getLocation(), Sound.ENTITY_WOLF_HOWL, 0.4F, 1.8F);
 
         // Iterate through each block in direction (line)
-        Skill skill = this;
+        final Skill skill = this;
         int numBlocks = 0;
         Block tempMiddleRowBlock;
         while (blockIterator.hasNext()) {
             tempMiddleRowBlock = blockIterator.next();
 
             // Stop on 'solid' block (we've hit a wall?)
-            if (!Util.transparentBlocks.contains(tempMiddleRowBlock.getType()))
+            if (!Util.transparentBlocks.contains(tempMiddleRowBlock.getType())) {
                 break;
+            }
 
             final List<Location> locations = getNewRowBlockLocations(isXDirection, tempMiddleRowBlock);
 
             // Delay particles and effects for each new block "row"
-            Bukkit.getScheduler().scheduleSyncDelayedTask(plugin, new Runnable() {
-                public void run() {
-                    doParticlesAtLocations(player.getWorld(), locations);
+            Bukkit.getScheduler().scheduleSyncDelayedTask(plugin, () -> {
+                doParticlesAtLocations(player.getWorld(), locations);
 
-                    for (Entity entity : nearbyEntities) {
-                        if (!(entity instanceof LivingEntity) || hitEnemies.contains(entity))
-                            continue; // Skip invalid entities, and entities already hit
-
-                        // Check if entity is in range and should be effected
-                        if (!isEntityInRangeOfAnyLocation(entity, radiusSquared, locations))
-                            continue;
-
-                        // Check to see if the entity can be damaged
-                        if (!damageCheck(player, (LivingEntity) entity))
-                            continue;
-
-                        // Effect target
-                        //addSpellTarget(target, hero); // no damage, so no need to add target?
-                        CharacterTemplate targetCT = plugin.getCharacterManager().getCharacter((LivingEntity) entity);
-                        targetCT.addEffect(new TerrorEffect(skill, player, duration, slowAmplifier));
-
-                        hitEnemies.add(entity);
+                for (final Entity entity : nearbyEntities) {
+                    if (!(entity instanceof LivingEntity) || hitEnemies.contains(entity)) {
+                        continue; // Skip invalid entities, and entities already hit
                     }
+
+                    // Check if entity is in range and should be effected
+                    if (!isEntityInRangeOfAnyLocation(entity, radiusSquared, locations)) {
+                        continue;
+                    }
+
+                    // Check to see if the entity can be damaged
+                    if (!damageCheck(player, (LivingEntity) entity)) {
+                        continue;
+                    }
+
+                    // Effect target
+                    //addSpellTarget(target, hero); // no damage, so no need to add target?
+                    final CharacterTemplate targetCT = plugin.getCharacterManager().getCharacter((LivingEntity) entity);
+                    targetCT.addEffect(new TerrorEffect(skill, player, duration, slowAmplifier));
+
+                    hitEnemies.add(entity);
                 }
-            }, numBlocks * delay);
+            }, (long) numBlocks * delay);
 
             numBlocks++;
         }
@@ -178,21 +190,8 @@ public class SkillTerror extends ActiveSkill {
     }
      */
 
-    public class TerrorEffect extends SlowEffect {
-
-        public TerrorEffect(Skill skill, Player applier, long duration, int slowAmplifier) {
-            super(skill, "Terror", applier, duration, slowAmplifier, applyText, expireText);
-
-            Collections.addAll(types, EffectType.DARK, EffectType.SLOW, EffectType.BLIND, EffectType.DISABLE,
-                    EffectType.DISPELLABLE, EffectType.HARMFUL);
-
-            addPotionEffect(new PotionEffect(PotionEffectType.BLINDNESS, (int)(20L * duration / 1000L), 0));
-        }
-    }
-
-
-    public boolean isEntityInRangeOfAnyLocation(Entity entity, double radiusSquared, List<Location> locations) {
-        for (Location location : locations) {
+    public boolean isEntityInRangeOfAnyLocation(final Entity entity, final double radiusSquared, final List<Location> locations) {
+        for (final Location location : locations) {
             if (entity.getLocation().distanceSquared(location) <= radiusSquared) {
                 return true;
             }
@@ -200,34 +199,33 @@ public class SkillTerror extends ActiveSkill {
         return false;
     }
 
-    public void doParticlesAtLocations(World world, List<Location> locations) {
+    public void doParticlesAtLocations(final World world, final List<Location> locations) {
         try {
-            for (Location location : locations) {
+            for (final Location location : locations) {
                 // FIXME do we want to use smoke?
                 //world.spawnParticle(Particle.SMOKE_NORMAL, location, 3, 0, 0.3, 0, 0.2);
                 world.spawnParticle(Particle.REDSTONE, location, 3, 0, 0, 0, 0, skillEffectDustOptions);
                 // just for ref: world.spawnParticle(Particle.REDSTONE, location, 4, 0.2F, 1.5F, 0.2F, 0, skillEffectDustOptions);
             }
-        } catch (Exception e) {
+        } catch (final Exception e) {
             e.printStackTrace();
         }
     }
 
-    public List<Location> getNewRowBlockLocations(boolean isXDirection, Block middleLocationBlock) {
+    public List<Location> getNewRowBlockLocations(final boolean isXDirection, final Block middleLocationBlock) {
         // Get left, right and middle block, based on whether its x or z direction
         final List<Location> locations = new ArrayList<>();
         if (isXDirection) {
             for (int xDir = -1; xDir < 1 + 1; xDir++) {
-                Block radiusBlocks = middleLocationBlock.getRelative(xDir, 0, 0);
+                final Block radiusBlocks = middleLocationBlock.getRelative(xDir, 0, 0);
 
                 if (Util.transparentBlocks.contains(radiusBlocks.getType())) {
                     locations.add(radiusBlocks.getLocation().clone().add(new Vector(.5, 0, .5)));
                 }
             }
-        }
-        else { // Z Direction
+        } else { // Z Direction
             for (int zDir = -1; zDir < 1 + 1; zDir++) {
-                Block radiusBlocks = middleLocationBlock.getRelative(0, 0, zDir);
+                final Block radiusBlocks = middleLocationBlock.getRelative(0, 0, zDir);
 
                 if (Util.transparentBlocks.contains(radiusBlocks.getType())) {
                     locations.add(radiusBlocks.getLocation().clone().add(new Vector(.5, 0, .5)));
@@ -238,11 +236,11 @@ public class SkillTerror extends ActiveSkill {
     }
 
     @Nullable
-    public BlockIterator getLineBlockIterator(Player player, int distance) {
-        BlockIterator blockIterator;
+    public BlockIterator getLineBlockIterator(final Player player, final int distance) {
+        final BlockIterator blockIterator;
         try {
             blockIterator = new BlockIterator(player, distance);
-        } catch (IllegalStateException e) {
+        } catch (final IllegalStateException e) {
             return null;
         }
         return blockIterator;
@@ -251,16 +249,28 @@ public class SkillTerror extends ActiveSkill {
     /**
      * @return true if X direction, otherwise false for Z direction
      */
-    private boolean is_X_Direction(Player player) {
+    private boolean is_X_Direction(final Player player) {
         Vector u = player.getLocation().getDirection();
         u = new Vector(u.getX(), 0.0D, u.getZ()).normalize();
-        Vector v = new Vector(0, 0, -1);
-        double magU = Math.sqrt(Math.pow(u.getX(), 2.0D) + Math.pow(u.getZ(), 2.0D));
-        double magV = Math.sqrt(Math.pow(v.getX(), 2.0D) + Math.pow(v.getZ(), 2.0D));
+        final Vector v = new Vector(0, 0, -1);
+        final double magU = Math.sqrt(Math.pow(u.getX(), 2.0D) + Math.pow(u.getZ(), 2.0D));
+        final double magV = Math.sqrt(Math.pow(v.getX(), 2.0D) + Math.pow(v.getZ(), 2.0D));
         double angle = Math.acos(u.dot(v) / (magU * magV));
         angle = angle * 180.0D / Math.PI;
         angle = Math.abs(angle - 180.0D);
 
         return (angle <= 45.0D) || (angle > 135.0D);
+    }
+
+    public class TerrorEffect extends SlowEffect {
+
+        public TerrorEffect(final Skill skill, final Player applier, final long duration, final int slowAmplifier) {
+            super(skill, "Terror", applier, duration, slowAmplifier, applyText, expireText);
+
+            Collections.addAll(types, EffectType.DARK, EffectType.SLOW, EffectType.BLIND, EffectType.DISABLE,
+                    EffectType.DISPELLABLE, EffectType.HARMFUL);
+
+            addPotionEffect(new PotionEffect(PotionEffectType.BLINDNESS, (int) (20L * duration / 1000L), 0));
+        }
     }
 }

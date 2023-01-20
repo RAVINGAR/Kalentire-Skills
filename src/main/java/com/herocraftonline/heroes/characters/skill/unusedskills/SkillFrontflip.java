@@ -5,7 +5,6 @@ import java.util.Set;
 
 import org.bukkit.Location;
 import org.bukkit.Material;
-import org.bukkit.Sound;
 import org.bukkit.block.BlockFace;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
@@ -50,11 +49,11 @@ public class SkillFrontflip extends ActiveSkill {
         ConfigurationSection node = super.getDefaultConfig();
 
         node.set("no-air-frontflip", false);
-        node.set("horizontal-power", Double.valueOf(0.4));
-        node.set("horizontal-power-increase-per-dexterity", Double.valueOf(0.01));
-        node.set("vertical-power", Double.valueOf(0.5));
-        node.set("vertical-power-increase-per-dexterity", Double.valueOf(0.00625));
-        node.set("ncp-exemption-duration", Integer.valueOf(2000));
+        node.set("horizontal-power", 0.4);
+        node.set("horizontal-power-increase-per-dexterity", 0.01);
+        node.set("vertical-power", 0.5);
+        node.set("vertical-power-increase-per-dexterity", 0.00625);
+        node.set("ncp-exemption-duration", 2000);
 
         return node;
     }
@@ -121,15 +120,10 @@ public class SkillFrontflip extends ActiveSkill {
         velocity.multiply(new Vector(hPower, 1, hPower));
 
         // Let's bypass the nocheat issues...
-        NCPUtils.applyExemptions(player, new NCPFunction() {
-
-            @Override
-            public void execute()
-            {
-                // Frontflip!
-                player.setVelocity(velocity);
-                player.setFallDistance(-8f);
-            }
+        NCPUtils.applyExemptions(player, () -> {
+            // Frontflip!
+            player.setVelocity(velocity);
+            player.setFallDistance(-8f);
         }, Lists.newArrayList("MOVING"), SkillConfigManager.getUseSetting(hero, this, "ncp-exemption-duration", 2000, false));
 
         player.getWorld().playSound(player.getLocation(), Sound.ENTITY_SKELETON_AMBIENT, 10.0F, 1.0F);

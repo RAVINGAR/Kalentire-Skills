@@ -23,7 +23,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class SkillPlagueBomb extends ActiveSkill {
-    private Map<Integer, Player> plagueBombs = new HashMap<Integer, Player>();
+    private final Map<Integer, Player> plagueBombs = new HashMap<>();
 
     public SkillPlagueBomb(Heroes plugin) {
         super(plugin, "PlagueBomb");
@@ -74,11 +74,9 @@ public class SkillPlagueBomb extends ActiveSkill {
         sheep.setCustomNameVisible(true);
         sheep.setVelocity(player.getLocation().getDirection().normalize().multiply(launchVelocity));
 
-        Bukkit.getScheduler().scheduleSyncDelayedTask(plugin, new Runnable() {
-            public void run() {
-                if (!sheep.isDead()) {
-                    sheepBomb(sheep);
-                }
+        Bukkit.getScheduler().scheduleSyncDelayedTask(plugin, () -> {
+            if (!sheep.isDead()) {
+                sheepBomb(sheep);
             }
         }, (long) maxDuration / 1000L * 20L);
 
@@ -108,7 +106,7 @@ public class SkillPlagueBomb extends ActiveSkill {
     }
 
     private class PlagueBombListener implements Listener {
-        private Skill skill;
+        private final Skill skill;
 
         PlagueBombListener(Skill skill) {
             this.skill = skill;

@@ -7,22 +7,27 @@ import com.herocraftonline.heroes.characters.Hero;
 import com.herocraftonline.heroes.characters.effects.Effect;
 import com.herocraftonline.heroes.characters.effects.EffectType;
 import com.herocraftonline.heroes.characters.effects.common.interfaces.Stacked;
-import com.herocraftonline.heroes.characters.skill.*;
+import com.herocraftonline.heroes.characters.skill.Skill;
+import com.herocraftonline.heroes.characters.skill.SkillConfigManager;
+import com.herocraftonline.heroes.characters.skill.SkillSetting;
+import com.herocraftonline.heroes.characters.skill.SkillType;
+import com.herocraftonline.heroes.characters.skill.TargettedSkill;
+import com.herocraftonline.heroes.libs.slikey.effectlib.effect.SphereEffect;
+import com.herocraftonline.heroes.libs.slikey.effectlib.util.DynamicLocation;
 import com.herocraftonline.heroes.util.Util;
-import de.slikey.effectlib.EffectManager;
-import de.slikey.effectlib.effect.SphereEffect;
-import de.slikey.effectlib.util.DynamicLocation;
-import org.bukkit.*;
+import org.bukkit.Color;
+import org.bukkit.Location;
+import org.bukkit.Particle;
+import org.bukkit.Sound;
+import org.bukkit.World;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.entity.EntityDamageEvent.DamageCause;
 
-import javax.annotation.Nonnull;
-
 public class SkillTimeDifferential extends TargettedSkill {
 
-    public SkillTimeDifferential(Heroes plugin) {
+    public SkillTimeDifferential(final Heroes plugin) {
         super(plugin, "TimeDifferential");
         setDescription("Restore your target's time to normal, dispelling any temporal buffs or debuffs, and absorbing their power to achieve an effect. " +
                 "If used on an ally, they will be healed for $1 health and an additional $2 health per temporal buff. " +
@@ -34,11 +39,11 @@ public class SkillTimeDifferential extends TargettedSkill {
     }
 
     @Override
-    public String getDescription(Hero hero) {
-        double healing = SkillConfigManager.getUseSetting(hero, this, SkillSetting.HEALING, 40.0, false);
-        double healingPerStack = SkillConfigManager.getUseSetting(hero, this, "healing-per-temporal-effect", 10.0, false);
-        double damage = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE, 40.0, false);
-        double damagePerStack = SkillConfigManager.getUseSetting(hero, this, "damage-per-temporal-effect", 10.0, false);
+    public String getDescription(final Hero hero) {
+        final double healing = SkillConfigManager.getUseSetting(hero, this, SkillSetting.HEALING, 40.0, false);
+        final double healingPerStack = SkillConfigManager.getUseSetting(hero, this, "healing-per-temporal-effect", 10.0, false);
+        final double damage = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE, 40.0, false);
+        final double damagePerStack = SkillConfigManager.getUseSetting(hero, this, "damage-per-temporal-effect", 10.0, false);
 
         return getDescription()
                 .replace("$1", Util.decFormat.format(healing))
@@ -49,7 +54,7 @@ public class SkillTimeDifferential extends TargettedSkill {
 
     @Override
     public ConfigurationSection getDefaultConfig() {
-        ConfigurationSection config = super.getDefaultConfig();
+        final ConfigurationSection config = super.getDefaultConfig();
         config.set(SkillSetting.MAX_DISTANCE.node(), 12);
         config.set(SkillSetting.DAMAGE.node(), 20.0);
         config.set("damage-per-temporal-effect", 10.0);
@@ -61,11 +66,11 @@ public class SkillTimeDifferential extends TargettedSkill {
     }
 
     @Override
-    public SkillResult use(Hero hero, LivingEntity target, String[] args) {
+    public SkillResult use(final Hero hero, final LivingEntity target, final String[] args) {
 
         broadcastExecuteText(hero, target);
 
-        CharacterTemplate ctTarget = plugin.getCharacterManager().getCharacter(target);
+        final CharacterTemplate ctTarget = plugin.getCharacterManager().getCharacter(target);
         if (hero.isAlliedTo(target)) {
             healTarget(hero, ctTarget);
         } else {
@@ -75,18 +80,18 @@ public class SkillTimeDifferential extends TargettedSkill {
         return SkillResult.NORMAL;
     }
 
-    private void healTarget(Hero hero, CharacterTemplate targetCT) {
-        final Player player = hero.getPlayer();
-        double baseHealing = SkillConfigManager.getUseSetting(hero, this, SkillSetting.HEALING, 40.0, false);
+    private void healTarget(final Hero hero, final CharacterTemplate targetCT) {
+        final double baseHealing = SkillConfigManager.getUseSetting(hero, this, SkillSetting.HEALING, 40.0, false);
         final double healingPerStack = SkillConfigManager.getUseSetting(hero, this, "healing-per-temporal-effect", 10.0, false);
 
         double healing = baseHealing;
-        for (Effect effect : targetCT.getEffects()) {
-            if (!effect.isType(EffectType.TEMPORAL))
+        for (final Effect effect : targetCT.getEffects()) {
+            if (!effect.isType(EffectType.TEMPORAL)) {
                 continue;
+            }
 
             if (effect instanceof Stacked) {
-                Stacked stack = (Stacked) effect;
+                final Stacked stack = (Stacked) effect;
                 healing += (healingPerStack * stack.getStackCount());
             } else {
                 healing += healingPerStack;
@@ -101,30 +106,25 @@ public class SkillTimeDifferential extends TargettedSkill {
         final double finalHealing = getScaledHealing(hero, healing);
         final int delaySeconds = SkillConfigManager.getUseSetting(hero, this, "healing-delay", 1000, false);
 
-        EffectManager em = new EffectManager(plugin);
-        SphereEffect visualEffect = buildBaseVisualEffect(em, target, delaySeconds);
+        final SphereEffect visualEffect = buildBaseVisualEffect(target, delaySeconds);
         visualEffect.color = Color.GREEN;
+        visualEffect.callback = () -> {
+            if (target.getHealth() < 0 || target.isDead()) {
+                return;
+            }
 
-        visualEffect.callback = new Runnable() {
-            @Override
-            public void run() {
-                if (target.getHealth() < 0 || target.isDead())
-                    return;
-
-                if (targetCT.tryHeal(hero, skill, finalHealing))
-                    world.playSound(loc, Sound.BLOCK_NOTE_BLOCK_HARP, 1.0f, 1.0F);
+            if (targetCT.tryHeal(hero, skill, finalHealing)) {
+                world.playSound(loc, Sound.BLOCK_NOTE_BLOCK_HARP, 1.0f, 1.0F);
             }
         };
 
-        em.start(visualEffect);
-        em.disposeOnTermination();
+        effectLib.start(visualEffect);
     }
 
-    @Nonnull
-    private SphereEffect buildBaseVisualEffect(EffectManager em, LivingEntity target, int delaySeconds) {
-        SphereEffect visualEffect = new SphereEffect(em);
+    private SphereEffect buildBaseVisualEffect(final LivingEntity target, final int delaySeconds) {
+        final SphereEffect visualEffect = new SphereEffect(effectLib);
 
-        DynamicLocation dynamicLoc = new DynamicLocation(target);
+        final DynamicLocation dynamicLoc = new DynamicLocation(target);
         visualEffect.setDynamicOrigin(dynamicLoc);
         visualEffect.disappearWithOriginEntity = true;
 
@@ -140,18 +140,19 @@ public class SkillTimeDifferential extends TargettedSkill {
         return visualEffect;
     }
 
-    private void damageTarget(Hero hero, CharacterTemplate ctTarget, LivingEntity target) {
+    private void damageTarget(final Hero hero, final CharacterTemplate ctTarget, final LivingEntity target) {
         final Player player = hero.getPlayer();
-        double baseDamage = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE, 40.0, false);
+        final double baseDamage = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE, 40.0, false);
         final double damagePerStack = SkillConfigManager.getUseSetting(hero, this, "damage-per-temporal-effect", 10.0, false);
 
         double damage = baseDamage;
-        for (Effect effect : ctTarget.getEffects()) {
-            if (!effect.isType(EffectType.TEMPORAL))
+        for (final Effect effect : ctTarget.getEffects()) {
+            if (!effect.isType(EffectType.TEMPORAL)) {
                 continue;
+            }
 
             if (effect instanceof Stacked) {
-                Stacked stack = (Stacked) effect;
+                final Stacked stack = (Stacked) effect;
                 damage += (damagePerStack * stack.getStackCount());
             } else {
                 damage += damagePerStack;
@@ -165,23 +166,18 @@ public class SkillTimeDifferential extends TargettedSkill {
         final double finalDamage = damage;
         final int delaySeconds = SkillConfigManager.getUseSetting(hero, this, "damage-delay", 1000, false);
 
-        EffectManager em = new EffectManager(plugin);
-        SphereEffect visualEffect = buildBaseVisualEffect(em, target, delaySeconds);
+        final SphereEffect visualEffect = buildBaseVisualEffect(target, delaySeconds);
         visualEffect.color = Color.ORANGE;
 
-        visualEffect.callback = new Runnable() {
-            @Override
-            public void run() {
-                if (target.getHealth() < 0 || target.isDead())
-                    return;
-
-                plugin.getDamageManager().addSpellTarget(target, hero, skill);
-                damageEntity(target, player, finalDamage, DamageCause.MAGIC, false);
-                world.playSound(loc, Sound.BLOCK_GLASS_BREAK, 1.0f, 1.0F);
+        visualEffect.callback = () -> {
+            if (target.getHealth() < 0 || target.isDead()) {
+                return;
             }
+            addSpellTarget(target, hero);
+            damageEntity(target, player, finalDamage, DamageCause.MAGIC, 0.0f);
+            world.playSound(loc, Sound.BLOCK_GLASS_BREAK, 1.0f, 1.0F);
         };
 
-        em.start(visualEffect);
-        em.disposeOnTermination();
+        effectLib.start(visualEffect);
     }
 }

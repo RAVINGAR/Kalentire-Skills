@@ -9,7 +9,6 @@ import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
-import org.bukkit.Sound;
 import org.bukkit.util.Vector;
 
 import java.util.HashSet;
@@ -53,8 +52,8 @@ public class SkillLavaWall extends ActiveSkill {
 	@Override
 	public void init() {
 		super.init();
-		applyText = SkillConfigManager.getRaw(this, SkillSetting.APPLY_TEXT, "%hero% conjures a wall of lava!").replace("%hero%", "$1");
-		expireText = SkillConfigManager.getRaw(this, SkillSetting.EXPIRE_TEXT, "%hero%'s wall has vanished").replace("%hero%", "$1");
+		applyText = SkillConfigManager.getRaw(this, SkillSetting.APPLY_TEXT, "%hero% conjures a wall of lava!").replace("%hero%", "$1").replace("$hero$", "$1");
+		expireText = SkillConfigManager.getRaw(this, SkillSetting.EXPIRE_TEXT, "%hero%'s wall has vanished").replace("%hero%", "$1").replace("$hero$", "$1");
 	}
 
 	public SkillResult use(Hero hero, String[] args) {
@@ -81,8 +80,8 @@ public class SkillLavaWall extends ActiveSkill {
 		private final Block tBlock;
 		private final int width;
 		private final int height;
-		private HashSet<Block> wBlocks;
-		private Material setter;
+		private final HashSet<Block> wBlocks;
+		private final Material setter;
 
 		public ShieldWallEffect(Skill skill, Player applier, long duration, Block tBlock, int width, int height, Material setter) {
 			super(skill, "sheildWallEffect", applier, duration);
@@ -90,7 +89,7 @@ public class SkillLavaWall extends ActiveSkill {
 			this.width = width;
 			this.height = height;
 			this.setter = setter;
-			this.wBlocks = new HashSet<Block>(width * height * 2);
+			this.wBlocks = new HashSet<>(width * height * 2);
 		}
 
 		public void applyToHero(Hero hero) {
@@ -127,10 +126,8 @@ public class SkillLavaWall extends ActiveSkill {
 			super.removeFromHero(hero);
 
 			Player player = hero.getPlayer();
-			Iterator<Block> bIter = this.wBlocks.iterator();
 
-			while (bIter.hasNext()) {
-				Block bChange = (Block) bIter.next();
+			for (Block bChange : this.wBlocks) {
 				if (bChange.getType() == this.setter) {
 					bChange.setType(Material.AIR);
 				}

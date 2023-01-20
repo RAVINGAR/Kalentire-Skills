@@ -17,13 +17,13 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 
 public class SkillEnchantingBook extends ActiveSkill {
-	HashMap<Player,PlayerExecuteData> executors;
+	final HashMap<Player,PlayerExecuteData> executors;
 	
-	private class PlayerExecuteData {
-		Map<Enchantment, Integer> enchant;
-		long expirationTime;
-		ItemStack hand;
-		int heldSlot;
+	private static class PlayerExecuteData {
+		final Map<Enchantment, Integer> enchant;
+		final long expirationTime;
+		final ItemStack hand;
+		final int heldSlot;
 		public PlayerExecuteData(Map<Enchantment, Integer> enchant, long expirationTime, ItemStack hand, int heldSlot) {
 			this.enchant = enchant;
 			this.expirationTime = expirationTime;
@@ -37,7 +37,7 @@ public class SkillEnchantingBook extends ActiveSkill {
 		setUsage("/skill enchantingbook");
 		setDescription("Grants the ability to use book enchanting.");
 		setArgumentRange(0,0);
-		executors = new LinkedHashMap<Player, PlayerExecuteData>(100);
+		executors = new LinkedHashMap<>(100);
 		setIdentifiers("skill enchantingbook");
         setTypes(SkillType.SILENCEABLE);
 	}
@@ -52,7 +52,7 @@ public class SkillEnchantingBook extends ActiveSkill {
 				return SkillResult.INVALID_TARGET_NO_MSG;
 			}
 			Map<Enchantment, Integer> enchant = ((EnchantmentStorageMeta)hand.getItemMeta()).getStoredEnchants();
-			executors.put(p, new PlayerExecuteData(enchant, System.currentTimeMillis() + 10000 , hand, p.getInventory().getHeldItemSlot()));
+			executors.put(p, new PlayerExecuteData(enchant, System.currentTimeMillis() + 10000, hand, p.getInventory().getHeldItemSlot()));
 			p.sendMessage(ChatColor.GRAY + "Select an item to enchant by using this skill again!");
 			return SkillResult.INVALID_TARGET_NO_MSG; //Prevent cooldowns/reagent use from triggering
 		} else {

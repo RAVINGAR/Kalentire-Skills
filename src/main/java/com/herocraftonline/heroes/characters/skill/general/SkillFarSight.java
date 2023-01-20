@@ -50,7 +50,7 @@ public class SkillFarSight extends ActiveSkill {
         return SkillResult.NORMAL;
     }
 
-    public class ZoomEffect extends ExpirableEffect {
+    public static class ZoomEffect extends ExpirableEffect {
 
         public ZoomEffect(Skill skill, Player applier, long duration) {
             super(skill, "Zoom", applier, duration);

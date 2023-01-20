@@ -98,13 +98,13 @@ public class SkillFlameDash extends ActiveSkill {
             return SkillResult.INVALID_TARGET_NO_MSG;
         }
 
-        List<Material> mustStepDownBlocks = new ArrayList<Material>(Util.transparentBlocks);
+        List<Material> mustStepDownBlocks = new ArrayList<>(Util.transparentBlocks);
         mustStepDownBlocks.remove(Material.WATER);
         mustStepDownBlocks.remove(Material.LAVA);
         mustStepDownBlocks.remove(Material.FIRE);
 
-        List<Block> fireTickBlocks = new ArrayList<Block>();
-        List<Block> possibleFireTickBlocks = new ArrayList<Block>();
+        List<Block> fireTickBlocks = new ArrayList<>();
+        List<Block> possibleFireTickBlocks = new ArrayList<>();
         Block previousBlock = currentPlayerLoc.getBlock();
         Block currentBlock = null;
         int totalStepUpsTaken = 0;

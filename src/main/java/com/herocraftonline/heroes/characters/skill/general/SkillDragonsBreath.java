@@ -2,7 +2,6 @@ package com.herocraftonline.heroes.characters.skill.general;
 
 import com.herocraftonline.heroes.Heroes;
 import com.herocraftonline.heroes.api.SkillResult;
-import com.herocraftonline.heroes.attributes.AttributeType;
 import com.herocraftonline.heroes.characters.Hero;
 import com.herocraftonline.heroes.characters.skill.ActiveSkill;
 import com.herocraftonline.heroes.characters.skill.SkillConfigManager;
@@ -88,32 +87,30 @@ public class SkillDragonsBreath extends ActiveSkill {
                 final List<Location> locations = getNewRowBlockLocations(isXDirection, tempMiddleRowBlock);
 
                 // Delay particles and damage for each new block "row"
-                Bukkit.getScheduler().scheduleSyncDelayedTask(plugin, new Runnable() {
-                    public void run() {
-                        doParticlesAtLocations(player.getWorld(), locations);
+                Bukkit.getScheduler().scheduleSyncDelayedTask(plugin, () -> {
+                    doParticlesAtLocations(player.getWorld(), locations);
 
-                        for (Entity entity : nearbyEntities) {
-                            if (!(entity instanceof LivingEntity) || hitEnemies.contains(entity))
-                                continue; // Skip invalid entities, and entities already hit
+                    for (Entity entity : nearbyEntities) {
+                        if (!(entity instanceof LivingEntity) || hitEnemies.contains(entity))
+                            continue; // Skip invalid entities, and entities already hit
 
-                            // Check if entity is in range and should be effected
-                            if (!isEntityInRangeOfAnyLocation(entity, radiusSquared, locations))
-                                continue;
-                            
-                            // Check to see if the entity can be damaged
-                            if (!damageCheck(player, (LivingEntity) entity))
-                                continue;
+                        // Check if entity is in range and should be effected
+                        if (!isEntityInRangeOfAnyLocation(entity, radiusSquared, locations))
+                            continue;
 
-                            // Damage target
-                            LivingEntity target = (LivingEntity) entity;
+                        // Check to see if the entity can be damaged
+                        if (!damageCheck(player, (LivingEntity) entity))
+                            continue;
 
-                            addSpellTarget(target, hero);
-                            damageEntity(target, player, damage, DamageCause.MAGIC);
+                        // Damage target
+                        LivingEntity target = (LivingEntity) entity;
 
-                            hitEnemies.add(entity);
-                        }
+                        addSpellTarget(target, hero);
+                        damageEntity(target, player, damage, DamageCause.MAGIC);
+
+                        hitEnemies.add(entity);
                     }
-                }, numBlocks * delay);
+                }, (long) numBlocks * delay);
 
                 numBlocks++;
             }

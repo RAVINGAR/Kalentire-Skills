@@ -8,7 +8,6 @@ import com.herocraftonline.heroes.characters.skill.SkillConfigManager;
 import com.herocraftonline.heroes.characters.skill.SkillSetting;
 import com.herocraftonline.heroes.characters.skill.skills.SkillBaseBeam;
 import com.herocraftonline.heroes.util.Util;
-import de.slikey.effectlib.util.ParticleEffect;
 import org.bukkit.Color;
 import org.bukkit.Particle;
 import org.bukkit.configuration.ConfigurationSection;
@@ -68,16 +67,13 @@ public class SkillDisarray extends SkillBaseBeam {
 
 		broadcastExecuteText(hero);
 
-		castBeam(hero, beam, new TargetHandler() {
-			@Override
-			public void handle(Hero hero, LivingEntity target, Beam.PointData pointData) {
-				if (damageCheck(hero.getPlayer(), target)) {
-					double beamDamage = SkillConfigManager.getUseSetting(hero, SkillDisarray.this, SkillSetting.DAMAGE, 150d, false);
-					double beamDamageIncrease = SkillConfigManager.getUseSetting(hero, SkillDisarray.this, SkillSetting.DAMAGE_INCREASE_PER_INTELLECT, 1d, false);
-					beamDamage += hero.getAttributeValue(AttributeType.INTELLECT) * beamDamageIncrease;
+		castBeam(hero, beam, (hero1, target, pointData) -> {
+			if (damageCheck(hero1.getPlayer(), target)) {
+				double beamDamage = SkillConfigManager.getUseSetting(hero1, SkillDisarray.this, SkillSetting.DAMAGE, 150d, false);
+				double beamDamageIncrease = SkillConfigManager.getUseSetting(hero1, SkillDisarray.this, SkillSetting.DAMAGE_INCREASE_PER_INTELLECT, 1d, false);
+				beamDamage += hero1.getAttributeValue(AttributeType.INTELLECT) * beamDamageIncrease;
 
-					damageEntity(target, hero.getPlayer(), beamDamage, EntityDamageEvent.DamageCause.MAGIC, false);
-				}
+				damageEntity(target, hero1.getPlayer(), beamDamage, EntityDamageEvent.DamageCause.MAGIC, false);
 			}
 		});
 

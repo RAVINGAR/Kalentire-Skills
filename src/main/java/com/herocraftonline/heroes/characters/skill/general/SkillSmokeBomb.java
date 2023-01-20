@@ -7,7 +7,11 @@ import com.herocraftonline.heroes.characters.effects.Effect;
 import com.herocraftonline.heroes.characters.effects.EffectType;
 import com.herocraftonline.heroes.characters.effects.common.InvisibleEffect;
 import com.herocraftonline.heroes.characters.effects.common.SpeedEffect;
-import com.herocraftonline.heroes.characters.skill.*;
+import com.herocraftonline.heroes.characters.skill.ActiveSkill;
+import com.herocraftonline.heroes.characters.skill.Skill;
+import com.herocraftonline.heroes.characters.skill.SkillConfigManager;
+import com.herocraftonline.heroes.characters.skill.SkillSetting;
+import com.herocraftonline.heroes.characters.skill.SkillType;
 import com.herocraftonline.heroes.chat.ChatComponents;
 import com.herocraftonline.heroes.util.Messaging;
 import com.herocraftonline.heroes.util.Util;
@@ -16,13 +20,12 @@ import org.bukkit.Particle;
 import org.bukkit.Sound;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
-import org.bukkit.util.Vector;
 
 public class SkillSmokeBomb extends ActiveSkill {
     private String applyText;
     private String expireText;
 
-    public SkillSmokeBomb(Heroes plugin) {
+    public SkillSmokeBomb(final Heroes plugin) {
         super(plugin, "SmokeBomb");
         setDescription("Vanish in a smokebomb! " +
                 "You will not be visible to other players for the next $1 second(s). " +
@@ -39,15 +42,15 @@ public class SkillSmokeBomb extends ActiveSkill {
     }
 
     @Override
-    public String getDescription(Hero hero) {
-        int duration = SkillConfigManager.getScaledUseSettingInt(hero, this, SkillSetting.DURATION, false);
+    public String getDescription(final Hero hero) {
+        final int duration = SkillConfigManager.getScaledUseSettingInt(hero, this, SkillSetting.DURATION, false);
 
         return getDescription().replace("$1", Util.decFormat.format(duration / 1000.0));
     }
 
     @Override
     public ConfigurationSection getDefaultConfig() {
-        ConfigurationSection config = super.getDefaultConfig();
+        final ConfigurationSection config = super.getDefaultConfig();
         config.set(SkillSetting.DURATION.node(), 5500);
         config.set(SkillSetting.APPLY_TEXT.node(), ChatComponents.GENERIC_SKILL + "Someone vanished in a cloud of smoke!");
         config.set(SkillSetting.EXPIRE_TEXT.node(), ChatComponents.GENERIC_SKILL + "%hero% has reappeared!");
@@ -60,21 +63,21 @@ public class SkillSmokeBomb extends ActiveSkill {
         super.init();
 
         applyText = SkillConfigManager.getRaw(this, SkillSetting.APPLY_TEXT,
-                ChatComponents.GENERIC_SKILL + "Someone vanished in a cloud of smoke!")
-                .replace("%hero%", "$1");
+                        ChatComponents.GENERIC_SKILL + "Someone vanished in a cloud of smoke!")
+                .replace("%hero%", "$1").replace("$hero$", "$1");
 
         expireText = SkillConfigManager.getRaw(this, SkillSetting.EXPIRE_TEXT,
-                ChatComponents.GENERIC_SKILL + "%hero% has reappeared!")
-                .replace("%hero%", "$1");
+                        ChatComponents.GENERIC_SKILL + "%hero% has reappeared!")
+                .replace("%hero%", "$1").replace("$hero$", "$1");
     }
 
     @Override
-    public SkillResult use(Hero hero, String[] args) {
-        Player player = hero.getPlayer();
+    public SkillResult use(final Hero hero, final String[] args) {
+        final Player player = hero.getPlayer();
 
         broadcastExecuteText(hero);
 
-        long duration = SkillConfigManager.getScaledUseSettingInt(hero, this, SkillSetting.DURATION, false);
+        final long duration = SkillConfigManager.getScaledUseSettingInt(hero, this, SkillSetting.DURATION, false);
         escape(hero, player, duration);
 
         //Util.playClientEffect(player, Particle.EXPLOSION_HUGE.toString(), new Vector(0, 0, 0), 1F, 10, true);
@@ -84,9 +87,9 @@ public class SkillSmokeBomb extends ActiveSkill {
         return SkillResult.NORMAL;
     }
 
-    public void escape(Hero hero, Player player, long duration) {
+    public void escape(final Hero hero, final Player player, final long duration) {
         boolean removed = false;
-        for (Effect effect : hero.getEffects()) {
+        for (final Effect effect : hero.getEffects()) {
             if (effect.isType(EffectType.SLOW) ||
                     effect.isType(EffectType.VELOCITY_DECREASING) ||
                     effect.isType(EffectType.WALK_SPEED_DECREASING) ||
@@ -98,7 +101,7 @@ public class SkillSmokeBomb extends ActiveSkill {
         }
 
         if (removed) {
-            int amplifier = SkillConfigManager.getUseSetting(hero, this, "speed-amplifier-on-effect-break", 2, false);
+            final int amplifier = SkillConfigManager.getUseSetting(hero, this, "speed-amplifier-on-effect-break", 2, false);
             if (duration > 0 && amplifier > 0) {
                 hero.addEffect(new SpeedEffect(this, getName(), player, duration, amplifier, null, null));
                 player.getWorld().playSound(player.getLocation(), Sound.ENTITY_BAT_DEATH, 0.8F, 1.0F);
@@ -107,15 +110,15 @@ public class SkillSmokeBomb extends ActiveSkill {
     }
 
     public class SmokeEffect extends InvisibleEffect {
-        SmokeEffect(Skill skill, Player applier, long duration) {
+        SmokeEffect(final Skill skill, final Player applier, final long duration) {
             super(skill, "Smoked", applier, duration, null, null);
         }
 
         @Override
-        public void applyToHero(Hero hero) {
+        public void applyToHero(final Hero hero) {
             super.applyToHero(hero);
 
-            Player player = hero.getPlayer();
+            final Player player = hero.getPlayer();
             if (applyText != null && applyText.length() > 0) {
                 // Override the standard invis effect message display so that we actually display a message to nearby players
                 //      even though we have a "silent actions" effect type.
@@ -126,10 +129,10 @@ public class SkillSmokeBomb extends ActiveSkill {
         }
 
         @Override
-        public void removeFromHero(Hero hero) {
+        public void removeFromHero(final Hero hero) {
             super.removeFromHero(hero);
 
-            Player player = hero.getPlayer();
+            final Player player = hero.getPlayer();
             if (expireText != null && expireText.length() > 0) {
                 // Override the standard invis effect message display so that we actually display a message to nearby players
                 //      even though we have a "silent actions" effect type.

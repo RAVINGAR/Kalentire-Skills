@@ -139,7 +139,7 @@ public class SkillDeathMark extends ActiveSkill implements Listenable {
         }
     }
 
-    public class DeathMarkingEffect extends PeriodicExpirableEffect {
+    public static class DeathMarkingEffect extends PeriodicExpirableEffect {
         private Player target;
         private double damageIncreasePercent;
 

@@ -13,10 +13,10 @@ allprojects {
     apply plugin: 'idea'
 
     group 'com.herocraftonline.heroes.characters.skill'
-    version '1.9.25'
+    version '1.9.27'
 
-    sourceCompatibility = JavaVersion.VERSION_16
-    targetCompatibility = JavaVersion.VERSION_16
+    sourceCompatibility = JavaVersion.VERSION_1_8
+    targetCompatibility = JavaVersion.VERSION_1_8
 }
 repositories {
     //mavenLocal()
@@ -81,14 +81,13 @@ ext.getGitHash = { ->
 }
 
 dependencies {
-    compileOnly "com.herocraftonline.heroes:Heroes:1.9.25-SNAPSHOT"
+    compileOnly "com.herocraftonline.heroes:Heroes:1.9.28-TEST-SNAPSHOT"
     compileOnly "org.spigotmc:spigot-api:1.18.2-R0.1-SNAPSHOT"
     compileOnly "net.milkbowl.vault:VaultAPI:1.7"
     compileOnly "com.sk89q.worldguard:worldguard-bukkit:7.0.3"
     compileOnly "com.comphenix.protocol:ProtocolLib:4.7.0"
     compileOnly "LibsDisguises:LibsDisguises:10.0.26"
     compileOnly "com.griefcraft.lwc:LWC:4.4.0"
-    compileOnly "de.slikey:EffectLib:6.1"
     compileOnly "com.herocraftonline:townships:1.1.0-SNAPSHOT"
     compileOnly "fr.neatmonster:nocheatplus:3.16.1-SNAPSHOT"
     compileOnly 'io.lumine:Mythic-Dist:5.1.0-SNAPSHOT'
@@ -1058,8 +1057,8 @@ abstract class CompilePackTask extends DefaultTask {
                 , encoding: "utf-8"
                 , fork: "yes"
                 , classpath: project.configurations.packClasspath.asPath
-                , source: 16
-                , target: 16)
+                , source: 8
+                , target: 8)
 
         ant.delete(dir: src)
 

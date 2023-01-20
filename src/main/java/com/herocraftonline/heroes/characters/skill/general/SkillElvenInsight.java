@@ -55,7 +55,7 @@ public class SkillElvenInsight extends PassiveSkill {
     }
 
     private class ElvenInsightListener implements Listener {
-        private Skill skill;
+        private final Skill skill;
 
         public ElvenInsightListener(Skill skill) {
             this.skill = skill;

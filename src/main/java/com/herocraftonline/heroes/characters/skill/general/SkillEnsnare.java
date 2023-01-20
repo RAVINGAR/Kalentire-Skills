@@ -16,14 +16,13 @@ import org.bukkit.Sound;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
-import org.bukkit.Sound;
 
 public class SkillEnsnare extends TargettedSkill {
 
     private String applyText;
     private String expireText;
 
-    public SkillEnsnare(Heroes plugin) {
+    public SkillEnsnare(final Heroes plugin) {
         super(plugin, "Ensare");
         setDescription("You ensare your target for $1 second(s).");
         setUsage("/skill ensnare");
@@ -33,16 +32,16 @@ public class SkillEnsnare extends TargettedSkill {
     }
 
     @Override
-    public String getDescription(Hero hero) {
-        int duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, 3000, false);
-        String formattedDuration = Util.decFormat.format(duration / 1000.0);
+    public String getDescription(final Hero hero) {
+        final int duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, 3000, false);
+        final String formattedDuration = Util.decFormat.format(duration / 1000.0);
 
         return getDescription().replace("$1", formattedDuration);
     }
 
     @Override
     public ConfigurationSection getDefaultConfig() {
-        ConfigurationSection node = super.getDefaultConfig();
+        final ConfigurationSection node = super.getDefaultConfig();
 
         node.set(SkillSetting.USE_TEXT.node(), ChatComponents.GENERIC_SKILL + "%target% was ensnared by %hero%!");
         node.set(SkillSetting.MAX_DISTANCE.node(), 4);
@@ -57,26 +56,27 @@ public class SkillEnsnare extends TargettedSkill {
     public void init() {
         super.init();
 
-        applyText = SkillConfigManager.getRaw(this, SkillSetting.APPLY_TEXT, ChatComponents.GENERIC_SKILL + "%target% was ensnared by %hero%!").replace("%target%", "$1");
-        expireText = SkillConfigManager.getRaw(this, SkillSetting.EXPIRE_TEXT, ChatComponents.GENERIC_SKILL + "%target% has broken free!").replace("%target%", "$1");
+        applyText = SkillConfigManager.getRaw(this, SkillSetting.APPLY_TEXT, ChatComponents.GENERIC_SKILL + "%target% was ensnared by %hero%!").replace("%target%", "$1").replace("$target$", "$1");
+        expireText = SkillConfigManager.getRaw(this, SkillSetting.EXPIRE_TEXT, ChatComponents.GENERIC_SKILL + "%target% has broken free!").replace("%target%", "$1").replace("$target$", "$1");
     }
 
     @Override
-    public SkillResult use(Hero hero, final LivingEntity target, String[] args) {
-        Player player = hero.getPlayer();
+    public SkillResult use(final Hero hero, final LivingEntity target, final String[] args) {
+        final Player player = hero.getPlayer();
 
-        if (!(target instanceof Player))
+        if (!(target instanceof Player)) {
             return SkillResult.INVALID_TARGET;
+        }
 
-        Hero targetHero = plugin.getCharacterManager().getHero((Player) target);
+        final Hero targetHero = plugin.getCharacterManager().getHero((Player) target);
 
-        long duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, 3000, false);
-        int strDecrease = SkillConfigManager.getUseSetting(hero, this, "agi-decrease", 500, false);
+        final long duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, 3000, false);
+        final int strDecrease = SkillConfigManager.getUseSetting(hero, this, "agi-decrease", 500, false);
         //targetHero.addEffect(new StrDecreaseEffect(this, player, duration, applyText, expireText));
 
-        AttributeDecreaseEffect aEffect = new AttributeDecreaseEffect(this, "AgiDecreaseEffect", player, duration, AttributeType.DEXTERITY, strDecrease, applyText, expireText);
-        if(hero.hasEffect("AgiDecreaseEffect")) {
-            if(((AttributeDecreaseEffect) hero.getEffect("AgiDecreaseEffect")).getDelta() > aEffect.getDelta()) {
+        final AttributeDecreaseEffect aEffect = new AttributeDecreaseEffect(this, "AgiDecreaseEffect", player, duration, AttributeType.DEXTERITY, strDecrease, applyText, expireText);
+        if (hero.hasEffect("AgiDecreaseEffect")) {
+            if (((AttributeDecreaseEffect) hero.getEffect("AgiDecreaseEffect")).getDelta() > aEffect.getDelta()) {
                 player.sendMessage("Target has a more powerful effect already!");
                 return SkillResult.CANCELLED;
             }

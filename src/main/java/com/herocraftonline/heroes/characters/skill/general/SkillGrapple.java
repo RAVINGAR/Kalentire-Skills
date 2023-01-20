@@ -121,7 +121,7 @@ public class SkillGrapple extends ActiveSkill {
         return SkillResult.INVALID_TARGET;
     }
 
-    private class TargetFinder {
+    private static class TargetFinder {
         public LivingEntity Target = null;
     }
 
@@ -175,12 +175,7 @@ public class SkillGrapple extends ActiveSkill {
 
         long exemptionDuration = SkillConfigManager.getUseSetting(hero, this, "ncp-exemption-duration", 0, false);
         if (exemptionDuration > 0) {
-            NCPUtils.applyExemptions(player, new NCPFunction() {
-                @Override
-                public void execute() {
-                    player.setVelocity(grappleVector);
-                }
-            }, Lists.newArrayList("MOVING"), exemptionDuration);
+            NCPUtils.applyExemptions(player, () -> player.setVelocity(grappleVector), Lists.newArrayList("MOVING"), exemptionDuration);
         } else {
             player.setVelocity(grappleVector);
         }

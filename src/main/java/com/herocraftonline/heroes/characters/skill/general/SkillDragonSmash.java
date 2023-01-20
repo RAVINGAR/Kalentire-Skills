@@ -32,9 +32,9 @@ import java.util.List;
 
 public class SkillDragonSmash extends ActiveSkill implements Listenable {
 
-    private static String launchedToggleableDragonSmashEffectName = "DragonSmashLaunched";
-    private static String droppingDragonSmashEffectName = "DragonSmashDrop";
-    private List<FallingBlock> fallingBlocks = new ArrayList<FallingBlock>();
+    private static final String launchedToggleableDragonSmashEffectName = "DragonSmashLaunched";
+    private static final String droppingDragonSmashEffectName = "DragonSmashDrop";
+    private final List<FallingBlock> fallingBlocks = new ArrayList<>();
     private final Listener listener;
 
     //fixme needs a lookover if it works
@@ -111,19 +111,16 @@ public class SkillDragonSmash extends ActiveSkill implements Listenable {
         player.setVelocity(new Vector(currentVelocity.getX(), currentVelocity.getY() + vPowerUp, currentVelocity.getZ()));
         runPeriodicCloudEffects(player, stopJumpDelayTicks);
 
-        Bukkit.getServer().getScheduler().runTaskLater(plugin, new Runnable() {
-            @Override
-            public void run() {
-                // Only negate velocity (to stop jump and hence should start falling) and protect from the fall?
-                if (!hero.hasEffect(droppingDragonSmashEffectName)) {
-                    // seems to protect from fall damage, since damage would be based off this?
-                    // Edit: This does not protect from fall, though wish it worked like that
-                    player.setFallDistance(-512F);
+        Bukkit.getServer().getScheduler().runTaskLater(plugin, () -> {
+            // Only negate velocity (to stop jump and hence should start falling) and protect from the fall?
+            if (!hero.hasEffect(droppingDragonSmashEffectName)) {
+                // seems to protect from fall damage, since damage would be based off this?
+                // Edit: This does not protect from fall, though wish it worked like that
+                player.setFallDistance(-512F);
 
-                    // negate previous jump velocity, will free fall now
-                    final Vector v = player.getVelocity();
-                    player.setVelocity(new Vector(v.getX(), 0, v.getZ()));
-                }
+                // negate previous jump velocity, will free fall now
+                final Vector v = player.getVelocity();
+                player.setVelocity(new Vector(v.getX(), 0, v.getZ()));
             }
         }, stopJumpDelayTicks);
         return SkillResult.NORMAL;
@@ -153,13 +150,13 @@ public class SkillDragonSmash extends ActiveSkill implements Listenable {
         return listener;
     }
 
-    private class LaunchedDragonSmashEffect extends ExpirableEffect {
+    private static class LaunchedDragonSmashEffect extends ExpirableEffect {
         LaunchedDragonSmashEffect(Skill skill, Player player, long duration) {
             super(skill, launchedToggleableDragonSmashEffectName, player, duration);
         }
     }
 
-    private class DroppingDragonSmashEffect extends Effect {
+    private static class DroppingDragonSmashEffect extends Effect {
         DroppingDragonSmashEffect(Skill skill, Player player) {
             super(skill, droppingDragonSmashEffectName, player);
         }

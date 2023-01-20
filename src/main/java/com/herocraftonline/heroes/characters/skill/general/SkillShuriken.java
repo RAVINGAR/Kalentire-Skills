@@ -32,7 +32,7 @@ import java.util.logging.Level;
 
 public class SkillShuriken extends PassiveSkill {
 
-    private Map<Arrow, Long> shurikens = new LinkedHashMap<Arrow, Long>(100) {
+    private final Map<Arrow, Long> shurikens = new LinkedHashMap<Arrow, Long>(100) {
         private static final long serialVersionUID = 1L;
 
         protected boolean removeEldestEntry(Map.Entry<Arrow, Long> eldest) {
@@ -86,7 +86,7 @@ public class SkillShuriken extends PassiveSkill {
 
     public class SkillEntityListener implements Listener {
 
-        private Skill skill;
+        private final Skill skill;
 
         public SkillEntityListener(Skill skill) {
             this.skill = skill;
@@ -172,14 +172,10 @@ public class SkillShuriken extends PassiveSkill {
                 return;
 
             // Delete the projectile so it cannot be picked up by any players.
-            Bukkit.getScheduler().runTaskLater(plugin, new Runnable() {
-                @Override
-                public void run() {
-                    shurikens.remove(projectile);
-                    if (projectile != null)
-                        projectile.remove();
-                }
-
+            Bukkit.getScheduler().runTaskLater(plugin, () -> {
+                shurikens.remove(projectile);
+                if (projectile != null)
+                    projectile.remove();
             }, 2L);
         }
 
@@ -261,34 +257,30 @@ public class SkillShuriken extends PassiveSkill {
         int i = 1;
         for (double a = 0; a <= degreesRad; a += diff) {
             final double finalA = a;
-            Bukkit.getScheduler().runTaskLater(plugin, new Runnable() {
-                @Override
-                public void run() {
-                    // Convert yaw to radians
-                    double yaw = player.getLocation().getYaw();
-                    yaw = yaw * (Math.PI / 180);
+            Bukkit.getScheduler().runTaskLater(plugin, () -> {
+                // Convert yaw to radians
+                double yaw = player.getLocation().getYaw();
+                yaw = yaw * (Math.PI / 180);
 
-                    // Offset Yaw
-                    yaw = yaw + degreeOffsetRad;
+                // Offset Yaw
+                yaw = yaw + degreeOffsetRad;
 
-                    // Convert Pitch to radians
-                    double pitch = player.getEyeLocation().getPitch();
-                    pitch *= -1;    // Invert pitch
-                    pitch = pitch * (Math.PI / 180);
+                // Convert Pitch to radians
+                double pitch = player.getEyeLocation().getPitch();
+                pitch *= -1;    // Invert pitch
+                pitch = pitch * (Math.PI / 180);
 
-                    Arrow shuriken = player.launchProjectile(Arrow.class);
-                    double yValue = shuriken.getVelocity().getY();
+                Arrow shuriken = player.launchProjectile(Arrow.class);
+                double yValue = shuriken.getVelocity().getY();
 
-                    // Create our velocity direction based on where the player is facing.
-                    Vector vel = new Vector(Math.cos(yaw + finalA), 0, Math.sin(yaw + finalA));
-                    vel.multiply(velocityMultiplier);
-                    vel.setY(yValue * velocityMultiplier);
+                // Create our velocity direction based on where the player is facing.
+                Vector vel = new Vector(Math.cos(yaw + finalA), 0, Math.sin(yaw + finalA));
+                vel.multiply(velocityMultiplier);
+                vel.setY(yValue * velocityMultiplier);
 
-                    shuriken.setVelocity(vel);
-                    shuriken.setShooter(player);
-                    shurikens.put(shuriken, System.currentTimeMillis());
-                }
-
+                shuriken.setVelocity(vel);
+                shuriken.setShooter(player);
+                shurikens.put(shuriken, System.currentTimeMillis());
             }, (long) ((interval * i) * 20));
 
             i++;
@@ -300,7 +292,7 @@ public class SkillShuriken extends PassiveSkill {
     }
 
     // Effect required for implementing an internal cooldown
-    private class ShurikenTossCooldownEffect extends ExpirableEffect {
+    private static class ShurikenTossCooldownEffect extends ExpirableEffect {
         public ShurikenTossCooldownEffect(Skill skill, Player applier, long duration) {
             super(skill, "ShurikenTossCooldownEffect", applier, duration);
         }

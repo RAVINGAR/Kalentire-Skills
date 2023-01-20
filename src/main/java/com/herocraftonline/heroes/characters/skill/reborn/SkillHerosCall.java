@@ -8,10 +8,13 @@ import com.herocraftonline.heroes.characters.Monster;
 import com.herocraftonline.heroes.characters.effects.EffectType;
 import com.herocraftonline.heroes.characters.effects.ExpirableEffect;
 import com.herocraftonline.heroes.characters.effects.PeriodicExpirableEffect;
-import com.herocraftonline.heroes.characters.skill.*;
+import com.herocraftonline.heroes.characters.skill.ActiveSkill;
+import com.herocraftonline.heroes.characters.skill.Skill;
+import com.herocraftonline.heroes.characters.skill.SkillConfigManager;
+import com.herocraftonline.heroes.characters.skill.SkillSetting;
+import com.herocraftonline.heroes.characters.skill.SkillType;
 import com.herocraftonline.heroes.chat.ChatComponents;
 import com.herocraftonline.heroes.util.Util;
-import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.Particle;
 import org.bukkit.Sound;
@@ -29,12 +32,12 @@ import java.util.List;
 
 public class SkillHerosCall extends ActiveSkill {
 
-    private String buffEffectName = "HeroicCalling";
-    private String debuffEffectName = "HeroicPurpose";
+    private final String buffEffectName = "HeroicCalling";
+    private final String debuffEffectName = "HeroicPurpose";
     private String applyText;
     private String expireText;
 
-    public SkillHerosCall(Heroes plugin) {
+    public SkillHerosCall(final Heroes plugin) {
         super(plugin, "HerosCall");
         setDescription("You taunt all nearby enemies in a $1 block radius around you. " +
                 "The effect lasts for $2 second(s). " +
@@ -46,9 +49,9 @@ public class SkillHerosCall extends ActiveSkill {
     }
 
     @Override
-    public String getDescription(Hero hero) {
-        double radius = SkillConfigManager.getScaledUseSettingDouble(hero, this, SkillSetting.RADIUS, false);
-        long duration = SkillConfigManager.getScaledUseSettingInt(hero, this, SkillSetting.DURATION, false);
+    public String getDescription(final Hero hero) {
+        final double radius = SkillConfigManager.getScaledUseSettingDouble(hero, this, SkillSetting.RADIUS, false);
+        final long duration = SkillConfigManager.getScaledUseSettingInt(hero, this, SkillSetting.DURATION, false);
 
         return getDescription()
                 .replace("$1", Util.decFormat.format(radius))
@@ -57,7 +60,7 @@ public class SkillHerosCall extends ActiveSkill {
 
     @Override
     public ConfigurationSection getDefaultConfig() {
-        ConfigurationSection config = super.getDefaultConfig();
+        final ConfigurationSection config = super.getDefaultConfig();
         config.set(SkillSetting.ON_INTERRUPT_FORCE_COOLDOWN.node(), 2000);
         config.set(SkillSetting.RADIUS.node(), 8.0);
         config.set("transform-period", 500);
@@ -71,56 +74,59 @@ public class SkillHerosCall extends ActiveSkill {
         return config;
     }
 
+    @Override
     public void init() {
         super.init();
 
         applyText = SkillConfigManager.getRaw(this, SkillSetting.APPLY_TEXT,
-                ChatComponents.GENERIC_SKILL + "%target% is filled with a Hero's call and wishes to slay %hero%!")
-                .replace("%target%", "$1")
-                .replace("%hero%", "$2");
+                        ChatComponents.GENERIC_SKILL + "%target% is filled with a Hero's call and wishes to slay %hero%!")
+                .replace("%target%", "$1").replace("$target$", "$1")
+                .replace("%hero%", "$2").replace("$hero$", "$2");
 
         expireText = SkillConfigManager.getRaw(this, SkillSetting.EXPIRE_TEXT,
-                ChatComponents.GENERIC_SKILL + "%target% is no longer filled with heroic purpose!")
-                .replace("%target%", "$1");
+                        ChatComponents.GENERIC_SKILL + "%target% is no longer filled with heroic purpose!")
+                .replace("%target%", "$1").replace("$target$", "$1");
     }
 
     @Override
-    public SkillResult use(Hero hero, String[] args) {
-        Player player = hero.getPlayer();
+    public SkillResult use(final Hero hero, final String[] args) {
+        final Player player = hero.getPlayer();
 
-        double radius = SkillConfigManager.getScaledUseSettingDouble(hero, this, SkillSetting.RADIUS, false);
-        long duration = SkillConfigManager.getScaledUseSettingInt(hero, this, SkillSetting.DURATION, false);
+        final double radius = SkillConfigManager.getScaledUseSettingDouble(hero, this, SkillSetting.RADIUS, false);
+        final long duration = SkillConfigManager.getScaledUseSettingInt(hero, this, SkillSetting.DURATION, false);
 
-        int period = hero.hasEffect("EnderBeastTransformed")
+        final int period = hero.hasEffect("EnderBeastTransformed")
                 ? SkillConfigManager.getUseSetting(hero, this, "transform-period", 500, false)
                 : SkillConfigManager.getUseSetting(hero, this, SkillSetting.PERIOD, 4000, false);
 
-        double maxDistance = SkillConfigManager.getUseSetting(hero, this, "maximum-effective-distance", 40.0, false);
-        double pullPowerReduction = SkillConfigManager.getUseSetting(hero, this, "pull-power-reduction", 6.0, false);
-        double maxAngle = SkillConfigManager.getUseSetting(hero, this, "taunt-required-fov", 30.0, false);
+        final double maxDistance = SkillConfigManager.getUseSetting(hero, this, "maximum-effective-distance", 40.0, false);
+        final double pullPowerReduction = SkillConfigManager.getUseSetting(hero, this, "pull-power-reduction", 6.0, false);
+        final double maxAngle = SkillConfigManager.getUseSetting(hero, this, "taunt-required-fov", 30.0, false);
 
         broadcastExecuteText(hero);
 
-        List<CharacterTemplate> actualCallTargets = new ArrayList<CharacterTemplate>();
-        List<Entity> entities = hero.getPlayer().getNearbyEntities(radius, radius, radius);
-        for (Entity entity : entities) {
+        final List<CharacterTemplate> actualCallTargets = new ArrayList<>();
+        final List<Entity> entities = hero.getPlayer().getNearbyEntities(radius, radius, radius);
+        for (final Entity entity : entities) {
             if (!(entity instanceof LivingEntity)) {
                 continue;
             }
 
-            LivingEntity target = (LivingEntity) entity;
-            if (!damageCheck(player, target))
+            final LivingEntity target = (LivingEntity) entity;
+            if (!damageCheck(player, target)) {
                 continue;
+            }
 
-            CharacterTemplate targetCT = plugin.getCharacterManager().getCharacter(target);
+            final CharacterTemplate targetCT = plugin.getCharacterManager().getCharacter(target);
             target.getWorld().spawnParticle(Particle.SQUID_INK, target.getLocation().add(0, 1, 0), 5, 1.0F, 0.5F, 1.0F, 0);
-            if (targetCT.hasEffect(debuffEffectName))
+            if (targetCT.hasEffect(debuffEffectName)) {
                 targetCT.removeEffect(hero.getEffect(debuffEffectName));
+            }
 
-            HeroicPurposeEffect callEffect = new HeroicPurposeEffect(this, player, period, duration, maxDistance, maxAngle, pullPowerReduction);
+            final HeroicPurposeEffect callEffect = new HeroicPurposeEffect(this, player, period, duration, maxDistance, maxAngle, pullPowerReduction);
             targetCT.addEffect(callEffect);
             if (targetCT instanceof Hero) {
-                long interruptCd = SkillConfigManager.getUseSetting(hero, this, SkillSetting.ON_INTERRUPT_FORCE_COOLDOWN, 2000, false);
+                final long interruptCd = SkillConfigManager.getUseSetting(hero, this, SkillSetting.ON_INTERRUPT_FORCE_COOLDOWN, 2000, false);
                 ((Hero) targetCT).interruptDelayedSkill(interruptCd);
             }
             actualCallTargets.add(targetCT);
@@ -138,18 +144,21 @@ public class SkillHerosCall extends ActiveSkill {
 
         private final List<CharacterTemplate> callTargets;
 
-        public HeroicCallingEffect(Skill skill, Player applier, long duration, List<CharacterTemplate> callTargets) {
+        public HeroicCallingEffect(final Skill skill, final Player applier, final long duration, final List<CharacterTemplate> callTargets) {
             super(skill, buffEffectName, applier, duration);
             this.callTargets = callTargets;
         }
 
         @Override
-        public void removeFromHero(Hero hero) {
-            for (CharacterTemplate target : callTargets) {
+        public void removeFromHero(final Hero hero) {
+            for (final CharacterTemplate target : callTargets) {
                 if (target == null) // Does this happen if one of the players logs out? I have no idea tbh.
+                {
                     continue;
-                if (target.hasEffect(debuffEffectName))
+                }
+                if (target.hasEffect(debuffEffectName)) {
                     target.removeEffect(target.getEffect(debuffEffectName));
+                }
             }
         }
     }
@@ -159,7 +168,7 @@ public class SkillHerosCall extends ActiveSkill {
         private final double pullPowerReduction;
         private final double maxAngleDegrees;
 
-        HeroicPurposeEffect(Skill skill, Player applier, long period, long duration, double maxDistance, double maxAngle, double pullPowerReduction) {
+        HeroicPurposeEffect(final Skill skill, final Player applier, final long period, final long duration, final double maxDistance, final double maxAngle, final double pullPowerReduction) {
             super(skill, debuffEffectName, applier, period, duration, applyText, expireText);
             this.maxDistanceSquared = maxDistance * maxDistance;
             this.maxAngleDegrees = maxAngle * 0.5;
@@ -175,47 +184,49 @@ public class SkillHerosCall extends ActiveSkill {
         }
 
         @Override
-        public void tickHero(Hero hero) {
-            Player victim = hero.getPlayer();
-            Hero currentlyCallingHero = plugin.getCharacterManager().getHero((Player) applier);
-            if (currentlyCallingHero == null || !currentlyCallingHero.hasEffect(buffEffectName) || victim.getLocation().distanceSquared(applier.getLocation()) > maxDistanceSquared)
+        public void tickHero(final Hero hero) {
+            final Player victim = hero.getPlayer();
+            final Hero currentlyCallingHero = plugin.getCharacterManager().getHero((Player) applier);
+            if (currentlyCallingHero == null || !currentlyCallingHero.hasEffect(buffEffectName) || victim.getLocation().distanceSquared(applier.getLocation()) > maxDistanceSquared) {
                 hero.removeEffect(this);
+            }
 
-            Location callerLoc = applier.getLocation();
+            final Location callerLoc = applier.getLocation();
             faceTargetIfNecessary(victim, applier.getEyeLocation());
             pullToTarget(victim, callerLoc);
         }
 
         @Override
-        public void tickMonster(Monster monster) {
-            LivingEntity victim = monster.getEntity();
-            Hero currentlyCallingHero = plugin.getCharacterManager().getHero((Player) applier);
-            if (currentlyCallingHero == null || !currentlyCallingHero.hasEffect(buffEffectName) || victim.getLocation().distanceSquared(applier.getLocation()) > maxDistanceSquared)
+        public void tickMonster(final Monster monster) {
+            final LivingEntity victim = monster.getEntity();
+            final Hero currentlyCallingHero = plugin.getCharacterManager().getHero((Player) applier);
+            if (currentlyCallingHero == null || !currentlyCallingHero.hasEffect(buffEffectName) || victim.getLocation().distanceSquared(applier.getLocation()) > maxDistanceSquared) {
                 monster.removeEffect(this);
+            }
 
-            Location callerLoc = applier.getLocation();
+            final Location callerLoc = applier.getLocation();
             faceTargetIfNecessary(victim, applier.getEyeLocation());
             pullToTarget(victim, callerLoc);
 
             monster.setTargetIfAble(applier);
         }
 
-        private void faceTargetIfNecessary(LivingEntity victim, Location callerLocation) {
-            Location victimLocation = victim.getEyeLocation();
-            Vector difference = callerLocation.toVector().subtract(victimLocation.toVector());
-            double angleDegrees = Math.toDegrees(victimLocation.getDirection().angle(difference));
+        private void faceTargetIfNecessary(final LivingEntity victim, final Location callerLocation) {
+            final Location victimLocation = victim.getEyeLocation();
+            final Vector difference = callerLocation.toVector().subtract(victimLocation.toVector());
+            final double angleDegrees = Math.toDegrees(victimLocation.getDirection().angle(difference));
 
             if (angleDegrees > maxAngleDegrees) {
-                Vector dir = callerLocation.clone().subtract(victim.getEyeLocation()).toVector();
-                Location loc = victim.getLocation().setDirection(dir);
+                final Vector dir = callerLocation.clone().subtract(victim.getEyeLocation()).toVector();
+                final Location loc = victim.getLocation().setDirection(dir);
                 victim.teleport(loc, PlayerTeleportEvent.TeleportCause.PLUGIN);
             }
         }
 
-        private void pullToTarget(LivingEntity victim, Location callerLocation) {
-            Location victimLocation = victim.getLocation();
-            double xDir = (callerLocation.getX() - victimLocation.getX()) / pullPowerReduction;
-            double zDir = (callerLocation.getZ() - victimLocation.getZ()) / pullPowerReduction;
+        private void pullToTarget(final LivingEntity victim, final Location callerLocation) {
+            final Location victimLocation = victim.getLocation();
+            final double xDir = (callerLocation.getX() - victimLocation.getX()) / pullPowerReduction;
+            final double zDir = (callerLocation.getZ() - victimLocation.getZ()) / pullPowerReduction;
             final Vector v = new Vector(xDir, 0, zDir);
             victim.setVelocity(victim.getVelocity().add(v));
         }

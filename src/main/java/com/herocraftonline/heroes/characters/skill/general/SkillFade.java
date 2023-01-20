@@ -23,7 +23,7 @@ public class SkillFade extends ActiveSkill {
     private String applyText;
     private String expireText;
     private String failText;
-    private FadeMoveChecker moveChecker;
+    private final FadeMoveChecker moveChecker;
 
     public SkillFade(Heroes plugin) {
         super(plugin, "Fade");
@@ -87,8 +87,8 @@ public class SkillFade extends ActiveSkill {
 
     public class FadeMoveChecker implements Runnable {
 
-        private Map<Hero, Location> oldLocations = new HashMap<>();
-        private Skill skill;
+        private final Map<Hero, Location> oldLocations = new HashMap<>();
+        private final Skill skill;
 
         FadeMoveChecker(Skill skill) {
             this.skill = skill;

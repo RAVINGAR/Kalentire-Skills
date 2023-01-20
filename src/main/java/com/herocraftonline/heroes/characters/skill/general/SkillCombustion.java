@@ -29,7 +29,7 @@ import static com.herocraftonline.heroes.util.GeometryUtil.circle;
 
 
 public class SkillCombustion extends ActiveSkill {
-    private HashMap<SmallFireball, Player> fireballs = new HashMap<SmallFireball, Player>();
+    private final HashMap<SmallFireball, Player> fireballs = new HashMap<>();
 
     public SkillCombustion(Heroes plugin) {
         super(plugin, "Combustion");
@@ -81,8 +81,6 @@ public class SkillCombustion extends ActiveSkill {
             fireballs.put(fireball, player);
 
             final SmallFireball f = fireball;
-            final Player p = player;
-            final Hero h = hero;
 
             new BukkitRunnable() // velocity check, 4 times
             {
@@ -141,7 +139,7 @@ public class SkillCombustion extends ActiveSkill {
     public class SkillEntityListener implements Listener {
 
         private final Skill skill;
-        private final ArrayList<LivingEntity> damagedEntities = new ArrayList<LivingEntity>();
+        private final ArrayList<LivingEntity> damagedEntities = new ArrayList<>();
 
         public SkillEntityListener(Skill skill) {
             this.skill = skill;

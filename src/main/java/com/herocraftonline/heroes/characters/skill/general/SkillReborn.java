@@ -12,7 +12,6 @@ import org.bukkit.Bukkit;
 import org.bukkit.Effect;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
-import org.bukkit.Sound;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
@@ -44,8 +43,7 @@ public class SkillReborn extends PassiveSkill {
     public String getDescription(Hero hero) {
         final double health = ((SkillConfigManager.getUseSetting(hero, this, "health-percent-on-rebirth", 0.5, false) + (SkillConfigManager.getUseSetting(hero, this, "health-increase", 0.0, false) * hero.getHeroLevel(this))) * 100);
         final int cooldown = SkillConfigManager.getUseSetting(hero, this, SkillSetting.COOLDOWN.node(), 600000, false) + (SkillConfigManager.getUseSetting(hero, this, SkillSetting.COOLDOWN_REDUCE.node(), 0, false) * hero.getHeroLevel(this));
-        final String description = getDescription().replace("$1", health + "").replace("$2", cooldown + "");
-        return description;
+        return getDescription().replace("$1", health + "").replace("$2", cooldown + "");
     }
 
     @Override
@@ -84,7 +82,7 @@ public class SkillReborn extends PassiveSkill {
                     event.setDamage(0);
                     event.setCancelled(true);
                     hero.heal(hrh.getDelta());
-                    final long cooldown = SkillConfigManager.getUseSetting(hero, skill, SkillSetting.COOLDOWN.node(), 600000, false) + (SkillConfigManager.getUseSetting(hero, skill, SkillSetting.COOLDOWN_REDUCE.node(), 0, false) * hero.getHeroLevel());
+                    final long cooldown = SkillConfigManager.getUseSetting(hero, skill, SkillSetting.COOLDOWN.node(), 600000, false) + ((long) SkillConfigManager.getUseSetting(hero, skill, SkillSetting.COOLDOWN_REDUCE.node(), 0, false) * hero.getHeroLevel());
                     hero.setCooldown("Reborn", cooldown + System.currentTimeMillis());
                     broadcast(player.getLocation(), rebornText.replace("%hero%", player.getDisplayName()));
                     player.getWorld().playEffect(player.getLocation(), Effect.SMOKE, 3);

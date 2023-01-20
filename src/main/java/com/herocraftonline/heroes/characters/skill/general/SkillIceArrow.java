@@ -2,7 +2,6 @@ package com.herocraftonline.heroes.characters.skill.general;
 
 import com.herocraftonline.heroes.Heroes;
 import com.herocraftonline.heroes.api.SkillResult;
-import com.herocraftonline.heroes.characters.CustomNameManager;
 import com.herocraftonline.heroes.characters.Hero;
 import com.herocraftonline.heroes.characters.effects.EffectType;
 import com.herocraftonline.heroes.characters.effects.common.ImbueEffect;
@@ -17,7 +16,6 @@ import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Arrow;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
-import org.bukkit.Sound;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
@@ -30,7 +28,7 @@ public class SkillIceArrow extends ActiveSkill {
     private String applyText;
     private String expireText;
 
-    public SkillIceArrow(Heroes plugin) {
+    public SkillIceArrow(final Heroes plugin) {
         super(plugin, "IceArrow");
         setDescription("Your arrows will freeze their target, but drain $1 mana per shot.");
         setUsage("/skill iarrow");
@@ -55,13 +53,13 @@ public class SkillIceArrow extends ActiveSkill {
     @Override
     public void init() {
         super.init();
-        setUseText("%hero% imbues their arrows with ice!".replace("%hero%", "$1"));
-        applyText = SkillConfigManager.getRaw(this, SkillSetting.APPLY_TEXT.node(), "%target% is slowed by %hero%!").replace("%target%", "$1").replace("%hero%", "$2");
+        setUseText("%hero% imbues their arrows with ice!".replace("%hero%", "$1").replace("$hero$", "$1"));
+        applyText = SkillConfigManager.getRaw(this, SkillSetting.APPLY_TEXT.node(), "%target% is slowed by %hero%!").replace("%target%", "$1").replace("$target$", "$1").replace("%hero%", "$2").replace("$hero$", "$2");
         expireText = SkillConfigManager.getRaw(this, SkillSetting.EXPIRE_TEXT.node(), "%hero%'s arrows are no longer imbued with ice!");
     }
 
     @Override
-    public SkillResult use(Hero hero, String[] args) {
+    public SkillResult use(final Hero hero, final String[] args) {
         if (hero.hasEffect("IceArrowBuff")) {
             hero.removeEffect(hero.getEffect("IceArrowBuff"));
             return SkillResult.SKIP_POST_USAGE;
@@ -71,16 +69,22 @@ public class SkillIceArrow extends ActiveSkill {
         return SkillResult.NORMAL;
     }
 
+    @Override
+    public String getDescription(final Hero hero) {
+        final int mana = SkillConfigManager.getUseSetting(hero, this, "mana-per-shot", 1, false);
+        return getDescription().replace("$1", mana + "");
+    }
+
     public class IceArrowBuff extends ImbueEffect {
 
-        public IceArrowBuff(Skill skill) {
+        public IceArrowBuff(final Skill skill) {
             super(skill, "IceArrowBuff");
             types.add(EffectType.ICE);
             setDescription("ice arrow");
         }
 
         @Override
-        public void removeFromHero(Hero hero) {
+        public void removeFromHero(final Hero hero) {
             super.removeFromHero(hero);
             final Player player = hero.getPlayer();
             broadcast(player.getLocation(), expireText.replace("%hero%", player.getDisplayName()));
@@ -91,12 +95,12 @@ public class SkillIceArrow extends ActiveSkill {
 
         private final Skill skill;
 
-        public SkillDamageListener(Skill skill) {
+        public SkillDamageListener(final Skill skill) {
             this.skill = skill;
         }
 
         @EventHandler(priority = EventPriority.MONITOR)
-        public void onEntityDamage(EntityDamageEvent event) {
+        public void onEntityDamage(final EntityDamageEvent event) {
             if (event.isCancelled() || !(event instanceof EntityDamageByEntityEvent) || !(event.getEntity() instanceof LivingEntity)) {
                 return;
             }
@@ -124,7 +128,7 @@ public class SkillIceArrow extends ActiveSkill {
         }
 
         @EventHandler(priority = EventPriority.MONITOR)
-        public void onEntityShootBow(EntityShootBowEvent event) {
+        public void onEntityShootBow(final EntityShootBowEvent event) {
             if (event.isCancelled() || !(event.getEntity() instanceof Player) || !(event.getProjectile() instanceof Arrow)) {
                 return;
             }
@@ -138,11 +142,5 @@ public class SkillIceArrow extends ActiveSkill {
                 }
             }
         }
-    }
-
-    @Override
-    public String getDescription(Hero hero) {
-        final int mana = SkillConfigManager.getUseSetting(hero, this, "mana-per-shot", 1, false);
-        return getDescription().replace("$1", mana + "");
     }
 }

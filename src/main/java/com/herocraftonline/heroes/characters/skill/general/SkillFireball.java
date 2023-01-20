@@ -32,7 +32,7 @@ import java.util.Map;
 
 public class SkillFireball extends ActiveSkill {
 
-    private Map<Snowball, FireballAttributes> fireballs = new LinkedHashMap<Snowball, FireballAttributes>(100) {
+    private final Map<Snowball, FireballAttributes> fireballs = new LinkedHashMap<Snowball, FireballAttributes>(100) {
         private static final long serialVersionUID = 4329526013158603250L;
 
         @Override
@@ -147,11 +147,11 @@ public class SkillFireball extends ActiveSkill {
         }
     }
 
-    public class FireballAttributes {
-        public long shootTimeMilliseconds;
-        public int targetFireTicks;
-        public double baseDamage;
-        public double damageIncreasePerIntellect;
+    public static class FireballAttributes {
+        public final long shootTimeMilliseconds;
+        public final int targetFireTicks;
+        public final double baseDamage;
+        public final double damageIncreasePerIntellect;
 
         public FireballAttributes(long shootTimeMilliseconds, int targetFireTicks, double baseDamage,
                                   double damageIncreasePerIntellect){

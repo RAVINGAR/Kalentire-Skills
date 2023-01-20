@@ -36,7 +36,7 @@ public class SkillAssassinsBlade extends ActiveSkill {
     private String applyText;
     private String expireText;
 
-    public SkillAssassinsBlade(Heroes plugin) {
+    public SkillAssassinsBlade(final Heroes plugin) {
         super(plugin, "AssassinsBlade");
         this.setDescription("You poison your blade which will deal an extra $1 damage every $2 second(s).");
         this.setUsage("/skill ablade");
@@ -64,12 +64,12 @@ public class SkillAssassinsBlade extends ActiveSkill {
     @Override
     public void init() {
         super.init();
-        this.applyText = SkillConfigManager.getRaw(this, SkillSetting.APPLY_TEXT, "%target% is poisoned!").replace("%target%", "$1");
-        this.expireText = SkillConfigManager.getRaw(this, SkillSetting.EXPIRE_TEXT, "%target% has recovered from the poison!").replace("%target%", "$1");
+        this.applyText = SkillConfigManager.getRaw(this, SkillSetting.APPLY_TEXT, "%target% is poisoned!").replace("%target%", "$1").replace("$target$", "$1");
+        this.expireText = SkillConfigManager.getRaw(this, SkillSetting.EXPIRE_TEXT, "%target% has recovered from the poison!").replace("%target%", "$1").replace("$target$", "$1");
     }
 
     @Override
-    public SkillResult use(Hero hero, String[] args) {
+    public SkillResult use(final Hero hero, final String[] args) {
         final long duration = SkillConfigManager.getUseSetting(hero, this, "buff-duration", 600000, false);
         final int numAttacks = SkillConfigManager.getUseSetting(hero, this, "attacks", 1, false);
         hero.addEffect(new AssassinBladeBuff(this, hero.getPlayer(), duration, numAttacks));
@@ -77,11 +77,19 @@ public class SkillAssassinsBlade extends ActiveSkill {
         return SkillResult.NORMAL;
     }
 
-    public class AssassinBladeBuff extends ExpirableEffect {
+    @Override
+    public String getDescription(final Hero hero) {
+        double damage = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE, 2, false);
+        damage += (SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE_INCREASE, 0, false) * hero.getHeroLevel(this));
+        final double seconds = SkillConfigManager.getUseSetting(hero, this, "poison-duration", 10000, false) / 1000.0;
+        return this.getDescription().replace("$1", damage + "").replace("$2", seconds + "");
+    }
+
+    public static class AssassinBladeBuff extends ExpirableEffect {
 
         private int applicationsLeft = 1;
 
-        public AssassinBladeBuff(Skill skill, Player applier, long duration, int numAttacks) {
+        public AssassinBladeBuff(final Skill skill, final Player applier, final long duration, final int numAttacks) {
             super(skill, "PoisonBlade", applier, duration);
             this.applicationsLeft = numAttacks;
             this.types.add(EffectType.BENEFICIAL);
@@ -95,50 +103,49 @@ public class SkillAssassinsBlade extends ActiveSkill {
             return this.applicationsLeft;
         }
 
-        @Override
-        public void removeFromHero(Hero hero) {
-            super.removeFromHero(hero);
-            hero.getPlayer().sendMessage(ChatColor.GRAY + "Your blade is no longer poisoned!");
+        /**
+         * @param applicationsLeft the applicationsLeft to set
+         */
+        public void setApplicationsLeft(final int applicationsLeft) {
+            this.applicationsLeft = applicationsLeft;
         }
 
-        /**
-         * @param applicationsLeft
-         *            the applicationsLeft to set
-         */
-        public void setApplicationsLeft(int applicationsLeft) {
-            this.applicationsLeft = applicationsLeft;
+        @Override
+        public void removeFromHero(final Hero hero) {
+            super.removeFromHero(hero);
+            hero.getPlayer().sendMessage(ChatColor.GRAY + "Your blade is no longer poisoned!");
         }
     }
 
     public class AssassinsPoison extends PeriodicDamageEffect {
 
-        public AssassinsPoison(Skill skill, long period, long duration, double tickDamage, Player applier) {
+        public AssassinsPoison(final Skill skill, final long period, final long duration, final double tickDamage, final Player applier) {
             super(skill, "AssassinsPoison", applier, period, duration, tickDamage);
             this.types.add(EffectType.POISON);
             this.addPotionEffect(new PotionEffect(PotionEffectType.POISON, (int) (20 * duration / 1000), 0), true);
         }
 
         @Override
-        public void applyToMonster(Monster monster) {
+        public void applyToMonster(final Monster monster) {
             super.applyToMonster(monster);
             this.broadcast(monster.getEntity().getLocation(), SkillAssassinsBlade.this.applyText, CustomNameManager.getName(monster).toLowerCase());
         }
 
         @Override
-        public void applyToHero(Hero hero) {
+        public void applyToHero(final Hero hero) {
             super.applyToHero(hero);
             final Player player = hero.getPlayer();
             this.broadcast(player.getLocation(), SkillAssassinsBlade.this.applyText, player.getDisplayName());
         }
 
         @Override
-        public void removeFromMonster(Monster monster) {
+        public void removeFromMonster(final Monster monster) {
             super.removeFromMonster(monster);
             this.broadcast(monster.getEntity().getLocation(), SkillAssassinsBlade.this.expireText, CustomNameManager.getName(monster).toLowerCase());
         }
 
         @Override
-        public void removeFromHero(Hero hero) {
+        public void removeFromHero(final Hero hero) {
             super.removeFromHero(hero);
             final Player player = hero.getPlayer();
             this.broadcast(player.getLocation(), SkillAssassinsBlade.this.expireText, player.getDisplayName());
@@ -149,12 +156,12 @@ public class SkillAssassinsBlade extends ActiveSkill {
 
         private final Skill skill;
 
-        public SkillDamageListener(Skill skill) {
+        public SkillDamageListener(final Skill skill) {
             this.skill = skill;
         }
 
         @EventHandler(priority = EventPriority.MONITOR)
-        public void onEntityDamage(EntityDamageEvent event) {
+        public void onEntityDamage(final EntityDamageEvent event) {
             if (event.isCancelled() || !(event instanceof EntityDamageByEntityEvent) || (event.getDamage() == 0)) {
                 return;
             }
@@ -191,21 +198,12 @@ public class SkillAssassinsBlade extends ActiveSkill {
             }
         }
 
-        private void checkBuff(Hero hero) {
+        private void checkBuff(final Hero hero) {
             final AssassinBladeBuff abBuff = (AssassinBladeBuff) hero.getEffect("PoisonBlade");
             abBuff.applicationsLeft -= 1;
             if (abBuff.applicationsLeft < 1) {
                 hero.removeEffect(abBuff);
             }
         }
-    }
-
-    @Override
-    public String getDescription(Hero hero) {
-        double damage = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE, 2, false);
-        damage += (SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE_INCREASE, 0, false) * hero.getHeroLevel(this));
-        final double seconds = SkillConfigManager.getUseSetting(hero, this, "poison-duration", 10000, false) / 1000.0;
-        final String s = this.getDescription().replace("$1", damage + "").replace("$2", seconds + "");
-        return s;
     }
 }

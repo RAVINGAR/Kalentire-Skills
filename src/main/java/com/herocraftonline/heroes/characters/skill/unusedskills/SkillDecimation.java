@@ -20,7 +20,7 @@ import java.util.Map;
 
 public class SkillDecimation extends ActiveSkill {
 
-    private Map<WitherSkull, Long> fireballs = new LinkedHashMap<WitherSkull, Long>(100) {
+    private final Map<WitherSkull, Long> fireballs = new LinkedHashMap<WitherSkull, Long>(100) {
         private static final long serialVersionUID = 4329526013158603250L;
 
         @Override

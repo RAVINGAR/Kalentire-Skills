@@ -10,10 +10,7 @@ import com.herocraftonline.heroes.characters.skill.SkillSetting;
 import com.herocraftonline.heroes.characters.skill.SkillType;
 import com.herocraftonline.heroes.characters.skill.TargettedSkill;
 import org.bukkit.ChatColor;
-import org.bukkit.Effect;
 import org.bukkit.Particle;
-import org.bukkit.Sound;
-import org.bukkit.Sound;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
@@ -48,7 +45,7 @@ public class SkillScorch extends TargettedSkill
 		double damage = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE, 15, false);
 		damage += SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE_INCREASE, 0.5D, false) * hero.getHeroLevel(this);
 		long duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, 2000, false);
-		duration += SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION_INCREASE, 40, false) * hero.getHeroLevel(this);
+		duration += (long) SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION_INCREASE, 40, false) * hero.getHeroLevel(this);
 
 		addSpellTarget(target, hero);
 		damageEntity(target, hero.getPlayer(), damage, DamageCause.ENTITY_ATTACK, false);
@@ -71,8 +68,8 @@ public class SkillScorch extends TargettedSkill
 		int damage = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE, 15, false);
 		damage += (int)(SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE_INCREASE, 0.5D, false) * hero.getHeroLevel(this));
 		long duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, 2000, false);
-		duration += SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION_INCREASE, 40, false) * hero.getHeroLevel(this);
-		String dur = String.valueOf(Math.ceil(duration / 1000));
+		duration += (long) SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION_INCREASE, 40, false) * hero.getHeroLevel(this);
+		String dur = String.valueOf(Math.ceil(duration / 1000.0));
 		return getDescription().replace("$1", damage + "").replace("$2", dur);
 	}
 }

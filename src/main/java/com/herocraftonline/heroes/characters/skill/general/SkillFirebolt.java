@@ -10,7 +10,6 @@ import com.herocraftonline.heroes.characters.skill.*;
 
 import com.herocraftonline.heroes.util.Util;
 import org.bukkit.*;
-import org.bukkit.Sound;
 import org.bukkit.block.Block;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.*;
@@ -21,7 +20,6 @@ import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityDamageEvent.DamageCause;
 import org.bukkit.event.entity.ProjectileHitEvent;
 import org.bukkit.projectiles.ProjectileSource;
-import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.scheduler.BukkitScheduler;
 import org.bukkit.util.Vector;
 
@@ -31,7 +29,7 @@ import java.util.logging.Level;
 
 public class SkillFirebolt extends ActiveSkill {
 
-    private Map<Snowball, Long> fireballs = new LinkedHashMap<Snowball, Long>(100) {
+    private final Map<Snowball, Long> fireballs = new LinkedHashMap<Snowball, Long>(100) {
         private static final long serialVersionUID = 4329526013158603250L;
 
         @Override
@@ -108,7 +106,7 @@ public class SkillFirebolt extends ActiveSkill {
     }
 
     // Not used atm.
-    private class VelocityDropRunnable implements Runnable {
+    private static class VelocityDropRunnable implements Runnable {
         private final BukkitScheduler scheduler;
         private final Projectile projectile;
 

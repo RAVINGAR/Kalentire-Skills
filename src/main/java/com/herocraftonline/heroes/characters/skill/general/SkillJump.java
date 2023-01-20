@@ -17,8 +17,6 @@ import org.bukkit.Sound;
 import org.bukkit.block.BlockFace;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
-import org.bukkit.potion.PotionEffect;
-import org.bukkit.potion.PotionEffectType;
 import org.bukkit.util.Vector;
 
 import java.util.HashSet;
@@ -117,12 +115,7 @@ public class SkillJump extends ActiveSkill {
         long ncpExemptionDuration = SkillConfigManager.getUseSetting(hero, this, "ncp-exemption-duration", 2000, false);
         if (ncpExemptionDuration > 0) {
             // Let's bypass the nocheat issues...
-            NCPUtils.applyExemptions(player, new NCPFunction() {
-                @Override
-                public void execute() {
-                    jump(player, velocity);
-                }
-            }, Lists.newArrayList("MOVING"), ncpExemptionDuration);
+            NCPUtils.applyExemptions(player, () -> jump(player, velocity), Lists.newArrayList("MOVING"), ncpExemptionDuration);
         } else {
             jump(player, velocity);
         }
@@ -154,7 +147,7 @@ public class SkillJump extends ActiveSkill {
         requiredMaterials.add(Material.SPRUCE_LEAVES);
         requiredMaterials.add(Material.SOUL_SAND);
     }
-    private class JumpEffect extends SafeFallEffect {
+    private static class JumpEffect extends SafeFallEffect {
         JumpEffect(Skill skill, Player applier, long duration) {
             super(skill, applier, duration, null, null);
             types.add(EffectType.BENEFICIAL);

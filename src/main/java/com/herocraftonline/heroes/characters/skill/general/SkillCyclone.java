@@ -15,7 +15,6 @@ import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
-import org.bukkit.Sound;
 import org.bukkit.event.entity.EntityDamageEvent.DamageCause;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.util.Vector;
@@ -61,7 +60,7 @@ public class SkillCyclone extends ActiveSkill
 
 		node.set(SkillSetting.DAMAGE.node(), 75);
 		node.set(SkillSetting.DAMAGE_INCREASE_PER_INTELLECT.node(), 1.5);
-		node.set(SkillSetting.RADIUS.node(), Integer.valueOf(4));
+		node.set(SkillSetting.RADIUS.node(), 4);
 		node.set(SkillSetting.DURATION.node(), 6000);
 
 		return node;
@@ -73,7 +72,7 @@ public class SkillCyclone extends ActiveSkill
 
 		double increment = (2 * Math.PI) / particleAmount;
 
-		ArrayList<Location> locations = new ArrayList<Location>();
+		ArrayList<Location> locations = new ArrayList<>();
 
 		for (int i = 0; i < particleAmount; i++)
 		{
@@ -127,21 +126,21 @@ public class SkillCyclone extends ActiveSkill
 		{
 			int point = 0;
 	
-			int maxTicks = (int) ((duration/1000)*(20/5)); // every 2 ticks means this runs 10 times a second, a total of 10 times a second for 6 seconds = 60 ticks
+			final int maxTicks = (int) ((duration/1000)*(20/5)); // every 2 ticks means this runs 10 times a second, a total of 10 times a second for 6 seconds = 60 ticks
 			int ticks = 0;
 			
 			public void run()
 			{
 				ArrayList<Location> surrounding = circle(player.getLocation().add(0, 0.5, 0), 24, radius); // This is down here to make sure it updates
-				if (point < surrounding.size()) // making sure we're staying within index boundaries
+                // next point
+                if (point < surrounding.size()) // making sure we're staying within index boundaries
 				{
 					//player.getWorld().spigot().playEffect(surrounding.get(point), Effect.TILE_BREAK, Material.WATER.getId(), 0, 1.2F, 1.2F, 1.2F, 0.0F, 3,16);
 					player.getWorld().spawnParticle(Particle.BLOCK_CRACK, surrounding.get(point), 3, 1.2, 1.2, 1.2, 0, Bukkit.createBlockData(Material.WATER));
 					//player.getWorld().spigot().playEffect(surrounding.get(point), Effect.SPLASH, 0, 0, 1.2F, 1.2F, 1.2F, 0.0F, 10, 16);
 					player.getWorld().spawnParticle(Particle.WATER_SPLASH, surrounding.get(point), 10, 1.2, 1.2, 1.2, 0);
 					player.getWorld().playSound(player.getLocation(), Sound.WEATHER_RAIN, 0.5F, 0.7F);
-					point++; // next point
-				}
+                }
 				else
 				{
 					point = 0; // reset the circle
@@ -149,9 +148,9 @@ public class SkillCyclone extends ActiveSkill
 					player.getWorld().spawnParticle(Particle.BLOCK_CRACK, surrounding.get(point), 3, 1.2, 1.2, 1.2, 0, Bukkit.createBlockData(Material.WATER));
 					//player.getWorld().spigot().playEffect(surrounding.get(point), Effect.SPLASH, 0, 0, 1.2F, 1.2F, 1.2F, 0.0F, 10, 16);
 					player.getWorld().spawnParticle(Particle.WATER_SPLASH, surrounding.get(point), 10, 1.2, 1.2, 1.2, 0);
-					point++; // next point
-				}
-				ticks += 1;
+                }
+                point++; // next point
+                ticks += 1;
 				if (ticks >= maxTicks) // if the effect has played for 6 seconds
 				{
 					cancel(); // cancel the visual
@@ -162,30 +161,28 @@ public class SkillCyclone extends ActiveSkill
 		new BukkitRunnable() // This is the visual effect, should iterate though all points in a circle. Should, I say.
 		{
 			int point = 0;
-			int maxTicks = 110; // every 2 ticks means this runs 10 times a second, a total of 10 times a second for 5.5 seconds = 55 ticks
+			final int maxTicks = 110; // every 2 ticks means this runs 10 times a second, a total of 10 times a second for 5.5 seconds = 55 ticks
 			int ticks = 0;
 			
 			public void run()
 			{
 				ArrayList<Location> surrounding = circle(player.getLocation().add(0, 1, 0), 24, radius); // This is down here to make sure it updates
-				if (point < surrounding.size()) // making sure we're staying within index boundaries
+                // next point
+                if (point < surrounding.size()) // making sure we're staying within index boundaries
 				{
 					//player.getWorld().spigot().playEffect(surrounding.get(point), Effect.TILE_BREAK, Material.WATER.getId(), 0, 1.2F, 1.2F, 1.2F, 0.0F, 3,16);
-					player.getWorld().spawnParticle(Particle.BLOCK_CRACK, surrounding.get(point), 3, 1.2, 1.2, 1.2, 0, Bukkit.createBlockData(Material.WATER));
-					//player.getWorld().spigot().playEffect(surrounding.get(point), Effect.SPLASH, 0, 0, 1.2F, 1.2F, 1.2F, 0.0F, 10, 16);
-					player.getWorld().spawnParticle(Particle.WATER_SPLASH, surrounding.get(point), 10, 1.2, 1.2, 1.2, 0);
-					point++; // next point
-				}
+                    //player.getWorld().spigot().playEffect(surrounding.get(point), Effect.SPLASH, 0, 0, 1.2F, 1.2F, 1.2F, 0.0F, 10, 16);
+                }
 				else
 				{
 					point = 0; // reset the circle
 					//player.getWorld().spigot().playEffect(surrounding.get(point), Effect.TILE_BREAK, Material.WATER.getId(), 0, 1.2F, 1.2F, 1.2F, 0.0F, 3,16);
-					player.getWorld().spawnParticle(Particle.BLOCK_CRACK, surrounding.get(point), 3, 1.2, 1.2, 1.2, 0, Bukkit.createBlockData(Material.WATER));
-					//player.getWorld().spigot().playEffect(surrounding.get(point), Effect.SPLASH, 0, 0, 1.2F, 1.2F, 1.2F, 0.0F, 10, 16);
-					player.getWorld().spawnParticle(Particle.WATER_SPLASH, surrounding.get(point), 10, 1.2, 1.2, 1.2, 0);
-					point++; // next point
-				}
-				ticks += 1;
+                    //player.getWorld().spigot().playEffect(surrounding.get(point), Effect.SPLASH, 0, 0, 1.2F, 1.2F, 1.2F, 0.0F, 10, 16);
+                }
+                player.getWorld().spawnParticle(Particle.BLOCK_CRACK, surrounding.get(point), 3, 1.2, 1.2, 1.2, 0, Bukkit.createBlockData(Material.WATER));
+                player.getWorld().spawnParticle(Particle.WATER_SPLASH, surrounding.get(point), 10, 1.2, 1.2, 1.2, 0);
+                point++; // next point
+                ticks += 1;
 				if (ticks >= maxTicks) // if the effect has played for 6 seconds
 				{
 					cancel(); // cancel the visual
@@ -196,30 +193,28 @@ public class SkillCyclone extends ActiveSkill
 		new BukkitRunnable() // This is the visual effect, should iterate though all points in a circle. Should, I say.
 		{
 			int point = 0;
-			int maxTicks = 100; // every 2 ticks means this runs 10 times a second, a total of 10 times a second for 5 seconds = 50 ticks
+			final int maxTicks = 100; // every 2 ticks means this runs 10 times a second, a total of 10 times a second for 5 seconds = 50 ticks
 			int ticks = 0;
 			
 			public void run()
 			{
 				ArrayList<Location> surrounding = circle(player.getLocation().add(0, 1.5, 0), 24, radius); // This is down here to make sure it updates
-				if (point < surrounding.size()) // making sure we're staying within index boundaries
+                // next point
+                if (point < surrounding.size()) // making sure we're staying within index boundaries
 				{
 					//player.getWorld().spigot().playEffect(surrounding.get(point), Effect.TILE_BREAK, Material.WATER.getId(), 0, 1.2F, 1.2F, 1.2F, 0.0F, 3,16);
-					player.getWorld().spawnParticle(Particle.BLOCK_CRACK, surrounding.get(point), 3, 1.2, 1.2, 1.2, 0, Bukkit.createBlockData(Material.WATER));
-					//player.getWorld().spigot().playEffect(surrounding.get(point), Effect.SPLASH, 0, 0, 1.2F, 1.2F, 1.2F, 0.0F, 10, 16);
-					player.getWorld().spawnParticle(Particle.WATER_SPLASH, surrounding.get(point), 10, 1.2, 1.2, 1.2, 0);
-					point++; // next point
-				}
+                    //player.getWorld().spigot().playEffect(surrounding.get(point), Effect.SPLASH, 0, 0, 1.2F, 1.2F, 1.2F, 0.0F, 10, 16);
+                }
 				else
 				{
 					point = 0; // reset the circle
 					//player.getWorld().spigot().playEffect(surrounding.get(point), Effect.TILE_BREAK, Material.WATER.getId(), 0, 1.2F, 1.2F, 1.2F, 0.0F, 3,16);
-					player.getWorld().spawnParticle(Particle.BLOCK_CRACK, surrounding.get(point), 3, 1.2, 1.2, 1.2, 0, Bukkit.createBlockData(Material.WATER));
-					//player.getWorld().spigot().playEffect(surrounding.get(point), Effect.SPLASH, 0, 0, 1.2F, 1.2F, 1.2F, 0.0F, 10, 16);
-					player.getWorld().spawnParticle(Particle.WATER_SPLASH, surrounding.get(point), 10, 1.2, 1.2, 1.2, 0);
-					point++; // next point
-				}
-				ticks += 1;
+                    //player.getWorld().spigot().playEffect(surrounding.get(point), Effect.SPLASH, 0, 0, 1.2F, 1.2F, 1.2F, 0.0F, 10, 16);
+                }
+                player.getWorld().spawnParticle(Particle.BLOCK_CRACK, surrounding.get(point), 3, 1.2, 1.2, 1.2, 0, Bukkit.createBlockData(Material.WATER));
+                player.getWorld().spawnParticle(Particle.WATER_SPLASH, surrounding.get(point), 10, 1.2, 1.2, 1.2, 0);
+                point++; // next point
+                ticks += 1;
 				if (ticks >= maxTicks) // if the effect has played for 6 seconds
 				{
 					cancel(); // cancel the visual
@@ -230,30 +225,28 @@ public class SkillCyclone extends ActiveSkill
 		new BukkitRunnable() // This is the visual effect, should iterate though all points in a circle. Should, I say.
 		{
 			int point = 0;
-			int maxTicks = 90; // every 2 ticks means this runs 10 times a second, a total of 10 times a second for 4.5 seconds = 45 ticks
+			final int maxTicks = 90; // every 2 ticks means this runs 10 times a second, a total of 10 times a second for 4.5 seconds = 45 ticks
 			int ticks = 0;
 			
 			public void run()
 			{
 				ArrayList<Location> surrounding = circle(player.getLocation().add(0, 2, 0), 24, radius); // This is down here to make sure it updates
-				if (point < surrounding.size()) // making sure we're staying within index boundaries
+                // next point
+                if (point < surrounding.size()) // making sure we're staying within index boundaries
 				{
 					//player.getWorld().spigot().playEffect(surrounding.get(point), Effect.TILE_BREAK, Material.WATER.getId(), 0, 1.2F, 1.2F, 1.2F, 0.0F, 3,16);
-					player.getWorld().spawnParticle(Particle.BLOCK_CRACK, surrounding.get(point), 3, 1.2, 1.2, 1.2, 0, Bukkit.createBlockData(Material.WATER));
-					//player.getWorld().spigot().playEffect(surrounding.get(point), Effect.SPLASH, 0, 0, 1.2F, 1.2F, 1.2F, 0.0F, 10, 16);
-					player.getWorld().spawnParticle(Particle.WATER_SPLASH, surrounding.get(point), 10, 1.2, 1.2, 1.2, 0);
-					point++; // next point
-				}
+                    //player.getWorld().spigot().playEffect(surrounding.get(point), Effect.SPLASH, 0, 0, 1.2F, 1.2F, 1.2F, 0.0F, 10, 16);
+                }
 				else
 				{
 					point = 0; // reset the circle
 					//player.getWorld().spigot().playEffect(surrounding.get(point), Effect.TILE_BREAK, Material.WATER.getId(), 0, 1.2F, 1.2F, 1.2F, 0.0F, 3,16);
-					player.getWorld().spawnParticle(Particle.BLOCK_CRACK, surrounding.get(point), 3, 1.2, 1.2, 1.2, 0, Bukkit.createBlockData(Material.WATER));
-					//player.getWorld().spigot().playEffect(surrounding.get(point), Effect.SPLASH, 0, 0, 1.2F, 1.2F, 1.2F, 0.0F, 10, 16);
-					player.getWorld().spawnParticle(Particle.WATER_SPLASH, surrounding.get(point), 10, 1.2, 1.2, 1.2, 0);
-					point++; // next point
-				}
-				ticks += 1;
+                    //player.getWorld().spigot().playEffect(surrounding.get(point), Effect.SPLASH, 0, 0, 1.2F, 1.2F, 1.2F, 0.0F, 10, 16);
+                }
+                player.getWorld().spawnParticle(Particle.BLOCK_CRACK, surrounding.get(point), 3, 1.2, 1.2, 1.2, 0, Bukkit.createBlockData(Material.WATER));
+                player.getWorld().spawnParticle(Particle.WATER_SPLASH, surrounding.get(point), 10, 1.2, 1.2, 1.2, 0);
+                point++; // next point
+                ticks += 1;
 				if (ticks >= maxTicks) // if the effect has played for 6 seconds
 				{
 					cancel(); // cancel the visual
@@ -264,30 +257,28 @@ public class SkillCyclone extends ActiveSkill
 		new BukkitRunnable() // This is the visual effect, should iterate though all points in a circle. Should, I say.
 		{
 			int point = 0;
-			int maxTicks = 80; // every 2 ticks means this runs 10 times a second, a total of 10 times a second for 4 seconds = 40 ticks
+			final int maxTicks = 80; // every 2 ticks means this runs 10 times a second, a total of 10 times a second for 4 seconds = 40 ticks
 			int ticks = 0;
 			
 			public void run()
 			{
 				ArrayList<Location> surrounding = circle(player.getLocation().add(0, 2.5, 0), 24, radius); // This is down here to make sure it updates
-				if (point < surrounding.size()) // making sure we're staying within index boundaries
+                // next point
+                if (point < surrounding.size()) // making sure we're staying within index boundaries
 				{
 					//player.getWorld().spigot().playEffect(surrounding.get(point), Effect.TILE_BREAK, Material.WATER.getId(), 0, 1.2F, 1.2F, 1.2F, 0.0F, 3,16);
-					player.getWorld().spawnParticle(Particle.BLOCK_CRACK, surrounding.get(point), 3, 1.2, 1.2, 1.2, 0, Bukkit.createBlockData(Material.WATER));
-					//player.getWorld().spigot().playEffect(surrounding.get(point), Effect.SPLASH, 0, 0, 1.2F, 1.2F, 1.2F, 0.0F, 10, 16);
-					player.getWorld().spawnParticle(Particle.WATER_SPLASH, surrounding.get(point), 10, 1.2, 1.2, 1.2, 0);
-					point++; // next point
-				}
+                    //player.getWorld().spigot().playEffect(surrounding.get(point), Effect.SPLASH, 0, 0, 1.2F, 1.2F, 1.2F, 0.0F, 10, 16);
+                }
 				else
 				{
 					point = 0; // reset the circle
 					//player.getWorld().spigot().playEffect(surrounding.get(point), Effect.TILE_BREAK, Material.WATER.getId(), 0, 1.2F, 1.2F, 1.2F, 0.0F, 3,16);
-					player.getWorld().spawnParticle(Particle.BLOCK_CRACK, surrounding.get(point), 3, 1.2, 1.2, 1.2, 0, Bukkit.createBlockData(Material.WATER));
-					//player.getWorld().spigot().playEffect(surrounding.get(point), Effect.SPLASH, 0, 0, 1.2F, 1.2F, 1.2F, 0.0F, 10, 16);
-					player.getWorld().spawnParticle(Particle.WATER_SPLASH, surrounding.get(point), 10, 1.2, 1.2, 1.2, 0);
-					point++; // next point
-				}
-				ticks += 1;
+                    //player.getWorld().spigot().playEffect(surrounding.get(point), Effect.SPLASH, 0, 0, 1.2F, 1.2F, 1.2F, 0.0F, 10, 16);
+                }
+                player.getWorld().spawnParticle(Particle.BLOCK_CRACK, surrounding.get(point), 3, 1.2, 1.2, 1.2, 0, Bukkit.createBlockData(Material.WATER));
+                player.getWorld().spawnParticle(Particle.WATER_SPLASH, surrounding.get(point), 10, 1.2, 1.2, 1.2, 0);
+                point++; // next point
+                ticks += 1;
 				if (ticks >= maxTicks) // if the effect has played for 6 seconds
 				{
 					cancel(); // cancel the visual
@@ -298,30 +289,28 @@ public class SkillCyclone extends ActiveSkill
 		new BukkitRunnable() // This is the visual effect, should iterate though all points in a circle. Should, I say.
 		{
 			int point = 0;
-			int maxTicks = 70; // every 2 ticks means this runs 10 times a second, a total of 10 times a second for 3.5 seconds = 35 ticks
+			final int maxTicks = 70; // every 2 ticks means this runs 10 times a second, a total of 10 times a second for 3.5 seconds = 35 ticks
 			int ticks = 0;
 			
 			public void run()
 			{
 				ArrayList<Location> surrounding = circle(player.getLocation().add(0, 3, 0), 24, radius); // This is down here to make sure it updates
-				if (point < surrounding.size()) // making sure we're staying within index boundaries
+                // next point
+                if (point < surrounding.size()) // making sure we're staying within index boundaries
 				{
 					//player.getWorld().spigot().playEffect(surrounding.get(point), Effect.TILE_BREAK, Material.WATER.getId(), 0, 1.2F, 1.2F, 1.2F, 0.0F, 3,16);
-					player.getWorld().spawnParticle(Particle.BLOCK_CRACK, surrounding.get(point), 3, 1.2, 1.2, 1.2, 0, Bukkit.createBlockData(Material.WATER));
-					//player.getWorld().spigot().playEffect(surrounding.get(point), Effect.SPLASH, 0, 0, 1.2F, 1.2F, 1.2F, 0.0F, 10, 16);
-					player.getWorld().spawnParticle(Particle.WATER_SPLASH, surrounding.get(point), 10, 1.2, 1.2, 1.2, 0);
-					point++; // next point
-				}
+                    //player.getWorld().spigot().playEffect(surrounding.get(point), Effect.SPLASH, 0, 0, 1.2F, 1.2F, 1.2F, 0.0F, 10, 16);
+                }
 				else
 				{
 					point = 0; // reset the circle
 					//player.getWorld().spigot().playEffect(surrounding.get(point), Effect.TILE_BREAK, Material.WATER.getId(), 0, 1.2F, 1.2F, 1.2F, 0.0F, 3,16);
-					player.getWorld().spawnParticle(Particle.BLOCK_CRACK, surrounding.get(point), 3, 1.2, 1.2, 1.2, 0, Bukkit.createBlockData(Material.WATER));
-					//player.getWorld().spigot().playEffect(surrounding.get(point), Effect.SPLASH, 0, 0, 1.2F, 1.2F, 1.2F, 0.0F, 10, 16);
-					player.getWorld().spawnParticle(Particle.WATER_SPLASH, surrounding.get(point), 10, 1.2, 1.2, 1.2, 0);
-					point++; // next point
-				}
-				ticks += 1;
+                    //player.getWorld().spigot().playEffect(surrounding.get(point), Effect.SPLASH, 0, 0, 1.2F, 1.2F, 1.2F, 0.0F, 10, 16);
+                }
+                player.getWorld().spawnParticle(Particle.BLOCK_CRACK, surrounding.get(point), 3, 1.2, 1.2, 1.2, 0, Bukkit.createBlockData(Material.WATER));
+                player.getWorld().spawnParticle(Particle.WATER_SPLASH, surrounding.get(point), 10, 1.2, 1.2, 1.2, 0);
+                point++; // next point
+                ticks += 1;
 				if (ticks >= maxTicks) // if the effect has played for 6 seconds
 				{
 					cancel(); // cancel the visual
@@ -332,12 +321,12 @@ public class SkillCyclone extends ActiveSkill
 		new BukkitRunnable()
 		{
 			private int ticks = 0;
-			private int maxTicks = 60;
-			private Random rand = new Random();
+			private final int maxTicks = 60;
+			private final Random rand = new Random();
 
 			public void run()
 			{
-				ArrayList<Location> waterburstLocs = new ArrayList<Location>();
+				ArrayList<Location> waterburstLocs = new ArrayList<>();
 				
 				for (int i = 0; i < radius; i++)
 				{

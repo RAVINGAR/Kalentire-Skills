@@ -138,14 +138,11 @@ public class SkillBackflip extends ActiveSkill {
 
     public void backflip(Hero hero, Player player, Vector velocity) {
         // Let's bypass the nocheat issues...
-        NCPUtils.applyExemptions(player, new NCPFunction() {
-            @Override
-            public void execute() {
-                // Backflip!
-                player.setVelocity(velocity);
-                int duration = SkillConfigManager.getUseSetting(hero, SkillBackflip.this, "ncp-exemption-duration", 1000, false);
-                hero.addEffect(new SafeFallEffect(SkillBackflip.this, "BackflipSafeFall", player, duration, null, null));
-            }
+        NCPUtils.applyExemptions(player, () -> {
+            // Backflip!
+            player.setVelocity(velocity);
+            int duration = SkillConfigManager.getUseSetting(hero, SkillBackflip.this, "ncp-exemption-duration", 1000, false);
+            hero.addEffect(new SafeFallEffect(SkillBackflip.this, "BackflipSafeFall", player, duration, null, null));
         }, Lists.newArrayList("MOVING"), SkillConfigManager.getUseSetting(hero, this, "ncp-exemption-duration", 1000, false));
     }
 }

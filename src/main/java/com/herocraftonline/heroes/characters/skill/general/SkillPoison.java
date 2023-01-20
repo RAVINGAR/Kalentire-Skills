@@ -22,7 +22,7 @@ public class SkillPoison extends TargettedSkill {
 
     private String expireText;
 
-    public SkillPoison(Heroes plugin) {
+    public SkillPoison(final Heroes plugin) {
         super(plugin, "Poison");
         this.setDescription("You poison your target dealing $1 damage over $2 second(s).");
         this.setUsage("/skill poison <target>");
@@ -44,11 +44,11 @@ public class SkillPoison extends TargettedSkill {
     @Override
     public void init() {
         super.init();
-        this.expireText = SkillConfigManager.getRaw(this, SkillSetting.EXPIRE_TEXT, "%target% has recovered from the poison!").replace("%target%", "$1");
+        this.expireText = SkillConfigManager.getRaw(this, SkillSetting.EXPIRE_TEXT, "%target% has recovered from the poison!").replace("%target%", "$1").replace("$target$", "$1");
     }
 
     @Override
-    public SkillResult use(Hero hero, LivingEntity target, String[] args) {
+    public SkillResult use(final Hero hero, final LivingEntity target, final String[] args) {
         final Player player = hero.getPlayer();
 
         final long duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, 10000, false);
@@ -59,43 +59,43 @@ public class SkillPoison extends TargettedSkill {
         return SkillResult.NORMAL;
     }
 
+    @Override
+    public String getDescription(final Hero hero) {
+        final int duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, 10000, false);
+        final double period = SkillConfigManager.getUseSetting(hero, this, SkillSetting.PERIOD, 2000, false);
+        final double damage = SkillConfigManager.getUseSetting(hero, this, "tick-damage", 1, false);
+        return this.getDescription().replace("$1", ((damage * duration) / period) + "").replace("$2", (duration / 1000) + "");
+    }
+
     public class PoisonSkillEffect extends PeriodicDamageEffect {
 
-        public PoisonSkillEffect(Skill skill, long period, long duration, double tickDamage, Player applier) {
+        public PoisonSkillEffect(final Skill skill, final long period, final long duration, final double tickDamage, final Player applier) {
             super(skill, "Poison", applier, period, duration, tickDamage);
             this.types.add(EffectType.POISON);
             this.addPotionEffect(new PotionEffect(PotionEffectType.POISON, (int) (20 * duration / 1000), 0), true);
         }
 
         @Override
-        public void applyToMonster(Monster monster) {
+        public void applyToMonster(final Monster monster) {
             super.applyToMonster(monster);
         }
 
         @Override
-        public void applyToHero(Hero hero) {
+        public void applyToHero(final Hero hero) {
             super.applyToHero(hero);
         }
 
         @Override
-        public void removeFromMonster(Monster monster) {
+        public void removeFromMonster(final Monster monster) {
             super.removeFromMonster(monster);
             this.broadcast(monster.getEntity().getLocation(), SkillPoison.this.expireText, CustomNameManager.getName(monster).toLowerCase());
         }
 
         @Override
-        public void removeFromHero(Hero hero) {
+        public void removeFromHero(final Hero hero) {
             super.removeFromHero(hero);
             final Player player = hero.getPlayer();
             this.broadcast(player.getLocation(), SkillPoison.this.expireText, player.getDisplayName());
         }
-    }
-
-    @Override
-    public String getDescription(Hero hero) {
-        final int duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, 10000, false);
-        final double period = SkillConfigManager.getUseSetting(hero, this, SkillSetting.PERIOD, 2000, false);
-        final double damage = SkillConfigManager.getUseSetting(hero, this, "tick-damage", 1, false);
-        return this.getDescription().replace("$1", ((damage * duration) / period) + "").replace("$2", (duration / 1000) + "");
     }
 }

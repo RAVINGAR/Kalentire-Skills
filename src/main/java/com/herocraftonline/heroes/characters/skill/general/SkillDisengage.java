@@ -15,7 +15,6 @@ import org.bukkit.*;
 import org.bukkit.block.BlockFace;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
-import org.bukkit.Sound;
 import org.bukkit.util.Vector;
 
 import java.util.HashSet;
@@ -49,11 +48,11 @@ public class SkillDisengage extends ActiveSkill
         ConfigurationSection node = super.getDefaultConfig();
 
         node.set("no-air-jump", false);
-        node.set("horizontal-power", Double.valueOf(0.5));
-        node.set("horizontal-power-increase", Double.valueOf(0.0125));
-        node.set("vertical-power", Double.valueOf(0.5));
-        node.set("vertical-power-increase", Double.valueOf(0.00625));
-        node.set("ncp-exemption-duration", Integer.valueOf(2000));
+        node.set("horizontal-power", 0.5);
+        node.set("horizontal-power-increase", 0.0125);
+        node.set("vertical-power", 0.5);
+        node.set("vertical-power-increase", 0.00625);
+        node.set("ncp-exemption-duration", 2000);
 
         return node;
     }
@@ -102,8 +101,8 @@ public class SkillDisengage extends ActiveSkill
                 break;
         }
 
-        double vPower = SkillConfigManager.getUseSetting(hero, this, "vertical-power", Double.valueOf(0.5), false);
-        double vPowerIncrease = SkillConfigManager.getUseSetting(hero, this, "vertical-power-increase", Double.valueOf(0.0125), false)
+        double vPower = SkillConfigManager.getUseSetting(hero, this, "vertical-power", 0.5, false);
+        double vPowerIncrease = SkillConfigManager.getUseSetting(hero, this, "vertical-power-increase", 0.0125, false)
                 * hero.getAttributeValue(AttributeType.DEXTERITY);
         vPower += vPowerIncrease;
 
@@ -121,8 +120,8 @@ public class SkillDisengage extends ActiveSkill
         directionVector.multiply(multiplier);
 
         velocity.add(directionVector);
-        double hPower = SkillConfigManager.getUseSetting(hero, this, "horizontal-power", Double.valueOf(0.5), false);
-        double hPowerIncrease = SkillConfigManager.getUseSetting(hero, this, "horizontal-power-increase", Double.valueOf(0.0125), false)
+        double hPower = SkillConfigManager.getUseSetting(hero, this, "horizontal-power", 0.5, false);
+        double hPowerIncrease = SkillConfigManager.getUseSetting(hero, this, "horizontal-power-increase", 0.0125, false)
                 * hero.getAttributeValue(AttributeType.DEXTERITY);
         hPower += hPowerIncrease;
 
@@ -141,7 +140,7 @@ public class SkillDisengage extends ActiveSkill
         return SkillResult.NORMAL;
     }
 
-    private class NCPExemptionEffect extends ExpirableEffect 
+    private static class NCPExemptionEffect extends ExpirableEffect
     {
 
         public NCPExemptionEffect(Skill skill, Player applier, long duration) 
@@ -171,7 +170,7 @@ public class SkillDisengage extends ActiveSkill
 
     private static final Set<Material> nodisengageMaterials;
     static {
-        nodisengageMaterials = new HashSet<Material>();
+        nodisengageMaterials = new HashSet<>();
         nodisengageMaterials.add(Material.WATER);
         nodisengageMaterials.add(Material.LAVA);
         nodisengageMaterials.add(Material.AIR);

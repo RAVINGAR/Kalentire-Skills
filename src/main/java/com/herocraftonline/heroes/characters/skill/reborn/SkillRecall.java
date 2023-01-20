@@ -20,7 +20,6 @@ import com.sk89q.worldguard.bukkit.WorldGuardPlugin;
 import com.sk89q.worldguard.protection.flags.Flags;
 import com.sk89q.worldguard.protection.regions.RegionContainer;
 import com.sk89q.worldguard.protection.regions.RegionQuery;
-import org.apache.commons.lang.StringUtils;
 import org.bukkit.*;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.MemoryConfiguration;
@@ -38,7 +37,7 @@ import java.util.logging.Level;
 
 public class SkillRecall extends ActiveSkill implements Listener {
 
-    private boolean towny = false;
+    private final boolean towny = false;
     private WorldGuardPlugin wgp;
     private boolean worldguard = false;
     private boolean townships = false;
@@ -218,7 +217,7 @@ public class SkillRecall extends ActiveSkill implements Listener {
             // Remove 1 use from Runestone, but only if the runestone isn't unlimited.
             if (uses != -1) {
                 if (maxUses != -1) {
-                    loreData.set(1, ChatColor.AQUA.toString() + "Uses: " + (uses - 1) + "/" + maxUses);
+                    loreData.set(1, ChatColor.AQUA + "Uses: " + (uses - 1) + "/" + maxUses);
                     metaData.setLore(loreData);
                     heldItem.setItemMeta(metaData);
                 }
@@ -267,19 +266,15 @@ public class SkillRecall extends ActiveSkill implements Listener {
         // Run this delayed task to check if the recall failed
         final String playerName = player.getName();
         final SkillRecall thisSkill = this;
-        Bukkit.getScheduler().runTaskLater(plugin, new Runnable() {
-
-            @Override
-            public void run() {
-                Player player = Bukkit.getPlayerExact(playerName);
-                if (player != null) {
-                    Hero hero = plugin.getCharacterManager().getHero(player);
-                    ConfigurationSection skillSettings = plugin.getCharacterManager().getHero(player).getSkillSettings(thisSkill);
-                    if (skillSettings != null && ("runestone".equals(skillSettings.getString("pending-teleport")) ||
-                            "recall".equals(skillSettings.getString("pending-teleport")))) {
-                        hero.setSkillSetting(thisSkill, "pending-teleport", "none");
-                        player.sendMessage("Teleport fizzled.");
-                    }
+        Bukkit.getScheduler().runTaskLater(plugin, () -> {
+            Player player1 = Bukkit.getPlayerExact(playerName);
+            if (player1 != null) {
+                Hero hero1 = plugin.getCharacterManager().getHero(player1);
+                ConfigurationSection skillSettings1 = plugin.getCharacterManager().getHero(player1).getSkillSettings(thisSkill);
+                if (skillSettings1 != null && ("runestone".equals(skillSettings1.getString("pending-teleport")) ||
+                        "recall".equals(skillSettings1.getString("pending-teleport")))) {
+                    hero1.setSkillSetting(thisSkill, "pending-teleport", "none");
+                    player1.sendMessage("Teleport fizzled.");
                 }
             }
         }, 40);
@@ -443,10 +438,11 @@ public class SkillRecall extends ActiveSkill implements Listener {
     }
 
     private boolean isRemoteServerLocation(ConfigurationSection skillSettings) {
-
-        return skillSettings != null && StringUtils.isNotEmpty(skillSettings.getString("server"))
-                && !skillSettings.getString("server").equals(plugin.getServerName())
-                && plugin.getServerNames().contains(skillSettings.getString("server"));
+        if(skillSettings == null) {
+            return false;
+        }
+        String server = skillSettings.getString("server");
+        return server != null && !server.isEmpty() && !server.equals(plugin.getServerName()) && plugin.getServerNames().contains(server);
     }
 
     private boolean isValidUses(String uses, Player player) {
@@ -463,7 +459,7 @@ public class SkillRecall extends ActiveSkill implements Listener {
         }
     }
 
-    class Info<T> {
+    static class Info<T> {
         private final static long TIMEOUT = 10 * 1000; // 10s
 
         private final long timeStamp;

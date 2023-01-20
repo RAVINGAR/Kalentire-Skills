@@ -136,7 +136,7 @@ public class SkillWardStone extends SkillBaseRunestone {
     }
 
     public class WardStoneListener extends RunestoneListener {
-        private Skill skill;
+        private final Skill skill;
 
         public WardStoneListener(Skill skill) {
             // note purposely overrides default (super) constructor which registers its events
@@ -188,7 +188,7 @@ public class SkillWardStone extends SkillBaseRunestone {
         }
     }
 
-    public class ProtectionInfo {
+    public static class ProtectionInfo {
         private final long timeProtectedMilliseconds;
         private final Player protector;
         private final int duration;

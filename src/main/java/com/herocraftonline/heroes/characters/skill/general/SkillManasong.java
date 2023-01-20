@@ -1,10 +1,7 @@
 package com.herocraftonline.heroes.characters.skill.general;
 
-import org.bukkit.Effect;
 import org.bukkit.Location;
 import org.bukkit.Particle;
-import org.bukkit.Sound;
-import org.bukkit.Sound;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
 import org.bukkit.Sound;
@@ -31,7 +28,7 @@ import com.herocraftonline.heroes.util.Util;
 
 public class SkillManasong extends ActiveSkill {
 
-    private Song skillSong;
+    private final Song skillSong;
 
     private String applyText;
     private String expireText;

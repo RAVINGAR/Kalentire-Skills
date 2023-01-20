@@ -12,7 +12,6 @@ import org.bukkit.*;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
-import org.bukkit.Sound;
 import org.bukkit.event.entity.EntityDamageEvent.DamageCause;
 
 public class SkillExecute extends TargettedSkill
@@ -40,16 +39,14 @@ public class SkillExecute extends TargettedSkill
 	public SkillResult use(Hero hero, LivingEntity target, String[] args)
 	{
 		Player player = hero.getPlayer();
-		Hero h = hero;
-		Player p = player;
-		double damage = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE, 5, true);
+        double damage = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE, 5, true);
 		damage += SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE_INCREASE_PER_DEXTERITY, 0.5, true)
 				* hero.getAttributeValue(AttributeType.DEXTERITY);
 		double damagePercent = SkillConfigManager.getUseSetting(hero, this, "damage-increase-per-missing-percent", 2, true);
 		double percentInterval = SkillConfigManager.getUseSetting(hero, this, "percent-scaling-interval", 5, true);
 		//get missing health, divide by full value to get decimal, multiply by 100 for percent, divide by 5 for to get every 5 percent 
-		double missingHealth = p.getMaxHealth()- p.getHealth();
-		double mhPercent = (missingHealth / p.getMaxHealth()) * 100;
+		double missingHealth = player.getMaxHealth()- player.getHealth();
+		double mhPercent = (missingHealth / player.getMaxHealth()) * 100;
         double multiplier = mhPercent / percentInterval;
          
         double additionalDamage = damagePercent * multiplier;

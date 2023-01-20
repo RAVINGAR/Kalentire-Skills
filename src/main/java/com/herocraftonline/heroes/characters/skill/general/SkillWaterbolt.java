@@ -29,7 +29,7 @@ import java.util.HashMap;
 
 public class SkillWaterbolt extends ActiveSkill
 {
-	private HashMap<Snowball, Player> bolts = new HashMap<Snowball, Player>();
+	private final HashMap<Snowball, Player> bolts = new HashMap<>();
 
 	public SkillWaterbolt(Heroes plugin)
 	{
@@ -78,7 +78,7 @@ public class SkillWaterbolt extends ActiveSkill
 		new BukkitRunnable()
 		{
 			private int ticks = 0;
-			private int maxTicks = 4;
+			private final int maxTicks = 4;
 			public void run()
 			{
 				if (ticks < maxTicks)
@@ -121,7 +121,7 @@ public class SkillWaterbolt extends ActiveSkill
 		return SkillResult.NORMAL;
 	}
 	
-	public class SaturatedEffect extends ExpirableEffect
+	public static class SaturatedEffect extends ExpirableEffect
 	{
 		public SaturatedEffect(Skill skill, Player applier, long duration)
 		{
@@ -161,7 +161,7 @@ public class SkillWaterbolt extends ActiveSkill
 
 	public class WaterboltListener implements Listener
 	{
-		Skill skill;
+		final Skill skill;
 		public WaterboltListener(Skill skill)
 		{
 			this.skill = skill;

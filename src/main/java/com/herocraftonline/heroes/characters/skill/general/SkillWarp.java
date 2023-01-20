@@ -43,7 +43,7 @@ public class SkillWarp extends ActiveSkill {
     public SkillResult use(Hero hero, String[] args) {
         Player player = hero.getPlayer();
         String defaultDestinationString = SkillConfigManager.getUseSetting(hero, this, "default-destination", "world");
-        List<String> possibleDestinations = new ArrayList<String>(SkillConfigManager.getUseSettingKeys(hero, this, "destinations"));
+        List<String> possibleDestinations = new ArrayList<>(SkillConfigManager.getUseSettingKeys(hero, this, "destinations"));
         Location destination = null;
         World world = player.getWorld();
         for (String arg : possibleDestinations) {

@@ -51,9 +51,7 @@ public class SkillEnchant extends ActiveSkill implements Passive {
     @Override
     public ConfigurationSection getDefaultConfig() {
         ConfigurationSection section = super.getDefaultConfig();
-        ALL_ENCHANTMENTS.forEach(e -> {
-            section.set(e, 1);
-        });
+        ALL_ENCHANTMENTS.forEach(e -> section.set(e, 1));
         section.set("experience-cost-per-level", -1);
         section.set(SkillSetting.APPLY_TEXT.node(), "");
         section.set(SkillSetting.UNAPPLY_TEXT.node(), "");

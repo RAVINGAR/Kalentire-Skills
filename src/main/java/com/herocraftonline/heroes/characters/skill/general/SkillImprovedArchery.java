@@ -11,7 +11,6 @@ import org.bukkit.Bukkit;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Arrow;
 import org.bukkit.entity.Player;
-import org.bukkit.Sound;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityShootBowEvent;
@@ -48,7 +47,7 @@ public class SkillImprovedArchery extends PassiveSkill
     
     public class ArcheryListener implements Listener
     {
-    	private Skill skill;
+    	private final Skill skill;
     	public ArcheryListener(Skill imprArch)
     	{
     		skill = imprArch;

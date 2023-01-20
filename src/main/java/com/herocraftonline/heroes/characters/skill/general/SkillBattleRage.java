@@ -28,24 +28,23 @@ public class SkillBattleRage
     double damageMod = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE, 0.2D, false) + SkillConfigManager.getUseSetting(hero, this, "damage-multiplier-increase", 0.0D, false) * hero.getHeroLevel(this);
     
     damageMod = damageMod > 0.0D ? damageMod : 0.0D;
-    String description = getDescription().replace("$1", healthPercentage + "").replace("$2", damageMod + "");
-    return description;
+      return getDescription().replace("$1", healthPercentage + "").replace("$2", damageMod + "");
   }
   
   public ConfigurationSection getDefaultConfig()
   {
     ConfigurationSection node = super.getDefaultConfig();
    
-    node.set("health-percentage", Double.valueOf(5));
-    node.set(SkillSetting.DAMAGE.node(), Double.valueOf(1.5));
-    node.set(SkillSetting.DAMAGE_INCREASE.node(), Double.valueOf(0));
+    node.set("health-percentage", 5.0);
+    node.set(SkillSetting.DAMAGE.node(), 1.5);
+    node.set(SkillSetting.DAMAGE_INCREASE.node(), (double) 0);
     return node;
   }
   
-  public class SkillHeroListener
+  public static class SkillHeroListener
     implements Listener
   {
-    private Skill skill;
+    private final Skill skill;
     
     public SkillHeroListener(Skill skill)
     {

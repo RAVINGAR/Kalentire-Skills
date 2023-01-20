@@ -18,7 +18,6 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
-import org.checkerframework.checker.units.qual.C;
 
 import javax.annotation.Nullable;
 import java.util.ArrayList;
@@ -220,7 +219,7 @@ public class SkillArtOfWar extends PassiveSkill implements Listenable {
         return validTargets.get(Util.nextInt(validCount));
     }
 
-    public class HighlightedTargetEffect extends ExpirableEffect {
+    public static class HighlightedTargetEffect extends ExpirableEffect {
         private final double damageMultiplier;
 
         public HighlightedTargetEffect(Skill skill, Player applier, long duration, double damageMultiplier) {

@@ -36,14 +36,14 @@ import java.util.Map.Entry;
 
 public class SkillLavaLurk extends ActiveSkill implements Listenable {
 
-    private static String effectName = "LavaLurking";
+    private static final String effectName = "LavaLurking";
+    private final LavaLurkMoveChecker moveChecker;
+    private final Listener listener;
     private String applyText;
     private String expireText;
     private String failText;
-    private LavaLurkMoveChecker moveChecker;
-    private Listener listener;
 
-    public SkillLavaLurk(Heroes plugin) {
+    public SkillLavaLurk(final Heroes plugin) {
         super(plugin, "LavaLurk");
         setDescription("You become one with lava, preventing all incoming fire damage and hiding your presence for $1 seconds. Every $2 seconds a spout of flames will erupt from your location");
         setUsage("/skill lavaLurk");
@@ -56,7 +56,7 @@ public class SkillLavaLurk extends ActiveSkill implements Listenable {
     }
 
     @Override
-    public String getDescription(Hero hero) {
+    public String getDescription(final Hero hero) {
         return super.getDescription()
                 .replace("$1", Util.decFormat.format(SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, 30000, false) / 1000))
                 .replace("$2", Util.decFormat.format(Double.parseDouble(SkillConfigManager.getRaw(this, "check-interval", "2000")) / 1000));
@@ -64,7 +64,7 @@ public class SkillLavaLurk extends ActiveSkill implements Listenable {
 
     @Override
     public ConfigurationSection getDefaultConfig() {
-        ConfigurationSection config = super.getDefaultConfig();
+        final ConfigurationSection config = super.getDefaultConfig();
         config.set(SkillSetting.DURATION.node(), 30000);
         config.set("on-break-delayed-fire-resist-duration", 1500);
         config.set(SkillSetting.APPLY_TEXT.node(), ChatComponents.GENERIC_SKILL + "You have become one with the lava.");
@@ -81,20 +81,20 @@ public class SkillLavaLurk extends ActiveSkill implements Listenable {
         expireText = SkillConfigManager.getRaw(this, SkillSetting.EXPIRE_TEXT, ChatComponents.GENERIC_SKILL + "Your body has returned to normal.");
         failText = SkillConfigManager.getRaw(this, "fail-text", ChatComponents.GENERIC_SKILL + "Unable to Lava Lurk. You are not submerged in lava.");
 
-        double interval = Double.parseDouble(SkillConfigManager.getRaw(this, "check-interval", "2000")) / 1000 * 20;
+        final double interval = Double.parseDouble(SkillConfigManager.getRaw(this, "check-interval", "2000")) / 1000 * 20;
         Bukkit.getServer().getScheduler().scheduleSyncRepeatingTask(plugin, moveChecker, 10, (long) interval);
     }
 
     @Override
-    public SkillResult use(Hero hero, String[] args) {
-        Player player = hero.getPlayer();
-        Location loc = player.getLocation();
+    public SkillResult use(final Hero hero, final String[] args) {
+        final Player player = hero.getPlayer();
+        final Location loc = player.getLocation();
 
-        long duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, 30000, false);
-        long onBreakDuration = SkillConfigManager.getUseSetting(hero, this, "on-break-delayed-fire-resist-duration", 1500, false);
+        final long duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, 30000, false);
+        final long onBreakDuration = SkillConfigManager.getUseSetting(hero, this, "on-break-delayed-fire-resist-duration", 1500, false);
 
         player.getWorld().playEffect(loc, org.bukkit.Effect.EXTINGUISH, 0, 10);
-        LavaLurkEffect lurkEffect = new LavaLurkEffect(this, player, duration, onBreakDuration);
+        final LavaLurkEffect lurkEffect = new LavaLurkEffect(this, player, duration, onBreakDuration);
         hero.addEffect(lurkEffect);
 
         moveChecker.addHero(hero);
@@ -107,74 +107,54 @@ public class SkillLavaLurk extends ActiveSkill implements Listenable {
         return listener;
     }
 
-    class LavaLurkEffect extends InvisibleEffect {
+    public static class LavaLurkListener implements Listener {
+        private final CharacterManager manager;
 
-        private final long onBreakFireResistDuration;
-
-        public LavaLurkEffect(Skill skill, Player applier, long duration, long onBreakFireResistDuration) {
-            super(skill, effectName, applier, duration, applyText, expireText);
-            this.onBreakFireResistDuration = onBreakFireResistDuration;
-
-            types.add(EffectType.RESIST_FIRE);
-            types.add(EffectType.INVISIBILITY);
-        }
-
-        @Override
-        public void removeFromHero(Hero hero) {
-            super.removeFromHero(hero);
-
-            ExpirableEffect temporaryResistEffect = new ExpirableEffect(skill, "LavaLurkDelayedFireResist", applier, onBreakFireResistDuration);
-            temporaryResistEffect.types.add(EffectType.RESIST_FIRE);
-            hero.addEffect(temporaryResistEffect);
-        }
-    }
-
-    public class LavaLurkListener implements Listener {
-        private CharacterManager manager;
-        public LavaLurkListener(Heroes heroes) {
+        public LavaLurkListener(final Heroes heroes) {
             manager = heroes.getCharacterManager();
         }
 
         @EventHandler(priority = EventPriority.MONITOR)
-        public void onDamage(EntityDamageEvent event) {
-            if(event.isCancelled()) {
+        public void onDamage(final EntityDamageEvent event) {
+            if (event.isCancelled()) {
                 return;
             }
-            if(event.getEntity() instanceof Player player) {
-                Hero hero = manager.getHero(player);
-                if(!hero.hasEffect(effectName)) {
+            if (event.getEntity() instanceof Player) {
+                final Player player = (Player) event.getEntity();
+                final Hero hero = manager.getHero(player);
+                if (!hero.hasEffect(effectName)) {
                     return;
                 }
-                World world = player.getWorld();
+                final World world = player.getWorld();
                 world.playSound(player.getLocation(), Sound.ENTITY_BLAZE_DEATH, 0.7F, 0.8F);
                 world.spawnParticle(Particle.SMALL_FLAME, player.getLocation(), 24, 0.15, 1, 0.15);
             }
         }
     }
 
-    public class LavaLurkMoveChecker implements Runnable {
+    public static class LavaLurkMoveChecker implements Runnable {
 
-        private Map<Hero, Location> oldLocations = new HashMap<>();
-        private Skill skill;
+        private final Map<Hero, Location> oldLocations = new HashMap<>();
+        private final Skill skill;
 
-        LavaLurkMoveChecker(Skill skill) {
+        LavaLurkMoveChecker(final Skill skill) {
             this.skill = skill;
         }
 
         @Override
         public void run() {
-            Iterator<Entry<Hero, Location>> heroes = oldLocations.entrySet().iterator();
+            final Iterator<Entry<Hero, Location>> heroes = oldLocations.entrySet().iterator();
             while (heroes.hasNext()) {
-                Entry<Hero, Location> entry = heroes.next();
-                Hero hero = entry.getKey();
-                Location oldLoc = entry.getValue();
+                final Entry<Hero, Location> entry = heroes.next();
+                final Hero hero = entry.getKey();
+                final Location oldLoc = entry.getValue();
 
                 if (!hero.hasEffect(effectName)) {
                     heroes.remove();
                     continue;
                 }
-                Location newLoc = hero.getPlayer().getLocation();
-                World world = newLoc.getWorld();
+                final Location newLoc = hero.getPlayer().getLocation();
+                final World world = newLoc.getWorld();
                 //todo mayb do thing where like there are two particles for eyes
                 world.spawnParticle(Particle.FLAME, oldLoc, 24, 0.15, 1, 0.15);
                 if (newLoc.getBlock().getType() == Material.WATER) {
@@ -192,10 +172,33 @@ public class SkillLavaLurk extends ActiveSkill implements Listenable {
             }
         }
 
-        void addHero(Hero hero) {
-            if (!hero.hasEffect(effectName))
+        void addHero(final Hero hero) {
+            if (!hero.hasEffect(effectName)) {
                 return;
+            }
             oldLocations.put(hero, hero.getPlayer().getLocation());
+        }
+    }
+
+    class LavaLurkEffect extends InvisibleEffect {
+
+        private final long onBreakFireResistDuration;
+
+        public LavaLurkEffect(final Skill skill, final Player applier, final long duration, final long onBreakFireResistDuration) {
+            super(skill, effectName, applier, duration, applyText, expireText);
+            this.onBreakFireResistDuration = onBreakFireResistDuration;
+
+            types.add(EffectType.RESIST_FIRE);
+            types.add(EffectType.INVISIBILITY);
+        }
+
+        @Override
+        public void removeFromHero(final Hero hero) {
+            super.removeFromHero(hero);
+
+            final ExpirableEffect temporaryResistEffect = new ExpirableEffect(skill, "LavaLurkDelayedFireResist", applier, onBreakFireResistDuration);
+            temporaryResistEffect.types.add(EffectType.RESIST_FIRE);
+            hero.addEffect(temporaryResistEffect);
         }
     }
 }

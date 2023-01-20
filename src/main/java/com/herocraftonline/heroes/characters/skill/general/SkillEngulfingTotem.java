@@ -23,7 +23,7 @@ import java.util.*;
 
 public class SkillEngulfingTotem extends SkillBaseTotem {
 
-    Map<Hero, List<LivingEntity>> afflictedTargets;
+    final Map<Hero, List<LivingEntity>> afflictedTargets;
     
     public SkillEngulfingTotem(Heroes plugin) {
         super(plugin, "EngulfingTotem");
@@ -33,7 +33,7 @@ public class SkillEngulfingTotem extends SkillBaseTotem {
         setDescription("Places an engulfing totem at target location that reduces the dexterity of non-partied entites in a $1 radius by $2. Lasts for $3 second(s).");
         setTypes(SkillType.MOVEMENT_SLOWING, SkillType.ABILITY_PROPERTY_MAGICAL, SkillType.SILENCEABLE, SkillType.AGGRESSIVE, SkillType.AREA_OF_EFFECT);
         material = Material.SOUL_SAND;
-        afflictedTargets = new HashMap<Hero, List<LivingEntity>>();
+        afflictedTargets = new HashMap<>();
     }
 
     @Override
@@ -47,7 +47,7 @@ public class SkillEngulfingTotem extends SkillBaseTotem {
     @Override
     public void usePower(Hero hero, Totem totem) {
         Player heroP = hero.getPlayer();
-        List<LivingEntity> heroTargets = afflictedTargets.containsKey(hero) ? afflictedTargets.get(hero) : new ArrayList<LivingEntity>(); 
+        List<LivingEntity> heroTargets = afflictedTargets.containsKey(hero) ? afflictedTargets.get(hero) : new ArrayList<>();
         List<LivingEntity> totemTargets = totem.getTargets(hero);
         if(!heroTargets.isEmpty()) {
             Iterator<LivingEntity> iter = heroTargets.iterator();
@@ -93,7 +93,7 @@ public class SkillEngulfingTotem extends SkillBaseTotem {
     @Override
     public void totemDestroyed(Hero hero, Totem totem) {
         Player heroP = hero.getPlayer();
-        List<LivingEntity> heroTargets = afflictedTargets.containsKey(hero) ? afflictedTargets.get(hero) : new ArrayList<LivingEntity>(); 
+        List<LivingEntity> heroTargets = afflictedTargets.containsKey(hero) ? afflictedTargets.get(hero) : new ArrayList<>();
         if(!heroTargets.isEmpty()) {
             Iterator<LivingEntity> iter = heroTargets.iterator();
             while(iter.hasNext()) {
@@ -139,7 +139,7 @@ public class SkillEngulfingTotem extends SkillBaseTotem {
         return SkillConfigManager.getRaw(this, SkillSetting.EXPIRE_TEXT, ChatComponents.GENERIC_SKILL + "$1 is no longer engulfed by a totem's power.");
     }
 
-    private class EngulfingTotemDexterityEffect extends AttributeDecreaseEffect {
+    private static class EngulfingTotemDexterityEffect extends AttributeDecreaseEffect {
 
         public EngulfingTotemDexterityEffect(SkillEngulfingTotem skill, Hero applier, long duration, int decreaseValue, int slownessAmplitude) {
             this(skill, applier, duration, decreaseValue, slownessAmplitude, null, null);

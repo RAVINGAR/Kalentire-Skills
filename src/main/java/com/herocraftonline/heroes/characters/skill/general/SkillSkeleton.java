@@ -97,12 +97,8 @@ public class SkillSkeleton extends ActiveSkill {
             {
                 return;
             }
-            Iterator<Monster> localIterator = localHero.getSummons().iterator();
-            while (localIterator.hasNext())
-            {
-                Monster localLivingEntity = localIterator.next();
-                if (localLivingEntity.getEntity() instanceof Skeleton)
-                {
+            for (Monster localLivingEntity : localHero.getSummons()) {
+                if (localLivingEntity.getEntity() instanceof Skeleton) {
                     Effect localEffect = localLivingEntity.getEffect("Summon");
                     if (localEffect != null) {
                         localLivingEntity.removeEffect(localEffect);
@@ -211,10 +207,7 @@ public class SkillSkeleton extends ActiveSkill {
             }
             Skeleton localSkeleton = (Skeleton)paramEntityDeathEvent.getEntity();
             Collection<Hero> localCollection = SkillSkeleton.this.plugin.getCharacterManager().getHeroes();
-            Iterator<Hero> localIterator = localCollection.iterator();
-            while (localIterator.hasNext())
-            {
-                Hero localHero = localIterator.next();
+            for (Hero localHero : localCollection) {
                 if (localHero.getSummons().contains(localSkeleton)) {
                     localHero.getSummons().remove(localSkeleton);
                 }
@@ -230,24 +223,15 @@ public class SkillSkeleton extends ActiveSkill {
             }
             if ((paramEntityTargetEvent.getTarget() instanceof Player))
             {
-                Iterator<Hero> localIterator1 = SkillSkeleton.this.plugin.getCharacterManager().getHeroes().iterator();
-                while (localIterator1.hasNext())
-                {
-                    Hero localHero1 = (Hero)localIterator1.next();
+                for (Hero localHero1 : SkillSkeleton.this.plugin.getCharacterManager().getHeroes()) {
                     if (localHero1.getSummons().contains(paramEntityTargetEvent.getEntity())) {
-                        if (localHero1.getParty() != null)
-                        {
-                            Iterator<Hero> localIterator2 = localHero1.getParty().getMembers().iterator();
-                            while (localIterator2.hasNext())
-                            {
-                                Hero localHero2 = (Hero)localIterator2.next();
+                        if (localHero1.getParty() != null) {
+                            for (Hero localHero2 : localHero1.getParty().getMembers()) {
                                 if (localHero2.getPlayer().equals(paramEntityTargetEvent.getTarget())) {
                                     paramEntityTargetEvent.setCancelled(true);
                                 }
                             }
-                        }
-                        else if (localHero1.getPlayer().equals(paramEntityTargetEvent.getTarget()))
-                        {
+                        } else if (localHero1.getPlayer().equals(paramEntityTargetEvent.getTarget())) {
                             paramEntityTargetEvent.setCancelled(true);
                         }
                     }

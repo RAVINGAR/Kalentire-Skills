@@ -82,7 +82,7 @@ public class SkillGust extends ActiveSkill {
         return SkillResult.NORMAL;
     }
 
-    class GustProjectile extends BasicDamageMissile {
+    static class GustProjectile extends BasicDamageMissile {
         private final double blockCollisionSizeSquared;
 
         GustProjectile(Heroes plugin, Skill skill, Hero hero) {

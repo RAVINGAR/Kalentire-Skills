@@ -4,14 +4,11 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.bukkit.Bukkit;
-import org.bukkit.Color;
-import org.bukkit.FireworkEffect;
 import org.bukkit.Location;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
-import org.bukkit.Sound;
 import org.bukkit.event.entity.EntityDamageEvent.DamageCause;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
@@ -114,37 +111,35 @@ public class SkillInferno extends ActiveSkill {
             int numExplosions = 0;
             List<Location> explosionLocations = circle(player, player.getLocation(), radius, 1, false, false, 0);
             for (final Location location : explosionLocations) {
-                Bukkit.getScheduler().scheduleSyncDelayedTask(plugin, new Runnable() {
-                    public void run() {
-                        final Location explosionLocation = location.clone().add(new Vector(.5, .5, .5));
-                        /*try {
-                            fplayer.playFirework(explosionLocation.getWorld(), explosionLocation, FireworkEffect.builder().flicker(false).trail(true).with(FireworkEffect.Type.BURST).withColor(Color.ORANGE).withFade(Color.MAROON).build());
-                            fplayer.playFirework(explosionLocation.getWorld(), explosionLocation, FireworkEffect.builder().flicker(false).trail(true).with(FireworkEffect.Type.BALL_LARGE).withColor(Color.MAROON).withFade(Color.ORANGE).build());
-                        }
-                        catch (IllegalArgumentException e) {
-                            e.printStackTrace();
-                        }
-                        catch (Exception e) {
-                            e.printStackTrace();
-                        }*/
-
-                        final List<Entity> nearbyEntities = player.getNearbyEntities(radius * 2, radius * 2, radius * 2);
-                        for (Entity entity : nearbyEntities) {
-                            // Check to see if the entity can be damaged
-                            if (!(entity instanceof LivingEntity) || entity.getLocation().distance(explosionLocation) > hitboxRadius)
-                                continue;
-
-                            if (!damageCheck(player, (LivingEntity) entity))
-                                continue;
-
-                            // Damage target
-                            LivingEntity target = (LivingEntity) entity;
-
-                            addSpellTarget(target, hero);
-                            damageEntity(target, player, damage, DamageCause.MAGIC);
-                        }
+                Bukkit.getScheduler().scheduleSyncDelayedTask(plugin, () -> {
+                    final Location explosionLocation = location.clone().add(new Vector(.5, .5, .5));
+                    /*try {
+                        fplayer.playFirework(explosionLocation.getWorld(), explosionLocation, FireworkEffect.builder().flicker(false).trail(true).with(FireworkEffect.Type.BURST).withColor(Color.ORANGE).withFade(Color.MAROON).build());
+                        fplayer.playFirework(explosionLocation.getWorld(), explosionLocation, FireworkEffect.builder().flicker(false).trail(true).with(FireworkEffect.Type.BALL_LARGE).withColor(Color.MAROON).withFade(Color.ORANGE).build());
                     }
-                }, numExplosions * spawnDelay);
+                    catch (IllegalArgumentException e) {
+                        e.printStackTrace();
+                    }
+                    catch (Exception e) {
+                        e.printStackTrace();
+                    }*/
+
+                    final List<Entity> nearbyEntities = player.getNearbyEntities(radius * 2, radius * 2, radius * 2);
+                    for (Entity entity : nearbyEntities) {
+                        // Check to see if the entity can be damaged
+                        if (!(entity instanceof LivingEntity) || entity.getLocation().distance(explosionLocation) > hitboxRadius)
+                            continue;
+
+                        if (!damageCheck(player, (LivingEntity) entity))
+                            continue;
+
+                        // Damage target
+                        LivingEntity target = (LivingEntity) entity;
+
+                        addSpellTarget(target, hero);
+                        damageEntity(target, player, damage, DamageCause.MAGIC);
+                    }
+                }, (long) numExplosions * spawnDelay);
 
                 numExplosions++;
             }
@@ -160,14 +155,11 @@ public class SkillInferno extends ActiveSkill {
         int y2 = targetLocation.getBlockY();
         int z2 = targetLocation.getBlockZ();
 
-        if (x2 >= (x1 + radiusX) || x2 <= (x1 - radiusX) || y2 >= (y1 + radiusY) || y2 <= (y1 - radiusY) || z2 >= (z1 + radiusZ) || z2 <= (z1 - radiusZ))
-            return false;
-
-        return true;
+        return x2 < (x1 + radiusX) && x2 > (x1 - radiusX) && y2 < (y1 + radiusY) && y2 > (y1 - radiusY) && z2 < (z1 + radiusZ) && z2 > (z1 - radiusZ);
     }
 
     protected List<Location> circle(Player player, Location loc, Integer r, Integer h, boolean hollow, boolean sphere, int plus_y) {
-        List<Location> circleblocks = new ArrayList<Location>();
+        List<Location> circleblocks = new ArrayList<>();
         int cx = loc.getBlockX();
         int cy = loc.getBlockY();
         int cz = loc.getBlockZ();

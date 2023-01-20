@@ -47,7 +47,7 @@ public class SkillJudgement extends ActiveSkill implements Listener
     public void startClearTimer() {
         new BukkitRunnable() {
             public void run() {
-                HashMap<JudgementEvent, Long> newJudgedEvents = new HashMap<JudgementEvent, Long>();
+                HashMap<JudgementEvent, Long> newJudgedEvents = new HashMap<>();
                 for (Map.Entry<JudgementEvent, Long> e : judgedEvents.entrySet()) {
                     if (e.getValue() > System.currentTimeMillis() - 10000){
                         newJudgedEvents.put(e.getKey(), e.getValue());
@@ -126,9 +126,9 @@ public class SkillJudgement extends ActiveSkill implements Listener
 
             LivingEntity target = (LivingEntity) e;
             CharacterTemplate targAle = plugin.getCharacterManager().getCharacter(target);
-            HashSet<JudgementEvent> relevantEvents = new HashSet<JudgementEvent>();
+            HashSet<JudgementEvent> relevantEvents = new HashSet<>();
             boolean isAlly = (target instanceof Player && (ap.hasParty() && ap.getParty().getMembers().contains(plugin.getCharacterManager().getHero((Player) target))));
-            HashMap<JudgementEvent, Long> newJudgedEvents = new HashMap<JudgementEvent, Long>(); // incidental cleanup
+            HashMap<JudgementEvent, Long> newJudgedEvents = new HashMap<>(); // incidental cleanup
             for (Map.Entry<JudgementEvent, Long> entry : judgedEvents.entrySet()) {
                 if (entry.getValue() >= System.currentTimeMillis() - judgementPeriod) {
                     if (entry.getKey().getDamager().equals(targAle) || entry.getKey().getDamaged().equals(targAle)){
@@ -196,7 +196,7 @@ public class SkillJudgement extends ActiveSkill implements Listener
                 target.sendMessage("    " + ChatComponents.GENERIC_SKILL + "The divines heal a portion of your injuries.");
                 new BukkitRunnable() {
                     int ticks = 0;
-                    int maxTicks = 5;
+                    final int maxTicks = 5;
                     public void run() {
                         if (ticks == maxTicks) cancel();
                         target.getWorld().playSound(target.getLocation(), Sound.ENTITY_EXPERIENCE_ORB_PICKUP, 0.3F, 0.1F + (0.2F * ticks));
@@ -248,11 +248,11 @@ public class SkillJudgement extends ActiveSkill implements Listener
         judgedEvents.put(new JudgementEvent(dmgerAle, entAle, e.getDamage()), System.currentTimeMillis());
     }
 
-    private class JudgementEvent // this is when I wish Java had structs
+    private static class JudgementEvent // this is when I wish Java had structs
     {
-        private CharacterTemplate damager;
-        private CharacterTemplate damaged;
-        private double damage;
+        private final CharacterTemplate damager;
+        private final CharacterTemplate damaged;
+        private final double damage;
 
         public JudgementEvent(CharacterTemplate damager, CharacterTemplate damaged, double damage)
         {

@@ -14,7 +14,6 @@ import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
-import org.bukkit.Sound;
 import org.bukkit.event.entity.EntityDamageEvent.DamageCause;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.util.Vector;
@@ -40,7 +39,7 @@ public class SkillSummonVines extends ActiveSkill
 	@Override
 	public String getDescription(Hero hero) 
 	{
-		int radius = SkillConfigManager.getUseSetting(hero, this, SkillSetting.RADIUS, Integer.valueOf(8), false);
+		int radius = SkillConfigManager.getUseSetting(hero, this, SkillSetting.RADIUS, 8, false);
 		int period = SkillConfigManager.getUseSetting(hero, this, SkillSetting.PERIOD, 3000, false);
 		int duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, 12000, false);
 
@@ -85,8 +84,8 @@ public class SkillSummonVines extends ActiveSkill
 
 	public class VinesEffect extends PeriodicExpirableEffect
 	{		
-		private Skill skill;
-		final ArrayList<Location> vineLocs = new ArrayList<Location>();
+		private final Skill skill;
+		final ArrayList<Location> vineLocs = new ArrayList<>();
 
 		public VinesEffect(Skill skill, Player applier, long duration, long period) 
 		{
@@ -102,7 +101,7 @@ public class SkillSummonVines extends ActiveSkill
 			
 			Location pLoc = player.getLocation().add(0, 0.5, 0);
 
-			final int radius = SkillConfigManager.getUseSetting(hero, skill, SkillSetting.RADIUS, Integer.valueOf(8), false);
+			final int radius = SkillConfigManager.getUseSetting(hero, skill, SkillSetting.RADIUS, 8, false);
 			
 			for (int i = 0; i < radius; i++)
 				vineLocs.addAll(circle(pLoc, 12, (double) i));
@@ -110,8 +109,8 @@ public class SkillSummonVines extends ActiveSkill
 			new BukkitRunnable()
 			{
 				private int ticks = 0;
-				private int maxTicks = 40;
-				private Random rand = new Random();
+				private final int maxTicks = 40;
+				private final Random rand = new Random();
 
 				public void run()
 				{
@@ -152,7 +151,7 @@ public class SkillSummonVines extends ActiveSkill
 		{
 			Player player = hero.getPlayer();
 			
-			final int radius = SkillConfigManager.getUseSetting(hero, skill, SkillSetting.RADIUS, Integer.valueOf(8), false);
+			final int radius = SkillConfigManager.getUseSetting(hero, skill, SkillSetting.RADIUS, 8, false);
 
 			int period = SkillConfigManager.getUseSetting(hero, skill, SkillSetting.PERIOD, 3000, false);
 
