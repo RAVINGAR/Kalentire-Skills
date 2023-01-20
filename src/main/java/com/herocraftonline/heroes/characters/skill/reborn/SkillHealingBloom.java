@@ -8,10 +8,9 @@ import com.herocraftonline.heroes.characters.skill.ActiveSkill;
 import com.herocraftonline.heroes.characters.skill.SkillConfigManager;
 import com.herocraftonline.heroes.characters.skill.SkillSetting;
 import com.herocraftonline.heroes.characters.skill.SkillType;
+import com.herocraftonline.heroes.libs.slikey.effectlib.effect.LoveEffect;
+import com.herocraftonline.heroes.libs.slikey.effectlib.util.DynamicLocation;
 import com.herocraftonline.heroes.util.Util;
-import de.slikey.effectlib.EffectManager;
-import de.slikey.effectlib.effect.LoveEffect;
-import de.slikey.effectlib.util.DynamicLocation;
 import org.bukkit.Location;
 import org.bukkit.Particle;
 import org.bukkit.configuration.ConfigurationSection;
@@ -21,7 +20,7 @@ import org.bukkit.util.Vector;
 
 public class SkillHealingBloom extends ActiveSkill {
 
-    public SkillHealingBloom(Heroes plugin) {
+    public SkillHealingBloom(final Heroes plugin) {
         super(plugin, "HealingBloom");
         setDescription("Apply a Healing Bloom to party members within $1 blocks, healing them for $2 health over $3 second(s). You are only healed for $3 health from this effect.");
         setUsage("/skill healingbloom");
@@ -30,24 +29,26 @@ public class SkillHealingBloom extends ActiveSkill {
         setArgumentRange(0, 0);
     }
 
-    public String getDescription(Hero hero) {
-        int radius = SkillConfigManager.getUseSetting(hero, this, SkillSetting.RADIUS, 15, false);
+    @Override
+    public String getDescription(final Hero hero) {
+        final int radius = SkillConfigManager.getUseSetting(hero, this, SkillSetting.RADIUS, 15, false);
 
-        int period = SkillConfigManager.getUseSetting(hero, this, SkillSetting.PERIOD, 2000, false);
-        int duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION.node(), 20000, false);
+        final int period = SkillConfigManager.getUseSetting(hero, this, SkillSetting.PERIOD, 2000, false);
+        final int duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION.node(), 20000, false);
 
         double healing = SkillConfigManager.getUseSetting(hero, this, SkillSetting.HEALING_TICK, 17, false);
         healing = getScaledHealing(hero, healing);
 
-        String formattedHealing = Util.decFormat.format(healing * ((double) duration / (double) period));
-        String formattedSelfHealing = Util.decFormat.format((healing * ((double) duration / (double) period)) * Heroes.properties.selfHeal);
-        String formattedDuration = Util.decFormat.format(duration / 1000.0);
+        final String formattedHealing = Util.decFormat.format(healing * ((double) duration / (double) period));
+        final String formattedSelfHealing = Util.decFormat.format((healing * ((double) duration / (double) period)) * Heroes.properties.selfHeal);
+        final String formattedDuration = Util.decFormat.format(duration / 1000.0);
 
         return getDescription().replace("$1", radius + "").replace("$2", formattedHealing).replace("$3", formattedDuration).replace("$4", formattedSelfHealing);
     }
 
+    @Override
     public ConfigurationSection getDefaultConfig() {
-        ConfigurationSection node = super.getDefaultConfig();
+        final ConfigurationSection node = super.getDefaultConfig();
 
         node.set(SkillSetting.DURATION.node(), 20000);
         node.set(SkillSetting.RADIUS.node(), 15);
@@ -58,26 +59,27 @@ public class SkillHealingBloom extends ActiveSkill {
         return node;
     }
 
-    public SkillResult use(Hero hero, String[] args) {
-        Player player = hero.getPlayer();
+    @Override
+    public SkillResult use(final Hero hero, final String[] args) {
+        final Player player = hero.getPlayer();
 
-        int radius = SkillConfigManager.getUseSetting(hero, this, SkillSetting.RADIUS, 15, false);
-        int radiusSquared = radius * radius;
-        int duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION.node(), 20000, false);
+        final int radius = SkillConfigManager.getUseSetting(hero, this, SkillSetting.RADIUS, 15, false);
+        final int radiusSquared = radius * radius;
+        final int duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION.node(), 20000, false);
         double healing = SkillConfigManager.getUseSetting(hero, this, SkillSetting.HEALING_TICK, 17, false);
         healing = getScaledHealing(hero, healing);
 
 
-        int period = SkillConfigManager.getUseSetting(hero, this, SkillSetting.PERIOD, 2000, false);
+        final int period = SkillConfigManager.getUseSetting(hero, this, SkillSetting.PERIOD, 2000, false);
 
 
         broadcastExecuteText(hero);
 
         // Check if the hero has a party
         if (hero.hasParty()) {
-            Location playerLocation = player.getLocation();
+            final Location playerLocation = player.getLocation();
             // Loop through the player's party members and add the effect as necessary
-            for (Hero member : hero.getParty().getMembers()) {
+            for (final Hero member : hero.getParty().getMembers()) {
                 // Ensure the party member is in the same world.
                 if (member.getPlayer().getLocation().getWorld().equals(playerLocation.getWorld())) {
                     // Check to see if they are close enough to the player to receive the buff
@@ -98,13 +100,12 @@ public class SkillHealingBloom extends ActiveSkill {
         return SkillResult.NORMAL;
     }
 
-    public void playVisuals(LivingEntity target, int duration) {
-        EffectManager effectManager = new EffectManager(plugin);
+    public void playVisuals(final LivingEntity target, final int duration) {
         final int durationTicks = (int) duration / 50;
         final int displayPeriod = 2;
 
-        LoveEffect visualEffect = new LoveEffect(effectManager);
-        DynamicLocation dynamicLoc = new DynamicLocation(target);
+        final LoveEffect visualEffect = new LoveEffect(effectLib);
+        final DynamicLocation dynamicLoc = new DynamicLocation(target);
         visualEffect.setDynamicOrigin(dynamicLoc);
         visualEffect.disappearWithOriginEntity = true;
 
@@ -115,7 +116,6 @@ public class SkillHealingBloom extends ActiveSkill {
         visualEffect.iterations = durationTicks / displayPeriod;
         dynamicLoc.addOffset(new Vector(0, 0.8, 0));
 
-        effectManager.start(visualEffect);
-        effectManager.disposeOnTermination();
+        effectLib.start(visualEffect);
     }
 }

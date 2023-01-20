@@ -21,7 +21,7 @@ import org.bukkit.scheduler.BukkitRunnable;
 
 public class SkillDimensionalStrike extends TargettedSkill {
 
-    public SkillDimensionalStrike(Heroes plugin) {
+    public SkillDimensionalStrike(final Heroes plugin) {
         super(plugin, "DimensionalStrike");
         setDescription("Teleport towards your target dealing $1 damage and stunning them for $3 second(s) before teleporting back after $4 second(s).");
         setUsage("/skill dimensionalstrike");
@@ -31,43 +31,43 @@ public class SkillDimensionalStrike extends TargettedSkill {
     }
 
     @Override
-    public String getDescription(Hero hero) {
+    public String getDescription(final Hero hero) {
         double damage = (SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE.node(), 6, false));
         damage = damage > 0 ? damage : 0;
         int radius = (SkillConfigManager.getUseSetting(hero, this, SkillSetting.RADIUS.node(), 3, false));
         radius = Math.max(radius, 0);
         int duration = (SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION.node(), 3000, false)) / 1000;
         duration = Math.max(duration, 0);
-        int delay = (SkillConfigManager.getUseSetting(hero, this, "teleport-delay", 500, false));
-        String description = getDescription().replace("$1", damage + "").replace("$2", radius + "").replace("$3", duration + "");
-        return description;
+        final int delay = (SkillConfigManager.getUseSetting(hero, this, "teleport-delay", 500, false));
+        return getDescription().replace("$1", damage + "").replace("$2", radius + "").replace("$3", duration + "");
     }
 
     @Override
     public ConfigurationSection getDefaultConfig() {
-        ConfigurationSection node = super.getDefaultConfig();
+        final ConfigurationSection node = super.getDefaultConfig();
         node.set(SkillSetting.RADIUS.node(), 3);
         node.set(SkillSetting.DURATION.node(), 3000);
         node.set(SkillSetting.DAMAGE.node(), 6);
         node.set("teleport-delay", 500);
         return node;
     }
-    
+
     @Override
-    public SkillResult use(Hero hero, LivingEntity target, String args[]) {
-        Player player = hero.getPlayer();
+    public SkillResult use(final Hero hero, final LivingEntity target, final String[] args) {
+        final Player player = hero.getPlayer();
         if (target instanceof Player && ((Player) target).equals(player)) {
             return SkillResult.INVALID_TARGET;
         }
-        Location oLoc = player.getLocation();
-        World world = oLoc.getWorld();
+        final Location oLoc = player.getLocation();
+        final World world = oLoc.getWorld();
         player.teleport(target.getLocation());
         broadcastExecuteText(hero, target);
-        long duration = (SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION.node(), 3000, false));
-        double damage = (SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE.node(), 6, false));
+        final long duration = (SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION.node(), 3000, false));
+        final double damage = (SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE.node(), 6, false));
 
-        if (target instanceof Player tPlayer) {
-            Hero tHero = plugin.getCharacterManager().getHero(tPlayer);
+        if (target instanceof Player) {
+            final Player tPlayer = (Player) target;
+            final Hero tHero = plugin.getCharacterManager().getHero(tPlayer);
             if (damageCheck(player, target)) {
                 if (duration > 0) {
                     tHero.addEffect(new StunEffect(this, hero.getPlayer(), duration));

@@ -9,8 +9,6 @@ import com.herocraftonline.heroes.characters.effects.ExpirableEffect;
 import com.herocraftonline.heroes.characters.effects.common.SafeFallEffect;
 import com.herocraftonline.heroes.characters.skill.*;
 import com.herocraftonline.heroes.chat.ChatComponents;
-import com.herocraftonline.heroes.nms.physics.NMSPhysics;
-import com.herocraftonline.heroes.nms.physics.RayCastHit;
 import com.herocraftonline.heroes.util.Util;
 import org.bukkit.*;
 import org.bukkit.block.Block;
@@ -31,7 +29,6 @@ import org.bukkit.util.BoundingBox;
 import org.bukkit.util.Vector;
 
 import java.util.*;
-import java.util.logging.Level;
 
 public class SkillOvergrowth extends TargettedLocationSkill {
 
@@ -99,8 +96,8 @@ public class SkillOvergrowth extends TargettedLocationSkill {
 
     private OvergrowthConstructionData tryGetOvergrowthConstructionData(Hero hero, Block startBlock, int height, int radius) {
         Player player = hero.getPlayer();
-        List<Block> conversionBlocks = new ArrayList<Block>();
-        List<LivingEntity> targets = new ArrayList<LivingEntity>();
+        List<Block> conversionBlocks = new ArrayList<>();
+        List<LivingEntity> targets = new ArrayList<>();
 
         int requiredUpwardFreeSpace = 3;    // 2 for player + 1 for the block itself
         Block validTopBlock = null;
@@ -209,7 +206,7 @@ public class SkillOvergrowth extends TargettedLocationSkill {
     private List<LivingEntity> getLivingEntitiesWithinSphere(Location center, int radius) {
         World world = center.getWorld();
         List<LivingEntity> worldEntities = world.getLivingEntities();
-        List<LivingEntity> entitiesWithinRadius = new ArrayList<LivingEntity>();
+        List<LivingEntity> entitiesWithinRadius = new ArrayList<>();
         List<Block> blocksInRadius = getBlocksWithinSphere(center, radius, false);
 
         for (LivingEntity entity : worldEntities) {
@@ -223,7 +220,7 @@ public class SkillOvergrowth extends TargettedLocationSkill {
     private List<Entity> getEntitiesWithinSphere(Location center, int radius) {
         World world = center.getWorld();
         List<Entity> worldEntities = world.getEntities();
-        List<Entity> entitiesWithinRadius = new ArrayList<Entity>();
+        List<Entity> entitiesWithinRadius = new ArrayList<>();
         List<Block> blocksInRadius = getBlocksWithinSphere(center, radius, false);
 
         for (Entity entity : worldEntities) {
@@ -237,7 +234,7 @@ public class SkillOvergrowth extends TargettedLocationSkill {
     private List<LivingEntity> getLivingEntitiesWithinFlatCircle(Location center, int radius) {
         World world = center.getWorld();
         List<LivingEntity> worldEntities = world.getLivingEntities();
-        List<LivingEntity> entitiesWithinRadius = new ArrayList<LivingEntity>();
+        List<LivingEntity> entitiesWithinRadius = new ArrayList<>();
         List<Block> blocksInRadius = getBlocksWithinFlatCircle(center, radius);
 
         for (LivingEntity entity : worldEntities) {
@@ -263,7 +260,7 @@ public class SkillOvergrowth extends TargettedLocationSkill {
 //    }
 
     private List<Block> getBlocksWithinSphere(Location center, int radius, boolean hollow) {
-        List<Block> sphereBlocks = new ArrayList<Block>();
+        List<Block> sphereBlocks = new ArrayList<>();
         World world = center.getWorld();
         int centerX = center.getBlockX();
         int centerY = center.getBlockY();
@@ -284,7 +281,7 @@ public class SkillOvergrowth extends TargettedLocationSkill {
     }
 
     private List<Block> getBlocksWithinFlatCircle(Location center, int radius) {
-        List<Block> flatCircleBlocks = new ArrayList<Block>();
+        List<Block> flatCircleBlocks = new ArrayList<>();
         World world = center.getWorld();
         int centerY = center.getBlockY();
         int centerX = center.getBlockX();
@@ -322,12 +319,12 @@ public class SkillOvergrowth extends TargettedLocationSkill {
         return false;
     }
 
-    private class OvergrowthConstructionData {
-        Block bottomCenterBlock;
-        Block topCenterBlock;
-        int radius;
-        List<Block> possibleConversionBlocks = new ArrayList<Block>();
-        List<LivingEntity> targets = new ArrayList<LivingEntity>();
+    private static class OvergrowthConstructionData {
+        final Block bottomCenterBlock;
+        final Block topCenterBlock;
+        final int radius;
+        List<Block> possibleConversionBlocks = new ArrayList<>();
+        List<LivingEntity> targets = new ArrayList<>();
 
         OvergrowthConstructionData(Block bottomCenterBlock, Block topCenterBlock, int radius, List<Block> possibleConversionBlocks, List<LivingEntity> targets) {
             this.bottomCenterBlock = bottomCenterBlock;
@@ -357,8 +354,8 @@ public class SkillOvergrowth extends TargettedLocationSkill {
     public class OvergrowthEffect extends ExpirableEffect {
         private final OvergrowthConstructionData data;
 
-        private Set<Block> changedBlocks = new HashSet<Block>();
-        private SkillBlockListener listener = new SkillBlockListener();
+        private final Set<Block> changedBlocks = new HashSet<>();
+        private final SkillBlockListener listener = new SkillBlockListener();
 
         OvergrowthEffect(Skill skill, Player applier, long duration, OvergrowthConstructionData data) {
             super(skill, "Overgrowth", applier, duration);

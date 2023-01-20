@@ -23,11 +23,11 @@ import org.bukkit.scheduler.BukkitRunnable;
 
 public class SkillDualWield extends PassiveSkill implements Listenable {
 
-    private static String hitCountEffectName = "DualWield-HitCount";
-    private static String cooldownEffectName = "DualWield-CooldownEffect";
+    private static final String hitCountEffectName = "DualWield-HitCount";
+    private static final String cooldownEffectName = "DualWield-CooldownEffect";
     private final Listener listener;
 
-    private NMSHandler nmsHandler = NMSHandler.getInterface();
+    private final NMSHandler nmsHandler = NMSHandler.getInterface();
 
     public SkillDualWield(Heroes plugin) {
         super(plugin, "DualWield");
@@ -63,7 +63,7 @@ public class SkillDualWield extends PassiveSkill implements Listenable {
     }
 
     public class SkillHeroListener implements Listener {
-        private Skill skill;
+        private final Skill skill;
 
         public SkillHeroListener(Skill skill) {
             this.skill = skill;
@@ -116,7 +116,7 @@ public class SkillDualWield extends PassiveSkill implements Listenable {
     }
 
     // Effect required for implementing an internal cooldown on healing
-    private class CooldownEffect extends ExpirableEffect {
+    private static class CooldownEffect extends ExpirableEffect {
         public CooldownEffect(Skill skill, Player applier, long duration) {
             super(skill, cooldownEffectName, applier, duration);
         }

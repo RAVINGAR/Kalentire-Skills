@@ -68,13 +68,7 @@ public class SkillFlyingKick extends TargettedSkill {
         double vPower = SkillConfigManager.getScaledUseSettingDouble(hero, this, "vertical-power", false);
         final Vector pushUpVector = new Vector(0, vPower, 0);
         // Let's bypass the nocheat issues...
-        NCPUtils.applyExemptions(player, new NCPFunction() {
-
-            @Override
-            public void execute() {
-                player.setVelocity(pushUpVector);
-            }
-        }, Lists.newArrayList("MOVING"), SkillConfigManager.getUseSetting(hero, this, "ncp-exemption-duration", 1500, false));
+        NCPUtils.applyExemptions(player, () -> player.setVelocity(pushUpVector), Lists.newArrayList("MOVING"), SkillConfigManager.getUseSetting(hero, this, "ncp-exemption-duration", 1500, false));
 
         final double horizontalDivider = SkillConfigManager.getUseSetting(hero, this, "horizontal-divider", 6, false);
         final double verticalDivider = SkillConfigManager.getUseSetting(hero, this, "vertical-divider", 8, false);
@@ -83,23 +77,21 @@ public class SkillFlyingKick extends TargettedSkill {
         final double damage = SkillConfigManager.getScaledUseSettingDouble(hero, this, SkillSetting.DAMAGE, false);
 
         double delay = SkillConfigManager.getUseSetting(hero, this, "jump-delay", 0.2, false);
-        Bukkit.getScheduler().scheduleSyncDelayedTask(plugin, new Runnable() {
-            public void run() {
-                Location newPlayerLoc = player.getLocation();
-                Location newTargetLoc = target.getLocation();
+        Bukkit.getScheduler().scheduleSyncDelayedTask(plugin, () -> {
+            Location newPlayerLoc = player.getLocation();
+            Location newTargetLoc = target.getLocation();
 
-                double xDir = (newTargetLoc.getX() - newPlayerLoc.getX()) / horizontalDivider;
-                double yDir = (newTargetLoc.getY() - newPlayerLoc.getY()) / verticalDivider;
-                double zDir = (newTargetLoc.getZ() - newPlayerLoc.getZ()) / horizontalDivider;
+            double xDir = (newTargetLoc.getX() - newPlayerLoc.getX()) / horizontalDivider;
+            double yDir = (newTargetLoc.getY() - newPlayerLoc.getY()) / verticalDivider;
+            double zDir = (newTargetLoc.getZ() - newPlayerLoc.getZ()) / horizontalDivider;
 
-                Vector vec = new Vector(xDir, yDir, zDir).multiply(multiplier);
-                player.setVelocity(vec);
-                player.setFallDistance(-8f);
+            Vector vec = new Vector(xDir, yDir, zDir).multiply(multiplier);
+            player.setVelocity(vec);
+            player.setFallDistance(-8f);
 
 
-                addSpellTarget(target, hero);
-                damageEntity(target, player, damage, DamageCause.ENTITY_ATTACK);
-            }
+            addSpellTarget(target, hero);
+            damageEntity(target, player, damage, DamageCause.ENTITY_ATTACK);
         }, (long) (delay * 20));
 
         //player.getWorld().spigot().playEffect(player.getLocation(), Effect.CLOUD, 0, 0, 0, 0.1F, 0, 0.5F, 25, 12);

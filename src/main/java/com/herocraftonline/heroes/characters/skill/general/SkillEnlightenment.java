@@ -14,7 +14,6 @@ import org.bukkit.*;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
-import org.bukkit.Sound;
 import org.bukkit.scheduler.BukkitRunnable;
 
 public class SkillEnlightenment extends TargettedSkill {
@@ -34,7 +33,7 @@ public class SkillEnlightenment extends TargettedSkill {
     @Override
     public String getDescription(Hero h) {
         long duration = SkillConfigManager.getUseSetting(h, this, SkillSetting.DURATION, 600000, false);
-        duration += SkillConfigManager.getUseSetting(h, this, SkillSetting.DURATION_INCREASE_PER_LEVEL, 1000, false) * h.getHeroLevel(this);
+        duration += (long) SkillConfigManager.getUseSetting(h, this, SkillSetting.DURATION_INCREASE_PER_LEVEL, 1000, false) * h.getHeroLevel(this);
         int attributeIncrease = SkillConfigManager.getUseSetting(h, this, "attribute-increase", 15, false);
         
         return getDescription()
@@ -70,7 +69,7 @@ public class SkillEnlightenment extends TargettedSkill {
         Player player = hero.getPlayer();
         
         long duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, 600000, false);
-        duration += SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION_INCREASE_PER_LEVEL, 1000, false) * hero.getHeroLevel(this);
+        duration += (long) SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION_INCREASE_PER_LEVEL, 1000, false) * hero.getHeroLevel(this);
         int attributeIncrease = SkillConfigManager.getUseSetting(hero, this, "attribute-increase", 15, false);
         
         // Only using the one effect for checks. Checking both of them would get crazy
@@ -87,11 +86,10 @@ public class SkillEnlightenment extends TargettedSkill {
         
         new BukkitRunnable() {
             
-            private Location location = target.getLocation();
+            private final Location location = target.getLocation();
 
             private double time = 0;
 
-            @SuppressWarnings("deprecation")
             @Override
             public void run() {
                 if (time < 1.0) {

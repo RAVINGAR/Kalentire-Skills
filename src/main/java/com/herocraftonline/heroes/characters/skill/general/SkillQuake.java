@@ -83,19 +83,16 @@ public class SkillQuake extends SkillBaseBlockWave {
 		final double totalDamage = damage + hero.getAttributeValue(AttributeType.WISDOM) * damageIncrease;
 		final long duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, 4000, false);
 
-		castBlockWave(hero, hero.getPlayer().getLocation().getBlock(), new WaveTargetAction() {
-			@Override
-			public void onTarget(Hero hero, LivingEntity target, Location center) {
-				if (damageCheck(hero.getPlayer(), target)) {
-					damageEntity(target, hero.getPlayer(), totalDamage, EntityDamageEvent.DamageCause.MAGIC, false);
+		castBlockWave(hero, hero.getPlayer().getLocation().getBlock(), (hero1, target, center) -> {
+            if (damageCheck(hero1.getPlayer(), target)) {
+                damageEntity(target, hero1.getPlayer(), totalDamage, EntityDamageEvent.DamageCause.MAGIC, false);
 
-					CharacterTemplate targetCt = plugin.getCharacterManager().getCharacter(target);
+                CharacterTemplate targetCt = plugin.getCharacterManager().getCharacter(target);
 
-					BlindEffect blind = new BlindEffect(SkillQuake.this, hero.getPlayer(), duration);
-					targetCt.addEffect(blind);
-				}
-			}
-		});
+                BlindEffect blind = new BlindEffect(SkillQuake.this, hero1.getPlayer(), duration);
+                targetCt.addEffect(blind);
+            }
+        });
 
 		final World world = hero.getPlayer().getWorld();
 		new BukkitRunnable() {

@@ -29,7 +29,7 @@ public class SkillConfuse extends TargettedSkill {
     private String applyText;
     private String expireText;
 
-    public SkillConfuse(Heroes plugin) {
+    public SkillConfuse(final Heroes plugin) {
         super(plugin, "Confuse");
         this.setDescription("You confuse the target for $1 second(s).");
         this.setUsage("/skill confuse <target>");
@@ -52,12 +52,12 @@ public class SkillConfuse extends TargettedSkill {
     @Override
     public void init() {
         super.init();
-        this.applyText = SkillConfigManager.getRaw(this, SkillSetting.APPLY_TEXT.node(), "%target% is confused!").replace("%target%", "$1");
-        this.expireText = SkillConfigManager.getRaw(this, SkillSetting.EXPIRE_TEXT.node(), "%target% has regained his wit!").replace("%target%", "$1");
+        this.applyText = SkillConfigManager.getRaw(this, SkillSetting.APPLY_TEXT.node(), "%target% is confused!").replace("%target%", "$1").replace("$target$", "$1");
+        this.expireText = SkillConfigManager.getRaw(this, SkillSetting.EXPIRE_TEXT.node(), "%target% has regained his wit!").replace("%target%", "$1").replace("$target$", "$1");
     }
 
     @Override
-    public SkillResult use(Hero hero, LivingEntity target, String[] args) {
+    public SkillResult use(final Hero hero, final LivingEntity target, final String[] args) {
         final long duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, 10000, false);
         final long period = SkillConfigManager.getUseSetting(hero, this, SkillSetting.PERIOD, 2000, true);
         final float maxDrift = (float) SkillConfigManager.getUseSetting(hero, this, "max-drift", 0.35, false);
@@ -66,11 +66,17 @@ public class SkillConfuse extends TargettedSkill {
         return SkillResult.NORMAL;
     }
 
+    @Override
+    public String getDescription(final Hero hero) {
+        final int duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, 10000, false);
+        return this.getDescription().replace("$1", (duration / 1000) + "");
+    }
+
     public class ConfuseEffect extends PeriodicExpirableEffect {
 
         private final float maxDrift;
 
-        public ConfuseEffect(Skill skill, Player applier, long duration, long period, float maxDrift) {
+        public ConfuseEffect(final Skill skill, final Player applier, final long duration, final long period, final float maxDrift) {
             super(skill, "Confuse", applier, period, duration);
             this.maxDrift = maxDrift;
             this.types.add(EffectType.HARMFUL);
@@ -79,10 +85,10 @@ public class SkillConfuse extends TargettedSkill {
             this.addPotionEffect(new PotionEffect(PotionEffectType.CONFUSION, (int) (20 * duration / 1000), 127), false);
         }
 
-        public void adjustVelocity(LivingEntity lEntity) {
+        public void adjustVelocity(final LivingEntity lEntity) {
             final Vector velocity = lEntity.getVelocity();
 
-            double angle = random.nextDouble() * 2 * Math.PI;
+            final double angle = random.nextDouble() * 2 * Math.PI;
             final float xAdjustment = (float) (this.maxDrift * Math.cos(angle));
             final float zAdjustment = (float) (this.maxDrift * Math.sin(angle));
 
@@ -92,32 +98,32 @@ public class SkillConfuse extends TargettedSkill {
         }
 
         @Override
-        public void applyToMonster(Monster monster) {
+        public void applyToMonster(final Monster monster) {
             super.applyToMonster(monster);
         }
 
         @Override
-        public void applyToHero(Hero hero) {
+        public void applyToHero(final Hero hero) {
             super.applyToHero(hero);
             final Player player = hero.getPlayer();
             this.broadcast(player.getLocation(), SkillConfuse.this.applyText, player.getDisplayName());
         }
 
         @Override
-        public void removeFromMonster(Monster monster) {
+        public void removeFromMonster(final Monster monster) {
             super.removeFromMonster(monster);
             this.broadcast(monster.getEntity().getLocation(), SkillConfuse.this.expireText, CustomNameManager.getName(monster));
         }
 
         @Override
-        public void removeFromHero(Hero hero) {
+        public void removeFromHero(final Hero hero) {
             super.removeFromHero(hero);
             final Player player = hero.getPlayer();
             this.broadcast(player.getLocation(), SkillConfuse.this.expireText, player.getDisplayName());
         }
 
         @Override
-        public void tickMonster(Monster monster) {
+        public void tickMonster(final Monster monster) {
             this.adjustVelocity(monster.getEntity());
             if (monster instanceof Creature) {
                 ((Creature) monster).setTarget(null);
@@ -125,14 +131,8 @@ public class SkillConfuse extends TargettedSkill {
         }
 
         @Override
-        public void tickHero(Hero hero) {
+        public void tickHero(final Hero hero) {
             this.adjustVelocity(hero.getPlayer());
         }
-    }
-
-    @Override
-    public String getDescription(Hero hero) {
-        final int duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, 10000, false);
-        return this.getDescription().replace("$1", (duration / 1000) + "");
     }
 }

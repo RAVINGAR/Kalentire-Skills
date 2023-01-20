@@ -7,7 +7,11 @@ import com.herocraftonline.heroes.characters.Hero;
 import com.herocraftonline.heroes.characters.effects.BloodUnionEffect;
 import com.herocraftonline.heroes.characters.effects.EffectType;
 import com.herocraftonline.heroes.characters.effects.PeriodicDamageEffect;
-import com.herocraftonline.heroes.characters.skill.*;
+import com.herocraftonline.heroes.characters.skill.ActiveSkill;
+import com.herocraftonline.heroes.characters.skill.Skill;
+import com.herocraftonline.heroes.characters.skill.SkillConfigManager;
+import com.herocraftonline.heroes.characters.skill.SkillSetting;
+import com.herocraftonline.heroes.characters.skill.SkillType;
 import com.herocraftonline.heroes.chat.ChatComponents;
 import com.herocraftonline.heroes.util.Util;
 import org.bukkit.Bukkit;
@@ -25,7 +29,7 @@ public class SkillBoilBlood extends ActiveSkill {
     private String applyText;
     private String expireText;
 
-    public SkillBoilBlood(Heroes plugin) {
+    public SkillBoilBlood(final Heroes plugin) {
         super(plugin, "BoilBlood");
         setDescription("Boil the blood of $6 enemies within $1 blocks, " +
                 "dealing $2 instant damage, and doing an additional $3 damage over $4 second(s). " +
@@ -37,35 +41,38 @@ public class SkillBoilBlood extends ActiveSkill {
         setTypes(SkillType.ABILITY_PROPERTY_DARK, SkillType.ABILITY_PROPERTY_MAGICAL, SkillType.DAMAGING, SkillType.AREA_OF_EFFECT, SkillType.SILENCEABLE, SkillType.AGGRESSIVE);
     }
 
-    public String getDescription(Hero hero) {
-        double radius = SkillConfigManager.getUseSetting(hero, this, SkillSetting.RADIUS, 5.0, false);
-        int period = SkillConfigManager.getUseSetting(hero, this, SkillSetting.PERIOD, 2000, false);
-        int duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, 7500, false);
-        int bloodUnionReq = SkillConfigManager.getUseSetting(hero, this, "blood-union-required-for-use", 3, false);
+    @Override
+    public String getDescription(final Hero hero) {
+        final double radius = SkillConfigManager.getUseSetting(hero, this, SkillSetting.RADIUS, 5.0, false);
+        final int period = SkillConfigManager.getUseSetting(hero, this, SkillSetting.PERIOD, 2000, false);
+        final int duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, 7500, false);
+        final int bloodUnionReq = SkillConfigManager.getUseSetting(hero, this, "blood-union-required-for-use", 3, false);
 
-        double damage = SkillConfigManager.getScaledUseSettingDouble(hero, this, SkillSetting.DAMAGE, false);
-        double tickDamage = SkillConfigManager.getScaledUseSettingDouble(hero, this, SkillSetting.DAMAGE_TICK, false);
+        final double damage = SkillConfigManager.getScaledUseSettingDouble(hero, this, SkillSetting.DAMAGE, false);
+        final double tickDamage = SkillConfigManager.getScaledUseSettingDouble(hero, this, SkillSetting.DAMAGE_TICK, false);
 
-        int maxTargets = SkillConfigManager.getUseSetting(hero, this, "max-targets", 6, false);
+        final int maxTargets = SkillConfigManager.getUseSetting(hero, this, "max-targets", 6, false);
 
         // Change description to either say "all" if there is no maximum target number specified.
-        String targetText;
-        if (maxTargets > 0)
+        final String targetText;
+        if (maxTargets > 0) {
             targetText = "up to " + maxTargets;
-        else
+        } else {
             targetText = "all";
+        }
 
         return getDescription()
                 .replace("$6", targetText)
                 .replace("$1", Util.decFormat.format(radius))
                 .replace("$2", Util.decFormat.format(damage))
                 .replace("$3", Util.decFormat.format((tickDamage * ((double) duration / (double) period))))
-                .replace("$4",Util.decFormat.format(duration / 1000.0))
+                .replace("$4", Util.decFormat.format(duration / 1000.0))
                 .replace("$5", bloodUnionReq + "");
     }
 
+    @Override
     public ConfigurationSection getDefaultConfig() {
-        ConfigurationSection config = super.getDefaultConfig();
+        final ConfigurationSection config = super.getDefaultConfig();
         config.set(SkillSetting.DAMAGE.node(), 30.0);
         config.set(SkillSetting.DAMAGE_INCREASE_PER_INTELLECT.node(), 0.0);
         config.set(SkillSetting.RADIUS.node(), 5.0);
@@ -83,22 +90,23 @@ public class SkillBoilBlood extends ActiveSkill {
     @Override
     public void init() {
         super.init();
-        this.applyText = SkillConfigManager.getRaw(this, SkillSetting.APPLY_TEXT, ChatComponents.GENERIC_SKILL + "%target%'s blood begins to boil!").replace("%target%", "$1");
-        this.expireText = SkillConfigManager.getRaw(this, SkillSetting.EXPIRE_TEXT, ChatComponents.GENERIC_SKILL + "%target%'s blood is no longer boiling.").replace("%target%", "$1");
+        this.applyText = SkillConfigManager.getRaw(this, SkillSetting.APPLY_TEXT, ChatComponents.GENERIC_SKILL + "%target%'s blood begins to boil!").replace("%target%", "$1").replace("$target$", "$1");
+        this.expireText = SkillConfigManager.getRaw(this, SkillSetting.EXPIRE_TEXT, ChatComponents.GENERIC_SKILL + "%target%'s blood is no longer boiling.").replace("%target%", "$1").replace("$target$", "$1");
     }
 
-    public SkillResult use(Hero hero, String[] args) {
-        Player player = hero.getPlayer();
+    @Override
+    public SkillResult use(final Hero hero, final String[] args) {
+        final Player player = hero.getPlayer();
 
         // Get Blood Union Level
         int bloodUnionLevel = 0;
         if (hero.hasEffect(bloodUnionEffectName)) {
-            BloodUnionEffect buEffect = (BloodUnionEffect) hero.getEffect(bloodUnionEffectName);
+            final BloodUnionEffect buEffect = (BloodUnionEffect) hero.getEffect(bloodUnionEffectName);
             bloodUnionLevel = buEffect.getBloodUnionLevel();
         }
 
         // Add DoT if blood union is high enough.
-        int bloodUnionReq = SkillConfigManager.getUseSetting(hero, this, "blood-union-required-for-use", 3, false);
+        final int bloodUnionReq = SkillConfigManager.getUseSetting(hero, this, "blood-union-required-for-use", 3, false);
         if (bloodUnionLevel < bloodUnionReq) {
             player.sendMessage("    " + ChatComponents.GENERIC_SKILL + "You must have at least " + bloodUnionReq + " Blood Union to use this ability!");
             return SkillResult.FAIL;
@@ -108,25 +116,27 @@ public class SkillBoilBlood extends ActiveSkill {
 
         broadcastExecuteText(hero);
 
-        double radius = SkillConfigManager.getUseSetting(hero, this, SkillSetting.RADIUS, 5.0, false);
-        double damage = SkillConfigManager.getScaledUseSettingDouble(hero, this, SkillSetting.DAMAGE, false);
-        double tickDamage = SkillConfigManager.getScaledUseSettingDouble(hero, this, SkillSetting.DAMAGE_TICK, false);
+        final double radius = SkillConfigManager.getUseSetting(hero, this, SkillSetting.RADIUS, 5.0, false);
+        final double damage = SkillConfigManager.getScaledUseSettingDouble(hero, this, SkillSetting.DAMAGE, false);
+        final double tickDamage = SkillConfigManager.getScaledUseSettingDouble(hero, this, SkillSetting.DAMAGE_TICK, false);
 
-        int period = SkillConfigManager.getUseSetting(hero, this, SkillSetting.PERIOD, 2000, false);
-        int duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, 8000, false);
-        int maxTargets = SkillConfigManager.getUseSetting(hero, this, "max-targets", 0, false);
+        final int period = SkillConfigManager.getUseSetting(hero, this, SkillSetting.PERIOD, 2000, false);
+        final int duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, 8000, false);
+        final int maxTargets = SkillConfigManager.getUseSetting(hero, this, "max-targets", 0, false);
 
         int targetsHit = 0;
-        for (Entity entity : player.getNearbyEntities(radius, radius, radius)) {
-            if (maxTargets > 0 && targetsHit >= maxTargets)
+        for (final Entity entity : player.getNearbyEntities(radius, radius, radius)) {
+            if (maxTargets > 0 && targetsHit >= maxTargets) {
                 break;
+            }
 
             // Check to see if the entity can be damaged
-            if (!(entity instanceof LivingEntity) || !damageCheck(player, (LivingEntity) entity))
+            if (!(entity instanceof LivingEntity) || !damageCheck(player, (LivingEntity) entity)) {
                 continue;
+            }
 
-            LivingEntity target = (LivingEntity) entity;
-            
+            final LivingEntity target = (LivingEntity) entity;
+
             //player.getWorld().spigot().playEffect(target.getLocation(), Effect.LARGE_SMOKE, 0, 0, 0, 0, 0, 0.2F, 50, 16);
             player.getWorld().spawnParticle(Particle.SMOKE_LARGE, target.getLocation(), 50, 0, 0, 0, 0.2);
             //player.getWorld().spigot().playEffect(target.getEyeLocation(), Effect.TILE_BREAK, Material.NETHER_WARTS.getId(), 0, 0, 0.1F, 0, 0.1F, 16, 16);
@@ -137,7 +147,7 @@ public class SkillBoilBlood extends ActiveSkill {
             damageEntity(target, player, damage, DamageCause.MAGIC);
 
             // Create and add DoT effect to target
-            CharacterTemplate targCT = plugin.getCharacterManager().getCharacter(target);
+            final CharacterTemplate targCT = plugin.getCharacterManager().getCharacter(target);
             targCT.addEffect(new BoilingBloodEffect(this, player, period, duration, tickDamage, applyText, expireText));
 
             // Increase counter
@@ -145,17 +155,17 @@ public class SkillBoilBlood extends ActiveSkill {
         }
 
         // Decrease Blood Union
-        BloodUnionEffect buEffect = (BloodUnionEffect) hero.getEffect(bloodUnionEffectName);
+        final BloodUnionEffect buEffect = (BloodUnionEffect) hero.getEffect(bloodUnionEffectName);
         buEffect.decreaseBloodUnion(bloodUnionReq);
 
         return SkillResult.NORMAL;
     }
 
-    public class BoilingBloodEffect extends PeriodicDamageEffect {
+    public static class BoilingBloodEffect extends PeriodicDamageEffect {
         private final String applyText;
         private final String expireText;
 
-        public BoilingBloodEffect(Skill skill, Player applier, long period, long duration, double tickDamage, String applyText, String expireText) {
+        public BoilingBloodEffect(final Skill skill, final Player applier, final long period, final long duration, final double tickDamage, final String applyText, final String expireText) {
             super(skill, "BoilingBlood", applier, period, duration, tickDamage, false, applyText, expireText);
 
             types.add(EffectType.DARK);

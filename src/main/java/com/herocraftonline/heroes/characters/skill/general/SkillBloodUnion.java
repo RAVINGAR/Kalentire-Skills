@@ -72,7 +72,7 @@ public class SkillBloodUnion extends PassiveSkill implements Listenable {
     }
 
     private class BloodUnionListener implements Listener {
-        private PassiveSkill skill;
+        private final PassiveSkill skill;
 
         public BloodUnionListener(PassiveSkill skill) {
             this.skill = skill;
@@ -143,9 +143,9 @@ public class SkillBloodUnion extends PassiveSkill implements Listenable {
         }
 
         List<Location> circle = GeometryUtil.circle(healer.getLocation(), 36, 1.5);
-        for (int i = 0; i < circle.size(); i++) {
+        for (Location location : circle) {
             //healer.getWorld().spigot().playEffect(circle.get(i), org.bukkit.Effect.COLOURED_DUST, 0, 0, 0.2F, 1.5F, 0.2F, 0, 4, 16);
-            healer.getWorld().spawnParticle(Particle.REDSTONE, circle.get(i), 4, 0.2F, 1.5F, 0.2F, 0, skillEffectDustOptions);
+            healer.getWorld().spawnParticle(Particle.REDSTONE, location, 4, 0.2F, 1.5F, 0.2F, 0, skillEffectDustOptions);
         }
     }
 }

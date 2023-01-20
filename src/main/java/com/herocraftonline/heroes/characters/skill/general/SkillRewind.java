@@ -19,7 +19,6 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
-import org.bukkit.event.player.PlayerLoginEvent;
 import org.bukkit.event.player.PlayerTeleportEvent;
 
 public class SkillRewind extends ActiveSkill implements Passive {
@@ -169,7 +168,7 @@ public class SkillRewind extends ActiveSkill implements Passive {
         public void tickMonster(Monster monster) {}
     }
 
-    private class SavedPlayerState {
+    private static class SavedPlayerState {
         public double previousHealth;
         public int previousMana;
         public int previousStamina;

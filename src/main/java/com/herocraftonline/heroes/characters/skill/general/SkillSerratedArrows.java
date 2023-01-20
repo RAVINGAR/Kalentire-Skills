@@ -117,7 +117,7 @@ public class SkillSerratedArrows extends PassiveSkill implements Listenable {
         return listener;
     }
 
-    private class SerratedArrowsHitEffect extends ExpirableEffect {
+    private static class SerratedArrowsHitEffect extends ExpirableEffect {
         private int hitCount = 1;
 
         SerratedArrowsHitEffect(Skill skill, String name, Player applier, long duration) {

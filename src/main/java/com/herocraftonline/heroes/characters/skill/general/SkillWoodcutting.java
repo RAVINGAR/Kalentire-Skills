@@ -49,7 +49,7 @@ public class SkillWoodcutting extends PassiveSkill implements Listenable {
 
     public class SkillBlockListener implements Listener {
 
-        private Skill skill;
+        private final Skill skill;
 
         SkillBlockListener(Skill skill) {
             this.skill = skill;

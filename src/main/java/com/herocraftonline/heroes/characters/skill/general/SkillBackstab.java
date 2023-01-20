@@ -9,16 +9,16 @@ import com.herocraftonline.heroes.characters.Hero;
 import com.herocraftonline.heroes.characters.skill.*;
 import com.herocraftonline.heroes.nms.NMSHandler;
 import com.herocraftonline.heroes.util.Util;
-import org.apache.commons.lang.WordUtils;
+import io.lumine.mythic.bukkit.utils.lib.lang3.text.WordUtils;
 import org.bukkit.*;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.LivingEntity;
-import org.bukkit.entity.Monster;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.inventory.ItemStack;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -29,7 +29,7 @@ public class SkillBackstab extends ActiveSkill implements Passive, Listenable {
     private final Listener listener;
     private String backstabText;
 
-    private List<Material> validWeapons;
+    private final List<Material> validWeapons;
 
     public SkillBackstab(Heroes plugin) {
         super(plugin, "Backstab");
@@ -147,6 +147,7 @@ public class SkillBackstab extends ActiveSkill implements Passive, Listenable {
         // After all our only use as a active is to show bonus attack damage for weapons
     }
 
+    @NotNull
     @Override
     public Listener getListener() {
         return listener;
@@ -161,10 +162,11 @@ public class SkillBackstab extends ActiveSkill implements Passive, Listenable {
 
         @EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
         public void onWeaponDamage(WeaponDamageEvent event) {
-            if (!(event.getAttacker() instanceof Hero hero)) {
+            if (!(event.getAttacker() instanceof Hero)) {
                 return;
             }
 
+            Hero hero = (Hero)event.getAttacker();
             Player player = hero.getPlayer();
             LivingEntity target = event.getDefender().getEntity();
 

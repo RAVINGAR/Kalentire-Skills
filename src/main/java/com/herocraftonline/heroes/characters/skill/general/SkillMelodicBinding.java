@@ -31,12 +31,11 @@ import java.util.List;
 
 public class SkillMelodicBinding extends ActiveSkill {
 
+    private final Song skillSong;
     private String applyText;
     private String expireText;
 
-    private Song skillSong;
-
-    public SkillMelodicBinding(Heroes plugin) {
+    public SkillMelodicBinding(final Heroes plugin) {
         super(plugin, "MelodicBinding");
         setDescription("You resonate melodic bindings, pulsing for $1 damage and slowing enemies within $2 blocks for $3 second(s). " +
                 "Your melodic bindings pulse every $4 seconds for the next $5 second(s).");
@@ -53,20 +52,21 @@ public class SkillMelodicBinding extends ActiveSkill {
         );
     }
 
-    public String getDescription(Hero hero) {
+    @Override
+    public String getDescription(final Hero hero) {
 
-        int duration = SkillConfigManager.getUseSetting(hero, this, "melodic-buff-duration", 3000, false);
-        int period = SkillConfigManager.getUseSetting(hero, this, "melodic-buff-period", 1500, false);
+        final int duration = SkillConfigManager.getUseSetting(hero, this, "melodic-buff-duration", 3000, false);
+        final int period = SkillConfigManager.getUseSetting(hero, this, "melodic-buff-period", 1500, false);
 
-        double radius = SkillConfigManager.getUseSetting(hero, this, SkillSetting.RADIUS, 6.0, false);
-        int slowDuration = SkillConfigManager.getUseSetting(hero, this, "melodic-slow-duration", 1500, false);
+        final double radius = SkillConfigManager.getUseSetting(hero, this, SkillSetting.RADIUS, 6.0, false);
+        final int slowDuration = SkillConfigManager.getUseSetting(hero, this, "melodic-slow-duration", 1500, false);
 
-        double damage = SkillConfigManager.getScaledUseSettingDouble(hero, this, SkillSetting.DAMAGE, 17, false);
+        final double damage = SkillConfigManager.getScaledUseSettingDouble(hero, this, SkillSetting.DAMAGE, 17, false);
 
-        String formattedPeriod = Util.decFormat.format(period / 1000.0);
-        String formattedDuration = Util.decFormat.format(duration / 1000.0);
-        String formattedSlowDuration = Util.decFormat.format(slowDuration / 1000.0);
-        String formattedDamage = Util.decFormat.format(damage);
+        final String formattedPeriod = Util.decFormat.format(period / 1000.0);
+        final String formattedDuration = Util.decFormat.format(duration / 1000.0);
+        final String formattedSlowDuration = Util.decFormat.format(slowDuration / 1000.0);
+        final String formattedDamage = Util.decFormat.format(damage);
 
         return getDescription()
                 .replace("$1", formattedDamage)
@@ -78,7 +78,7 @@ public class SkillMelodicBinding extends ActiveSkill {
 
     @Override
     public ConfigurationSection getDefaultConfig() {
-        ConfigurationSection config = super.getDefaultConfig();
+        final ConfigurationSection config = super.getDefaultConfig();
         config.set(SkillSetting.USE_TEXT.node(), "");
         config.set("melodic-buff-duration", 3000);
         config.set("melodic-buff-period", 1500);
@@ -100,21 +100,21 @@ public class SkillMelodicBinding extends ActiveSkill {
     public void init() {
         super.init();
 
-        applyText = SkillConfigManager.getRaw(this, SkillSetting.APPLY_TEXT.node(), "").replace("%hero%", "$1");
-        expireText = SkillConfigManager.getRaw(this, SkillSetting.EXPIRE_TEXT.node(), "").replace("%hero%", "$1");
+        applyText = SkillConfigManager.getRaw(this, SkillSetting.APPLY_TEXT.node(), "").replace("%hero%", "$1").replace("$hero$", "$1");
+        expireText = SkillConfigManager.getRaw(this, SkillSetting.EXPIRE_TEXT.node(), "").replace("%hero%", "$1").replace("$hero$", "$1");
     }
 
     @Override
-    public SkillResult use(Hero hero, String[] args) {
+    public SkillResult use(final Hero hero, final String[] args) {
 
-        Player player = hero.getPlayer();
+        final Player player = hero.getPlayer();
         broadcastExecuteText(hero);
 
         hero.addEffect(new SoundEffect(this, "MelodicBindingSong", 100, skillSong));
 
-        int duration = SkillConfigManager.getUseSetting(hero, this, "melodic-buff-duration", 3000, false);
-        int period = SkillConfigManager.getUseSetting(hero, this, "melodic-buff-period", 1500, false);
-        double radius = SkillConfigManager.getUseSetting(hero, this, SkillSetting.RADIUS, 6.0, false);
+        final int duration = SkillConfigManager.getUseSetting(hero, this, "melodic-buff-duration", 3000, false);
+        final int period = SkillConfigManager.getUseSetting(hero, this, "melodic-buff-period", 1500, false);
+        final double radius = SkillConfigManager.getUseSetting(hero, this, SkillSetting.RADIUS, 6.0, false);
 
         hero.addEffect(new MelodicBindingEffect(this, hero.getPlayer(), period, duration, radius));
 
@@ -130,7 +130,7 @@ public class SkillMelodicBinding extends ActiveSkill {
 
         private final double radius;
 
-        public MelodicBindingEffect(SkillMelodicBinding skill, Player applier, int period, int duration, double radius) {
+        public MelodicBindingEffect(final SkillMelodicBinding skill, final Player applier, final int period, final int duration, final double radius) {
             super(skill, "MelodicBinding", applier, period, duration, applyText, expireText);
 
             types.add(EffectType.BENEFICIAL);
@@ -139,28 +139,26 @@ public class SkillMelodicBinding extends ActiveSkill {
         }
 
         @Override
-        public void tickHero(Hero hero) {
-            Player player = hero.getPlayer();
+        public void tickHero(final Hero hero) {
+            final Player player = hero.getPlayer();
 
-            for (double r = 1; r < radius; r++)
-            {
-                List<Location> particleLocations = GeometryUtil.circle(player.getLocation(), 36, r);
-                for (int i = 0; i < particleLocations.size(); i++)
-                {
+            for (double r = 1; r < radius; r++) {
+                final List<Location> particleLocations = GeometryUtil.circle(player.getLocation(), 36, r);
+                for (final Location particleLocation : particleLocations) {
                     //player.getWorld().spigot().playEffect(particleLocations.get(i).add(0, 0.1, 0), Effect.NOTE, 0, 0, 0, 0.1F, 0, 0.0F, 1, 16);
-                    player.getWorld().spawnParticle(Particle.NOTE, particleLocations.get(i), 1, 0, 0.1, 0, 0);
+                    player.getWorld().spawnParticle(Particle.NOTE, particleLocation, 1, 0, 0.1, 0, 0);
                 }
             }
 
-            int slowAmount = SkillConfigManager.getScaledUseSettingInt(hero, skill, "slow-amplifier", 1, false);
-            int slowDuration = SkillConfigManager.getUseSetting(hero, skill, "melodic-slow-duration", 1500, false);
+            final int slowAmount = SkillConfigManager.getScaledUseSettingInt(hero, skill, "slow-amplifier", 1, false);
+            final int slowDuration = SkillConfigManager.getUseSetting(hero, skill, "melodic-slow-duration", 1500, false);
 
-            double damage = SkillConfigManager.getScaledUseSettingDouble(hero, skill, SkillSetting.DAMAGE, 17.0, false);
+            final double damage = SkillConfigManager.getScaledUseSettingDouble(hero, skill, SkillSetting.DAMAGE, 17.0, false);
 
             // An example of not limiting if damage is 0. Since this isn't the case on live, it makes for a good example.
-            int maxTargets = damage > 0 ? SkillConfigManager.getUseSetting(hero, skill, "max-targets", 0, false) : 0;
+            final int maxTargets = damage > 0 ? SkillConfigManager.getUseSetting(hero, skill, "max-targets", 0, false) : 0;
             int targetsHit = 0;
-            for (Entity entity : player.getNearbyEntities(radius, radius, radius)) {
+            for (final Entity entity : player.getNearbyEntities(radius, radius, radius)) {
                 // Check to see if we've exceeded the max targets
                 if (maxTargets > 0 && targetsHit >= maxTargets) {
                     break;
@@ -170,14 +168,14 @@ public class SkillMelodicBinding extends ActiveSkill {
                     continue;
                 }
 
-                CharacterTemplate targetCT = plugin.getCharacterManager().getCharacter((LivingEntity) entity);
+                final CharacterTemplate targetCT = plugin.getCharacterManager().getCharacter((LivingEntity) entity);
 
                 if (damage > 0) {
                     addSpellTarget(entity, hero);
                     damageEntity((LivingEntity) entity, player, damage, DamageCause.MAGIC, false);
                 }
 
-                SlowEffect sEffect = new SlowEffect(skill, player, slowDuration, slowAmount, null, null);
+                final SlowEffect sEffect = new SlowEffect(skill, player, slowDuration, slowAmount, null, null);
                 sEffect.types.add(EffectType.DISPELLABLE);
                 targetCT.addEffect(sEffect);
 
@@ -186,6 +184,7 @@ public class SkillMelodicBinding extends ActiveSkill {
         }
 
         @Override
-        public void tickMonster(Monster monster) {}
+        public void tickMonster(final Monster monster) {
+        }
     }
 }

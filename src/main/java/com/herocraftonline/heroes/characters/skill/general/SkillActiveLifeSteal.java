@@ -22,7 +22,7 @@ import org.jetbrains.annotations.NotNull;
 public class SkillActiveLifeSteal extends ActiveSkill implements Listenable {
     private final Listener listener;
 
-    public SkillActiveLifeSteal(Heroes plugin) {
+    public SkillActiveLifeSteal(final Heroes plugin) {
         super(plugin, "ActiveLifeSteal");
         setDescription("Your attacks restore $1 health for a duration of $2 seconds.");
         setUsage("/skill activelifesteal");
@@ -33,24 +33,24 @@ public class SkillActiveLifeSteal extends ActiveSkill implements Listenable {
     }
 
     @Override
-    public String getDescription(Hero hero) {
-        double health = SkillConfigManager.getUseSetting(hero, this, "health-per-attack", 1, false);
-        double duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION.node(), 8000, false);
+    public String getDescription(final Hero hero) {
+        final double health = SkillConfigManager.getUseSetting(hero, this, "health-per-attack", 1, false);
+        final double duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION.node(), 8000, false);
         return getDescription().replace("$1", "" + health).replace("$2", "" + duration);
     }
 
     @Override
     public ConfigurationSection getDefaultConfig() {
-        ConfigurationSection node = super.getDefaultConfig();
+        final ConfigurationSection node = super.getDefaultConfig();
         node.set(SkillSetting.DURATION.node(), 8000);
         node.set("health-per-attack", 1);
         return node;
     }
 
     @Override
-    public SkillResult use(Hero hero, String[] args) {
-        long duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, 8000, false);
-        hero.addEffect(new LifeStealEffect( this, hero.getPlayer(), duration));
+    public SkillResult use(final Hero hero, final String[] args) {
+        final long duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, 8000, false);
+        hero.addEffect(new LifeStealEffect(this, hero.getPlayer(), duration));
         broadcastExecuteText(hero);
         return SkillResult.NORMAL;
     }
@@ -61,8 +61,8 @@ public class SkillActiveLifeSteal extends ActiveSkill implements Listenable {
         return listener;
     }
 
-    public class LifeStealEffect extends ExpirableEffect {
-        public LifeStealEffect(SkillActiveLifeSteal skill, Player applier, long duration) {
+    public static class LifeStealEffect extends ExpirableEffect {
+        public LifeStealEffect(final SkillActiveLifeSteal skill, final Player applier, final long duration) {
             super(skill, "Lifesteal", applier, duration);
         }
     }
@@ -70,24 +70,26 @@ public class SkillActiveLifeSteal extends ActiveSkill implements Listenable {
     public class SkillHeroListener implements Listener {
         private final Skill skill;
 
-        public SkillHeroListener(Skill skill) {
+        public SkillHeroListener(final Skill skill) {
             this.skill = skill;
         }
 
         @EventHandler(priority = EventPriority.MONITOR)
-        public void onEntityDamage(WeaponDamageEvent event) {
-            if(event.isCancelled()) {
+        public void onEntityDamage(final WeaponDamageEvent event) {
+            if (event.isCancelled()) {
                 return;
             }
-            if (event.getAttacker() instanceof Hero hero) {
-                if (!hero.hasEffect("Lifesteal"))
+            if (event.getAttacker() instanceof Hero) {
+                final Hero hero = (Hero) event.getAttacker();
+                if (!hero.hasEffect("Lifesteal")) {
                     return;
+                }
 
-                double health = SkillConfigManager.getUseSetting(hero, skill, "health-per-attack", 1, false);
+                final double health = SkillConfigManager.getUseSetting(hero, skill, "health-per-attack", 1, false);
 
-                HeroRegainHealthEvent hrEvent = new HeroRegainHealthEvent(hero, health, skill, hero);
+                final HeroRegainHealthEvent hrEvent = new HeroRegainHealthEvent(hero, health, skill, hero);
                 plugin.getServer().getPluginManager().callEvent(hrEvent);
-                if(!hrEvent.isCancelled()) {
+                if (!hrEvent.isCancelled()) {
                     hero.heal(hrEvent.getDelta());
                 }
             }

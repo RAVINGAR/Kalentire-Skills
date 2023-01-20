@@ -15,7 +15,7 @@ public class SkillWaveRider extends ActiveSkill {
 
     String applyText;
 
-    public SkillWaveRider(Heroes plugin) {
+    public SkillWaveRider(final Heroes plugin) {
         super(plugin, "WaveRider");
         setUsage("/skill waverider");
         setIdentifiers("skill waverider");
@@ -24,13 +24,14 @@ public class SkillWaveRider extends ActiveSkill {
         setTypes(SkillType.DAMAGING, SkillType.MOVEMENT_INCREASING, SkillType.ABILITY_PROPERTY_PHYSICAL, SkillType.AGGRESSIVE);
     }
 
-    public String getDescription(Hero hero) {
+    @Override
+    public String getDescription(final Hero hero) {
         return getDescription();
     }
 
+    @Override
     public ConfigurationSection getDefaultConfig() {
-        ConfigurationSection cs = super.getDefaultConfig();
-        return cs;
+        return super.getDefaultConfig();
     }
 
     @Override
@@ -38,13 +39,13 @@ public class SkillWaveRider extends ActiveSkill {
         super.init();
 
         applyText = SkillConfigManager.getRaw(this, SkillSetting.APPLY_TEXT, ChatComponents.GENERIC_SKILL
-                + "%hero% used WaveRider!")
-                .replace("%hero%", "$2");
+                        + "%hero% used WaveRider!")
+                .replace("%hero%", "$2").replace("$hero$", "$2");
     }
 
-    public SkillResult use(Hero hero, String[] args) {
+    @Override
+    public SkillResult use(final Hero hero, final String[] args) {
         final Player player = hero.getPlayer();
-
 
 
         broadcastExecuteText(hero);

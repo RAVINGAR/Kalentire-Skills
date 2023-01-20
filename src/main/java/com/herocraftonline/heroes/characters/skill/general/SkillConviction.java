@@ -118,9 +118,9 @@ public class SkillConviction extends ActiveSkill {
 
     public static class ConvictionEffect extends ExpirableEffect {
 
-        private double damageModifier;
-        private String applyText;
-        private String expireText;
+        private final double damageModifier;
+        private final String applyText;
+        private final String expireText;
 
         public ConvictionEffect(Skill skill, Player applier, long duration, double damageModifier, String applyText, String expireText) {
             super(skill, "Conviction", applier, duration);

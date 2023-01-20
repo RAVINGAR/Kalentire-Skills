@@ -38,7 +38,7 @@ public class SkillAccelerando extends ActiveSkill implements Listenable {
     private String applyText;
     private String expireText;
 
-    private Song skillSong;
+    private final Song skillSong;
     private final Listener listener;
 
     public SkillAccelerando(Heroes plugin) {
@@ -126,10 +126,9 @@ public class SkillAccelerando extends ActiveSkill implements Listenable {
         Location playerLoc = player.getLocation();
 
         List<Location> circle = GeometryUtil.circle(playerLoc, 72, radius);
-        for (int i = 0; i < circle.size(); i++)
-        {
+        for (Location location : circle) {
             //player.getWorld().spigot().playEffect(circle(player.getLocation(), 72, radius).get(i), org.bukkit.Effect.NOTE, 0, 0, 0, 0.2F, 0, 1, 1, 20);
-            player.getWorld().spawnParticle(Particle.NOTE, circle.get(i), 1, 0, 0.2, 0, 1);
+            player.getWorld().spawnParticle(Particle.NOTE, location, 1, 0, 0.2, 0, 1);
         }
 
         //Apply the effect to all party members
@@ -209,12 +208,7 @@ public class SkillAccelerando extends ActiveSkill implements Listenable {
             if (player.hasPotionEffect(PotionEffectType.POISON) || player.hasPotionEffect(PotionEffectType.WITHER)
                     || player.hasPotionEffect(PotionEffectType.HARM)) {
                 // If they have a harmful effect present when removing the ability, delay effect removal by a bit.
-                Bukkit.getScheduler().runTaskLater(plugin, new Runnable() {
-                    @Override
-                    public void run() {
-                        AccelerandoEffect.super.removeFromHero(hero);
-                    }
-                }, 2L);
+                Bukkit.getScheduler().runTaskLater(plugin, () -> AccelerandoEffect.super.removeFromHero(hero), 2L);
             }
             else {
                 super.removeFromHero(hero);

@@ -6,7 +6,12 @@ import com.herocraftonline.heroes.characters.CharacterTemplate;
 import com.herocraftonline.heroes.characters.Hero;
 import com.herocraftonline.heroes.characters.effects.EffectType;
 import com.herocraftonline.heroes.characters.effects.common.HealthRegainReductionEffect;
-import com.herocraftonline.heroes.characters.skill.*;
+import com.herocraftonline.heroes.characters.skill.ActiveSkill;
+import com.herocraftonline.heroes.characters.skill.Listenable;
+import com.herocraftonline.heroes.characters.skill.Skill;
+import com.herocraftonline.heroes.characters.skill.SkillConfigManager;
+import com.herocraftonline.heroes.characters.skill.SkillSetting;
+import com.herocraftonline.heroes.characters.skill.SkillType;
 import com.herocraftonline.heroes.chat.ChatComponents;
 import com.herocraftonline.heroes.util.GeometryUtil;
 import com.herocraftonline.heroes.util.Util;
@@ -35,20 +40,19 @@ import java.util.Map;
 
 public class SkillDarkBolt extends ActiveSkill implements Listenable {
 
-    private String applyText;
-    private String expireText;
     private final Listener listener;
-
-    private Map<WitherSkull, Long> darkBolts = new LinkedHashMap<WitherSkull, Long>(100) {
+    private final Map<WitherSkull, Long> darkBolts = new LinkedHashMap<WitherSkull, Long>(100) {
         private static final long serialVersionUID = 4329526013158603250L;
 
         @Override
-        protected boolean removeEldestEntry(Map.Entry<WitherSkull, Long> eldest) {
+        protected boolean removeEldestEntry(final Map.Entry<WitherSkull, Long> eldest) {
             return (size() > 60 || eldest.getValue() + 5000 <= System.currentTimeMillis());
         }
     };
+    private String applyText;
+    private String expireText;
 
-    public SkillDarkBolt(Heroes plugin) {
+    public SkillDarkBolt(final Heroes plugin) {
         super(plugin, "DarkBolt");
         setDescription("Launch a Wither Skull imbued with dark energy. The skull will explode shortly after launching, or after hitting an enemy. "
                 + "Enemies caught within $1 blocks of the explosion are dealt $2 damage and withered for $3 second(s). "
@@ -63,22 +67,22 @@ public class SkillDarkBolt extends ActiveSkill implements Listenable {
     }
 
     @Override
-    public String getDescription(Hero hero) {
-        double radius = SkillConfigManager.getScaledUseSettingDouble(hero, this, SkillSetting.RADIUS, false);
-        double damage = SkillConfigManager.getScaledUseSettingDouble(hero, this, SkillSetting.DAMAGE, false);
-        int duration = SkillConfigManager.getScaledUseSettingInt(hero, this, SkillSetting.DURATION, false);
-        double healingReductionPercent = SkillConfigManager.getUseSetting(hero, this, "healing-reduction-percent", 0.15, false);
+    public String getDescription(final Hero hero) {
+        final double radius = SkillConfigManager.getScaledUseSettingDouble(hero, this, SkillSetting.RADIUS, false);
+        final double damage = SkillConfigManager.getScaledUseSettingDouble(hero, this, SkillSetting.DAMAGE, false);
+        final int duration = SkillConfigManager.getScaledUseSettingInt(hero, this, SkillSetting.DURATION, false);
+        final double healingReductionPercent = SkillConfigManager.getUseSetting(hero, this, "healing-reduction-percent", 0.15, false);
 
-        String formattedDamage = Util.decFormat.format(damage);
-        String formattedDuration = Util.decFormat.format(duration / 1000.0);
-        String formattedHealingReduction = Util.decFormat.format(healingReductionPercent * 100.0);
+        final String formattedDamage = Util.decFormat.format(damage);
+        final String formattedDuration = Util.decFormat.format(duration / 1000.0);
+        final String formattedHealingReduction = Util.decFormat.format(healingReductionPercent * 100.0);
 
         return getDescription().replace("$1", radius + "").replace("$2", formattedDamage).replace("$3", formattedDuration).replace("$4", formattedHealingReduction);
     }
 
     @Override
     public ConfigurationSection getDefaultConfig() {
-        ConfigurationSection config = super.getDefaultConfig();
+        final ConfigurationSection config = super.getDefaultConfig();
         config.set(SkillSetting.DAMAGE.node(), 50.0);
         config.set(SkillSetting.DAMAGE_INCREASE_PER_INTELLECT.node(), 0.0);
         config.set(SkillSetting.RADIUS.node(), 4.0);
@@ -96,13 +100,13 @@ public class SkillDarkBolt extends ActiveSkill implements Listenable {
     public void init() {
         super.init();
 
-        applyText = SkillConfigManager.getRaw(this, SkillSetting.APPLY_TEXT, ChatComponents.GENERIC_SKILL + "%target%'s begins to wither away!").replace("%target%", "$1");
-        expireText = SkillConfigManager.getRaw(this, SkillSetting.EXPIRE_TEXT, ChatComponents.GENERIC_SKILL + "%target%'s is no longer withering.").replace("%target%", "$1");
+        applyText = SkillConfigManager.getRaw(this, SkillSetting.APPLY_TEXT, ChatComponents.GENERIC_SKILL + "%target%'s begins to wither away!").replace("%target%", "$1").replace("$target$", "$1");
+        expireText = SkillConfigManager.getRaw(this, SkillSetting.EXPIRE_TEXT, ChatComponents.GENERIC_SKILL + "%target%'s is no longer withering.").replace("%target%", "$1").replace("$target$", "$1");
     }
 
     @Override
-    public SkillResult use(Hero hero, String[] args) {
-        Player player = hero.getPlayer();
+    public SkillResult use(final Hero hero, final String[] args) {
+        final Player player = hero.getPlayer();
 
         player.getWorld().playSound(player.getLocation(), Sound.ENTITY_WITHER_SHOOT, 0.4F, 0.8F);
 
@@ -110,20 +114,18 @@ public class SkillDarkBolt extends ActiveSkill implements Listenable {
         darkBolts.put(darkBolt, System.currentTimeMillis());
         darkBolt.setShooter(player);
 
-        double projVel = SkillConfigManager.getUseSetting(hero, this, "projectile-velocity", 1.5, false);
+        final double projVel = SkillConfigManager.getUseSetting(hero, this, "projectile-velocity", 1.5, false);
         darkBolt.setVelocity(player.getLocation().getDirection().normalize().multiply(projVel));
         darkBolt.setIsIncendiary(false);
         darkBolt.setCharged(false);
         darkBolt.setYield(0.0F);
 
-        int ticksLived = SkillConfigManager.getUseSetting(hero, this, "projectile-max-ticks-lived", 20, false);
+        final int ticksLived = SkillConfigManager.getUseSetting(hero, this, "projectile-max-ticks-lived", 20, false);
 
-        Bukkit.getScheduler().scheduleSyncDelayedTask(plugin, new Runnable() {
-            public void run() {
-                if (!darkBolt.isDead()) {
-                    explodeDarkBolt(darkBolt);
-                    darkBolts.remove(darkBolt);
-                }
+        Bukkit.getScheduler().scheduleSyncDelayedTask(plugin, () -> {
+            if (!darkBolt.isDead()) {
+                explodeDarkBolt(darkBolt);
+                darkBolts.remove(darkBolt);
             }
         }, ticksLived);
 
@@ -137,75 +139,35 @@ public class SkillDarkBolt extends ActiveSkill implements Listenable {
         return listener;
     }
 
-    public class SkillEntityListener implements Listener {
+    private void explodeDarkBolt(final WitherSkull darkBolt) {
 
-        @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
-        public void onProjectileHit(ProjectileHitEvent event) {
-            if (!(event.getEntity() instanceof WitherSkull))
-                return;
+        final Player player = (Player) darkBolt.getShooter();
+        final Hero hero = plugin.getCharacterManager().getHero(player);
 
-            final WitherSkull darkBolt = (WitherSkull) event.getEntity();
-            if ((!(darkBolt.getShooter() instanceof Player)))
-                return;
-            if (!(darkBolts.containsKey(darkBolt)))
-                return;
+        final double radius = SkillConfigManager.getScaledUseSettingDouble(hero, this, SkillSetting.RADIUS, false);
+        final double damage = SkillConfigManager.getScaledUseSettingDouble(hero, this, SkillSetting.DAMAGE, false);
 
-            explodeDarkBolt(darkBolt);
+        final int duration = SkillConfigManager.getScaledUseSettingInt(hero, this, SkillSetting.DURATION, false);
+        final int witherLevel = SkillConfigManager.getUseSetting(hero, this, "wither-level", 1, false);
+        final double healingReductionPercent = SkillConfigManager.getUseSetting(hero, this, "healing-reduction-percent", 0.15, false);
 
-            // Delay the removal from the map so that we ensure that the damage event always catches each darkbolt.
-            Bukkit.getScheduler().scheduleSyncDelayedTask(plugin, new Runnable() {
-                public void run() {
-                    darkBolts.remove(darkBolt);
-                }
-            }, 1);
-        }
-
-        @EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
-        public void onEntityDamage(EntityDamageEvent event) {
-            if (!(event instanceof EntityDamageByEntityEvent) || !(event.getEntity() instanceof LivingEntity))
-                return;
-
-            EntityDamageByEntityEvent subEvent = (EntityDamageByEntityEvent) event;
-            Entity projectile = subEvent.getDamager();
-            if (!(projectile instanceof WitherSkull) || !darkBolts.containsKey(projectile))
-                return;
-
-            final WitherSkull darkBolt = (WitherSkull) projectile;
-
-            explodeDarkBolt(darkBolt);
-            darkBolts.remove(projectile);
-            event.setCancelled(true);
-        }
-    }
-
-    private void explodeDarkBolt(WitherSkull darkBolt) {
-
-        Player player = (Player) darkBolt.getShooter();
-        Hero hero = plugin.getCharacterManager().getHero(player);
-
-        double radius = SkillConfigManager.getScaledUseSettingDouble(hero, this, SkillSetting.RADIUS, false);
-        double damage = SkillConfigManager.getScaledUseSettingDouble(hero, this, SkillSetting.DAMAGE, false);
-
-        int duration = SkillConfigManager.getScaledUseSettingInt(hero, this, SkillSetting.DURATION, false);
-        int witherLevel = SkillConfigManager.getUseSetting(hero, this, "wither-level", 1, false);
-        double healingReductionPercent = SkillConfigManager.getUseSetting(hero, this, "healing-reduction-percent", 0.15, false);
-
-        Location darkBoltLoc = darkBolt.getLocation();
+        final Location darkBoltLoc = darkBolt.getLocation();
         darkBoltLoc.getWorld().spawnParticle(Particle.EXPLOSION_LARGE, darkBoltLoc, 15, 1, 1, 1, 0);
         player.getWorld().playSound(player.getLocation(), Sound.ENTITY_WITHER_DEATH, 0.1F, 2.0F);
 
-        List<Location> circle = GeometryUtil.getPerfectCircle(darkBoltLoc, (int) radius, 0, true, true, 0);
-        for (Location location : circle) {
+        final List<Location> circle = GeometryUtil.getPerfectCircle(darkBoltLoc, (int) radius, 0, true, true, 0);
+        for (final Location location : circle) {
             darkBolt.getWorld().spawnParticle(Particle.SPELL_WITCH, location, 2, 0.2, 0.3, 0.2, 0);
         }
 
-        List<Entity> targets = darkBolt.getNearbyEntities(radius, radius, radius);
-        for (Entity entity : targets) {
-            if (!(entity instanceof LivingEntity) || !damageCheck(player, (LivingEntity) entity))
+        final List<Entity> targets = darkBolt.getNearbyEntities(radius, radius, radius);
+        for (final Entity entity : targets) {
+            if (!(entity instanceof LivingEntity) || !damageCheck(player, (LivingEntity) entity)) {
                 continue;
+            }
 
-            LivingEntity target = (LivingEntity) entity;
-            CharacterTemplate targetCT = plugin.getCharacterManager().getCharacter(target);
+            final LivingEntity target = (LivingEntity) entity;
+            final CharacterTemplate targetCT = plugin.getCharacterManager().getCharacter(target);
 
             // Damage the target
             addSpellTarget(target, hero);
@@ -218,9 +180,51 @@ public class SkillDarkBolt extends ActiveSkill implements Listenable {
         darkBolt.remove();
     }
 
+    public class SkillEntityListener implements Listener {
+
+        @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
+        public void onProjectileHit(final ProjectileHitEvent event) {
+            if (!(event.getEntity() instanceof WitherSkull)) {
+                return;
+            }
+
+            final WitherSkull darkBolt = (WitherSkull) event.getEntity();
+            if ((!(darkBolt.getShooter() instanceof Player))) {
+                return;
+            }
+            if (!(darkBolts.containsKey(darkBolt))) {
+                return;
+            }
+
+            explodeDarkBolt(darkBolt);
+
+            // Delay the removal from the map so that we ensure that the damage event always catches each darkbolt.
+            Bukkit.getScheduler().scheduleSyncDelayedTask(plugin, () -> darkBolts.remove(darkBolt), 1);
+        }
+
+        @EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
+        public void onEntityDamage(final EntityDamageEvent event) {
+            if (!(event instanceof EntityDamageByEntityEvent) || !(event.getEntity() instanceof LivingEntity)) {
+                return;
+            }
+
+            final EntityDamageByEntityEvent subEvent = (EntityDamageByEntityEvent) event;
+            final Entity projectile = subEvent.getDamager();
+            if (!(projectile instanceof WitherSkull) || !darkBolts.containsKey(projectile)) {
+                return;
+            }
+
+            final WitherSkull darkBolt = (WitherSkull) projectile;
+
+            explodeDarkBolt(darkBolt);
+            darkBolts.remove(projectile);
+            event.setCancelled(true);
+        }
+    }
+
     public class WitheringEffect extends HealthRegainReductionEffect {
 
-        public WitheringEffect(Skill skill, Player applier, long duration, int witherLevel, double healingReductionPercent) {
+        public WitheringEffect(final Skill skill, final Player applier, final long duration, final int witherLevel, final double healingReductionPercent) {
             super(skill, applier.getName() + "-DarkBoltWithering", applier, duration, healingReductionPercent, applyText, expireText);
 
             types.add(EffectType.DISPELLABLE);

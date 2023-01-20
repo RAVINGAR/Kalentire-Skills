@@ -26,7 +26,7 @@ import java.util.List;
 
 public class SkillConjureElemental extends ActiveSkill {
     private String expireText;
-    private List<String> types;
+    private final List<String> types;
 
     public SkillConjureElemental(Heroes paramHeroes)
     {

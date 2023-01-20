@@ -11,11 +11,8 @@ import com.herocraftonline.heroes.characters.skill.SkillConfigManager;
 import com.herocraftonline.heroes.characters.skill.SkillSetting;
 import com.herocraftonline.heroes.characters.skill.SkillType;
 import com.herocraftonline.heroes.util.Util;
-import org.bukkit.Effect;
 import org.bukkit.Location;
 import org.bukkit.Particle;
-import org.bukkit.Sound;
-import org.bukkit.Sound;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
@@ -24,7 +21,6 @@ import org.bukkit.Sound;
 import org.bukkit.event.entity.EntityDamageEvent.DamageCause;
 import org.bukkit.scheduler.BukkitRunnable;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
@@ -68,7 +64,7 @@ public class SkillShock extends ActiveSkill
 
 		node.set(SkillSetting.DAMAGE.node(), 20);
 		node.set(SkillSetting.DAMAGE_INCREASE_PER_INTELLECT.node(), 0.3);
-		node.set(SkillSetting.RADIUS.node(), Integer.valueOf(4));
+		node.set(SkillSetting.RADIUS.node(), 4);
 		node.set(SkillSetting.DURATION.node(), 1000);
 		node.set("stun-chance-percent", 20);
 

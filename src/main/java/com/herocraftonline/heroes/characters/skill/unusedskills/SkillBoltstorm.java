@@ -7,7 +7,6 @@ import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
-import org.bukkit.Sound;
 import org.bukkit.event.entity.EntityDamageEvent.DamageCause;
 
 import com.herocraftonline.heroes.Heroes;
@@ -52,8 +51,8 @@ public class SkillBoltstorm extends ActiveSkill {
     @Override
     public void init() {
         super.init();
-        applyText = SkillConfigManager.getRaw(this, SkillSetting.APPLY_TEXT, "%hero% has summoned a boltstorm!").replace("%hero%", "$1");
-        expireText = SkillConfigManager.getRaw(this, SkillSetting.EXPIRE_TEXT, "%hero%'s boltstorm has subsided!").replace("%hero%", "$1");
+        applyText = SkillConfigManager.getRaw(this, SkillSetting.APPLY_TEXT, "%hero% has summoned a boltstorm!").replace("%hero%", "$1").replace("$hero$", "$1");
+        expireText = SkillConfigManager.getRaw(this, SkillSetting.EXPIRE_TEXT, "%hero%'s boltstorm has subsided!").replace("%hero%", "$1").replace("$hero$", "$1");
     }
 
     @Override
@@ -93,7 +92,7 @@ public class SkillBoltstorm extends ActiveSkill {
             Player player = hero.getPlayer();
             int range = SkillConfigManager.getUseSetting(hero, skill, SkillSetting.RADIUS, 7, false);
 
-            List<LivingEntity> targets = new ArrayList<LivingEntity>();
+            List<LivingEntity> targets = new ArrayList<>();
             for (Entity entity : player.getNearbyEntities(range, range, range)) {
                 if (!(entity instanceof LivingEntity)) {
                     continue;

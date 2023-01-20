@@ -79,12 +79,12 @@
 //
 //        applyText = SkillConfigManager.getRaw(this, SkillSetting.APPLY_TEXT, ChatComponents.GENERIC_SKILL +
 //                "%hero% has opened a dark pact with %target%!")
-//                .replace("%hero%", "$2")
-//                .replace("%target%", "$1");
+//                .replace("%hero%", "$2").replace("$hero$", "$2")
+//                .replace("%target%", "$1").replace("$target$", "$1");
 //        expireText = SkillConfigManager.getRaw(this, SkillSetting.EXPIRE_TEXT, ChatComponents.GENERIC_SKILL +
 //                "%hero%'s pact has ended with %target%.")
-//                .replace("%hero%", "$2")
-//                .replace("%target%", "$1");
+//                .replace("%hero%", "$2").replace("$hero$", "$2")
+//                .replace("%target%", "$1").replace("$target$", "$1");
 //    }
 //
 //    public ArrayList<Location> helix(Location center, double height, double radius, double particleInterval)

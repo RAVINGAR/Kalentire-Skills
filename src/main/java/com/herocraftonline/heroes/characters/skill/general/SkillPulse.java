@@ -12,14 +12,12 @@ import com.herocraftonline.heroes.util.GeometryUtil;
 import org.bukkit.Location;
 import org.bukkit.Particle;
 import org.bukkit.Sound;
-import org.bukkit.World;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.entity.EntityDamageEvent.DamageCause;
 
-import java.util.ArrayList;
 import java.util.List;
 
 public class SkillPulse extends ActiveSkill {
@@ -94,11 +92,10 @@ public class SkillPulse extends ActiveSkill {
         for (double r = 1; r < radius * 2; r++)
 		{
 			List<Location> particleLocations = GeometryUtil.circle(player.getLocation(), 45, r / 2);
-			for (int i = 0; i < particleLocations.size(); i++)
-			{
-				//player.getWorld().spigot().playEffect(particleLocations.get(i), Effect.MAGIC_CRIT, 0, 0, 0, 0.1F, 0, 0.1F, 1, 16);
-                player.getWorld().spawnParticle(Particle.CRIT_MAGIC, particleLocations.get(i), 1, 0, 0.1, 0, 0.1);
-			}
+            for (Location particleLocation : particleLocations) {
+                //player.getWorld().spigot().playEffect(particleLocations.get(i), Effect.MAGIC_CRIT, 0, 0, 0, 0.1F, 0, 0.1F, 1, 16);
+                player.getWorld().spawnParticle(Particle.CRIT_MAGIC, particleLocation, 1, 0, 0.1, 0, 0.1);
+            }
 		}
         
         player.getWorld().playSound(player.getLocation(), Sound.ENTITY_EXPERIENCE_ORB_PICKUP, 1.0F, 1.2F);

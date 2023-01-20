@@ -14,11 +14,9 @@ import com.herocraftonline.heroes.characters.skill.ActiveSkill;
 import com.herocraftonline.heroes.characters.skill.SkillConfigManager;
 import com.herocraftonline.heroes.characters.skill.SkillSetting;
 import com.herocraftonline.heroes.characters.skill.SkillType;
-import org.apache.commons.lang.StringUtils;
 import org.bukkit.*;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
-import org.bukkit.Sound;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerJoinEvent;
@@ -31,8 +29,8 @@ import java.util.logging.Level;
 
 public class SkillPort extends ActiveSkill implements Listener, PluginMessageListener {
 
-    private Set<String> pendingPort = new HashSet<>();
-    private Map<String, Info<String>> onJoinSkillSettings = new Hashtable<>();
+    private final Set<String> pendingPort = new HashSet<>();
+    private final Map<String, Info<String>> onJoinSkillSettings = new Hashtable<>();
 
     public SkillPort(Heroes plugin) {
         super(plugin, "Port");
@@ -104,7 +102,7 @@ public class SkillPort extends ActiveSkill implements Listener, PluginMessageLis
 
     // handle bungee port
         String server = portArgs.get(0);
-        if (!StringUtils.isNotEmpty(server) || server.equals(plugin.getServerName())) {
+        if (!server.isEmpty() || server.equals(plugin.getServerName())) {
             return doPort(hero, portInfo, true);
         }
         if (!plugin.getServerNames().contains(server)) {
@@ -142,15 +140,11 @@ public class SkillPort extends ActiveSkill implements Listener, PluginMessageLis
 
         // Run this delayed task to check if the port failed
         final String playerName = player.getName();
-        Bukkit.getScheduler().runTaskLater(plugin, new Runnable() {
-
-            @Override
-            public void run() {
-                if (pendingPort.remove(playerName)) {
-                    Player player = Bukkit.getPlayer(playerName);
-                    if (player != null) {
-                        player.sendMessage("Teleport fizzled.");
-                    }
+        Bukkit.getScheduler().runTaskLater(plugin, () -> {
+            if (pendingPort.remove(playerName)) {
+                Player player1 = Bukkit.getPlayer(playerName);
+                if (player1 != null) {
+                    player1.sendMessage("Teleport fizzled.");
                 }
             }
         }, 40);
@@ -211,7 +205,7 @@ public class SkillPort extends ActiveSkill implements Listener, PluginMessageLis
     }
 
     private Collection<String> getPortMemberNames(Hero hero, Location portLocation) {
-        List<String> memberNames = new ArrayList<String>();
+        List<String> memberNames = new ArrayList<>();
         for (Hero member : getPortMembers(hero, portLocation)) {
             memberNames.add(member.getPlayer().getName());
         }
@@ -267,7 +261,7 @@ public class SkillPort extends ActiveSkill implements Listener, PluginMessageLis
             String playerNames = msgin.readUTF();
             for (String playerName : Splitter.on(",").split(playerNames)) {
                 // cache the location for onPlayerJoin
-                onJoinSkillSettings.put(playerName, new Info<String>(portInfo));
+                onJoinSkillSettings.put(playerName, new Info<>(portInfo));
 
                 // send the player to this server
                 ByteArrayDataOutput connectOther = ByteStreams.newDataOutput();
@@ -305,7 +299,7 @@ public class SkillPort extends ActiveSkill implements Listener, PluginMessageLis
         }
     }
 
-    class Info<T> {
+    static class Info<T> {
         private final static long TIMEOUT = 10 * 1000; // 10s
 
         private final long timeStamp;

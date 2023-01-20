@@ -16,11 +16,11 @@ import org.bukkit.event.entity.EntityDamageEvent;
 
 public class SkillChronophage extends SkillBaseMarkedTeleport {
 
-    public SkillChronophage(Heroes plugin) {
-        super(plugin, "Chronophage", false, new EffectType[] {
+    public SkillChronophage(final Heroes plugin) {
+        super(plugin, "Chronophage", false, new EffectType[]{
                 EffectType.DAMAGING,
                 EffectType.HARMFUL
-        }, Particle.REDSTONE, new Color[] {
+        }, Particle.REDSTONE, new Color[]{
                 Color.PURPLE,
                 Color.BLACK
         });
@@ -34,12 +34,12 @@ public class SkillChronophage extends SkillBaseMarkedTeleport {
     }
 
     @Override
-    public String getDescription(Hero hero) {
+    public String getDescription(final Hero hero) {
         double damage = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE, 250d, false);
-        double damageIncrease = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE_INCREASE_PER_INTELLECT, 1d, false);
+        final double damageIncrease = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE_INCREASE_PER_INTELLECT, 1d, false);
         damage += hero.getAttributeValue(AttributeType.INTELLECT) * damageIncrease;
 
-        double totalDuration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, 10000, false);
+        final double totalDuration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, 10000, false);
 
         return getDescription()
                 .replace("$1", Util.decFormat.format(totalDuration / 1000))
@@ -48,7 +48,7 @@ public class SkillChronophage extends SkillBaseMarkedTeleport {
 
     @Override
     public ConfigurationSection getDefaultConfig() {
-        ConfigurationSection node = super.getDefaultConfig();
+        final ConfigurationSection node = super.getDefaultConfig();
 
         node.set(SkillSetting.DURATION.node(), 10000);
         node.set(SkillSetting.DAMAGE.node(), 250d);
@@ -61,20 +61,19 @@ public class SkillChronophage extends SkillBaseMarkedTeleport {
     }
 
     @Override
-    protected void onMarkerActivate(Marker marker, long activateTime) {
+    protected void onMarkerActivate(final Marker marker, final long activateTime) {
         if (damageCheck(marker.getHero().getPlayer(), marker.getTarget().getEntity())) {
-            double damage = SkillConfigManager.getUseSetting(marker.getHero(), this, SkillSetting.DAMAGE, 250d, false);
-            double damageIncrease = SkillConfigManager.getUseSetting(marker.getHero(), this, SkillSetting.DAMAGE_INCREASE_PER_INTELLECT, 1d, false);
-            damage += marker.getHero().getAttributeValue(AttributeType.INTELLECT) * damageIncrease;
-            long reCastDelay = SkillConfigManager.getUseSetting(marker.getHero(), this, RE_CAST_DELAY_NODE, 0, false);
+            final double damage = SkillConfigManager.getScaledUseSettingDouble(marker.getHero(), this, SkillSetting.DAMAGE, 250d, false);
+            final long reCastDelay = SkillConfigManager.getUseSetting(marker.getHero(), this, RE_CAST_DELAY_NODE, 0, false);
 
-            double totalDuration = SkillConfigManager.getUseSetting(marker.getHero(), this, SkillSetting.DURATION, 10000, false);
-            double damageScale = 1 - ((activateTime - marker.getCreateTime() - reCastDelay) / (totalDuration - reCastDelay));
+            final double totalDuration = SkillConfigManager.getScaledUseSettingInt(marker.getHero(), this, SkillSetting.DURATION, 10000, false);
+            double damageScale = ((activateTime - marker.getCreateTime() - reCastDelay) / (totalDuration - reCastDelay));
             if (damageScale < 0) {
                 damageScale = 0;
             }
 
-            damageEntity(marker.getTarget().getEntity(), marker.getHero().getPlayer(), damage * damageScale, EntityDamageEvent.DamageCause.MAGIC, false);
+            addSpellTarget(marker.getTarget().getEntity(), marker.getHero());
+            damageEntity(marker.getTarget().getEntity(), marker.getHero().getPlayer(), damage * damageScale, EntityDamageEvent.DamageCause.MAGIC, 0.0f);
         }
     }
 }

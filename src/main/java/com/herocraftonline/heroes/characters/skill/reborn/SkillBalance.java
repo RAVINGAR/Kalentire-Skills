@@ -51,7 +51,7 @@ public class SkillBalance extends ActiveSkill {
 
 		double increment = (2 * Math.PI) / particleAmount;
 
-		ArrayList<Location> locations = new ArrayList<Location>();
+		ArrayList<Location> locations = new ArrayList<>();
 
 		for (int i = 0; i < particleAmount; i++)
 		{
@@ -106,25 +106,21 @@ public class SkillBalance extends ActiveSkill {
 
         double healthMultiplier = currentHealthTotal * Math.pow(maxHealthTotal, -1);
 
-        Iterator<Hero> applyHealthIterator = heroParty.getMembers().iterator();
-        while (applyHealthIterator.hasNext()) {
-            Hero applyHero = applyHealthIterator.next();
+        for (Hero applyHero : heroParty.getMembers()) {
             Location applyHeroLocation = applyHero.getPlayer().getLocation();
 
             if (skipRangeCheck || (applyHeroLocation.getWorld().equals(playerLocation.getWorld()) && applyHeroLocation.distanceSquared(playerLocation) < radiusSquared)) {
                 applyHero.getPlayer().setHealth((applyHero.getPlayer().getMaxHealth() * healthMultiplier));
                 if (applyHero.getName().equals(hero.getName())) {
                     player.sendMessage(ChatColor.GRAY + "You used Balance!");
-                }
-                else {
+                } else {
                     applyHero.getPlayer().sendMessage(ChatColor.GRAY + hero.getName() + " balanced your health with that of your party!");
                 }
                 List<Location> circle = circle(applyHero.getPlayer().getLocation().add(0, 0.5, 0), 36, 1.5);
-                for (int i = 0; i < circle.size(); i++)
-        		{
-        			//applyHero.getPlayer().getWorld().spigot().playEffect(circle(applyHero.getPlayer().getLocation().add(0, 0.5, 0), 36, radius / 2).get(i), org.bukkit.Effect.INSTANT_SPELL, 0, 0, 0, 0, 0, 0, 16, 16);
-        		    applyHero.getPlayer().getWorld().spawnParticle(Particle.SPELL_INSTANT, circle.get(i), 16, 0, 0, 0, 0);
-        		}
+                for (Location location : circle) {
+                    //applyHero.getPlayer().getWorld().spigot().playEffect(circle(applyHero.getPlayer().getLocation().add(0, 0.5, 0), 36, radius / 2).get(i), org.bukkit.Effect.INSTANT_SPELL, 0, 0, 0, 0, 0, 0, 16, 16);
+                    applyHero.getPlayer().getWorld().spawnParticle(Particle.SPELL_INSTANT, location, 16, 0, 0, 0, 0);
+                }
             }
         }
         player.getWorld().playSound(playerLocation, Sound.ENTITY_PLAYER_LEVELUP, 0.9F, 1.0F);

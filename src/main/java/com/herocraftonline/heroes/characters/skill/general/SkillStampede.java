@@ -5,7 +5,6 @@ import com.herocraftonline.heroes.api.SkillResult;
 import com.herocraftonline.heroes.characters.CharacterTemplate;
 import com.herocraftonline.heroes.characters.Hero;
 import com.herocraftonline.heroes.characters.Monster;
-import com.herocraftonline.heroes.characters.effects.EffectType;
 import com.herocraftonline.heroes.characters.effects.common.SlowEffect;
 import com.herocraftonline.heroes.characters.effects.common.SummonEffect;
 import com.herocraftonline.heroes.characters.skill.ActiveSkill;
@@ -27,8 +26,6 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
-import org.bukkit.potion.PotionEffect;
-import org.bukkit.potion.PotionEffectType;
 import org.bukkit.util.Vector;
 
 import java.util.Random;
@@ -38,7 +35,7 @@ public class SkillStampede extends ActiveSkill {
 
     private final String minionEffectName = "Stampede";
     private boolean disguiseApiLoaded;
-    private final EntityType animalArray[] = {EntityType.COW, EntityType.PIG, EntityType.LLAMA, EntityType.SHEEP, EntityType.TURTLE};
+    private final EntityType[] animalArray = {EntityType.COW, EntityType.PIG, EntityType.LLAMA, EntityType.SHEEP, EntityType.TURTLE};
 
     public SkillStampede(Heroes plugin) {
         super(plugin, "Stampede");

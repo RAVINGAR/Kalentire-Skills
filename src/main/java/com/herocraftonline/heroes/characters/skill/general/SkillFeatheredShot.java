@@ -6,7 +6,12 @@ import com.herocraftonline.heroes.characters.CharacterTemplate;
 import com.herocraftonline.heroes.characters.Hero;
 import com.herocraftonline.heroes.characters.effects.EffectType;
 import com.herocraftonline.heroes.characters.effects.ExpirableEffect;
-import com.herocraftonline.heroes.characters.skill.*;
+import com.herocraftonline.heroes.characters.skill.ActiveSkill;
+import com.herocraftonline.heroes.characters.skill.Listenable;
+import com.herocraftonline.heroes.characters.skill.Skill;
+import com.herocraftonline.heroes.characters.skill.SkillConfigManager;
+import com.herocraftonline.heroes.characters.skill.SkillSetting;
+import com.herocraftonline.heroes.characters.skill.SkillType;
 import com.herocraftonline.heroes.chat.ChatComponents;
 import com.herocraftonline.heroes.util.Util;
 import org.bukkit.configuration.ConfigurationSection;
@@ -22,12 +27,12 @@ import org.bukkit.potion.PotionEffectType;
 
 public class SkillFeatheredShot extends ActiveSkill implements Listenable {
 
+    private final String shotEffect = "HasFeatheredArrows";
+    private final Listener listener;
     private String applyText;
     private String expireText;
-    private String shotEffect = "HasFeatheredArrows";
-    private Listener listener;
 
-    public SkillFeatheredShot(Heroes plugin) {
+    public SkillFeatheredShot(final Heroes plugin) {
         super(plugin, "FeatheredShot");
         setDescription("For the next $1 second(s), your arrows will apply a jump boost and slow fall to slow down your target.");
         setUsage("/skill featheredshot");
@@ -39,12 +44,12 @@ public class SkillFeatheredShot extends ActiveSkill implements Listenable {
     }
 
     @Override
-    public String getDescription(Hero hero) {
-        int duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, 10000, false);
-        double damage = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE, 5, false);
+    public String getDescription(final Hero hero) {
+        final int duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, 10000, false);
+        final double damage = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE, 5, false);
 
-        String formattedDamage = Util.decFormat.format(damage);
-        String formattedDuration = Util.decFormat.format(duration / 1000.0);
+        final String formattedDamage = Util.decFormat.format(damage);
+        final String formattedDuration = Util.decFormat.format(duration / 1000.0);
 
         return getDescription()
                 .replace("$1", formattedDuration)
@@ -53,7 +58,7 @@ public class SkillFeatheredShot extends ActiveSkill implements Listenable {
 
     @Override
     public ConfigurationSection getDefaultConfig() {
-        ConfigurationSection config = super.getDefaultConfig();
+        final ConfigurationSection config = super.getDefaultConfig();
         config.set(SkillSetting.DURATION.node(), 10000);
         config.set(SkillSetting.DAMAGE.node(), 15.0);
         config.set(SkillSetting.DAMAGE_INCREASE_PER_INTELLECT.node(), 0.0);
@@ -65,23 +70,24 @@ public class SkillFeatheredShot extends ActiveSkill implements Listenable {
         return config;
     }
 
+    @Override
     public void init() {
         super.init();
 
         applyText = SkillConfigManager.getRaw(this, SkillSetting.APPLY_TEXT,
-                ChatComponents.GENERIC_SKILL + "%hero% has deadly feathers attached to their bow.")
-                .replace("%hero%", "$1");
+                        ChatComponents.GENERIC_SKILL + "%hero% has deadly feathers attached to their bow.")
+                .replace("%hero%", "$1").replace("$hero$", "$1");
 
         expireText = SkillConfigManager.getRaw(this, SkillSetting.EXPIRE_TEXT,
-                ChatComponents.GENERIC_SKILL + "%hero%'s bow no longer has deadly feathers attached to their bow.")
-                .replace("%hero%", "$1");
+                        ChatComponents.GENERIC_SKILL + "%hero%'s bow no longer has deadly feathers attached to their bow.")
+                .replace("%hero%", "$1").replace("$hero$", "$1");
     }
 
     @Override
-    public SkillResult use(Hero hero, String[] args) {
+    public SkillResult use(final Hero hero, final String[] args) {
         broadcastExecuteText(hero);
 
-        int duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, 10000, false);
+        final int duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, 10000, false);
         hero.addEffect(new FeatherArrowsEffect(this, hero.getPlayer(), duration));
 
         return SkillResult.NORMAL;
@@ -92,16 +98,29 @@ public class SkillFeatheredShot extends ActiveSkill implements Listenable {
         return listener;
     }
 
+    public static class FeatheredEffect extends ExpirableEffect {
+
+        public FeatheredEffect(final Skill skill, final Player applier, final long duration, final int slowFallAmplifier, final int jumpBoostAmplifier) {
+            super(skill, "FeatherShotted", applier, duration);
+
+            types.add(EffectType.DISPELLABLE);
+            types.add(EffectType.HARMFUL);
+
+            addPotionEffect(new PotionEffect(PotionEffectType.SLOW_FALLING, (int) (duration / 1000 * 20), slowFallAmplifier));
+            addPotionEffect(new PotionEffect(PotionEffectType.JUMP, (int) (duration / 1000 * 20), jumpBoostAmplifier));
+        }
+    }
+
     public class FeatherArrowsEffect extends ExpirableEffect {
 
-        FeatherArrowsEffect(Skill skill, Player applier, long duration) {
+        FeatherArrowsEffect(final Skill skill, final Player applier, final long duration) {
             super(skill, shotEffect, applier, duration, applyText, expireText);
             types.add(EffectType.IMBUE);
             types.add(EffectType.BENEFICIAL);
         }
 
         @Override
-        public void applyToHero(Hero hero) {
+        public void applyToHero(final Hero hero) {
             super.applyToHero(hero);
 
             for (final com.herocraftonline.heroes.characters.effects.Effect effect : hero.getEffects()) {
@@ -116,7 +135,7 @@ public class SkillFeatheredShot extends ActiveSkill implements Listenable {
         }
 
         @Override
-        public void removeFromHero(Hero hero) {
+        public void removeFromHero(final Hero hero) {
             super.removeFromHero(hero);
         }
     }
@@ -124,45 +143,36 @@ public class SkillFeatheredShot extends ActiveSkill implements Listenable {
     public class SkillDamageListener implements Listener {
         private final Skill skill;
 
-        public SkillDamageListener(Skill skill) {
+        public SkillDamageListener(final Skill skill) {
             this.skill = skill;
         }
 
         @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
-        public void onEntityDamage(EntityDamageByEntityEvent event) {
-            if (!(event.getEntity() instanceof LivingEntity))
+        public void onEntityDamage(final EntityDamageByEntityEvent event) {
+            if (!(event.getEntity() instanceof LivingEntity)) {
                 return;
+            }
 
-            if (!(event.getDamager() instanceof Arrow))
+            if (!(event.getDamager() instanceof Arrow)) {
                 return;
+            }
 
             final Arrow arrow = (Arrow) event.getDamager();
-            if (!(arrow.getShooter() instanceof Player))
+            if (!(arrow.getShooter() instanceof Player)) {
                 return;
+            }
 
             final Player player = (Player) arrow.getShooter();
             final Hero hero = plugin.getCharacterManager().getHero(player);
-            if (!hero.hasEffect(shotEffect))
+            if (!hero.hasEffect(shotEffect)) {
                 return;
+            }
 
-            CharacterTemplate targetCT = plugin.getCharacterManager().getCharacter((LivingEntity) event.getEntity());
-            int duration = SkillConfigManager.getUseSetting(hero, skill, "shot-duration", 4000, false);
-            int slowFall = SkillConfigManager.getUseSetting(hero, skill, "slow-fall-amplifier", 3, false);
-            int jumpBoost = SkillConfigManager.getUseSetting(hero, skill, "jump-boost-amplifier", 4, false);
+            final CharacterTemplate targetCT = plugin.getCharacterManager().getCharacter((LivingEntity) event.getEntity());
+            final int duration = SkillConfigManager.getUseSetting(hero, skill, "shot-duration", 4000, false);
+            final int slowFall = SkillConfigManager.getUseSetting(hero, skill, "slow-fall-amplifier", 3, false);
+            final int jumpBoost = SkillConfigManager.getUseSetting(hero, skill, "jump-boost-amplifier", 4, false);
             targetCT.addEffect(new FeatheredEffect(skill, player, duration, slowFall, jumpBoost));
-        }
-    }
-
-    public class FeatheredEffect extends ExpirableEffect {
-
-        public FeatheredEffect(Skill skill, Player applier, long duration, int slowFallAmplifier, int jumpBoostAmplifier) {
-            super(skill, "FeatherShotted", applier, duration);
-
-            types.add(EffectType.DISPELLABLE);
-            types.add(EffectType.HARMFUL);
-
-            addPotionEffect(new PotionEffect(PotionEffectType.SLOW_FALLING, (int) (duration / 1000 * 20), slowFallAmplifier));
-            addPotionEffect(new PotionEffect(PotionEffectType.JUMP, (int) (duration / 1000 * 20), jumpBoostAmplifier));
         }
     }
 }

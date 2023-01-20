@@ -15,11 +15,11 @@ import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 
 public class SkillConstrict extends TargettedSkill {
-    
+
     private String applyText;
     private String expireText;
-    
-    public SkillConstrict(Heroes plugin) {
+
+    public SkillConstrict(final Heroes plugin) {
         super(plugin, "Constrict");
         setDescription("You slow the target's movement & attack speed for $1 second(s).");
         setUsage("/skill constrict");
@@ -30,7 +30,7 @@ public class SkillConstrict extends TargettedSkill {
 
     @Override
     public ConfigurationSection getDefaultConfig() {
-        ConfigurationSection node = super.getDefaultConfig();
+        final ConfigurationSection node = super.getDefaultConfig();
         node.set("speed-multiplier", 3);
         node.set(SkillSetting.DURATION.node(), 15000);
         node.set(SkillSetting.APPLY_TEXT.node(), "%target% has been constricted by %hero%!");
@@ -41,30 +41,32 @@ public class SkillConstrict extends TargettedSkill {
     @Override
     public void init() {
         //super.init();
-        applyText = SkillConfigManager.getRaw(this, SkillSetting.APPLY_TEXT, "%target% has been constricted by %hero%!").replace("%target%", "$1").replace("%hero%", "$2");
-        expireText = SkillConfigManager.getRaw(this, SkillSetting.EXPIRE_TEXT, "%target% is no longer constricted!").replace("%target%", "$1");
+        applyText = SkillConfigManager.getRaw(this, SkillSetting.APPLY_TEXT, "%target% has been constricted by %hero%!").replace("%target%", "$1").replace("$target$", "$1").replace("%hero%", "$2").replace("$hero$", "$2");
+        expireText = SkillConfigManager.getRaw(this, SkillSetting.EXPIRE_TEXT, "%target% is no longer constricted!").replace("%target%", "$1").replace("$target$", "$1");
     }
+
     @Override
-    public SkillResult use(Hero hero, LivingEntity target, String[] args) {
-    	//Player player = hero.getPlayer();
-        if (!(target instanceof Player))
+    public SkillResult use(final Hero hero, final LivingEntity target, final String[] args) {
+        //Player player = hero.getPlayer();
+        if (!(target instanceof Player)) {
             return SkillResult.INVALID_TARGET;
-        
-        int duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, 15000, false);
+        }
+
+        final int duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, 15000, false);
         int multiplier = SkillConfigManager.getUseSetting(hero, this, "speed-multiplier", 2, false);
         if (multiplier > 20) {
             multiplier = 20;
         }
-        SlowEffect effect = new SlowEffect(this, hero.getPlayer(), duration, multiplier, applyText, expireText);
+        final SlowEffect effect = new SlowEffect(this, hero.getPlayer(), duration, multiplier, applyText, expireText);
         effect.types.add(EffectType.MAGIC);
         plugin.getCharacterManager().getHero((Player) target).addEffect(effect);
-        hero.getPlayer().getWorld().playSound(hero.getPlayer().getLocation(), Sound.ENTITY_SPIDER_STEP , 0.8F, 1.0F);
+        hero.getPlayer().getWorld().playSound(hero.getPlayer().getLocation(), Sound.ENTITY_SPIDER_STEP, 0.8F, 1.0F);
         return SkillResult.NORMAL;
     }
 
     @Override
-    public String getDescription(Hero hero) {
-        int duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, 15000, false);
+    public String getDescription(final Hero hero) {
+        final int duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, 15000, false);
         return getDescription().replace("$1", duration / 1000 + "");
     }
 }

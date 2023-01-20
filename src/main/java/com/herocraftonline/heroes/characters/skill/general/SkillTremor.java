@@ -127,12 +127,7 @@ public class SkillTremor extends ActiveSkill {
             final Vector velocity = new Vector(xDir, individualVPower, zDir);
             long exemptionDuration = SkillConfigManager.getUseSetting(hero, this, "ncp-exemption-duration", 500, false);
             if (exemptionDuration > 0) {
-                NCPUtils.applyExemptions(target, new NCPFunction() {
-                    @Override
-                    public void execute() {
-                        target.setVelocity(velocity);
-                    }
-                }, Lists.newArrayList("MOVING"), exemptionDuration);
+                NCPUtils.applyExemptions(target, () -> target.setVelocity(velocity), Lists.newArrayList("MOVING"), exemptionDuration);
             } else {
                 target.setVelocity(velocity);
             }
@@ -143,8 +138,8 @@ public class SkillTremor extends ActiveSkill {
 
         for (double r = 1; r < 5 * 2; r++) {
             List<Location> particleLocations = GeometryUtil.circle(player.getLocation(), 72, r / 2);
-            for (int i = 0; i < particleLocations.size(); i++) {
-                player.getWorld().spawnParticle(Particle.BLOCK_CRACK, particleLocations.get(i).add(0, 0.1, 0), 2, 0, 0.3, 0, 0.1,
+            for (Location particleLocation : particleLocations) {
+                player.getWorld().spawnParticle(Particle.BLOCK_CRACK, particleLocation.add(0, 0.1, 0), 2, 0, 0.3, 0, 0.1,
                         player.getLocation().getBlock().getRelative(BlockFace.DOWN).getBlockData());
             }
         }

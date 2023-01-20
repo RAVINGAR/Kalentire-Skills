@@ -50,7 +50,7 @@ public class SkillBitterComfort extends PassiveSkill {
     }
 
     private class BitterComfortListener implements Listener {
-        private Skill skill;
+        private final Skill skill;
 
         public BitterComfortListener(Skill skill) {
             this.skill = skill;

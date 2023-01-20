@@ -7,7 +7,6 @@ import com.herocraftonline.heroes.characters.skill.*;
 import com.herocraftonline.heroes.nms.NMSHandler;
 import com.herocraftonline.heroes.util.Util;
 import org.bukkit.Bukkit;
-import org.bukkit.GameMode;
 import org.bukkit.Material;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.*;
@@ -271,7 +270,7 @@ public class SkillPotion extends PassiveSkill {
 
             boolean firstLoop = true; // The easiest way to determine first loop without duplicating the entire loop code.
 
-            Float cloudRadiusOnUse = cloud.getRadiusOnUse();
+            float cloudRadiusOnUse = cloud.getRadiusOnUse();
             int cloudDurationOnUse = cloud.getDurationOnUse();
 
 
@@ -522,7 +521,7 @@ public class SkillPotion extends PassiveSkill {
 
             boolean upgraded = type.isUpgradeable() && data.isUpgraded();
             boolean extended = type.isExtendable() && data.isExtended();
-            int duration = potionDurations.containsKey(effectType.getName()) ? potionDurations.get(effectType.getName()) : 90000; // 4500 seconds
+            int duration = potionDurations.getOrDefault(effectType.getName(), 90000); // 4500 seconds
 
             if (upgraded)
                 duration *= 0.5; // 1/2 duration

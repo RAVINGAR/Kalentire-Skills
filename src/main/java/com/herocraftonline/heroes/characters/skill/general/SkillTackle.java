@@ -37,8 +37,7 @@ public class SkillTackle extends TargettedSkill {
         int duration = (int) ((SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION.node(), 3000, false) +
                 (SkillConfigManager.getUseSetting(hero, this, "duration-increase", 0.0, false) * hero.getHeroLevel(this)))) / 1000;
         duration = duration > 0 ? duration : 0;
-        String description = getDescription().replace("$1", damage + "").replace("$2", radius + "").replace("$3", duration + "");
-        return description;
+        return getDescription().replace("$1", damage + "").replace("$2", radius + "").replace("$3", duration + "");
     }
 
     @Override
@@ -54,7 +53,7 @@ public class SkillTackle extends TargettedSkill {
     }
     
     @Override
-    public SkillResult use(Hero hero, LivingEntity target, String args[]) {
+    public SkillResult use(Hero hero, LivingEntity target, String[] args) {
         Player player = hero.getPlayer();
         if (target instanceof Player && ((Player) target).equals(player)) {
             return SkillResult.INVALID_TARGET;

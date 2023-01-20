@@ -12,7 +12,6 @@ import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
-import org.bukkit.Sound;
 import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.util.Vector;
@@ -86,7 +85,7 @@ public class SkillShadowStep extends ActiveSkill {
         final ArrayList<LivingEntity> lungeEntitiesToHit = new ArrayList<>();
         new BukkitRunnable() {
             int ticks = 0;
-            int maxTicks = 5;
+            final int maxTicks = 5;
 
             public void run() {
                 if (ticks == maxTicks) {

@@ -76,7 +76,7 @@ public class SkillBaseTNT extends ActiveSkill {
         return SkillResult.NORMAL;
     }
 
-    public class SkillTNTListener implements Listener {
+    public static class SkillTNTListener implements Listener {
 
         @EventHandler/*(priority = EventPriority.HIGHEST)*/
         public void onEntityDamageByEntityEvent(EntityDamageByEntityEvent event) {

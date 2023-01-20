@@ -5,7 +5,6 @@ import org.bukkit.entity.Creature;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
-import org.bukkit.Sound;
 import org.bukkit.event.entity.EntityDamageEvent.DamageCause;
 
 import com.herocraftonline.heroes.Heroes;
@@ -96,7 +95,7 @@ public class SkillTackle extends TargettedSkill {
     }
     
     @Override
-    public SkillResult use(Hero hero, LivingEntity target, String args[]) {
+    public SkillResult use(Hero hero, LivingEntity target, String[] args) {
         Player player = hero.getPlayer();
         if (target instanceof Player && ((Player) target).equals(player)) {
             return SkillResult.INVALID_TARGET;

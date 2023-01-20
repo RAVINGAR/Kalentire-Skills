@@ -12,14 +12,13 @@ import com.herocraftonline.heroes.characters.skill.TargettedSkill;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
-import org.bukkit.Sound;
 
 public class SkillSlow extends TargettedSkill {
 
     private String applyText;
     private String expireText;
 
-    public SkillSlow(Heroes plugin) {
+    public SkillSlow(final Heroes plugin) {
         super(plugin, "Slow");
         this.setDescription("You slow the target's movement & attack speed for $1 second(s).");
         this.setUsage("/skill slow");
@@ -41,12 +40,12 @@ public class SkillSlow extends TargettedSkill {
 
     @Override
     public void init() {
-        this.applyText = SkillConfigManager.getRaw(this, SkillSetting.APPLY_TEXT, "%target% has been slowed by %hero%!").replace("%target%", "$1").replace("%hero%", "$2");
-        this.expireText = SkillConfigManager.getRaw(this, SkillSetting.EXPIRE_TEXT, "%target% is no longer slowed!").replace("%target%", "$1");
+        this.applyText = SkillConfigManager.getRaw(this, SkillSetting.APPLY_TEXT, "%target% has been slowed by %hero%!").replace("%target%", "$1").replace("$target$", "$1").replace("%hero%", "$2").replace("$hero$", "$2");
+        this.expireText = SkillConfigManager.getRaw(this, SkillSetting.EXPIRE_TEXT, "%target% is no longer slowed!").replace("%target%", "$1").replace("$target$", "$1");
     }
 
     @Override
-    public SkillResult use(Hero hero, LivingEntity target, String[] args) {
+    public SkillResult use(final Hero hero, final LivingEntity target, final String[] args) {
         if (!(target instanceof Player)) {
             return SkillResult.INVALID_TARGET;
         }
@@ -63,9 +62,8 @@ public class SkillSlow extends TargettedSkill {
     }
 
     @Override
-    public String getDescription(Hero hero) {
+    public String getDescription(final Hero hero) {
         final int duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, 15000, false);
-        ;
         return this.getDescription().replace("$1", (duration / 1000) + "");
     }
 }

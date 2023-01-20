@@ -20,7 +20,7 @@ public class SkillBlind extends TargettedSkill {
     private String applyText;
     private String expireText;
 
-    public SkillBlind(Heroes plugin) {
+    public SkillBlind(final Heroes plugin) {
         super(plugin, "Blind");
         setDescription("You throw dirt into your target's eyes, interrupting them and blinding them for $1 second(s). " +
                 "Blinded enemies are unable to target any abilities.");
@@ -30,16 +30,18 @@ public class SkillBlind extends TargettedSkill {
         setTypes(SkillType.ABILITY_PROPERTY_MAGICAL, SkillType.DEBUFFING, SkillType.INTERRUPTING, SkillType.AGGRESSIVE, SkillType.DAMAGING);
     }
 
-    public String getDescription(Hero hero) {
-        int duration = SkillConfigManager.getScaledUseSettingInt(hero, this, SkillSetting.DURATION, false);
+    @Override
+    public String getDescription(final Hero hero) {
+        final int duration = SkillConfigManager.getScaledUseSettingInt(hero, this, SkillSetting.DURATION, false);
 
-        String formattedDuration = Util.decFormat.format(duration / 1000.0);
+        final String formattedDuration = Util.decFormat.format(duration / 1000.0);
 
         return getDescription().replace("$1", formattedDuration);
     }
 
+    @Override
     public ConfigurationSection getDefaultConfig() {
-        ConfigurationSection config = super.getDefaultConfig();
+        final ConfigurationSection config = super.getDefaultConfig();
         config.set(SkillSetting.MAX_DISTANCE.node(), 10);
         config.set(SkillSetting.DURATION.node(), 2000);
         config.set(SkillSetting.DURATION_INCREASE_PER_CHARISMA.node(), 0);
@@ -48,29 +50,31 @@ public class SkillBlind extends TargettedSkill {
         return config;
     }
 
+    @Override
     public void init() {
         super.init();
 
         applyText = SkillConfigManager.getRaw(this, SkillSetting.APPLY_TEXT,
-                ChatComponents.GENERIC_SKILL + "%target% has been blinded!")
-                .replace("%target%", "$1");
+                        ChatComponents.GENERIC_SKILL + "%target% has been blinded!")
+                .replace("%target%", "$1").replace("$target$", "$1");
 
         expireText = SkillConfigManager.getRaw(this, SkillSetting.EXPIRE_TEXT,
-                ChatComponents.GENERIC_SKILL + "%target% can see again!")
-                .replace("%target%", "$1");
+                        ChatComponents.GENERIC_SKILL + "%target% can see again!")
+                .replace("%target%", "$1").replace("$target$", "$1");
     }
 
-    public SkillResult use(Hero hero, LivingEntity target, String[] args) {
-        Player player = hero.getPlayer();
+    @Override
+    public SkillResult use(final Hero hero, final LivingEntity target, final String[] args) {
+        final Player player = hero.getPlayer();
 
         if (!(target instanceof Player)) {
             player.sendMessage("    " + ChatComponents.GENERIC_SKILL + "You must target a player with this ability!");
             return SkillResult.INVALID_TARGET_NO_MSG;
         }
 
-        int duration = SkillConfigManager.getScaledUseSettingInt(hero, this, SkillSetting.DURATION, false);
+        final int duration = SkillConfigManager.getScaledUseSettingInt(hero, this, SkillSetting.DURATION, false);
 
-        BlindEffect effect = new BlindEffect(this, player, duration, applyText, expireText);
+        final BlindEffect effect = new BlindEffect(this, player, duration, applyText, expireText);
 
         plugin.getCharacterManager().getHero((Player) target).addEffect(effect);
 

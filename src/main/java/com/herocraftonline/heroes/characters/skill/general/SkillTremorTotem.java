@@ -127,14 +127,7 @@ public class SkillTremorTotem extends SkillBaseTotem {
             
             // Let's bypass the nocheat issues...
             final Vector velocity = new Vector(xDir, individualVPower, zDir);
-            NCPUtils.applyExemptions(target, new NCPFunction() {
-                
-                @Override
-                public void execute()
-                {
-                    target.setVelocity(velocity);                    
-                }
-            }, Lists.newArrayList("MOVING"), SkillConfigManager.getUseSetting(hero, this, "ncp-exemption-duration", 500, false));
+            NCPUtils.applyExemptions(target, () -> target.setVelocity(velocity), Lists.newArrayList("MOVING"), SkillConfigManager.getUseSetting(hero, this, "ncp-exemption-duration", 500, false));
             targetsHit++;
         }
     }

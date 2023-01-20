@@ -47,7 +47,7 @@ public class SkillRestrictBows extends PassiveSkill {
         return config;
     }
 
-    public class SkillInventoryListener implements Listener {
+    public static class SkillInventoryListener implements Listener {
         private final PassiveSkill skill;
 
         public SkillInventoryListener(PassiveSkill skill) {

@@ -5,6 +5,7 @@ import com.herocraftonline.heroes.api.events.HeroLeavePartyEvent;
 import com.herocraftonline.heroes.attributes.AttributeType;
 import com.herocraftonline.heroes.characters.Hero;
 import com.herocraftonline.heroes.characters.effects.PeriodicHealEffect;
+import com.herocraftonline.heroes.characters.skill.Listenable;
 import com.herocraftonline.heroes.characters.skill.SkillConfigManager;
 import com.herocraftonline.heroes.characters.skill.SkillSetting;
 import com.herocraftonline.heroes.characters.skill.SkillType;
@@ -18,22 +19,27 @@ import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
+import org.bukkit.event.Listener;
 import org.bukkit.scheduler.BukkitRunnable;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
 
-public class SkillHealingTotem extends SkillBaseTotem {
+public class SkillHealingTotem extends SkillBaseTotem implements Listenable {
+    private final Listener listener;
 
     public SkillHealingTotem(Heroes plugin) {
         super(plugin, "HealingTotem");
         setArgumentRange(0,0);
         setUsage("/skill healingtotem");
         setIdentifiers("skill healingtotem");
-        setDescription("Places a healing totem at target location that heals allied players for $1 HP per second in a $2 radius. Lasts for $3 second(s).");
+        setDescription("Places a healing totem at target location that heals allied players for $1 health per second in a $2 radius. Lasts for $3 second(s).");
         setTypes(SkillType.HEALING, SkillType.ABILITY_PROPERTY_MAGICAL, SkillType.SILENCEABLE, SkillType.AREA_OF_EFFECT);
         material = Material.MYCELIUM;
+        this.listener = new HealingTotemListener();
     }
 
     @Override
@@ -76,7 +82,7 @@ public class SkillHealingTotem extends SkillBaseTotem {
     public void usePower(Hero hero, Totem totem) {
         Location totemLoc = totem.getLocation();
 
-        Set<Hero> party = hero.hasParty() ? hero.getParty().getMembers() : new HashSet<>(Arrays.asList(hero));
+        Set<Hero> party = hero.hasParty() ? hero.getParty().getMembers() : new HashSet<>(Collections.singletonList(hero));
         double rangeSquared = Math.pow(getRange(hero), 2);
         Player heroP = hero.getPlayer();
 
@@ -85,22 +91,19 @@ public class SkillHealingTotem extends SkillBaseTotem {
             if(member.hasEffect("HealingTotemHealEffect")) {
                 if(memberLoc.getWorld() != totemLoc.getWorld()) {
                     PeriodicHealEffect oldEffect = (PeriodicHealEffect) member.getEffect("HealingTotemHealEffect");
-                    if(oldEffect.getApplier() == heroP) {
+                    if(oldEffect.getApplier().equals(heroP)) {
                         oldEffect.expire();
                     }
                 }
-                continue;
             }
             else if(memberLoc.getWorld() == totemLoc.getWorld() && memberLoc.distanceSquared(totemLoc) <= rangeSquared) {
                 PeriodicHealEffect hEffect = new PeriodicHealEffect(this, "HealingTotemHealEffect", heroP, totem.getEffect().getPeriod(), totem.getEffect().getRemainingTime(), getHealing(hero));
                 final Player memberP = member.getPlayer();
                 new BukkitRunnable() {
 
-                    private Location location = memberP.getLocation();
+                    private final Location location = memberP.getLocation();
 
                     private double time = 0;
-
-                    @SuppressWarnings("deprecation")
                     @Override
                     public void run() {
                         if (time < 1.0) {
@@ -127,7 +130,7 @@ public class SkillHealingTotem extends SkillBaseTotem {
     
     @Override
     public void totemDestroyed(Hero hero, Totem totem) {
-        Set<Hero> party = hero.hasParty() ? hero.getParty().getMembers() : new HashSet<>(Arrays.asList(hero));
+        Set<Hero> party = hero.hasParty() ? hero.getParty().getMembers() : new HashSet<>(Collections.singletonList(hero));
         Player heroP = hero.getPlayer();
 
         for(Hero member : party) {
@@ -137,14 +140,6 @@ public class SkillHealingTotem extends SkillBaseTotem {
                     oldEffect.expire();
                 }
             }
-        }
-    }
-    
-    @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
-    public void onHeroLeaveParty(HeroLeavePartyEvent event) {
-        Hero hero = event.getHero();
-        if(hero.hasEffect("HealingTotemHealEffect")) {
-            ((PeriodicHealEffect) hero.getEffect("HealingTotemHealEffect")).expire();
         }
     }
 
@@ -160,4 +155,19 @@ public class SkillHealingTotem extends SkillBaseTotem {
         return SkillConfigManager.getUseSetting(h, this, SkillSetting.HEALING, 25.0, false) + SkillConfigManager.getUseSetting(h, this, SkillSetting.HEALING_INCREASE_PER_WISDOM, 1.0, false) * h.getAttributeValue(AttributeType.WISDOM);
     }
 
+    @NotNull
+    @Override
+    public Listener getListener() {
+        return listener;
+    }
+
+    public static class HealingTotemListener implements Listener {
+        @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
+        public void onHeroLeaveParty(HeroLeavePartyEvent event) {
+            Hero hero = event.getHero();
+            if(hero.hasEffect("HealingTotemHealEffect")) {
+                ((PeriodicHealEffect) hero.getEffect("HealingTotemHealEffect")).expire();
+            }
+        }
+    }
 }

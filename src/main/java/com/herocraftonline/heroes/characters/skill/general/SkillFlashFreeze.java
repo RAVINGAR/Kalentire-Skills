@@ -14,7 +14,6 @@ import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
-import org.bukkit.Sound;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
@@ -28,7 +27,7 @@ import java.util.List;
 
 public class SkillFlashFreeze
         extends TargettedSkill {
-    final List<Location> locations = new ArrayList<Location>();
+    final List<Location> locations = new ArrayList<>();
 
     public SkillFlashFreeze(Heroes plugin) {
         super(plugin, "FlashFreeze");
@@ -50,8 +49,6 @@ public class SkillFlashFreeze
     @Override
     public SkillResult use(Hero hero, LivingEntity target, String[] args) {
         Player player = hero.getPlayer();
-        final LivingEntity t = target;
-        final Player p = player;
         int duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, 3000, false);
         duration += SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION_INCREASE_PER_CHARISMA, 100, false)
                 * hero.getAttributeValue(AttributeType.CHARISMA);
@@ -60,7 +57,7 @@ public class SkillFlashFreeze
 
         final Location base = target.getLocation().add(0, 0.1, 0).getBlock().getLocation();
 
-        final HashMap<Location, Material> mats = new HashMap<Location, Material>();
+        final HashMap<Location, Material> mats = new HashMap<>();
 
         List<Entity> nearby = target.getNearbyEntities(1.2, 1.2, 1.2);
         for (Entity e : nearby) {
@@ -103,7 +100,7 @@ public class SkillFlashFreeze
                     }
                     revert = true;
                 } else {
-                    ArrayList<Location> toRemove = new ArrayList<Location>();
+                    ArrayList<Location> toRemove = new ArrayList<>();
                     for (Location l : locations) {
                         Material m = mats.get(l);
                         try {
@@ -149,7 +146,7 @@ public class SkillFlashFreeze
         }
     }
 
-    public class FlashFrozenEffect extends StunEffect {
+    public static class FlashFrozenEffect extends StunEffect {
         public FlashFrozenEffect(Skill skill, Player applier, long duration) {
             super(skill, applier, duration);
             types.add((EffectType.INVULNERABILITY));

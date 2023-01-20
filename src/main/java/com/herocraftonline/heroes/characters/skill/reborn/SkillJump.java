@@ -114,12 +114,7 @@ public class SkillJump extends ActiveSkill {
         long ncpExemptionDuration = SkillConfigManager.getUseSetting(hero, this, "ncp-exemption-duration", 2000, false);
         if (ncpExemptionDuration > 0) {
             // Let's bypass the nocheat issues...
-            NCPUtils.applyExemptions(player, new NCPFunction() {
-                @Override
-                public void execute() {
-                    jump(player, velocity);
-                }
-            }, Lists.newArrayList("MOVING"), ncpExemptionDuration);
+            NCPUtils.applyExemptions(player, () -> jump(player, velocity), Lists.newArrayList("MOVING"), ncpExemptionDuration);
         } else {
             jump(player, velocity);
         }

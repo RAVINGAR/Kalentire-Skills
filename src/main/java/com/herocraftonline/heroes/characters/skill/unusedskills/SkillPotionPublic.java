@@ -12,7 +12,6 @@ import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
-import org.bukkit.Sound;
 import org.bukkit.event.Event;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
@@ -146,7 +145,7 @@ public class SkillPotionPublic extends PassiveSkill {
     }
 
     static {
-        final Map<Byte, String> regMap = new HashMap<Byte, String>();
+        final Map<Byte, String> regMap = new HashMap<>();
         regMap.put((byte) 8193, "regeneration");
         regMap.put((byte) 8257, "regeneration");
         regMap.put((byte) 8225, "regeneration-II");
@@ -176,7 +175,7 @@ public class SkillPotionPublic extends PassiveSkill {
         regMap.put((byte) 8236, "harming-II");
         regularPotions = Collections.unmodifiableMap(regMap);
 
-        final Map<Byte, String> splashMap = new HashMap<Byte, String>();
+        final Map<Byte, String> splashMap = new HashMap<>();
         splashMap.put((byte) 16385, "splash-regeneration");
         splashMap.put((byte) 16449, "splash-regeneration");
         splashMap.put((byte) 16417, "splash-regeneration-II");

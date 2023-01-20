@@ -28,7 +28,7 @@ import java.util.Map;
 
 public class SkillMassPiggify extends ActiveSkill {
 
-    private Map<Entity, CharacterTemplate> creatures = new HashMap<Entity, CharacterTemplate>();
+    private final Map<Entity, CharacterTemplate> creatures = new HashMap<>();
 
     public SkillMassPiggify(Heroes plugin) {
         super(plugin, "MassPiggify");
@@ -137,12 +137,7 @@ public class SkillMassPiggify extends ActiveSkill {
             else if (event.getEntity() instanceof LivingEntity) {
                 final CharacterTemplate character = plugin.getCharacterManager().getCharacter((LivingEntity) event.getEntity());
                 if (character.hasEffect("MassPiggify")) {
-                    Bukkit.getScheduler().runTaskLater(plugin, new Runnable() {
-                        @Override
-                        public void run() {
-                            character.removeEffect(character.getEffect("MassPiggify"));
-                        }
-                    }, (long) (0.1 * 20));
+                    Bukkit.getScheduler().runTaskLater(plugin, () -> character.removeEffect(character.getEffect("MassPiggify")), (long) (0.1 * 20));
                 }
             }
         }
@@ -230,13 +225,7 @@ public class SkillMassPiggify extends ActiveSkill {
             player.setFoodLevel(1);
             player.setSprinting(false);
 
-            Bukkit.getServer().getScheduler().scheduleSyncDelayedTask(plugin, new Runnable()
-            {
-                public void run()
-                {
-                    player.setFoodLevel(currentHunger);
-                }
-            }, 0L);
+            Bukkit.getServer().getScheduler().scheduleSyncDelayedTask(plugin, () -> player.setFoodLevel(currentHunger), 0L);
         }
 
         @Override

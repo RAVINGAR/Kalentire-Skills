@@ -16,7 +16,6 @@ import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
-import org.bukkit.Sound;
 import org.bukkit.entity.SmallFireball;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -30,7 +29,7 @@ import java.util.List;
 
 public class SkillFlashFire extends ActiveSkill 
 {
-	public ArrayList<SmallFireball> tests = new ArrayList<SmallFireball>();
+	public final ArrayList<SmallFireball> tests = new ArrayList<>();
 	public SkillFlashFire(Heroes plugin) {
 		super(plugin, "FlashFire");
 		setDescription("You flash through space in a burst of flame, teleporting up to $1 blocks away and dealing $2 damage to any enemies you pass through.");
@@ -57,7 +56,7 @@ public class SkillFlashFire extends ActiveSkill
 
 		double increment = (2 * Math.PI) / particleAmount;
 
-		ArrayList<Location> locations = new ArrayList<Location>();
+		ArrayList<Location> locations = new ArrayList<>();
 
 		for (int i = 0; i < particleAmount; i++)
 		{
@@ -88,7 +87,7 @@ public class SkillFlashFire extends ActiveSkill
 			//l.getWorld().spigot().playEffect(l, Effect.FLAME, 0, 0, 0.1F, 0.5F, 0.1F, 0.0F, 20, 16);
 			l.getWorld().spawnParticle(Particle.FLAME, l, 20, 0.1, 0.5, 0.1, 0);
 		
-		final ArrayList<LivingEntity> damaged = new ArrayList<LivingEntity>();		
+		final ArrayList<LivingEntity> damaged = new ArrayList<>();
 
 		Block prev = null;
 		Block b;

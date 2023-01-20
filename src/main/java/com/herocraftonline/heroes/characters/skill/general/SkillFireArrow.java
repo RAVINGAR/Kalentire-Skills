@@ -55,7 +55,7 @@ public class SkillFireArrow extends ActiveSkill {
         return SkillResult.NORMAL;
     }
 
-    public class FireArrowBuff extends ImbueEffect {
+    public static class FireArrowBuff extends ImbueEffect {
 
         public FireArrowBuff(Skill skill) {
             super(skill, "FireArrowBuff");

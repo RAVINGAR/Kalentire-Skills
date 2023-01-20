@@ -8,10 +8,8 @@ import com.herocraftonline.heroes.characters.skill.SkillConfigManager;
 import com.herocraftonline.heroes.characters.skill.SkillSetting;
 import com.herocraftonline.heroes.characters.skill.skills.SkillBaseBeam;
 import com.herocraftonline.heroes.util.Util;
-import de.slikey.effectlib.util.ParticleEffect;
 import org.bukkit.Color;
 import org.bukkit.Particle;
-import org.bukkit.Sound;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
@@ -19,7 +17,6 @@ import org.bukkit.Sound;
 import org.bukkit.scheduler.BukkitRunnable;
 
 import static com.herocraftonline.heroes.characters.skill.SkillType.*;
-import static com.herocraftonline.heroes.characters.skill.SkillType.SILENCEABLE;
 
 public class SkillSacredGlimmer extends SkillBaseBeam {
 
@@ -68,18 +65,15 @@ public class SkillSacredGlimmer extends SkillBaseBeam {
 
 		broadcastExecuteText(hero);
 
-		castBeam(hero, beam, new SkillBaseBeam.TargetHandler() {
-			@Override
-			public void handle(Hero hero, LivingEntity target, SkillBaseBeam.Beam.PointData pointData) {
-				if (target instanceof Player) {
-					Hero targetHero = plugin.getCharacterManager().getHero((Player) target);
-					if (targetHero == hero || (hero.hasParty() && hero.getParty().isPartyMember(targetHero))) {
-						double beamHeal = SkillConfigManager.getUseSetting(hero, SkillSacredGlimmer.this, SkillSetting.HEALING, 150d, false);
-						double beamHealIncrease = SkillConfigManager.getUseSetting(hero, SkillSacredGlimmer.this, SkillSetting.HEALING_INCREASE_PER_WISDOM, 1d, false);
-						beamHeal += hero.getAttributeValue(AttributeType.WISDOM) * beamHealIncrease;
+		castBeam(hero, beam, (hero1, target, pointData) -> {
+			if (target instanceof Player) {
+				Hero targetHero = plugin.getCharacterManager().getHero((Player) target);
+				if (targetHero == hero1 || (hero1.hasParty() && hero1.getParty().isPartyMember(targetHero))) {
+					double beamHeal = SkillConfigManager.getUseSetting(hero1, SkillSacredGlimmer.this, SkillSetting.HEALING, 150d, false);
+					double beamHealIncrease = SkillConfigManager.getUseSetting(hero1, SkillSacredGlimmer.this, SkillSetting.HEALING_INCREASE_PER_WISDOM, 1d, false);
+					beamHeal += hero1.getAttributeValue(AttributeType.WISDOM) * beamHealIncrease;
 
-						targetHero.heal(beamHeal);
-					}
+					targetHero.heal(beamHeal);
 				}
 			}
 		});

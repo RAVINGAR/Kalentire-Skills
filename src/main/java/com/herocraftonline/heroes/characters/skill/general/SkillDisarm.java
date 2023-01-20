@@ -23,7 +23,7 @@ public class SkillDisarm extends TargettedSkill {
     private String applyText;
     private String expireText;
 
-    public SkillDisarm(Heroes plugin) {
+    public SkillDisarm(final Heroes plugin) {
         super(plugin, "Disarm");
         setDescription("You disarm your target for $1 second(s).");
         setUsage("/skill disarm");
@@ -33,16 +33,16 @@ public class SkillDisarm extends TargettedSkill {
     }
 
     @Override
-    public String getDescription(Hero hero) {
-        int duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, 3000, false);
-        String formattedDuration = Util.decFormat.format(duration / 1000.0);
+    public String getDescription(final Hero hero) {
+        final int duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, 3000, false);
+        final String formattedDuration = Util.decFormat.format(duration / 1000.0);
 
         return getDescription().replace("$1", formattedDuration);
     }
 
     @Override
     public ConfigurationSection getDefaultConfig() {
-        ConfigurationSection node = super.getDefaultConfig();
+        final ConfigurationSection node = super.getDefaultConfig();
 
         node.set(SkillSetting.USE_TEXT.node(), ChatComponents.GENERIC_SKILL + "%target% was disarmed by %hero%!");
         node.set(SkillSetting.MAX_DISTANCE.node(), 4);
@@ -57,21 +57,22 @@ public class SkillDisarm extends TargettedSkill {
     public void init() {
         super.init();
 
-        applyText = SkillConfigManager.getRaw(this, SkillSetting.APPLY_TEXT, ChatComponents.GENERIC_SKILL + "%target% was disarmed by %hero%!").replace("%target%", "$1");
-        expireText = SkillConfigManager.getRaw(this, SkillSetting.EXPIRE_TEXT, ChatComponents.GENERIC_SKILL + "%target% has found their weapon again!").replace("%target%", "$1");
+        applyText = SkillConfigManager.getRaw(this, SkillSetting.APPLY_TEXT, ChatComponents.GENERIC_SKILL + "%target% was disarmed by %hero%!").replace("%target%", "$1").replace("$target$", "$1");
+        expireText = SkillConfigManager.getRaw(this, SkillSetting.EXPIRE_TEXT, ChatComponents.GENERIC_SKILL + "%target% has found their weapon again!").replace("%target%", "$1").replace("$target$", "$1");
     }
 
     @Override
-    public SkillResult use(Hero hero, final LivingEntity target, String[] args) {
-        Player player = hero.getPlayer();
+    public SkillResult use(final Hero hero, final LivingEntity target, final String[] args) {
+        final Player player = hero.getPlayer();
 
-        if (!(target instanceof Player))
+        if (!(target instanceof Player)) {
             return SkillResult.INVALID_TARGET;
+        }
 
-        Hero targetHero = plugin.getCharacterManager().getHero((Player) target);
+        final Hero targetHero = plugin.getCharacterManager().getHero((Player) target);
 
 
-        long duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, 3000, false);
+        final long duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, 3000, false);
 
         // Weird method used when items don't drop on death
         /*int strDecrease = SkillConfigManager.getUseSetting(hero, this, "str-decrease", 90, false);
@@ -86,7 +87,7 @@ public class SkillDisarm extends TargettedSkill {
         }
         targetHero.addEffect(aEffect);*/
 
-        Material heldItem = targetHero.getPlayer().getItemInHand().getType();
+        final Material heldItem = targetHero.getPlayer().getItemInHand().getType();
 
         if (!Util.isWeapon(heldItem) && !Util.isAwkwardWeapon(heldItem)) {
             player.sendMessage("You cannot disarm that target!");

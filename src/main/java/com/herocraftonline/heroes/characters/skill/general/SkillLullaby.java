@@ -49,7 +49,7 @@ public class SkillLullaby extends ActiveSkill
 				* hero.getAttributeValue(AttributeType.CHARISMA));
 
 		long duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, 3000, true);
-		duration += SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION_INCREASE_PER_CHARISMA, 20, true)
+		duration += (long) SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION_INCREASE_PER_CHARISMA, 20, true)
 			* hero.getAttributeValue(AttributeType.CHARISMA);
 		String formattedDuration = String.valueOf(duration / 1000);
 
@@ -84,7 +84,7 @@ public class SkillLullaby extends ActiveSkill
 				* hero.getAttributeValue(AttributeType.CHARISMA));
 
 		long duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, 3000, true);
-		duration += SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION_INCREASE_PER_CHARISMA, 20, true)
+		duration += (long) SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION_INCREASE_PER_CHARISMA, 20, true)
 				* hero.getAttributeValue(AttributeType.CHARISMA);
 
 		String applyText = SkillConfigManager.getUseSetting(hero, this, SkillSetting.APPLY_TEXT, " §f%hero%§7's §fLullaby§7 makes you feel sleepy...").replace("%hero%", hero.getName());
@@ -120,14 +120,14 @@ public class SkillLullaby extends ActiveSkill
 		new BukkitRunnable()
 		{
 			private int ticks = 0;
-			private int maxTicks = 40;
-			private Random rand = new Random();
+			private final int maxTicks = 40;
+			private final Random rand = new Random();
 
 			public void run()
 			{
 				if (ticks < maxTicks)
 				{
-					final ArrayList<Location> noteLocs = new ArrayList<Location>();
+					final ArrayList<Location> noteLocs = new ArrayList<>();
 					for (int i = 0; i < radius; i++)
 					{
 						noteLocs.addAll(circle(p.getLocation().add(0, 0.5, 0), 12, (double) i));
@@ -153,7 +153,7 @@ public class SkillLullaby extends ActiveSkill
 		return SkillResult.NORMAL;
 	}
 
-	private class LullabyEffect extends PeriodicExpirableEffect
+	private static class LullabyEffect extends PeriodicExpirableEffect
 	{
 		private final String applyText;
 		private final String expireText;

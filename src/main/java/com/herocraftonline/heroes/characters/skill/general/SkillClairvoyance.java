@@ -16,7 +16,6 @@ import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
-import org.bukkit.event.entity.EntityDamageEvent.DamageCause;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 
@@ -63,7 +62,7 @@ public class SkillClairvoyance extends ActiveSkill {
 
 		double increment = (2 * Math.PI) / particleAmount;
 
-		ArrayList<Location> locations = new ArrayList<Location>();
+		ArrayList<Location> locations = new ArrayList<>();
 
 		for (int i = 0; i < particleAmount; i++)
 		{
@@ -114,10 +113,9 @@ public class SkillClairvoyance extends ActiveSkill {
         for (double r = 1; r < radius * 2; r++)
 		{
 			ArrayList<Location> particleLocations = circle(player.getLocation(), 45,  2);
-			for (int i = 0; i < particleLocations.size(); i++)
-			{
-                player.getWorld().spawnParticle(Particle.CLOUD, particleLocations.get(i), 1, 0, 0.1, 0, 0.1);
-			}
+            for (Location particleLocation : particleLocations) {
+                player.getWorld().spawnParticle(Particle.CLOUD, particleLocation, 1, 0, 0.1, 0, 0.1);
+            }
 		}
         
         player.getWorld().playSound(player.getLocation(), Sound.ENTITY_GUARDIAN_AMBIENT, 1.0F, 1.2F);

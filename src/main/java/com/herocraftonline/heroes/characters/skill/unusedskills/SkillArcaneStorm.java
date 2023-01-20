@@ -14,7 +14,6 @@ import org.bukkit.FireworkEffect.Type;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
-import org.bukkit.Sound;
 import org.bukkit.event.entity.EntityDamageEvent.DamageCause;
 
 import java.util.ArrayList;
@@ -46,39 +45,30 @@ public class SkillArcaneStorm extends ActiveSkill  {
 			    final VisualEffect fplayer = new VisualEffect();
 			    for(int i = 0; i < fireworkLocations.size(); i++) {
 			    	final Location fLoc = fireworkLocations.get(i);
-			    	Bukkit.getScheduler().runTaskLater(this.plugin, new Runnable() {
-						@Override
-						public void run() {
-							try {
-								fplayer.playFirework(fLoc.getWorld(), fLoc, FireworkEffect
-										.builder()
-										.withColor(Color.AQUA)
-										.with(Type.BURST)
-										.build());
-							} catch (Exception e) {
-								e.printStackTrace();
-							}
+			    	Bukkit.getScheduler().runTaskLater(this.plugin, () -> {
+						try {
+							fplayer.playFirework(fLoc.getWorld(), fLoc, FireworkEffect
+									.builder()
+									.withColor(Color.AQUA)
+									.with(Type.BURST)
+									.build());
+						} catch (Exception e) {
+							e.printStackTrace();
 						}
-
-			    	}, ticksPerFirework*i);	    	
+					}, ticksPerFirework*i);
 			    }
-			    Bukkit.getScheduler().scheduleSyncDelayedTask(this.plugin, new Runnable() {
-
-					@Override
-					public void run() {
-						for (Entity entity : player.getNearbyEntities(16, 5, 16)) {
-							if (!(entity instanceof LivingEntity)) {
-								continue;
-							}
-							if (!Skill.damageCheck(player, (LivingEntity) entity)) {
-								continue;
-							}
-							damageEntity((LivingEntity) entity, player, 200D, DamageCause.MAGIC);
-							player.getWorld().strikeLightningEffect(entity.getLocation());
+			    Bukkit.getScheduler().scheduleSyncDelayedTask(this.plugin, () -> {
+					for (Entity entity : player.getNearbyEntities(16, 5, 16)) {
+						if (!(entity instanceof LivingEntity)) {
+							continue;
 						}
+						if (!Skill.damageCheck(player, (LivingEntity) entity)) {
+							continue;
+						}
+						damageEntity((LivingEntity) entity, player, 200D, DamageCause.MAGIC);
+						player.getWorld().strikeLightningEffect(entity.getLocation());
 					}
-
-		    	}, 100);
+				}, 100);
 			}
 			@Override
 			public void removeFromHero(Hero hero) {
@@ -90,7 +80,7 @@ public class SkillArcaneStorm extends ActiveSkill  {
 		return SkillResult.NORMAL;
 	}
 	protected List<Location> circle(Player player, Location loc, Integer r, Integer h, boolean hollow, boolean sphere, int plus_y) {
-		List<Location> circleBlocks = new ArrayList<Location>();
+		List<Location> circleBlocks = new ArrayList<>();
         int cx = loc.getBlockX();
         int cy = loc.getBlockY();
         int cz = loc.getBlockZ();

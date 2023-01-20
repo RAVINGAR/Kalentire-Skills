@@ -56,7 +56,7 @@ public class SkillChant extends ActiveSkill {
     }
 
     // Note Basic damage Missile internals take care of damage and entity detect radius
-    class ChantHealingProjectile extends BasicHealMissile {
+    static class ChantHealingProjectile extends BasicHealMissile {
         ChantHealingProjectile(Heroes plugin, Skill skill, Hero hero) {
             super(plugin, skill, hero);
         }

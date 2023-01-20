@@ -68,13 +68,13 @@ public class SkillRadiance extends ActiveSkill
         healing += (SkillConfigManager.getUseSetting(hero, this, SkillSetting.HEALING_INCREASE_PER_WISDOM, 3, true)
                 * hero.getAttributeValue(AttributeType.WISDOM));
         long duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, 8000, true);
-        final double healingPerTick = (healing / (duration / 50));
+        final double healingPerTick = (healing / (duration / 50.0));
 
         hero.addEffect(new RadianceEffect(this, player, duration));
 
         new BukkitRunnable() {
             int index = 0;
-            Random rand = new Random();
+            final Random rand = new Random();
             public void run() {
                 if (!hero.hasEffect("Radiance")) cancel();
                 List<Location> circle = GeometryUtil.circle(player.getLocation().clone().add(0, 1, 0), 56, radius);
@@ -102,7 +102,7 @@ public class SkillRadiance extends ActiveSkill
         return SkillResult.NORMAL;
     }
 
-    public class RadianceEffect extends ExpirableEffect
+    public static class RadianceEffect extends ExpirableEffect
     {
         public RadianceEffect(Skill skill, Player applier, long duration)
         {

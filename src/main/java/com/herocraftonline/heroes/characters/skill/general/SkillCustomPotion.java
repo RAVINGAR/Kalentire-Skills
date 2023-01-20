@@ -12,11 +12,9 @@ import com.herocraftonline.heroes.characters.effects.common.SpeedEffect;
 import com.herocraftonline.heroes.characters.skill.*;
 import org.bukkit.Bukkit;
 import org.bukkit.Particle;
-import org.bukkit.Sound;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
-import org.bukkit.Sound;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
@@ -218,8 +216,8 @@ public class SkillCustomPotion extends PassiveSkill implements Listener {
     }
 
     // Extend PeriodicHeal but add a boolean to determine no-combat or not.
-    public class RegenerationPotionEffect extends PeriodicHealEffect {
-        boolean expireOnCombat;
+    public static class RegenerationPotionEffect extends PeriodicHealEffect {
+        final boolean expireOnCombat;
 
         public RegenerationPotionEffect(Skill skill, long period, long duration, double tickHealth, boolean noCombat) {
             super(skill, "RegenerationPotionEffect", null, period, duration, tickHealth, null, null);
@@ -255,9 +253,9 @@ public class SkillCustomPotion extends PassiveSkill implements Listener {
     }
 
     // Speed effect taken from Accelerando just in case its delayed removal is necessary. Not sure why it's there, so keeping it for now.
-    public class SpeedPotionEffect extends SpeedEffect {
+    public static class SpeedPotionEffect extends SpeedEffect {
 
-        int amplifier;
+        final int amplifier;
 
         public SpeedPotionEffect(Skill skill, int duration, int multiplier) {
             super(skill, "SpeedPotionEffect", null, duration, multiplier, null, null);
@@ -275,12 +273,7 @@ public class SkillCustomPotion extends PassiveSkill implements Listener {
             if (player.hasPotionEffect(PotionEffectType.POISON) || player.hasPotionEffect(PotionEffectType.WITHER)
                     || player.hasPotionEffect(PotionEffectType.HARM)) {
                 // If they have a harmful effect present when removing the ability, delay effect removal by a bit.
-                Bukkit.getScheduler().runTaskLater(plugin, new Runnable() {
-                    @Override
-                    public void run() {
-                        SpeedPotionEffect.super.removeFromHero(hero);
-                    }
-                }, 2L);
+                Bukkit.getScheduler().runTaskLater(plugin, () -> SpeedPotionEffect.super.removeFromHero(hero), 2L);
             }
             else {
                 super.removeFromHero(hero);

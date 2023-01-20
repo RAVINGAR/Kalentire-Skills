@@ -76,7 +76,7 @@ public class SkillFistOfJin extends PassiveSkill {
         node.set(SkillSetting.IS_SCALED_HEALING.node(), false);
         node.set(SkillSetting.HEALING_SCALE_EXPRESSION.node(), "1");
 
-        List<String> weaponList = new ArrayList<String>(5);
+        List<String> weaponList = new ArrayList<>(5);
         weaponList.add("AIR");
         weaponList.add("STICK");
         weaponList.add("FISHING_ROD");
@@ -89,7 +89,7 @@ public class SkillFistOfJin extends PassiveSkill {
     }
 
     private class SkillHeroListener implements Listener {
-        private Skill skill;
+        private final Skill skill;
 
         public SkillHeroListener(Skill skill) {
             this.skill = skill;
@@ -189,7 +189,7 @@ public class SkillFistOfJin extends PassiveSkill {
     }
 
     // Effect required for implementing an internal cooldown on healing
-    private class CooldownEffect extends ExpirableEffect {
+    private static class CooldownEffect extends ExpirableEffect {
         public CooldownEffect(Skill skill, Player applier, long duration) {
             super(skill, "FistOfJinCooldownEffect", applier, duration);
         }

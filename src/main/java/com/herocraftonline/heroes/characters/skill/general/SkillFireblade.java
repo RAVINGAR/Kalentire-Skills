@@ -1,19 +1,8 @@
 package com.herocraftonline.heroes.characters.skill.general;
 
-import com.herocraftonline.heroes.api.events.WeaponDamageEvent;
-import org.bukkit.Bukkit;
-import org.bukkit.configuration.ConfigurationSection;
-import org.bukkit.entity.LivingEntity;
-import org.bukkit.entity.Player;
-import org.bukkit.Sound;
-import org.bukkit.event.EventHandler;
-import org.bukkit.event.EventPriority;
-import org.bukkit.event.Listener;
-import org.bukkit.event.entity.EntityDamageByEntityEvent;
-import org.bukkit.event.entity.EntityDamageEvent;
-
 import com.herocraftonline.heroes.Heroes;
 import com.herocraftonline.heroes.api.SkillResult;
+import com.herocraftonline.heroes.api.events.WeaponDamageEvent;
 import com.herocraftonline.heroes.characters.CustomNameManager;
 import com.herocraftonline.heroes.characters.Hero;
 import com.herocraftonline.heroes.characters.effects.EffectType;
@@ -26,6 +15,15 @@ import com.herocraftonline.heroes.characters.skill.SkillSetting;
 import com.herocraftonline.heroes.characters.skill.SkillType;
 import com.herocraftonline.heroes.nms.NMSHandler;
 import com.herocraftonline.heroes.util.Util;
+import org.bukkit.Bukkit;
+import org.bukkit.Sound;
+import org.bukkit.configuration.ConfigurationSection;
+import org.bukkit.entity.LivingEntity;
+import org.bukkit.entity.Player;
+import org.bukkit.event.EventHandler;
+import org.bukkit.event.EventPriority;
+import org.bukkit.event.Listener;
+import org.bukkit.event.entity.EntityDamageEvent;
 
 public class SkillFireblade extends ActiveSkill {
 
@@ -33,7 +31,7 @@ public class SkillFireblade extends ActiveSkill {
     private String expireText;
     private String igniteText;
 
-    public SkillFireblade(Heroes plugin) {
+    public SkillFireblade(final Heroes plugin) {
         super(plugin, "Fireblade");
         setDescription("Your attacks have a $1% chance to ignite their target.");
         setUsage("/skill fireblade");
@@ -45,7 +43,7 @@ public class SkillFireblade extends ActiveSkill {
 
     @Override
     public ConfigurationSection getDefaultConfig() {
-        ConfigurationSection node = super.getDefaultConfig();
+        final ConfigurationSection node = super.getDefaultConfig();
         node.set("weapons", Util.swords);
         node.set(SkillSetting.APPLY_TEXT.node(), "%hero%'s weapon is sheathed in flame!");
         node.set(SkillSetting.EXPIRE_TEXT.node(), "%hero%'s weapon is no longer aflame!");
@@ -59,48 +57,54 @@ public class SkillFireblade extends ActiveSkill {
     @Override
     public void init() {
         super.init();
-        applyText = SkillConfigManager.getRaw(this, SkillSetting.APPLY_TEXT, "%hero%'s weapon is sheathed in flame!").replace("%hero%", "$1");
-        expireText = SkillConfigManager.getRaw(this, SkillSetting.EXPIRE_TEXT, "%hero%'s weapon is no longer aflame!").replace("%hero%", "$1");
+        applyText = SkillConfigManager.getRaw(this, SkillSetting.APPLY_TEXT, "%hero%'s weapon is sheathed in flame!").replace("%hero%", "$1").replace("$hero$", "$1");
+        expireText = SkillConfigManager.getRaw(this, SkillSetting.EXPIRE_TEXT, "%hero%'s weapon is no longer aflame!").replace("%hero%", "$1").replace("$hero$", "$1");
         igniteText = SkillConfigManager.getRaw(this, "ignite-text", "%hero% has lit %target% aflame!");
     }
 
     @Override
-    public SkillResult use(Hero hero, String[] args) {
-        int duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, 600000, false);
+    public SkillResult use(final Hero hero, final String[] args) {
+        final int duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, 600000, false);
         hero.addEffect(new FirebladeEffect(this, hero.getPlayer(), duration));
 
-        hero.getPlayer().getWorld().playSound(hero.getPlayer().getLocation(), Sound.BLOCK_ANVIL_USE , 0.6F, 1.0F);
+        hero.getPlayer().getWorld().playSound(hero.getPlayer().getLocation(), Sound.BLOCK_ANVIL_USE, 0.6F, 1.0F);
         return SkillResult.NORMAL;
+    }
+
+    @Override
+    public String getDescription(final Hero hero) {
+        final double chance = SkillConfigManager.getUseSetting(hero, this, "ignite-chance", .2, false);
+        return getDescription().replace("$1", Util.stringDouble(chance * 100));
     }
 
     public class SkillDamageListener implements Listener {
 
         private final Skill skill;
 
-        public SkillDamageListener(Skill skill) {
+        public SkillDamageListener(final Skill skill) {
             this.skill = skill;
         }
 
         @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
-        public void onWeaponDamage(WeaponDamageEvent event) {
+        public void onWeaponDamage(final WeaponDamageEvent event) {
             if (!(event.getEntity() instanceof LivingEntity) || !(event.getDamager() instanceof Hero) || event.getDamage() == 0 || event.getCause() != EntityDamageEvent.DamageCause.ENTITY_ATTACK) {
                 return; // With this, we know a Hero damaged some other sort of LivingEntity with damage that counts as ENTITY_ATTACK (i.e. not a Bow or a Skill)
             }
 
-            Hero hero = (Hero) event.getDamager();
-            Player player = hero.getPlayer();
+            final Hero hero = (Hero) event.getDamager();
+            final Player player = hero.getPlayer();
             if (!hero.hasEffect("Fireblade") || !SkillConfigManager.getUseSetting(hero, skill, "weapons", Util.swords).contains(NMSHandler.getInterface().getItemInMainHand(player.getInventory()).getType().name())) {
                 return; // With this, we know this Hero has the FireBlade Effect and is holding a suitable weapon.
             }
 
-            double chance = SkillConfigManager.getUseSetting(hero, skill, "ignite-chance", .2, false);
+            final double chance = SkillConfigManager.getUseSetting(hero, skill, "ignite-chance", .2, false);
             if (Util.nextRand() >= chance) {
                 return; // With this, we know the RNG roll for the Fire effect has passed.
             }
 
-            int fireTicks = SkillConfigManager.getUseSetting(hero, skill, "ignite-duration", 5000, false) / 50;
+            final int fireTicks = SkillConfigManager.getUseSetting(hero, skill, "ignite-duration", 5000, false) / 50;
 
-            LivingEntity target = (LivingEntity) event.getEntity();
+            final LivingEntity target = (LivingEntity) event.getEntity();
             target.setFireTicks(fireTicks);
             plugin.getCharacterManager().getCharacter(target).addEffect(new CombustEffect(skill, player));
 
@@ -110,17 +114,11 @@ public class SkillFireblade extends ActiveSkill {
 
     public class FirebladeEffect extends ExpirableEffect {
 
-        public FirebladeEffect(Skill skill, Player applier, long duration) {
+        public FirebladeEffect(final Skill skill, final Player applier, final long duration) {
             super(skill, "Fireblade", applier, duration, applyText, expireText); //TODO Implicit broadcast() call - may need changes?
             this.types.add(EffectType.BENEFICIAL);
             this.types.add(EffectType.DISPELLABLE);
             this.types.add(EffectType.FIRE);
         }
-    }
-
-    @Override
-    public String getDescription(Hero hero) {
-        double chance = SkillConfigManager.getUseSetting(hero, this, "ignite-chance", .2, false);
-        return getDescription().replace("$1", Util.stringDouble(chance * 100));
     }
 }

@@ -3,7 +3,6 @@ package com.herocraftonline.heroes.characters.skill.unusedskills;
 import org.bukkit.Color;
 import org.bukkit.FireworkEffect;
 import org.bukkit.Location;
-import org.bukkit.Sound;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
 import org.bukkit.Sound;
@@ -29,7 +28,7 @@ public class SkillChaoticIntellect extends ActiveSkill {
     private String applyText;
     private String expireText;
 
-    public VisualEffect fplayer = new VisualEffect();
+    public final VisualEffect fplayer = new VisualEffect();
 
     public SkillChaoticIntellect(Heroes plugin) {
         super(plugin, "ChaoticIntellect");
@@ -70,8 +69,8 @@ public class SkillChaoticIntellect extends ActiveSkill {
     public void init() {
         super.init();
 
-        applyText = SkillConfigManager.getRaw(this, SkillSetting.APPLY_TEXT, ChatComponents.GENERIC_SKILL + "%hero% is imbued with Chaotic Intellect!").replace("%hero%", "$1");
-        expireText = SkillConfigManager.getRaw(this, SkillSetting.EXPIRE_TEXT, ChatComponents.GENERIC_SKILL + "%hero%'s Chaotic Intellect fades.").replace("%hero%", "$1");
+        applyText = SkillConfigManager.getRaw(this, SkillSetting.APPLY_TEXT, ChatComponents.GENERIC_SKILL + "%hero% is imbued with Chaotic Intellect!").replace("%hero%", "$1").replace("$hero$", "$1");
+        expireText = SkillConfigManager.getRaw(this, SkillSetting.EXPIRE_TEXT, ChatComponents.GENERIC_SKILL + "%hero%'s Chaotic Intellect fades.").replace("%hero%", "$1").replace("$hero$", "$1");
     }
 
     @Override
@@ -88,11 +87,7 @@ public class SkillChaoticIntellect extends ActiveSkill {
         try {
             Location playerLocation = player.getLocation();
             fplayer.playFirework(playerLocation.getWorld(), playerLocation, FireworkEffect.builder().flicker(false).trail(true).with(FireworkEffect.Type.STAR).withColor(Color.BLACK).withFade(Color.ORANGE).build());
-        }
-        catch (IllegalArgumentException e) {
-            e.printStackTrace();
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             e.printStackTrace();
         }
 
@@ -104,8 +99,8 @@ public class SkillChaoticIntellect extends ActiveSkill {
 
     public class ChaoticIntellectEffect extends ExpirableEffect {
 
-        private int intGain;
-        private int conDrain;
+        private final int intGain;
+        private final int conDrain;
 
         public ChaoticIntellectEffect(Skill skill, Player applier, long duration, int intGain, int conDrain) {
             super(skill, "ChaoticIntellect", applier, duration, applyText, expireText);

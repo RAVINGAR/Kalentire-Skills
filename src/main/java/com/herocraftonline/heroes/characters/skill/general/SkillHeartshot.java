@@ -5,7 +5,6 @@ import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Arrow;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
-import org.bukkit.Sound;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
@@ -42,7 +41,7 @@ public class SkillHeartshot extends ActiveSkill {
 		ConfigurationSection conf = super.getDefaultConfig();
 		conf.set(SkillSetting.MANA.node(), 20);
 		conf.set(SkillSetting.COOLDOWN.node(), 3000);
-		conf.set(SkillSetting.APPLY_TEXT.node(), ChatColor.GRAY.toString() + "%hero% imbused their weapon with the power of HeartShot!");
+		conf.set(SkillSetting.APPLY_TEXT.node(), ChatColor.GRAY + "%hero% imbused their weapon with the power of HeartShot!");
 		conf.set(SkillSetting.DAMAGE.node(), 50);
 		conf.set(SkillSetting.DAMAGE_INCREASE.node(), 0);
 		conf.set("mana-per-shot", 20);
@@ -62,12 +61,12 @@ public class SkillHeartshot extends ActiveSkill {
 
 	@Override
 	public String getDescription(Hero hero) {
-		Integer damage = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE, 50, true);
-		Integer manaCost = SkillConfigManager.getUseSetting(hero, this, "mana-per-shot", 20, true);
-		return getDescription().replace("$1", damage.toString()).replace("$2", manaCost.toString());
+		int damage = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE, 50, true);
+		int manaCost = SkillConfigManager.getUseSetting(hero, this, "mana-per-shot", 20, true);
+		return getDescription().replace("$1", Integer.toString(damage)).replace("$2", Integer.toString(manaCost));
 	}
 	
-	public class HeartShotBuff extends ImbueEffect {
+	public static class HeartShotBuff extends ImbueEffect {
 
 		public HeartShotBuff(Skill skill) {
 			super(skill, "HeartShotBuff");

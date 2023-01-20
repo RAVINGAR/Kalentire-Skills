@@ -25,12 +25,13 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.logging.Level;
 
 public class SkillAncientRunestone extends SkillBaseRunestone {
 
-    private ConcurrentHashMap<Player, List<ItemStack>> soulboundRunestones;
+    private final ConcurrentHashMap<Player, List<ItemStack>> soulboundRunestones;
 
-    public SkillAncientRunestone(Heroes plugin) {
+    public SkillAncientRunestone(final Heroes plugin) {
         super(plugin, "AncientRunestone");
         setDescription("You imbue a redstone block with an Ancient Runestone.");
         setUsage("/skill ancientrunestone");
@@ -50,24 +51,25 @@ public class SkillAncientRunestone extends SkillBaseRunestone {
 
     protected class AncientRunestoneListener extends RunestoneListener implements Listener {
 
-        private Skill skill;
+        private final Skill skill;
 
-        public AncientRunestoneListener(Skill skill) {
+        public AncientRunestoneListener(final Skill skill) {
             this.skill = skill;
         }
 
         @EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
-        public void onPlayerQuit(PlayerQuitEvent event) {
-            if (!(soulboundRunestones.containsKey(event.getPlayer())))
+        public void onPlayerQuit(final PlayerQuitEvent event) {
+            if (!(soulboundRunestones.containsKey(event.getPlayer()))) {
                 return;
+            }
 
-            Player player = event.getPlayer();
-            Hero hero = plugin.getCharacterManager().getHero(player);
+            final Player player = event.getPlayer();
+            final Hero hero = plugin.getCharacterManager().getHero(player);
 
-            List<ItemStack> runestoneDataPairs = soulboundRunestones.get(player);
+            final List<ItemStack> runestoneDataPairs = soulboundRunestones.get(player);
 
             int i = 1;
-            for (ItemStack item : runestoneDataPairs) {
+            for (final ItemStack item : runestoneDataPairs) {
                 hero.setSkillSetting(skill, Integer.toString(i), item);
                 i++;
             }
@@ -80,57 +82,65 @@ public class SkillAncientRunestone extends SkillBaseRunestone {
         }
 
         @EventHandler(priority = EventPriority.HIGH)
-        public void onPlayerJoin(PlayerJoinEvent event) throws InvalidConfigurationException {
+        public void onPlayerJoin(final PlayerJoinEvent event) throws InvalidConfigurationException {
 
-            Player player = event.getPlayer();
-            Hero hero = plugin.getCharacterManager().getHero(player);
-            ConfigurationSection skillSettings = hero.getSkillSettings("ancientrunestone");
-            if (skillSettings == null)
-                return;
+            plugin.getServer().getScheduler().runTaskLater(plugin, () -> {
+                final Player player = event.getPlayer();
+                final Hero hero = plugin.getCharacterManager().getHero(player);
+                final ConfigurationSection skillSettings = hero.getSkillSettings("ancientrunestone");
+                if (skillSettings == null) {
+                    return;
+                }
 
-            try {
-                int i = 0;
-                for (String key : skillSettings.getKeys(false)) {
-                    ItemStack runeStone = (ItemStack) skillSettings.get(key);
-                    if (runeStone != null) {
-                        addRunestoneToSoulBoundList(player, runeStone);
-                        skillSettings.set(key, null);
-                        i++;
+                try {
+                    int i = 0;
+                    for (final String key : skillSettings.getKeys(false)) {
+                        final ItemStack runeStone = (ItemStack) skillSettings.get(key);
+                        if (runeStone != null) {
+                            addRunestoneToSoulBoundList(player, runeStone);
+                            skillSettings.set(key, null);
+                            i++;
+                        }
                     }
-                }
 
-                if (i > 0) {
-                    // Save just in case
-                    //plugin.getCharacterManager().saveHero(hero, true);
+                    if (i > 0) {
+                        // Save just in case
+                        //plugin.getCharacterManager().saveHero(hero, true);
+                    }
+                } catch (final NumberFormatException e) {
+                    Heroes.log(Level.WARNING, "AncientRunestone Configuraiton Error; expected a number.");
                 }
-            }
-            catch (NumberFormatException e) {
-                throw new InvalidConfigurationException("Expected a number.", e);
-            }
+            }, 30L);
+
         }
 
         @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
-        public void onPlayerDeath(PlayerDeathEvent event) {
+        public void onPlayerDeath(final PlayerDeathEvent event) {
 
-            if (event.getDrops().size() == 0)
+            if (event.getDrops().size() == 0) {
                 return;
+            }
 
-            Player player = event.getEntity();
+            final Player player = event.getEntity();
 
-            for (ItemStack item : new HashSet<>(event.getDrops())) {
-                if (item == null)
+            for (final ItemStack item : new HashSet<>(event.getDrops())) {
+                if (item == null) {
                     continue;
+                }
 
-                if (item.getType() != Material.REDSTONE_BLOCK)
+                if (item.getType() != Material.REDSTONE_BLOCK) {
                     continue;
+                }
 
-                ItemMeta metaData = item.getItemMeta();
+                final ItemMeta metaData = item.getItemMeta();
 
-                if (metaData == null || metaData.getDisplayName() == null)
+                if (metaData == null || metaData.getDisplayName() == null) {
                     continue;
+                }
 
-                if (!(metaData.getDisplayName().contains("Ancient Runestone")))
+                if (!(metaData.getDisplayName().contains("Ancient Runestone"))) {
                     continue;
+                }
 
                 // We have a runestone. Remove it from the drops, and get ready to place it back on the player
                 event.getDrops().remove(item);
@@ -140,16 +150,17 @@ public class SkillAncientRunestone extends SkillBaseRunestone {
         }
 
         @EventHandler(priority = EventPriority.MONITOR)
-        private void onPlayerRespawn(PlayerRespawnEvent event) {
-            if (!(soulboundRunestones.containsKey(event.getPlayer())))
+        private void onPlayerRespawn(final PlayerRespawnEvent event) {
+            if (!(soulboundRunestones.containsKey(event.getPlayer()))) {
                 return;
+            }
 
-            Player player = event.getPlayer();
-            List<ItemStack> runestoneDataPairs = soulboundRunestones.get(player);
+            final Player player = event.getPlayer();
+            final List<ItemStack> runestoneDataPairs = soulboundRunestones.get(player);
 
             // Loop through the items and give them back to the player.
-            PlayerInventory inventory = player.getInventory();
-            for (ItemStack item : runestoneDataPairs) {
+            final PlayerInventory inventory = player.getInventory();
+            for (final ItemStack item : runestoneDataPairs) {
                 inventory.addItem(item);
             }
             player.updateInventory();
@@ -157,19 +168,18 @@ public class SkillAncientRunestone extends SkillBaseRunestone {
             soulboundRunestones.remove(player);
         }
 
-        private void addRunestoneToSoulBoundList(Player player, ItemStack item) {
+        private void addRunestoneToSoulBoundList(final Player player, final ItemStack item) {
             // Add the runestone data to the list.
             if (soulboundRunestones.isEmpty()) {
                 // Initialize our item data pairs
-                List<ItemStack> runestoneDataPairs = new ArrayList<>();
+                final List<ItemStack> runestoneDataPairs = new ArrayList<>();
 
                 // Add the paired data to the list
                 runestoneDataPairs.add(item);
 
                 // Pair the paired data to our player
                 soulboundRunestones.put(player, runestoneDataPairs);
-            }
-            else {
+            } else {
                 // Our main map is not empty. However, we might not have an entry for the current player.
 
                 // Check if the player is on the map
@@ -177,14 +187,13 @@ public class SkillAncientRunestone extends SkillBaseRunestone {
                     // The player is on the map, and thus already has at least 1 runestone being tracked.
                     // Let's add this new runestone to the list.
 
-                    List<ItemStack> runestoneDataPairs = soulboundRunestones.get(player);
+                    final List<ItemStack> runestoneDataPairs = soulboundRunestones.get(player);
                     runestoneDataPairs.add(item);
-                }
-                else {
+                } else {
                     // The player is not on the map.
                     // Let's add the runestone to the list.
 
-                    List<ItemStack> runestoneDataPairs = new ArrayList<>();
+                    final List<ItemStack> runestoneDataPairs = new ArrayList<>();
                     runestoneDataPairs.add(item);
 
                     // Pair the paired data to our player

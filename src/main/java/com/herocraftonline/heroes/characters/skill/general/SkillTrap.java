@@ -9,11 +9,13 @@ import com.herocraftonline.heroes.characters.skill.SkillConfigManager;
 import com.herocraftonline.heroes.characters.skill.SkillSetting;
 import com.herocraftonline.heroes.characters.skill.SkillType;
 import com.herocraftonline.heroes.characters.skill.skills.SkillBaseGroundEffect;
+import com.herocraftonline.heroes.libs.slikey.effectlib.EffectType;
 import com.herocraftonline.heroes.util.Util;
-import de.slikey.effectlib.Effect;
-import de.slikey.effectlib.EffectManager;
-import de.slikey.effectlib.EffectType;
-import org.bukkit.*;
+import org.bukkit.Color;
+import org.bukkit.Location;
+import org.bukkit.Material;
+import org.bukkit.Particle;
+import org.bukkit.Sound;
 import org.bukkit.block.BlockFace;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.LivingEntity;
@@ -22,7 +24,7 @@ import org.bukkit.util.Vector;
 
 public class SkillTrap extends SkillBaseGroundEffect {
 
-    public SkillTrap(Heroes plugin) {
+    public SkillTrap(final Heroes plugin) {
         super(plugin, "Trap");
         setDescription("You set a trap underneath that lasts for $1s. The first player who sets of the trap will be rooted for $2s");
         setUsage("/skill trap");
@@ -32,16 +34,16 @@ public class SkillTrap extends SkillBaseGroundEffect {
     }
 
     @Override
-    public String getDescription(Hero hero) {
-        long warmUp = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DELAY, 3000, false);
-        long duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, 30000, false);
+    public String getDescription(final Hero hero) {
+        final long warmUp = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DELAY, 3000, false);
+        final long duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, 30000, false);
         return getDescription()
                 .replace("$1", Util.decFormat.format((double) duration / 1000));
     }
 
     @Override
     public ConfigurationSection getDefaultConfig() {
-        ConfigurationSection node = super.getDefaultConfig();
+        final ConfigurationSection node = super.getDefaultConfig();
         node.set(SkillSetting.RADIUS.node(), 3d);
         node.set(HEIGHT_NODE, 2d);
         node.set(SkillSetting.DELAY.node(), 5000);
@@ -51,12 +53,13 @@ public class SkillTrap extends SkillBaseGroundEffect {
         return node;
     }
 
-    @Override public SkillResult use(Hero hero, String[] strings) {
+    @Override
+    public SkillResult use(final Hero hero, final String[] strings) {
         final Player player = hero.getPlayer();
-        Location playerLoc = player.getLocation();
+        final Location playerLoc = player.getLocation();
 
         // place on ground only
-        Material belowBlockType = playerLoc.getBlock().getRelative(BlockFace.DOWN).getType();
+        final Material belowBlockType = playerLoc.getBlock().getRelative(BlockFace.DOWN).getType();
         if (!belowBlockType.isSolid()) {
             player.sendMessage("You must be standing on something hard to place the trap");
             return SkillResult.FAIL;
@@ -65,54 +68,53 @@ public class SkillTrap extends SkillBaseGroundEffect {
         broadcastExecuteText(hero);
 
         final double radius = SkillConfigManager.getUseSetting(hero, this, SkillSetting.RADIUS, 3d, false);
-        double height = SkillConfigManager.getUseSetting(hero, this, HEIGHT_NODE, 2d, false);
-        long duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, 30000, false);
+        final double height = SkillConfigManager.getUseSetting(hero, this, HEIGHT_NODE, 2d, false);
+        final long duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, 30000, false);
         final long period = SkillConfigManager.getUseSetting(hero, this, SkillSetting.PERIOD, 500, false);
-        long rootDuration = SkillConfigManager.getUseSetting(hero, this, "root-duration", 2000, false);
+        final long rootDuration = SkillConfigManager.getUseSetting(hero, this, "root-duration", 2000, false);
         applyAreaGroundEffectEffect(hero, period, duration, player.getLocation(), radius, height, new GroundEffectActions() {
 
             @Override
-            public void groundEffectTickAction(Hero hero, AreaGroundEffectEffect effect) {
-                EffectManager em = new EffectManager(plugin);
-                Effect e = new Effect(em) {
-                    int particlesPerRadius = 3;
-                    Particle particle = Particle.SMOKE_LARGE;
+            public void groundEffectTickAction(final Hero hero, final AreaGroundEffectEffect effect) {
+                final com.herocraftonline.heroes.libs.slikey.effectlib.Effect e = new com.herocraftonline.heroes.libs.slikey.effectlib.Effect(effectLib) {
+                    final int particlesPerRadius = 3;
+                    final Particle particle = Particle.SMOKE_LARGE;
 
                     @Override
                     public void onRun() {
-                        double inc = 1 / (particlesPerRadius * radius);
+                        final double inc = 1 / (particlesPerRadius * radius);
 
                         for (double angle = 0; angle <= 2 * Math.PI; angle += inc) {
-                            Vector v = new Vector(Math.cos(angle), 0, Math.sin(angle)).multiply(radius);
+                            final Vector v = new Vector(Math.cos(angle), 0, Math.sin(angle)).multiply(radius);
                             display(particle, getLocation().add(v));
                             getLocation().subtract(v);
                         }
                     }
                 };
 
-                Location location = effect.getLocation().clone();
+                final Location location = effect.getLocation().clone();
                 e.setLocation(location);
                 e.asynchronous = true;
                 e.iterations = 1;
                 e.type = EffectType.INSTANT;
                 e.color = Color.WHITE;
 
-                e.start();
-                em.disposeOnTermination();
+                effectLib.start(e);
             }
 
             @Override
-            public void groundEffectTargetAction(Hero hero, final LivingEntity target, final AreaGroundEffectEffect groundEffect) {
-                Player player = hero.getPlayer();
-                if (!damageCheck(player, target))
+            public void groundEffectTargetAction(final Hero hero, final LivingEntity target, final AreaGroundEffectEffect groundEffect) {
+                final Player player = hero.getPlayer();
+                if (!damageCheck(player, target)) {
                     return;
+                }
 
-                SkillTrap skill = SkillTrap.this;
+                final SkillTrap skill = SkillTrap.this;
                 final CharacterTemplate targetCT = plugin.getCharacterManager().getCharacter(target);
                 final RootEffect effect = new RootEffect(skill, player, 100, rootDuration);
                 targetCT.addEffect(effect);
 
-                Location targetLocation = target.getLocation();
+                final Location targetLocation = target.getLocation();
                 targetLocation.getWorld().playSound(targetLocation, Sound.BLOCK_WOODEN_PRESSURE_PLATE_CLICK_ON, 0.8F, 0.5F);
                 targetLocation.getWorld().playSound(targetLocation, Sound.BLOCK_WOODEN_PRESSURE_PLATE_CLICK_OFF, 0.8F, 0.5F);
                 hero.removeEffect(hero.getEffect(skill.getName()));

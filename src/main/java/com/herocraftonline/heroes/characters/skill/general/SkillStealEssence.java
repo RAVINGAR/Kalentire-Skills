@@ -58,7 +58,7 @@ public class SkillStealEssence extends TargettedSkill {
         if (!(target instanceof Player))
         	return SkillResult.INVALID_TARGET;
 
-        ArrayList<Effect> possibleEffects = new ArrayList<Effect>();
+        ArrayList<Effect> possibleEffects = new ArrayList<>();
         Hero tHero = plugin.getCharacterManager().getHero((Player) target);
         for (Effect e : tHero.getEffects()) {
             if (e.isType(EffectType.BENEFICIAL) && e.isType(EffectType.DISPELLABLE)) {
@@ -71,7 +71,7 @@ public class SkillStealEssence extends TargettedSkill {
             return SkillResult.INVALID_TARGET_NO_MSG;
         }
 
-        String stolenNames = "";
+        StringBuilder stolenNames = new StringBuilder();
         int numEffects = SkillConfigManager.getUseSetting(hero, this, "max-steals", 1, false);
         for (int i = 0; i < numEffects && possibleEffects.size() > 0; i++) {
             Effect stolenEffect = possibleEffects.get(Util.nextInt(possibleEffects.size()));
@@ -82,10 +82,10 @@ public class SkillStealEssence extends TargettedSkill {
 
             hero.addEffect(stolenEffect);
             possibleEffects.remove(stolenEffect);
-            stolenNames += stolenEffect.getName() + " ";
+            stolenNames.append(stolenEffect.getName()).append(" ");
         }
 
-        broadcast(player.getLocation(), getUseText().replace("%hero%", player.getName()).replace("%skill%", getName()).replace("%effect%", stolenNames).replace("%target%", tHero.getPlayer().getName()));
+        broadcast(player.getLocation(), getUseText().replace("%hero%", player.getName()).replace("%skill%", getName()).replace("%effect%", stolenNames.toString()).replace("%target%", tHero.getPlayer().getName()));
 
         player.getWorld().playSound(player.getLocation(), Sound.ENTITY_BAT_LOOP, 0.8F, 2.0F);
 

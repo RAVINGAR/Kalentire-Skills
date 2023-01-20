@@ -94,14 +94,9 @@ public class SkillForceTotem extends SkillBaseTotem {
             character.addEffect(new NauseaEffect(this, "ForceTotemNauseaEffect", heroP, getDisorientationDuration(hero), getDisorientationLevel(hero), null, getUnapplyText())); //TODO Implicit broadcast() call - may need changes?
 
             // Let's bypass the nocheat issues...
-            NCPUtils.applyExemptions(entity, new NCPFunction() {
-                
-                @Override
-                public void execute()
-                {
-                    entity.setVelocity(new Vector(0, getLaunch(hero), 0));
-                    entity.setFallDistance(-512);
-                }
+            NCPUtils.applyExemptions(entity, () -> {
+                entity.setVelocity(new Vector(0, getLaunch(hero), 0));
+                entity.setFallDistance(-512);
             }, Lists.newArrayList("MOVING"), SkillConfigManager.getUseSetting(hero, this, "ncp-exemption-duration", 2000, false));
             targetsHit++;
         }

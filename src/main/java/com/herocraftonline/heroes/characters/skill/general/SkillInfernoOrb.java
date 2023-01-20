@@ -8,9 +8,7 @@ import com.herocraftonline.heroes.characters.effects.common.CombustEffect;
 import com.herocraftonline.heroes.characters.skill.*;
 
 import org.bukkit.Bukkit;
-import org.bukkit.Effect;
 import org.bukkit.Particle;
-import org.bukkit.Sound;
 import org.bukkit.Sound;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.*;
@@ -28,7 +26,7 @@ import java.util.Map.Entry;
 
 public class SkillInfernoOrb extends ActiveSkill {
 
-    private Map<Snowball, Long> fireballs = new LinkedHashMap<Snowball, Long>(100) {
+    private final Map<Snowball, Long> fireballs = new LinkedHashMap<Snowball, Long>(100) {
         private static final long serialVersionUID = 4329526013158603250L;
 
         @Override

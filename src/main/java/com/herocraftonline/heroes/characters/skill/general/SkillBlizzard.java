@@ -8,14 +8,26 @@ import com.herocraftonline.heroes.characters.Hero;
 import com.herocraftonline.heroes.characters.effects.EffectType;
 import com.herocraftonline.heroes.characters.effects.ExpirableEffect;
 import com.herocraftonline.heroes.characters.effects.common.SlowEffect;
-import com.herocraftonline.heroes.characters.skill.*;
+import com.herocraftonline.heroes.characters.skill.ActiveSkill;
+import com.herocraftonline.heroes.characters.skill.Skill;
+import com.herocraftonline.heroes.characters.skill.SkillConfigManager;
+import com.herocraftonline.heroes.characters.skill.SkillSetting;
+import com.herocraftonline.heroes.characters.skill.SkillType;
 import com.herocraftonline.heroes.chat.ChatComponents;
 import com.herocraftonline.heroes.util.Util;
-
-import org.bukkit.*;
+import org.bukkit.Bukkit;
+import org.bukkit.Location;
+import org.bukkit.Material;
+import org.bukkit.Particle;
+import org.bukkit.Sound;
+import org.bukkit.World;
 import org.bukkit.block.Block;
 import org.bukkit.configuration.ConfigurationSection;
-import org.bukkit.entity.*;
+import org.bukkit.entity.Entity;
+import org.bukkit.entity.LivingEntity;
+import org.bukkit.entity.Player;
+import org.bukkit.entity.Projectile;
+import org.bukkit.entity.Snowball;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
@@ -23,16 +35,21 @@ import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.projectiles.ProjectileSource;
 import org.bukkit.util.Vector;
 
-import java.util.*;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Random;
 
 public class SkillBlizzard extends ActiveSkill {
 
-    private Map<Snowball, Long> blizzardIceBolts = new LinkedHashMap<Snowball, Long>(100) {
+    private final Map<Snowball, Long> blizzardIceBolts = new LinkedHashMap<Snowball, Long>(100) {
         private static final long serialVersionUID = 4632858378318784263L;
 
         @Override
-        protected boolean removeEldestEntry(Entry<Snowball, Long> eldest) {
+        protected boolean removeEldestEntry(final Entry<Snowball, Long> eldest) {
             return (size() > 7000 || eldest.getValue() + 5000 <= System.currentTimeMillis());
         }
     };
@@ -40,7 +57,7 @@ public class SkillBlizzard extends ActiveSkill {
     private String applyText;
     private String expireText;
 
-    public SkillBlizzard(Heroes plugin) {
+    public SkillBlizzard(final Heroes plugin) {
         super(plugin, "Blizzard");
         setDescription("Summon a powerful Blizzard at your target location. The blizzard rains down several ice bolts at the target location, each dealing $1 damage and slowing any targets hit for $2 second(s).");
         setUsage("/skill blizzard");
@@ -52,22 +69,22 @@ public class SkillBlizzard extends ActiveSkill {
     }
 
     @Override
-    public String getDescription(Hero hero) {
+    public String getDescription(final Hero hero) {
         double damage = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE, 50, false);
-        double damageIncrease = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE_INCREASE_PER_INTELLECT, 1.0, false);
+        final double damageIncrease = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE_INCREASE_PER_INTELLECT, 1.0, false);
         damage += damageIncrease * hero.getAttributeValue(AttributeType.INTELLECT);
 
-        long duration = SkillConfigManager.getUseSetting(hero, this, "slow-duration", 2000, false);
+        final long duration = SkillConfigManager.getUseSetting(hero, this, "slow-duration", 2000, false);
 
-        String formattedDuration = Util.decFormat.format(duration / 1000.0);
-        String formattedDamage = Util.decFormat.format(damage);
+        final String formattedDuration = Util.decFormat.format(duration / 1000.0);
+        final String formattedDamage = Util.decFormat.format(damage);
 
         return getDescription().replace("$1", formattedDamage).replace("$2", formattedDuration);
     }
 
     @Override
     public ConfigurationSection getDefaultConfig() {
-        ConfigurationSection node = super.getDefaultConfig();
+        final ConfigurationSection node = super.getDefaultConfig();
 
         node.set(SkillSetting.MAX_DISTANCE.node(), 12);
         node.set(SkillSetting.MAX_DISTANCE_INCREASE_PER_INTELLECT.node(), 0.2);
@@ -92,45 +109,46 @@ public class SkillBlizzard extends ActiveSkill {
     public void init() {
         super.init();
 
-        applyText = SkillConfigManager.getRaw(this, SkillSetting.APPLY_TEXT, ChatComponents.GENERIC_SKILL + "%target% has been slowed by %hero%'s Blizzard!").replace("%target%", "$1").replace("%hero%", "$2");
-        expireText = SkillConfigManager.getRaw(this, SkillSetting.EXPIRE_TEXT, ChatComponents.GENERIC_SKILL + "%target% is no longer slowed!").replace("%target%", "$1");
+        applyText = SkillConfigManager.getRaw(this, SkillSetting.APPLY_TEXT, ChatComponents.GENERIC_SKILL + "%target% has been slowed by %hero%'s Blizzard!").replace("%target%", "$1").replace("$target$", "$1").replace("%hero%", "$2").replace("$hero$", "$2");
+        expireText = SkillConfigManager.getRaw(this, SkillSetting.EXPIRE_TEXT, ChatComponents.GENERIC_SKILL + "%target% is no longer slowed!").replace("%target%", "$1").replace("$target$", "$1");
     }
 
     @Override
-    public SkillResult use(Hero hero, String[] args) {
+    public SkillResult use(final Hero hero, final String[] args) {
         final Player player = hero.getPlayer();
 
         final int radius = SkillConfigManager.getUseSetting(hero, this, SkillSetting.RADIUS, 10, false);
 
         int numIceBolts = SkillConfigManager.getUseSetting(hero, this, "icebolts-launched", 12, false);
-        double numIceBoltsIncrease = SkillConfigManager.getUseSetting(hero, this, "icebolts-launched-per-intellect", 0.325, false);
+        final double numIceBoltsIncrease = SkillConfigManager.getUseSetting(hero, this, "icebolts-launched-per-intellect", 0.325, false);
         numIceBolts += (int) (numIceBoltsIncrease * hero.getAttributeValue(AttributeType.INTELLECT));
 
-        double delayBetween = SkillConfigManager.getUseSetting(hero, this, "delay-between-firing", 0.2, false);
+        final double delayBetween = SkillConfigManager.getUseSetting(hero, this, "delay-between-firing", 0.2, false);
         final double velocityDeviation = SkillConfigManager.getUseSetting(hero, this, "velocity-deviation", 0.2, false);
         final double yVelocity = SkillConfigManager.getUseSetting(hero, this, "downward-velocity", 0.5, false);
 
-        int stormHeight = SkillConfigManager.getUseSetting(hero, this, "max-storm-height", 10, false);
+        final int stormHeight = SkillConfigManager.getUseSetting(hero, this, "max-storm-height", 10, false);
 
         int maxDist = SkillConfigManager.getUseSetting(hero, this, SkillSetting.MAX_DISTANCE, 12, false);
-        double maxDistIncrease = SkillConfigManager.getUseSetting(hero, this, SkillSetting.MAX_DISTANCE_INCREASE_PER_INTELLECT, 0.2, false);
+        final double maxDistIncrease = SkillConfigManager.getUseSetting(hero, this, SkillSetting.MAX_DISTANCE_INCREASE_PER_INTELLECT, 0.2, false);
         maxDist += (int) (hero.getAttributeValue(AttributeType.INTELLECT) * maxDistIncrease);
 
-        Block tBlock = player.getTargetBlock((HashSet<Material>)null, maxDist);
-     // Block tBlock = player.getTargetBlock(null, maxDist);
-        if (tBlock == null)
+        final Block tBlock = player.getTargetBlock((HashSet<Material>) null, maxDist);
+        // Block tBlock = player.getTargetBlock(null, maxDist);
+        if (tBlock == null) {
             return SkillResult.INVALID_TARGET;
+        }
 
         broadcastExecuteText(hero);
         player.getWorld().playSound(player.getLocation(), Sound.ENTITY_LIGHTNING_BOLT_THUNDER, 0.2F, 1.0F);
 
         // Create a cicle of icebolt launch locations, based on skill radius.
-        List<Location> possibleLaunchLocations = Util.getCircleLocationList(tBlock.getLocation().add(new Vector(.5, .5, .5)), radius, 1, true, true, stormHeight);
-        int numPossibleLaunchLocations = possibleLaunchLocations.size();
+        final List<Location> possibleLaunchLocations = Util.getCircleLocationList(tBlock.getLocation().add(new Vector(.5, .5, .5)), radius, 1, true, true, stormHeight);
+        final int numPossibleLaunchLocations = possibleLaunchLocations.size();
 
         Collections.shuffle(possibleLaunchLocations);
 
-        long time = System.currentTimeMillis();
+        final long time = System.currentTimeMillis();
         final Random ranGen = new Random((int) ((time / 2.0) * 12));
 
         // Play the firework effects in a sequence
@@ -145,28 +163,24 @@ public class SkillBlizzard extends ActiveSkill {
             final Location fLoc = possibleLaunchLocations.get(k);
             k++;
 
-            final int j = i;
-            Bukkit.getScheduler().runTaskLater(plugin, new Runnable() {
-                @Override
-                public void run() {
-                    //temp remove until we can figure out why the task is never-ending.
-                    /*if (j % 8 == 0) {
-                        Util.playClientEffect(player, fLoc, "fire", new Vector(0, 0, 0), 1F, 10, true);
-                        world.playSound(fLoc, Sound.ENTITY_LIGHTNING_THUNDER, 1.1F, 1.0F);
-                    }*/
+            Bukkit.getScheduler().runTaskLater(plugin, () -> {
+                //temp remove until we can figure out why the task is never-ending.
+                /*if (j % 8 == 0) {
+                    Util.playClientEffect(player, fLoc, "fire", new Vector(0, 0, 0), 1F, 10, true);
+                    world.playSound(fLoc, Sound.ENTITY_LIGHTNING_THUNDER, 1.1F, 1.0F);
+                }*/
 
-                    double randomX = ranGen.nextGaussian() * velocityDeviation;
-                    double randomZ = ranGen.nextGaussian() * velocityDeviation;
+                final double randomX = ranGen.nextGaussian() * velocityDeviation;
+                final double randomZ = ranGen.nextGaussian() * velocityDeviation;
 
-                    Vector vel = new Vector(randomX, -yVelocity, randomZ);
+                final Vector vel = new Vector(randomX, -yVelocity, randomZ);
 
-                    Snowball iceBolt = world.spawn(fLoc, Snowball.class);
-                    //iceBolt.getWorld().spigot().playEffect(iceBolt.getLocation(), Effect.EXPLOSION_LARGE, 0, 0, 0.4F, 0.4F, 0.4F, 0.0F, 2, 32);
-                    iceBolt.getWorld().spawnParticle(Particle.EXPLOSION_LARGE, iceBolt.getLocation(), 2, 0.4, 0.4, 0.4, 0);
-                    iceBolt.setShooter(player);
-                    iceBolt.setVelocity(vel);
-                    blizzardIceBolts.put(iceBolt, System.currentTimeMillis());
-                }
+                final Snowball iceBolt = world.spawn(fLoc, Snowball.class);
+                //iceBolt.getWorld().spigot().playEffect(iceBolt.getLocation(), Effect.EXPLOSION_LARGE, 0, 0, 0.4F, 0.4F, 0.4F, 0.0F, 2, 32);
+                iceBolt.getWorld().spawnParticle(Particle.EXPLOSION_LARGE, iceBolt.getLocation(), 2, 0.4, 0.4, 0.4, 0);
+                iceBolt.setShooter(player);
+                iceBolt.setVelocity(vel);
+                blizzardIceBolts.put(iceBolt, System.currentTimeMillis());
             }, (long) ((delayBetween * i) * 20));
         }
         player.getWorld().playSound(player.getLocation(), Sound.ENTITY_GENERIC_BURN, 0.5F, 1.0F);
@@ -177,36 +191,38 @@ public class SkillBlizzard extends ActiveSkill {
 
         private final Skill skill;
 
-        public SkillEntityListener(Skill skill) {
+        public SkillEntityListener(final Skill skill) {
             this.skill = skill;
         }
 
         @EventHandler()
-        public void onEntityDamage(EntityDamageEvent event) {
+        public void onEntityDamage(final EntityDamageEvent event) {
             if (event.isCancelled() || !(event instanceof EntityDamageByEntityEvent) || !(event.getEntity() instanceof LivingEntity)) {
                 return;
             }
 
-            EntityDamageByEntityEvent subEvent = (EntityDamageByEntityEvent) event;
-            Entity projectile = subEvent.getDamager();
+            final EntityDamageByEntityEvent subEvent = (EntityDamageByEntityEvent) event;
+            final Entity projectile = subEvent.getDamager();
             if (!(projectile instanceof Snowball) || !blizzardIceBolts.containsKey(projectile)) {
                 return;
             }
             event.setCancelled(true);
             blizzardIceBolts.remove(projectile);
 
-            ProjectileSource source = ((Projectile) subEvent.getDamager()).getShooter();
-            if (!(source instanceof LivingEntity))
+            final ProjectileSource source = ((Projectile) subEvent.getDamager()).getShooter();
+            if (!(source instanceof LivingEntity)) {
                 return;
-            Entity dmger = (LivingEntity) source;
+            }
+            final Entity dmger = (LivingEntity) source;
             if (dmger instanceof Player) {
-                Hero hero = plugin.getCharacterManager().getHero((Player) dmger);
+                final Hero hero = plugin.getCharacterManager().getHero((Player) dmger);
 
-                if (!damageCheck((Player) dmger, (LivingEntity) event.getEntity()))
+                if (!damageCheck((Player) dmger, (LivingEntity) event.getEntity())) {
                     return;
+                }
 
-                LivingEntity target = (LivingEntity) event.getEntity();
-                CharacterTemplate targetCT = plugin.getCharacterManager().getCharacter(target);
+                final LivingEntity target = (LivingEntity) event.getEntity();
+                final CharacterTemplate targetCT = plugin.getCharacterManager().getCharacter(target);
                 // Check if entity is immune to further firewave hits
                 if (targetCT.hasEffect("BlizzardAntiMultiEffect")) {
                     event.setCancelled(true);
@@ -216,20 +232,20 @@ public class SkillBlizzard extends ActiveSkill {
                 event.getEntity().setFireTicks(0);
 
                 double damage = SkillConfigManager.getUseSetting(hero, skill, SkillSetting.DAMAGE, 50, false);
-                double damageIncrease = SkillConfigManager.getUseSetting(hero, skill, SkillSetting.DAMAGE_INCREASE_PER_INTELLECT, 1.0, false);
+                final double damageIncrease = SkillConfigManager.getUseSetting(hero, skill, SkillSetting.DAMAGE_INCREASE_PER_INTELLECT, 1.0, false);
                 damage += (damageIncrease * hero.getAttributeValue(AttributeType.INTELLECT));
 
-                long duration = SkillConfigManager.getUseSetting(hero, skill, "slow-duration", 2000, false);
-                int amplifier = SkillConfigManager.getUseSetting(hero, skill, "slow-multiplier", 1, false);
+                final long duration = SkillConfigManager.getUseSetting(hero, skill, "slow-duration", 2000, false);
+                final int amplifier = SkillConfigManager.getUseSetting(hero, skill, "slow-multiplier", 1, false);
 
-                SlowEffect iceSlowEffect = new SlowEffect(skill, (Player) dmger, duration, amplifier, applyText, expireText);
+                final SlowEffect iceSlowEffect = new SlowEffect(skill, (Player) dmger, duration, amplifier, applyText, expireText);
                 iceSlowEffect.types.add(EffectType.DISPELLABLE);
                 iceSlowEffect.types.add(EffectType.ICE);
 
                 targetCT.addEffect(iceSlowEffect);
                 targetCT.addEffect(new ExpirableEffect(skill, "BlizzardAntiMultiEffect", (Player) dmger, 500));
 
-              //addSpellTarget((LivingEntity) event.getEntity(), hero);
+                //addSpellTarget((LivingEntity) event.getEntity(), hero);
                 addSpellTarget(event.getEntity(), hero);
                 damageEntity(target, hero.getPlayer(), damage, EntityDamageEvent.DamageCause.MAGIC);
                 event.setCancelled(true);

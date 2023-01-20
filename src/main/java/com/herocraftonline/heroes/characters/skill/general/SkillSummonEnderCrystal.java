@@ -33,8 +33,8 @@ import java.util.stream.Collectors;
 
 public class SkillSummonEnderCrystal extends TargettedLocationSkill {
 
-    private static Set<SkillConstructionData> activeConstructions = new HashSet<SkillConstructionData>();
-    private static String toggleableEffectName = "HasActiveEnderCrystal";
+    private static final Set<SkillConstructionData> activeConstructions = new HashSet<>();
+    private static final String toggleableEffectName = "HasActiveEnderCrystal";
 
     public SkillSummonEnderCrystal(Heroes plugin) {
         super(plugin, "SummonEnderCrystal");
@@ -104,7 +104,7 @@ public class SkillSummonEnderCrystal extends TargettedLocationSkill {
     }
 
     private SkillConstructionData getConstructionData(Player player, Block startBlock, int height) {
-        List<Block> constructionBlocks = new ArrayList<Block>();
+        List<Block> constructionBlocks = new ArrayList<>();
 
         Block validTopBlock = null;
         Block currentBlock = null;
@@ -141,12 +141,12 @@ public class SkillSummonEnderCrystal extends TargettedLocationSkill {
         return SkillResult.INVALID_TARGET_NO_MSG;
     }
 
-    private class SkillConstructionData {
+    private static class SkillConstructionData {
 
         final List<Block> constructionBlocks;
         final Location enderCrystalLoc;
 
-        List<Block> activeBlocks;
+        final List<Block> activeBlocks;
         EnderCrystal activeEnderCrystal;
 
         SkillConstructionData(List<Block> constructionBlocks) {
@@ -155,7 +155,7 @@ public class SkillSummonEnderCrystal extends TargettedLocationSkill {
 
             constructionBlocks.remove(highestBlock);
             this.constructionBlocks = constructionBlocks;
-            this.activeBlocks = new ArrayList<Block>();
+            this.activeBlocks = new ArrayList<>();
         }
 
         private void construct(Player player) {
@@ -274,7 +274,7 @@ public class SkillSummonEnderCrystal extends TargettedLocationSkill {
     }
 
     private List<Block> getAllActiveBlocksIncludingEnderCrystals() {
-        List<Block> allBlocks = new ArrayList<Block>();
+        List<Block> allBlocks = new ArrayList<>();
         allBlocks.addAll(getAllActiveBlocks());
         allBlocks.addAll(getAllActiveEnderCrystalBlocks());
         return allBlocks;

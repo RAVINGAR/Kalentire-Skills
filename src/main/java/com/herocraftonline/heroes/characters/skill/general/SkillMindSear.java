@@ -16,7 +16,6 @@ import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
-import org.bukkit.Sound;
 import org.bukkit.event.entity.EntityDamageEvent.DamageCause;
 
 import java.util.List;
@@ -61,7 +60,7 @@ public class SkillMindSear extends ActiveSkill
 
 		node.set(SkillSetting.DAMAGE.node(), 20);
 		node.set(SkillSetting.DAMAGE_INCREASE_PER_INTELLECT.node(), 0.6);
-		node.set(SkillSetting.RADIUS.node(), Integer.valueOf(7));
+		node.set(SkillSetting.RADIUS.node(), 7);
 		node.set(SkillSetting.DURATION.node(), 1500);
 
 		return node;
@@ -127,7 +126,7 @@ public class SkillMindSear extends ActiveSkill
 		return SkillResult.NORMAL;
 	}
 	
-	private class MindSearEffect extends PeriodicExpirableEffect
+	private static class MindSearEffect extends PeriodicExpirableEffect
 	{
 		private final String applyText;
 		private final String expireText;

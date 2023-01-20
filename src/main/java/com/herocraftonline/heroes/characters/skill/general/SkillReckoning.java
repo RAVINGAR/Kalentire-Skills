@@ -129,14 +129,7 @@ public class SkillReckoning extends ActiveSkill {
             final Vector v = new Vector(xDir, 0, zDir).multiply(0.5).setY(0.5);
 
             // Let's bypass the nocheat issues...
-            NCPUtils.applyExemptions(target, new NCPFunction() {
-                
-                @Override
-                public void execute()
-                {
-                    target.setVelocity(v);                    
-                }
-            }, Lists.newArrayList("MOVING"), SkillConfigManager.getUseSetting(hero, this, "ncp-exemption-duration", 500, false));
+            NCPUtils.applyExemptions(target, () -> target.setVelocity(v), Lists.newArrayList("MOVING"), SkillConfigManager.getUseSetting(hero, this, "ncp-exemption-duration", 500, false));
         }
 
 

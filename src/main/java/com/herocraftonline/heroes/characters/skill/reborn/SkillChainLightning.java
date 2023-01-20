@@ -5,11 +5,16 @@ import com.herocraftonline.heroes.api.SkillResult;
 import com.herocraftonline.heroes.attributes.AttributeType;
 import com.herocraftonline.heroes.characters.Hero;
 import com.herocraftonline.heroes.characters.effects.PeriodicEffect;
-import com.herocraftonline.heroes.characters.skill.*;
+import com.herocraftonline.heroes.characters.skill.Skill;
+import com.herocraftonline.heroes.characters.skill.SkillConfigManager;
+import com.herocraftonline.heroes.characters.skill.SkillSetting;
+import com.herocraftonline.heroes.characters.skill.SkillType;
+import com.herocraftonline.heroes.characters.skill.TargettedSkill;
+import com.herocraftonline.heroes.libs.slikey.effectlib.effect.LineEffect;
 import com.herocraftonline.heroes.util.Util;
-import de.slikey.effectlib.EffectManager;
-import de.slikey.effectlib.effect.LineEffect;
-import org.bukkit.*;
+import org.bukkit.Color;
+import org.bukkit.Particle;
+import org.bukkit.Sound;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
@@ -25,10 +30,10 @@ import java.util.concurrent.ThreadLocalRandom;
 
 public class SkillChainLightning extends TargettedSkill {
     private static final Random random = new Random(System.currentTimeMillis());
-    private static Color DEEP_ELECTRIC_BLUE = Color.fromRGB(44, 117, 255);
-    private static Color ELECTRIC_BLUE = Color.fromRGB(125, 249, 255);
+    private static final Color DEEP_ELECTRIC_BLUE = Color.fromRGB(44, 117, 255);
+    private static final Color ELECTRIC_BLUE = Color.fromRGB(125, 249, 255);
 
-    public SkillChainLightning(Heroes plugin) {
+    public SkillChainLightning(final Heroes plugin) {
         super(plugin, "ChainLightning");
         setDescription("Conjure a bolt of lightning that strikes from you to your target, dealing $1 damage. " +
                 "The bolt will strike in a chain to up to $2 times and has a maximum range of $3 blocks. " +
@@ -41,13 +46,13 @@ public class SkillChainLightning extends TargettedSkill {
     }
 
     @Override
-    public String getDescription(Hero hero) {
+    public String getDescription(final Hero hero) {
         int damage = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE, 100, false);
-        double damageIncrease = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE_INCREASE_PER_INTELLECT, 0.0, false);
+        final double damageIncrease = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE_INCREASE_PER_INTELLECT, 0.0, false);
         damage += damageIncrease * hero.getAttributeValue(AttributeType.INTELLECT);
 
-        int maxTargets = SkillConfigManager.getUseSetting(hero, this, "max-targets", 5, false);
-        int maxChainDistance = SkillConfigManager.getUseSetting(hero, this, "max-chain-distance", 5, false);
+        final int maxTargets = SkillConfigManager.getUseSetting(hero, this, "max-targets", 5, false);
+        final int maxChainDistance = SkillConfigManager.getUseSetting(hero, this, "max-chain-distance", 5, false);
 
         return getDescription()
                 .replace("$1", Util.decFormat.format(damage))
@@ -57,7 +62,7 @@ public class SkillChainLightning extends TargettedSkill {
 
     @Override
     public ConfigurationSection getDefaultConfig() {
-        ConfigurationSection config = super.getDefaultConfig();
+        final ConfigurationSection config = super.getDefaultConfig();
         config.set(SkillSetting.MAX_DISTANCE.node(), 8);
         config.set(SkillSetting.MAX_DISTANCE_INCREASE_PER_INTELLECT.node(), 0.0);
         config.set(SkillSetting.DAMAGE.node(), 75);
@@ -70,17 +75,18 @@ public class SkillChainLightning extends TargettedSkill {
     }
 
     @Override
-    public SkillResult use(Hero hero, LivingEntity target, String[] args) {
-        Player player = hero.getPlayer();
+    public SkillResult use(final Hero hero, final LivingEntity target, final String[] args) {
+        final Player player = hero.getPlayer();
 
         broadcastExecuteText(hero, target);
 
-        int strikePeriod = SkillConfigManager.getUseSetting(hero, this, "strike-period", 250, false);
-        ChainLightningEffect effect = new ChainLightningEffect(this, player, strikePeriod, target);
+        final int strikePeriod = SkillConfigManager.getUseSetting(hero, this, "strike-period", 250, false);
+        final ChainLightningEffect effect = new ChainLightningEffect(this, player, strikePeriod, target);
 
         // This shouldn't ever happen but just in case...
-        if (hero.hasEffect(effect.getName()))
+        if (hero.hasEffect(effect.getName())) {
             hero.removeEffect(hero.getEffect(effect.getName()));
+        }
 
         hero.addEffect(effect);
 
@@ -88,31 +94,27 @@ public class SkillChainLightning extends TargettedSkill {
     }
 
     private class ChainLightningEffect extends PeriodicEffect {
-        private final EffectManager effectManager;
         private final ArrayList<LivingEntity> hitTargets;
+        private final LivingEntity initialTarget;
         private int maxTargets = 0;
         private int maxChainDistance;
         private double damage;
         private float lightningVolume;
-
         private LivingEntity lastTarget = null;
-        private LivingEntity initialTarget;
         private int hitCount = 0;
 
-        public ChainLightningEffect(Skill skill, Player player, long period, LivingEntity target) {
+        public ChainLightningEffect(final Skill skill, final Player player, final long period, final LivingEntity target) {
             super(skill, "ChainLightningDelayedCast", player, period, null, null);
-
-            this.effectManager = new EffectManager(plugin);
-            this.hitTargets = new ArrayList<LivingEntity>();
+            this.hitTargets = new ArrayList<>();
             this.initialTarget = target;
         }
 
         @Override
-        public void applyToHero(Hero hero) {
+        public void applyToHero(final Hero hero) {
             super.applyToHero(hero);
 
-            double baseDamage = SkillConfigManager.getUseSetting(hero, skill, SkillSetting.DAMAGE, 100, false);
-            double damageIncrease = SkillConfigManager.getUseSetting(hero, skill, SkillSetting.DAMAGE_INCREASE_PER_INTELLECT, 0.0, false);
+            final double baseDamage = SkillConfigManager.getUseSetting(hero, skill, SkillSetting.DAMAGE, 100, false);
+            final double damageIncrease = SkillConfigManager.getUseSetting(hero, skill, SkillSetting.DAMAGE_INCREASE_PER_INTELLECT, 0.0, false);
             this.damage = baseDamage + (damageIncrease * hero.getAttributeValue(AttributeType.INTELLECT));
 
             this.maxTargets = SkillConfigManager.getUseSetting(hero, skill, "max-targets", 5, false);
@@ -129,44 +131,43 @@ public class SkillChainLightning extends TargettedSkill {
         }
 
         @Override
-        public void removeFromHero(Hero hero) {
+        public void removeFromHero(final Hero hero) {
             super.removeFromHero(hero);
 
             hitTargets.clear();
             lastTarget = null;
-            effectManager.dispose();
         }
 
-        private void playVisualEffects(LivingEntity from, LivingEntity to) {
+        private void playVisualEffects(final LivingEntity from, final LivingEntity to) {
             to.getWorld().playSound(to.getLocation(), Sound.ENTITY_LIGHTNING_BOLT_THUNDER, lightningVolume, 1.8F);
 
-            double randomX = ThreadLocalRandom.current().nextDouble(-0.035, 0.035);
-            double randomZ = ThreadLocalRandom.current().nextDouble(-0.035, 0.035);
-            Vector verticleOffset = new Vector(0, 0.15, 0);
+            final double randomX = ThreadLocalRandom.current().nextDouble(-0.035, 0.035);
+            final double randomZ = ThreadLocalRandom.current().nextDouble(-0.035, 0.035);
+            final Vector verticleOffset = new Vector(0, 0.15, 0);
 
-            LineEffect top = getBaseLightningEffect(randomX, randomZ);
+            final LineEffect top = getBaseLightningEffect(randomX, randomZ);
             top.color = DEEP_ELECTRIC_BLUE;
             top.setLocation(from.getEyeLocation().add(verticleOffset));
             top.setTargetLocation(to.getEyeLocation().subtract(verticleOffset));
 
-            LineEffect middle = getBaseLightningEffect(randomX, randomZ);
+            final LineEffect middle = getBaseLightningEffect(randomX, randomZ);
             middle.color = ELECTRIC_BLUE;
             middle.setLocation(from.getEyeLocation());
             middle.setTargetLocation(to.getEyeLocation());
 
-            LineEffect bottom = getBaseLightningEffect(randomX, randomZ);
+            final LineEffect bottom = getBaseLightningEffect(randomX, randomZ);
             bottom.color = DEEP_ELECTRIC_BLUE;
             bottom.setLocation(from.getEyeLocation().subtract(verticleOffset));
             bottom.setTargetLocation(to.getEyeLocation().subtract(verticleOffset));
 
-            effectManager.start(top);
-            effectManager.start(middle);
-            effectManager.start(bottom);
+            effectLib.start(top);
+            effectLib.start(middle);
+            effectLib.start(bottom);
         }
 
         @Nonnull
-        private LineEffect getBaseLightningEffect(double randomX, double randomZ) {
-            LineEffect lightning = new LineEffect(effectManager);
+        private LineEffect getBaseLightningEffect(final double randomX, final double randomZ) {
+            final LineEffect lightning = new LineEffect(effectLib);
             lightning.offset = new Vector(0, -0.5, 0);
             lightning.particle = Particle.REDSTONE;
             lightning.isZigZag = true;
@@ -178,7 +179,7 @@ public class SkillChainLightning extends TargettedSkill {
         }
 
         @Override
-        public void tickHero(Hero hero) {
+        public void tickHero(final Hero hero) {
             super.tickHero(hero);
 
             if (lastTarget == null || maxTargets == 0 || hitCount >= maxTargets) {
@@ -187,14 +188,16 @@ public class SkillChainLightning extends TargettedSkill {
             }
 
             boolean hitTarget = false;
-            List<Entity> entities = lastTarget.getNearbyEntities(maxChainDistance, 3, maxChainDistance);
-            for (Entity entity : entities) {
-                if (!(entity instanceof LivingEntity) || hitTargets.contains(entity))
+            final List<Entity> entities = lastTarget.getNearbyEntities(maxChainDistance, 3, maxChainDistance);
+            for (final Entity entity : entities) {
+                if (!(entity instanceof LivingEntity) || hitTargets.contains(entity)) {
                     continue;
+                }
 
-                LivingEntity newTarget = (LivingEntity) entity;
-                if (!damageCheck(applier, newTarget))
+                final LivingEntity newTarget = (LivingEntity) entity;
+                if (!damageCheck(applier, newTarget)) {
                     continue;
+                }
 
                 hitTargets.add(newTarget);
                 addSpellTarget(newTarget, hero);

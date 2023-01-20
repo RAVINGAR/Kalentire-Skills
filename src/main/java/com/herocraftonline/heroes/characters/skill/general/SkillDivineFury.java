@@ -6,25 +6,18 @@ import com.herocraftonline.heroes.characters.Hero;
 import com.herocraftonline.heroes.characters.skill.SkillConfigManager;
 import com.herocraftonline.heroes.characters.skill.SkillSetting;
 import com.herocraftonline.heroes.characters.skill.SkillType;
-import com.herocraftonline.heroes.characters.skill.skills.SkillBaseBeamShot;
-import com.herocraftonline.heroes.nms.NMSHandler;
-import com.herocraftonline.heroes.nms.physics.RayCastFlag;
-import com.herocraftonline.heroes.nms.physics.collision.AABB;
-import com.herocraftonline.heroes.nms.physics.collision.Capsule;
+import com.herocraftonline.heroes.characters.skill.skills.SkillBaseBeam;
 import org.bukkit.Location;
+import org.bukkit.Particle;
+import org.bukkit.Sound;
+import org.bukkit.World;
 import org.bukkit.configuration.ConfigurationSection;
-import org.bukkit.entity.LivingEntity;
+import org.bukkit.entity.Player;
+import org.bukkit.event.entity.EntityDamageEvent;
 
-import java.util.EnumSet;
+public class SkillDivineFury extends SkillBaseBeam {
 
-import static org.bukkit.util.NumberConversions.square;
-
-public class SkillDivineFury extends SkillBaseBeamShot {
-
-    private static final String MIN_DAMAGE_NODE = "min-damage";
-    private static final String MAX_DAMAGE_NODE = "max-damage";
-
-    public SkillDivineFury(Heroes plugin) {
+    public SkillDivineFury(final Heroes plugin) {
         super(plugin, "DivineFury");
         setDescription("Unleash Divine Fury at your target dealing $1 damage in a line.");
         setIdentifiers("skill divinefury");
@@ -34,51 +27,50 @@ public class SkillDivineFury extends SkillBaseBeamShot {
     }
 
     @Override
-    public String getDescription(Hero hero) {
-        return null;
+    public String getDescription(final Hero hero) {
+        return super.getDescription()
+                .replace("$1", "" + SkillConfigManager.getScaledUseSettingDouble(hero, this, SkillSetting.DAMAGE, 15, false));
     }
 
     @Override
     public ConfigurationSection getDefaultConfig() {
-        ConfigurationSection node = super.getDefaultConfig();
+        final ConfigurationSection node = super.getDefaultConfig();
 
-        node.set(MIN_DAMAGE_NODE, 100d);
-        node.set(MAX_DAMAGE_NODE, 350d);
-        node.set(SkillSetting.MAX_DISTANCE.node(), 20d);
+        node.set(SkillSetting.DAMAGE.node(), 15);
+        node.set(SkillSetting.MAX_DISTANCE.node(), 10);
         node.set(SkillSetting.RADIUS.node(), 0.5);
-        node.set(VELOCITY_NODE, 0.5);
-        node.set(PENETRATION_NODE, 0);
 
         return node;
     }
 
     @Override
-    public SkillResult use(Hero hero, String[] strings) {
+    public SkillResult use(final Hero hero, final String[] strings) {
 
-        final double minDamage = SkillConfigManager.getUseSetting(hero, this, MIN_DAMAGE_NODE, 100d, false);
-        final double maxDamage = SkillConfigManager.getUseSetting(hero, this, MAX_DAMAGE_NODE, 350d, false);
-        double maxDistance = SkillConfigManager.getUseSetting(hero, this, SkillSetting.MAX_DISTANCE, 20d, false);
-        double radius = SkillConfigManager.getUseSetting(hero, this, SkillSetting.RADIUS, 0.5, false);
-        double velocity = SkillConfigManager.getUseSetting(hero, this, VELOCITY_NODE, 0.5, false);
-        int penetration = SkillConfigManager.getUseSetting(hero, this, PENETRATION_NODE, 0, false);
+        final double damage = SkillConfigManager.getScaledUseSettingDouble(hero, this, SkillSetting.DAMAGE, 15, false);
+        final double radius = SkillConfigManager.getUseSetting(hero, this, SkillSetting.RADIUS, 0.5, false);
+        final int distance = SkillConfigManager.getUseSetting(hero, this, SkillSetting.MAX_DISTANCE, 10, false);
 
         broadcastExecuteText(hero);
 
-        final double maxDistanceSq = square(maxDistance);
+        final Player player = hero.getPlayer();
+        final Beam beam = createObstructedBeam(player.getEyeLocation(), distance, radius);
+        final Location location = player.getLocation();
+        final World world = location.getWorld();
+        world.playSound(location, Sound.ENTITY_BLAZE_SHOOT, 0.9F, 0.9F);
+        world.playSound(location, Sound.ENTITY_BAT_DEATH, 0.8F, 0.4F);
 
-        fireBeamShot(hero, maxDistance, radius, velocity, penetration, new BeamShotHit() {
-
-            @Override
-            public void onHit(Hero hero, LivingEntity target, Location origin, Capsule shot, int count, boolean first, boolean last) {
-                AABB targetAABB = NMSHandler.getInterface().getNMSPhysics().getEntityAABB(target);
-
+        castBeam(hero, beam, (hero1, target, pointData) -> {
+            if (damageCheck(hero1.getPlayer(), target)) {
+                addSpellTarget(target, hero1);
+                damageEntity(target, hero1.getPlayer(), damage, EntityDamageEvent.DamageCause.MAGIC, 0.3f);
+                final Location location1 = target.getLocation();
+                final World world1 = location1.getWorld();
+                world1.spawnParticle(Particle.END_ROD, location1, 15, 0.05, 0.05, 0.05, 0);
             }
+        });
 
-            @Override
-            public void onRenderShot(Location origin, Capsule shot, int frame, boolean first, boolean last) {
-
-            }
-        }, block -> false, EnumSet.of(RayCastFlag.BLOCK_IGNORE_NON_SOLID, RayCastFlag.BLOCK_HIGH_DETAIL));
+        renderEyeBeam(player, beam, Particle.VILLAGER_ANGRY, 40, 10, 40, 0.125, 0);
+        renderEyeBeam(player, beam, Particle.ELECTRIC_SPARK, 20, 10, 40, 0.125, 0);
 
         return SkillResult.NORMAL;
     }

@@ -30,7 +30,7 @@ import java.util.Map;
 
 public class SkillPiggify extends TargettedSkill {
 
-    private Map<Entity, CharacterTemplate> creatures = new HashMap<Entity, CharacterTemplate>();
+    private final Map<Entity, CharacterTemplate> creatures = new HashMap<>();
 
     public SkillPiggify(Heroes plugin) {
         super(plugin, "Piggify");
@@ -201,13 +201,7 @@ public class SkillPiggify extends TargettedSkill {
             player.setFoodLevel(1);
             player.setSprinting(false);
 
-            Bukkit.getServer().getScheduler().scheduleSyncDelayedTask(plugin, new Runnable()
-            {
-                public void run()
-                {
-                    player.setFoodLevel(currentHunger);
-                }
-            }, 0L);
+            Bukkit.getServer().getScheduler().scheduleSyncDelayedTask(plugin, () -> player.setFoodLevel(currentHunger), 0L);
         }
 
         @Override
@@ -218,13 +212,10 @@ public class SkillPiggify extends TargettedSkill {
             if (player.hasPotionEffect(PotionEffectType.POISON) || player.hasPotionEffect(PotionEffectType.WITHER)
                     || player.hasPotionEffect(PotionEffectType.HARM)) {
                 // If they have a harmful effect present when removing the ability, delay effect removal by a bit.
-                Bukkit.getScheduler().runTaskLater(plugin, new Runnable() {
-                    @Override
-                    public void run() {
-                        PigEffect.super.removeFromHero(hero);
-                        creatures.remove(creature);
-                        creature.remove();
-                    }
+                Bukkit.getScheduler().runTaskLater(plugin, () -> {
+                    PigEffect.super.removeFromHero(hero);
+                    creatures.remove(creature);
+                    creature.remove();
                 }, 2L);
             }
             else {

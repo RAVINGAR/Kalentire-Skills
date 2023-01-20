@@ -52,7 +52,7 @@ public class SkillPrimalTotem extends SkillBaseTotem implements Listener {
     public void usePower(Hero hero, Totem totem) {
         Location totemLoc = totem.getLocation();
 
-        Set<Hero> party = hero.hasParty() ? hero.getParty().getMembers() : new HashSet<>(Arrays.asList(hero));
+        Set<Hero> party = hero.hasParty() ? hero.getParty().getMembers() : new HashSet<>(Collections.singletonList(hero));
         double rangeSquared = Math.pow(getRange(hero), 2);
         Player heroP = hero.getPlayer();
 
@@ -72,11 +72,10 @@ public class SkillPrimalTotem extends SkillBaseTotem implements Listener {
                 final Player memberP = member.getPlayer();
                 new BukkitRunnable() {
 
-                    private Location location = memberP.getLocation();
+                    private final Location location = memberP.getLocation();
 
                     private double time = 0;
 
-                    @SuppressWarnings("deprecation")
                     @Override
                     public void run() {
                         if (time < 1.0) {
@@ -103,7 +102,7 @@ public class SkillPrimalTotem extends SkillBaseTotem implements Listener {
 
     @Override
     public void totemDestroyed(Hero hero, Totem totem) {
-        Set<Hero> party = hero.hasParty() ? hero.getParty().getMembers() : new HashSet<>(Arrays.asList(hero));
+        Set<Hero> party = hero.hasParty() ? hero.getParty().getMembers() : new HashSet<>(Collections.singletonList(hero));
         Player heroP = hero.getPlayer();
 
         for(Hero member : party) {

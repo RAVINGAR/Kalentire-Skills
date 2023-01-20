@@ -61,8 +61,8 @@ import java.util.Map;
 
 public class SkillCauldron extends PassiveSkill {
 
-	public ArrayList<ShapedRecipe> ShapedCauldronRecipes = new ArrayList<ShapedRecipe>();
-	public ArrayList<Integer> CauldronRecipesLevel = new ArrayList<Integer>();
+	public final ArrayList<ShapedRecipe> ShapedCauldronRecipes = new ArrayList<>();
+	public final ArrayList<Integer> CauldronRecipesLevel = new ArrayList<>();
 	private File CauldronConfigFile;
 	private FileConfiguration CauldronConfig;
 
@@ -182,9 +182,9 @@ public class SkillCauldron extends PassiveSkill {
 	public class SkillListener implements Listener {
 
 		private final Skill skill;
-		private final ArrayList<Player> players = new ArrayList<Player>();
-		private final ArrayList<Boolean> usingCauldronbench = new ArrayList<Boolean>();
-		private final ArrayList<Boolean> bCanMake = new ArrayList<Boolean>();
+		private final ArrayList<Player> players = new ArrayList<>();
+		private final ArrayList<Boolean> usingCauldronbench = new ArrayList<>();
+		private final ArrayList<Boolean> bCanMake = new ArrayList<>();
 
 		public SkillListener(Skill skill, Heroes plugin) {
 			this.skill = skill;
@@ -355,30 +355,30 @@ public class SkillCauldron extends PassiveSkill {
 		 * The following code shamelessly stolen/VERY slightly (pushing it) adapted (barely at all honestly)
 		 * from alkarin (with permission obviously who do you think I am)
 		 */
-		ShapedRecipe rs[] = {shapedRecipe, comparedRecipe};
-		int nncount[] = new int[2]; //Number of non-null itemstacks inside these two recipes (i.e. slots that contain items)
-		List<LinkedList<ItemStack>> items = new ArrayList<LinkedList<ItemStack>>();
+		ShapedRecipe[] rs = {shapedRecipe, comparedRecipe};
+		int[] nncount = new int[2]; //Number of non-null itemstacks inside these two recipes (i.e. slots that contain items)
+		List<LinkedList<ItemStack>> items = new ArrayList<>();
 		for (int k=0;k<rs.length;k++){
-			LinkedList<ItemStack> is = new LinkedList<ItemStack>();
+			LinkedList<ItemStack> is = new LinkedList<>();
 			items.add(is);
 			String[] shape = rs[k].getShape();
 			Map<Character, ItemStack> ingMap = rs[k].getIngredientMap();
 			boolean firstItemFound = false;
 			/// Add all items to the list, Starting from the first non null/air item
-			for (int i = 0;i < shape.length;i++){
-				for (int j=0;j < shape[i].length();j++){
-					if (shape[i] == null){
+			for (String s : shape) {
+				for (int j = 0; j < s.length(); j++) {
+					if (s == null) {
 						continue;
 					}
-					ItemStack item = ingMap.get(shape[i].charAt(j));
-					if (item != null){
+					ItemStack item = ingMap.get(s.charAt(j));
+					if (item != null) {
 						nncount[k]++;
 						firstItemFound = true;
 						if (item.getType() == Material.AIR)
 							item = null;
 
 					}
-					if (firstItemFound){
+					if (firstItemFound) {
 						is.add(item);
 					}
 				}
@@ -390,9 +390,8 @@ public class SkillCauldron extends PassiveSkill {
 		}
 
 		/// Remove nulls / air from the end of the lists
-		for (int i=0;i<items.size();i++){
-			LinkedList<ItemStack> is = items.get(i);
-			for (int j=is.size()-1;j>=0;j--){
+		for (LinkedList<ItemStack> is : items) {
+			for (int j = is.size() - 1; j >= 0; j--) {
 				if (is.get(j) == null)
 					is.remove(j);
 			}

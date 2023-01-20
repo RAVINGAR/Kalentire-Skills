@@ -9,8 +9,17 @@ import com.herocraftonline.heroes.characters.Hero;
 import com.herocraftonline.heroes.characters.effects.EffectType;
 import com.herocraftonline.heroes.characters.effects.ExpirableEffect;
 import com.herocraftonline.heroes.characters.effects.common.SilenceEffect;
-import com.herocraftonline.heroes.characters.skill.*;
-import org.bukkit.*;
+import com.herocraftonline.heroes.characters.skill.ActiveSkill;
+import com.herocraftonline.heroes.characters.skill.Listenable;
+import com.herocraftonline.heroes.characters.skill.Skill;
+import com.herocraftonline.heroes.characters.skill.SkillConfigManager;
+import com.herocraftonline.heroes.characters.skill.SkillSetting;
+import com.herocraftonline.heroes.characters.skill.SkillType;
+import org.bukkit.Bukkit;
+import org.bukkit.Color;
+import org.bukkit.Location;
+import org.bukkit.Particle;
+import org.bukkit.Sound;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
@@ -20,10 +29,10 @@ import org.bukkit.event.entity.EntityDamageEvent.DamageCause;
 import org.bukkit.scheduler.BukkitRunnable;
 
 public class SkillBloodRage extends ActiveSkill implements Listenable {
-    private String applyText, expireText;
     private final Listener listener;
+    private String applyText, expireText;
 
-    public SkillBloodRage(Heroes plugin) {
+    public SkillBloodRage(final Heroes plugin) {
         super(plugin, "BloodRage");
         setDescription("Increases your attack power by $1 for $2 seconds while rendering you incapable of using skills. While active, you heal for $3 health on every left click.");
         setUsage("/skill bloodrage");
@@ -33,8 +42,9 @@ public class SkillBloodRage extends ActiveSkill implements Listenable {
         listener = new SkillDamageListener(this);
     }
 
+    @Override
     public ConfigurationSection getDefaultConfig() {
-        ConfigurationSection node = super.getDefaultConfig();
+        final ConfigurationSection node = super.getDefaultConfig();
 
         node.set("damage-increase", 5);
         node.set("damage-increase-per-strength", 0.04);
@@ -48,27 +58,30 @@ public class SkillBloodRage extends ActiveSkill implements Listenable {
         return node;
     }
 
+    @Override
     public void init() {
         super.init();
 
-        applyText = SkillConfigManager.getRaw(this, SkillSetting.APPLY_TEXT, " %hero% is empowered by blood rage!").replace("%hero%", "$1");
-        expireText = SkillConfigManager.getRaw(this, SkillSetting.EXPIRE_TEXT, " %hero% has calmed down.").replace("%hero%", "$1");
+        applyText = SkillConfigManager.getRaw(this, SkillSetting.APPLY_TEXT, " %hero% is empowered by blood rage!").replace("%hero%", "$1").replace("$hero$", "$1");
+        expireText = SkillConfigManager.getRaw(this, SkillSetting.EXPIRE_TEXT, " %hero% has calmed down.").replace("%hero%", "$1").replace("$hero$", "$1");
     }
 
-    public String getDescription(Hero hero) {
+    @Override
+    public String getDescription(final Hero hero) {
         double damage = SkillConfigManager.getUseSetting(hero, this, "damage-increase", 7.0D, true);
         damage += SkillConfigManager.getUseSetting(hero, this, "damage-increase-per-strength", 0.16, true) * hero.getAttributeValue(AttributeType.STRENGTH);
-        int duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, 10000, true);
-        String formattedDuration = String.valueOf(duration / 1000);
+        final int duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, 10000, true);
+        final String formattedDuration = String.valueOf(duration / 1000);
         double healing = SkillConfigManager.getUseSetting(hero, this, "healing-per-hit", 5, true);
         healing += SkillConfigManager.getUseSetting(hero, this, "healing-per-hit-increase", 0.04, true) * hero.getAttributeValue(AttributeType.STRENGTH);
         return getDescription().replace("$1", damage + "").replace("$2", formattedDuration).replace("$3", healing + "");
     }
 
-    public SkillResult use(Hero hero, String[] args) {
+    @Override
+    public SkillResult use(final Hero hero, final String[] args) {
         final Player player = hero.getPlayer();
 
-        int duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, 10000, false);
+        final int duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, 10000, false);
 
         // fuck it
         applyText = SkillConfigManager.getRaw(this, SkillSetting.APPLY_TEXT, " %hero% is empowered by blood rage!").replace("%hero%", hero.getName());
@@ -77,7 +90,7 @@ public class SkillBloodRage extends ActiveSkill implements Listenable {
             hero.getPlayer().sendMessage("This skill may not be used when Bloodstorm is applied!");
             return SkillResult.FAIL;
         }
-        SilenceEffect silence = new SilenceEffect(this, player, duration);
+        final SilenceEffect silence = new SilenceEffect(this, player, duration);
         hero.addEffect(silence);
 
         hero.addEffect(new BloodRageEffect(plugin, this, hero.getPlayer(), duration));
@@ -87,22 +100,26 @@ public class SkillBloodRage extends ActiveSkill implements Listenable {
         player.getWorld().playSound(player.getLocation(), Sound.ENTITY_GHAST_SCREAM, 1.0F, 0.5F);
 
         new BukkitRunnable() {
+            private final int maxTicks = 40; // 4 times a second for 10 seconds
             private int ticks = 0;
-            private int maxTicks = 40; // 4 times a second for 10 seconds
             private boolean isNoise = false; // toggles back and forth to keep panting sounds reasonable
 
+            @Override
             public void run() {
-                Location location = player.getLocation().add(0, 0.5, 0);
+                final Location location = player.getLocation().add(0, 0.5, 0);
                 //player.getWorld().spigot().playEffect(location, Effect.COLOURED_DUST, 0, 0, 0.3F, 0.5F, 0.3F, 0.0F, 50, 16);
                 player.getWorld().spawnParticle(Particle.REDSTONE, location, 50, 0.3, 0.5, 0.3, 0, new Particle.DustOptions(Color.RED, 1));
                 ticks++;
 
-                if (isNoise == true)
+                if (isNoise) {
                     player.getWorld().playSound(location, Sound.ENTITY_WOLF_PANT, 1.3F, 0.8F); // Haven't you ever heard of a berserker? They pant.
-                else if (isNoise == false) isNoise = true;
+                } else if (!isNoise) {
+                    isNoise = true;
+                }
 
-                if (ticks == maxTicks)
+                if (ticks == maxTicks) {
                     cancel();
+                }
             }
         }.runTaskTimer(plugin, 1, 5);
 
@@ -118,24 +135,26 @@ public class SkillBloodRage extends ActiveSkill implements Listenable {
 
     public class SkillDamageListener implements Listener {
         private final Skill skill;
+        double healed = 0;
 
-
-        public SkillDamageListener(Skill skill) {
+        public SkillDamageListener(final Skill skill) {
             this.skill = skill;
         }
 
-        double healed = 0;
-
         @EventHandler
-        public void onDamage(WeaponDamageEvent event) {
-            CharacterTemplate ct = event.getDamager();
-            LivingEntity ent = ct.getEntity();
+        public void onDamage(final WeaponDamageEvent event) {
+            final CharacterTemplate ct = event.getDamager();
+            final LivingEntity ent = ct.getEntity();
 
-            if (!(event.getEntity() instanceof LivingEntity)) return;
-            LivingEntity target = (LivingEntity) event.getEntity();
+            if (!(event.getEntity() instanceof LivingEntity)) {
+                return;
+            }
+            final LivingEntity target = (LivingEntity) event.getEntity();
 
-            if (!ct.hasEffect("BloodRage") || !(ct instanceof Hero)) return;
-            Hero h = (Hero) ct;
+            if (!ct.hasEffect("BloodRage") || !(ct instanceof Hero)) {
+                return;
+            }
+            final Hero h = (Hero) ct;
             extraDamage(h, target);
         }
 
@@ -143,43 +162,45 @@ public class SkillBloodRage extends ActiveSkill implements Listenable {
             double healing = SkillConfigManager.getUseSetting(hero, skill, "healing-per-hit", 5, true);
             healing += SkillConfigManager.getUseSetting(hero, skill, "healing-per-hit-increase", 0.04, true) * hero.getAttributeValue(AttributeType.STRENGTH);
 
-            double maxHeal = SkillConfigManager.getUseSetting(hero, skill, "max-heal", 100, false);
+            final double maxHeal = SkillConfigManager.getUseSetting(hero, skill, "max-heal", 100, false);
             if (healed <= maxHeal) {
                 hero.heal(healing);
                 hero.getPlayer().getWorld().playSound(hero.getPlayer().getLocation(), Sound.ENTITY_GENERIC_DRINK, 0.5F, 1.0F);
                 healed += healing;
             }
-            Bukkit.getServer().getScheduler().scheduleSyncDelayedTask(plugin, new Runnable() {
-                public void run() {
-                    if (!(damageCheck(hero.getPlayer(), target))) return;
-
-                    double damage = SkillConfigManager.getUseSetting(hero, skill, "damage-increase", 7.0D, true);
-                    damage += SkillConfigManager.getUseSetting(hero, skill, "damage-increase-per-strength", 0.16, true) * hero.getAttributeValue(AttributeType.STRENGTH);
-
-                    addSpellTarget(target, hero);
-                    damageEntity(target, hero.getPlayer(), damage, DamageCause.MAGIC, false);
-
-                    //target.getWorld().spigot().playEffect(target.getLocation().add(0, 0.5, 0), Effect.CRIT, 0, 0, 0.3F, 0.5F, 0.3F, 0.5F, 25, 16);
-                    target.getWorld().spawnParticle(Particle.CRIT, target.getLocation().add(0, 0.5, 0), 25, 0.3, 0.5, 0.3, 0.5);
-                    target.getWorld().playSound(target.getLocation(), Sound.ENTITY_ENDER_DRAGON_HURT, 1, 1);
+            Bukkit.getServer().getScheduler().scheduleSyncDelayedTask(plugin, () -> {
+                if (!(damageCheck(hero.getPlayer(), target))) {
+                    return;
                 }
+
+                double damage = SkillConfigManager.getUseSetting(hero, skill, "damage-increase", 7.0D, true);
+                damage += SkillConfigManager.getUseSetting(hero, skill, "damage-increase-per-strength", 0.16, true) * hero.getAttributeValue(AttributeType.STRENGTH);
+
+                addSpellTarget(target, hero);
+                damageEntity(target, hero.getPlayer(), damage, DamageCause.MAGIC, false);
+
+                //target.getWorld().spigot().playEffect(target.getLocation().add(0, 0.5, 0), Effect.CRIT, 0, 0, 0.3F, 0.5F, 0.3F, 0.5F, 25, 16);
+                target.getWorld().spawnParticle(Particle.CRIT, target.getLocation().add(0, 0.5, 0), 25, 0.3, 0.5, 0.3, 0.5);
+                target.getWorld().playSound(target.getLocation(), Sound.ENTITY_ENDER_DRAGON_HURT, 1, 1);
             }, 2L);
         }
     }
 
     public class BloodRageEffect extends ExpirableEffect {
-        public BloodRageEffect(Heroes plugin, Skill skill, Player applier, long duration) {
+        public BloodRageEffect(final Heroes plugin, final Skill skill, final Player applier, final long duration) {
             super(skill, plugin, "BloodRage", applier, duration);
 
             types.add(EffectType.BENEFICIAL);
         }
 
-        public void applyToHero(Hero hero) {
+        @Override
+        public void applyToHero(final Hero hero) {
             super.applyToHero(hero);
             broadcast(hero.getPlayer().getLocation(), applyText);
         }
 
-        public void removeFromHero(Hero hero) {
+        @Override
+        public void removeFromHero(final Hero hero) {
             super.removeFromHero(hero);
             broadcast(hero.getPlayer().getLocation(), expireText);
             hero.getPlayer().getWorld().playSound(hero.getPlayer().getLocation(), Sound.ENTITY_BLAZE_AMBIENT, 1.0F, 1.0F);

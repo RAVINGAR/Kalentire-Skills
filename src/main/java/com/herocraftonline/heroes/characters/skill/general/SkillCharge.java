@@ -9,12 +9,11 @@ import com.herocraftonline.heroes.characters.effects.common.RootEffect;
 import com.herocraftonline.heroes.characters.effects.common.SilenceEffect;
 import com.herocraftonline.heroes.characters.effects.common.SlowEffect;
 import com.herocraftonline.heroes.characters.effects.common.StunEffect;
-import com.herocraftonline.heroes.characters.skill.Skill;
+import com.herocraftonline.heroes.characters.skill.Listenable;
 import com.herocraftonline.heroes.characters.skill.SkillConfigManager;
 import com.herocraftonline.heroes.characters.skill.SkillSetting;
 import com.herocraftonline.heroes.characters.skill.SkillType;
 import com.herocraftonline.heroes.characters.skill.TargettedSkill;
-import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Entity;
@@ -26,23 +25,26 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.entity.EntityDamageEvent.DamageCause;
 import org.bukkit.util.Vector;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.HashSet;
 import java.util.Set;
-import java.util.logging.Level;
+import java.util.UUID;
 
-public class SkillCharge extends TargettedSkill {
+public class SkillCharge extends TargettedSkill implements Listenable {
 
-    private final Set<String> chargingPlayers = new HashSet<String>();
+    private final Set<UUID> chargingPlayers = new HashSet<>();
 
-    public SkillCharge(Heroes plugin) {
+    private final Listener listener;
+
+    public SkillCharge(final Heroes plugin) {
         super(plugin, "Charge");
         this.setDescription("You charge toward your target!");
         this.setUsage("/skill charge");
         this.setArgumentRange(0, 1);
         this.setIdentifiers("skill charge");
         this.setTypes(SkillType.ABILITY_PROPERTY_PHYSICAL, SkillType.MOVEMENT_INCREASING, SkillType.AGGRESSIVE);
-        Bukkit.getServer().getPluginManager().registerEvents(new ChargeEntityListener(this), plugin);
+        this.listener = new ChargeEntityListener();
     }
 
     @Override
@@ -53,13 +55,12 @@ public class SkillCharge extends TargettedSkill {
         section.set("root-duration", 0);
         section.set("silence-duration", 0);
         section.set(SkillSetting.DAMAGE.node(), 0);
-        section.set(SkillSetting.DAMAGE_INCREASE.node(), 0);
-        section.set(SkillSetting.RADIUS.node(), 2);
+        section.set(SkillSetting.RADIUS.node(), 4);
         return section;
     }
 
     @Override
-    public SkillResult use(Hero hero, LivingEntity target, String[] args) {
+    public SkillResult use(final Hero hero, final LivingEntity target, final String[] args) {
         final Player player = hero.getPlayer();
 
         final Location playerLoc = player.getLocation();
@@ -70,47 +71,17 @@ public class SkillCharge extends TargettedSkill {
         final Vector v = new Vector(xDir / 3, .5, zDir / 3);
         player.setVelocity(v);
 
-        this.chargingPlayers.add(hero.getName());
-        this.plugin.getServer().getScheduler().scheduleSyncDelayedTask(this.plugin, new Runnable() {
-            @Override
-            public void run() {
-                player.setFallDistance(8f);
-            }
-        }, 2);
-        this.broadcastExecuteText(hero, target);
-        return SkillResult.NORMAL;
-    }
+        final int radius = SkillConfigManager.getUseSetting(hero, this, SkillSetting.RADIUS.node(), 2, false);
+        final long stunDuration = SkillConfigManager.getUseSetting(hero, this, "stun-duration", 5000, false);
+        final long slowDuration = SkillConfigManager.getUseSetting(hero, this, "slow-duration", 0, false);
+        final long rootDuration = SkillConfigManager.getUseSetting(hero, this, "root-duration", 0, false);
+        final int rootPeriod = SkillConfigManager.getUseSetting(hero, this, "root-period", 100, false);
+        final long silenceDuration = SkillConfigManager.getUseSetting(hero, this, "silence-duration", 0, false);
+        final double damage = SkillConfigManager.getScaledUseSettingDouble(hero, this, SkillSetting.DAMAGE.node(), 4D, false);
 
-    public class ChargeEntityListener implements Listener {
-
-        private final Skill skill;
-
-        public ChargeEntityListener(Skill skill) {
-            this.skill = skill;
-        }
-
-        @EventHandler(priority = EventPriority.LOWEST)
-        public void onEntityDamage(EntityDamageEvent event) {
-            if (!event.getCause().equals(DamageCause.FALL) || !(event.getEntity() instanceof Player) || !SkillCharge.this.chargingPlayers.contains(event.getEntity())) {
-                return;
-            }
-
-            final Player player = (Player) event.getEntity();
-            final Hero hero = SkillCharge.this.plugin.getCharacterManager().getHero(player);
-            SkillCharge.this.chargingPlayers.remove(hero.getName());
-            Heroes.log(Level.INFO, "Player landed!");
-            event.setDamage(0);
-            event.setCancelled(true);
-
-            final int radius = SkillConfigManager.getUseSetting(hero, this.skill, SkillSetting.RADIUS.node(), 2, false);
-            final long stunDuration = SkillConfigManager.getUseSetting(hero, this.skill, "stun-duration", 5000, false);
-            final long slowDuration = SkillConfigManager.getUseSetting(hero, this.skill, "slow-duration", 0, false);
-            final long rootDuration = SkillConfigManager.getUseSetting(hero, this.skill, "root-duration", 0, false);
-            final int rootPeriod = SkillConfigManager.getUseSetting(hero, this.skill, "root-period", 100, false);
-            final long silenceDuration = SkillConfigManager.getUseSetting(hero, this.skill, "silence-duration", 0, false);
-            double damage = SkillConfigManager.getUseSetting(hero, this.skill, SkillSetting.DAMAGE.node(), 0D, false);
-            damage += (SkillConfigManager.getUseSetting(hero, this.skill, SkillSetting.DAMAGE_INCREASE, 0, false) * hero.getHeroLevel(this.skill));
-            for (final Entity e : player.getNearbyEntities(radius, radius, radius)) {
+        this.chargingPlayers.add(player.getUniqueId());
+        this.plugin.getServer().getScheduler().scheduleSyncDelayedTask(this.plugin, () -> {
+            for (final Entity e : target.getNearbyEntities(radius, radius, radius)) {
                 if (!(e instanceof LivingEntity)) {
                     continue;
                 }
@@ -122,42 +93,64 @@ public class SkillCharge extends TargettedSkill {
 
                 if (e instanceof Player) {
                     final Player p = (Player) e;
-                    final Hero tHero = SkillCharge.this.plugin.getCharacterManager().getHero(p);
+                    final Hero tHero = this.plugin.getCharacterManager().getHero(p);
                     if (stunDuration > 0) {
-                        tHero.addEffect(new StunEffect(this.skill, hero.getPlayer(), stunDuration));
+                        tHero.addEffect(new StunEffect(this, hero.getPlayer(), stunDuration));
                     }
                     if (slowDuration > 0) {
-                        tHero.addEffect(new SlowEffect(this.skill, hero.getPlayer(), slowDuration, 2, p.getDisplayName() + " has been slowed by " + player.getDisplayName(), p.getDisplayName() + " is no longer slowed by " + player.getDisplayName()));
+                        tHero.addEffect(new SlowEffect(this, hero.getPlayer(), slowDuration, 2, p.getDisplayName() + " has been slowed by " + player.getDisplayName(), p.getDisplayName() + " is no longer slowed by " + player.getDisplayName()));
                     }
                     if (rootDuration > 0) {
-                        tHero.addEffect(new RootEffect(this.skill, hero.getPlayer(), rootPeriod, rootDuration));
+                        tHero.addEffect(new RootEffect(this, hero.getPlayer(), rootPeriod, rootDuration));
                     }
                     if (silenceDuration > 0) {
-                        tHero.addEffect(new SilenceEffect(this.skill, hero.getPlayer(), silenceDuration));
+                        tHero.addEffect(new SilenceEffect(this, hero.getPlayer(), silenceDuration));
                     }
-                    if (damage > 0) {
-                        SkillCharge.this.addSpellTarget(le, hero);
-                        damageEntity(le, player, damage, DamageCause.ENTITY_ATTACK);
-                    }
-                } else if (e instanceof LivingEntity) {
-                    final Monster monster = SkillCharge.this.plugin.getCharacterManager().getMonster((LivingEntity) e);
+                } else {
+                    final Monster monster = plugin.getCharacterManager().getMonster((LivingEntity) e);
                     if (slowDuration > 0) {
-                        monster.addEffect(new SlowEffect(this.skill, hero.getPlayer(), slowDuration, 2, CustomNameManager.getName(le) + " has been slowed by " + player.getDisplayName(), CustomNameManager.getName(le) + " is no longer slowed by " + player.getDisplayName()));
+                        monster.addEffect(new SlowEffect(this, hero.getPlayer(), slowDuration, 2, CustomNameManager.getName(le) + " has been slowed by " + player.getDisplayName(), CustomNameManager.getName(le) + " is no longer slowed by " + player.getDisplayName()));
                     }
                     if (rootDuration > 0) {
-                        monster.addEffect(new RootEffect(this.skill, hero.getPlayer(), rootPeriod, rootDuration));
+                        monster.addEffect(new RootEffect(this, hero.getPlayer(), rootPeriod, rootDuration));
                     }
                 }
-
                 if (damage > 0) {
-                    damageEntity(le, player, damage, DamageCause.ENTITY_ATTACK);
+                    addSpellTarget(le, hero);
+                    damageEntity(le, player, damage, DamageCause.ENTITY_ATTACK, 0.75f);
                 }
             }
-        }
+            chargingPlayers.remove(player.getUniqueId());
+        }, 5L);
+        this.broadcastExecuteText(hero, target);
+        return SkillResult.NORMAL;
+    }
+
+    @NotNull
+    @Override
+    public Listener getListener() {
+        return listener;
     }
 
     @Override
-    public String getDescription(Hero hero) {
+    public String getDescription(final Hero hero) {
         return this.getDescription();
+    }
+
+    public class ChargeEntityListener implements Listener {
+
+        public ChargeEntityListener() {
+        }
+
+        @EventHandler(priority = EventPriority.LOWEST)
+        public void onEntityDamage(final EntityDamageEvent event) {
+            if (!event.getCause().equals(DamageCause.FALL) || !(event.getEntity() instanceof Player)) {
+                return;
+            }
+            if (SkillCharge.this.chargingPlayers.remove(event.getEntity().getUniqueId())) {
+                event.setDamage(0);
+                event.setCancelled(true);
+            }
+        }
     }
 }

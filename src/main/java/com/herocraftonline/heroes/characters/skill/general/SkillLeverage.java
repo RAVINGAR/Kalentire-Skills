@@ -38,8 +38,8 @@ public class SkillLeverage extends PassiveSkill {
         return config;
     }
 
-    public class SkillHeroListener implements Listener {
-        private Skill skill;
+    public static class SkillHeroListener implements Listener {
+        private final Skill skill;
 
         public SkillHeroListener(Skill skill) {
             this.skill = skill;

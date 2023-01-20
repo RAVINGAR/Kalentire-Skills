@@ -43,7 +43,7 @@ public class SkillTridents extends PassiveSkill {
         return config;
     }
 
-    public class SkillListener implements Listener {
+    public static class SkillListener implements Listener {
 
         private final Skill skill;
         public SkillListener(Skill skill) {

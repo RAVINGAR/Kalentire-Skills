@@ -10,7 +10,11 @@ import com.herocraftonline.heroes.characters.Monster;
 import com.herocraftonline.heroes.characters.effects.EffectType;
 import com.herocraftonline.heroes.characters.effects.ExpirableEffect;
 import com.herocraftonline.heroes.characters.effects.PeriodicDamageEffect;
-import com.herocraftonline.heroes.characters.skill.*;
+import com.herocraftonline.heroes.characters.skill.ActiveSkill;
+import com.herocraftonline.heroes.characters.skill.Skill;
+import com.herocraftonline.heroes.characters.skill.SkillConfigManager;
+import com.herocraftonline.heroes.characters.skill.SkillSetting;
+import com.herocraftonline.heroes.characters.skill.SkillType;
 import com.herocraftonline.heroes.nms.NMSHandler;
 import com.herocraftonline.heroes.util.Util;
 import org.bukkit.Bukkit;
@@ -29,7 +33,7 @@ public class SkillToxicblade extends ActiveSkill {
     private String applyText;
     private String expireText;
 
-    public SkillToxicblade(Heroes plugin) {
+    public SkillToxicblade(final Heroes plugin) {
         super(plugin, "Toxicblade");
         setDescription("Your blade which will deal an extra $1 toxic damage every $2 second(s).");
         setUsage("/skill toxicblade");
@@ -41,7 +45,7 @@ public class SkillToxicblade extends ActiveSkill {
 
     @Override
     public ConfigurationSection getDefaultConfig() {
-        ConfigurationSection node = super.getDefaultConfig();
+        final ConfigurationSection node = super.getDefaultConfig();
         node.set("weapons", Util.swords);
         node.set("buff-duration", 600000); // 10 minutes in milliseconds
         node.set("poison-duration", 10000); // 10 seconds in milliseconds
@@ -57,24 +61,32 @@ public class SkillToxicblade extends ActiveSkill {
     @Override
     public void init() {
         super.init();
-        applyText = SkillConfigManager.getRaw(this, SkillSetting.APPLY_TEXT, "%target% has become toxic!").replace("%target%", "$1");
-        expireText = SkillConfigManager.getRaw(this, SkillSetting.EXPIRE_TEXT, "%target% has recovered from the toxicity!").replace("%target%", "$1");
+        applyText = SkillConfigManager.getRaw(this, SkillSetting.APPLY_TEXT, "%target% has become toxic!").replace("%target%", "$1").replace("$target$", "$1");
+        expireText = SkillConfigManager.getRaw(this, SkillSetting.EXPIRE_TEXT, "%target% has recovered from the toxicity!").replace("%target%", "$1").replace("$target$", "$1");
     }
 
     @Override
-    public SkillResult use(Hero hero, String[] args) {
-        long duration = SkillConfigManager.getUseSetting(hero, this, "buff-duration", 600000, false);
-        int numAttacks = SkillConfigManager.getUseSetting(hero, this, "attacks", 1, false);
+    public SkillResult use(final Hero hero, final String[] args) {
+        final long duration = SkillConfigManager.getUseSetting(hero, this, "buff-duration", 600000, false);
+        final int numAttacks = SkillConfigManager.getUseSetting(hero, this, "attacks", 1, false);
         hero.addEffect(new ToxicbladeBuff(this, hero.getPlayer(), duration, numAttacks));
         broadcastExecuteText(hero);
         return SkillResult.NORMAL;
     }
 
-    public class ToxicbladeBuff extends ExpirableEffect {
+    @Override
+    public String getDescription(final Hero hero) {
+        int damage = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE, 20, false);
+        damage += (SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE_INCREASE, 0, false) * hero.getHeroLevel(this));
+        final double seconds = SkillConfigManager.getUseSetting(hero, this, "poison-duration", 10000, false) / 1000.0;
+        return getDescription().replace("$1", damage + "").replace("$2", seconds + "");
+    }
+
+    public static class ToxicbladeBuff extends ExpirableEffect {
 
         protected int applicationsLeft = 1;
 
-        public ToxicbladeBuff(Skill skill, Player applier, long duration, int numAttacks) {
+        public ToxicbladeBuff(final Skill skill, final Player applier, final long duration, final int numAttacks) {
             super(skill, "Toxicblade", applier, duration);
             this.applicationsLeft = numAttacks;
             this.types.add(EffectType.BENEFICIAL);
@@ -85,48 +97,48 @@ public class SkillToxicblade extends ActiveSkill {
             return applicationsLeft;
         }
 
-        @Override
-        public void removeFromHero(Hero hero) {
-            super.removeFromHero(hero);
-            hero.getPlayer().sendMessage("Your blade is no longer toxified!");
+        public void setApplicationsLeft(final int applicationsLeft) {
+            this.applicationsLeft = applicationsLeft;
         }
 
-        public void setApplicationsLeft(int applicationsLeft) {
-            this.applicationsLeft = applicationsLeft;
+        @Override
+        public void removeFromHero(final Hero hero) {
+            super.removeFromHero(hero);
+            hero.getPlayer().sendMessage("Your blade is no longer toxified!");
         }
     }
 
     public class ToxicbladePoison extends PeriodicDamageEffect {
 
-        public ToxicbladePoison(Skill skill, long period, long duration, double tickDamage, Player applier) {
+        public ToxicbladePoison(final Skill skill, final long period, final long duration, final double tickDamage, final Player applier) {
             super(skill, "ToxicbladePoison", applier, period, duration, tickDamage);
             this.types.add(EffectType.POISON);
             addPotionEffect(new PotionEffect(PotionEffectType.POISON, (int) (duration / 1000) * 20, 0), true);
         }
 
         @Override
-        public void applyToMonster(Monster monster) {
+        public void applyToMonster(final Monster monster) {
             super.applyToMonster(monster);
             broadcast(monster.getEntity().getLocation(), "    " + applyText, CustomNameManager.getName(monster));
         }
 
         @Override
-        public void applyToHero(Hero hero) {
+        public void applyToHero(final Hero hero) {
             super.applyToHero(hero);
-            Player player = hero.getPlayer();
+            final Player player = hero.getPlayer();
             broadcast(player.getLocation(), "    " + applyText, player.getName());
         }
 
         @Override
-        public void removeFromMonster(Monster monster) {
+        public void removeFromMonster(final Monster monster) {
             super.removeFromMonster(monster);
             broadcast(monster.getEntity().getLocation(), "    " + expireText, CustomNameManager.getName(monster));
         }
 
         @Override
-        public void removeFromHero(Hero hero) {
+        public void removeFromHero(final Hero hero) {
             super.removeFromHero(hero);
-            Player player = hero.getPlayer();
+            final Player player = hero.getPlayer();
             broadcast(player.getLocation(), "    " + expireText, player.getName());
         }
     }
@@ -135,49 +147,40 @@ public class SkillToxicblade extends ActiveSkill {
 
         private final Skill skill;
 
-        public SkillDamageListener(Skill skill) {
+        public SkillDamageListener(final Skill skill) {
             this.skill = skill;
         }
 
         @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
-        public void onWeaponDamage(WeaponDamageEvent event) {
+        public void onWeaponDamage(final WeaponDamageEvent event) {
             if (!(event.getEntity() instanceof LivingEntity) || !(event.getDamager() instanceof Hero) || event.getDamage() == 0 || event.getCause() != EntityDamageEvent.DamageCause.ENTITY_ATTACK) {
                 return;  // With this, we know a Hero damaged some other sort of LivingEntity with damage that counts as ENTITY_ATTACK (i.e. not a Bow or a Skill)
             }
 
-            Hero hero = (Hero) event.getDamager();
-            Player player = hero.getPlayer();
+            final Hero hero = (Hero) event.getDamager();
+            final Player player = hero.getPlayer();
             if (!hero.hasEffect("Toxicblade") || !SkillConfigManager.getUseSetting(hero, skill, "weapons", Util.swords).contains(NMSHandler.getInterface().getItemInMainHand(player.getInventory()).getType().name())) {
                 return; // With this, we know this Hero has the ToxicBlade Effect and is holding a suitable weapon.
             }
 
-            long duration = SkillConfigManager.getUseSetting(hero, skill, "poison-duration", 10000, false);
-            long period = SkillConfigManager.getUseSetting(hero, skill, SkillSetting.PERIOD, 2000, false);
+            final long duration = SkillConfigManager.getUseSetting(hero, skill, "poison-duration", 10000, false);
+            final long period = SkillConfigManager.getUseSetting(hero, skill, SkillSetting.PERIOD, 2000, false);
             int tickDamage = SkillConfigManager.getUseSetting(hero, skill, "tick-damage", 20, false);
             tickDamage += (SkillConfigManager.getUseSetting(hero, skill, SkillSetting.DAMAGE_INCREASE, 0, false) * hero.getHeroLevel(skill));
 
-            ToxicbladePoison apEffect = new ToxicbladePoison(skill, period, duration, tickDamage, player);
-            CharacterTemplate character = plugin.getCharacterManager().getCharacter((LivingEntity) event.getEntity());
+            final ToxicbladePoison apEffect = new ToxicbladePoison(skill, period, duration, tickDamage, player);
+            final CharacterTemplate character = plugin.getCharacterManager().getCharacter((LivingEntity) event.getEntity());
             character.addEffect(apEffect);
 
             checkBuff(hero);
         }
 
-        private void checkBuff(Hero hero) {
-        	ToxicbladeBuff abBuff = (ToxicbladeBuff) hero.getEffect("Toxicblade");
+        private void checkBuff(final Hero hero) {
+            final ToxicbladeBuff abBuff = (ToxicbladeBuff) hero.getEffect("Toxicblade");
             abBuff.applicationsLeft -= 1;
             if (abBuff.applicationsLeft < 1) {
                 hero.removeEffect(abBuff);
             }
         }
-    }
-
-    @Override
-    public String getDescription(Hero hero) {
-        int damage = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE, 20, false);
-        damage += (SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE_INCREASE, 0, false) * hero.getHeroLevel(this));
-        double seconds = SkillConfigManager.getUseSetting(hero, this, "poison-duration", 10000, false) / 1000.0;
-        String s = getDescription().replace("$1", damage + "").replace("$2", seconds + "");
-        return s;
     }
 }

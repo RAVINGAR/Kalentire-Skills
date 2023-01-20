@@ -7,7 +7,11 @@ import com.herocraftonline.heroes.api.events.WeaponDamageEvent;
 import com.herocraftonline.heroes.characters.Hero;
 import com.herocraftonline.heroes.characters.effects.Effect;
 import com.herocraftonline.heroes.characters.effects.EffectType;
-import com.herocraftonline.heroes.characters.skill.*;
+import com.herocraftonline.heroes.characters.skill.ActiveSkill;
+import com.herocraftonline.heroes.characters.skill.Skill;
+import com.herocraftonline.heroes.characters.skill.SkillConfigManager;
+import com.herocraftonline.heroes.characters.skill.SkillSetting;
+import com.herocraftonline.heroes.characters.skill.SkillType;
 import com.herocraftonline.heroes.chat.ChatComponents;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -22,7 +26,7 @@ public class SkillAbsorb extends ActiveSkill {
     private String applyText;
     private String expireText;
 
-    public SkillAbsorb(Heroes plugin) {
+    public SkillAbsorb(final Heroes plugin) {
         super(plugin, "Absorb");
         setDescription("You absorb half the damage you take as mana.");
         setUsage("/skill absorb");
@@ -34,7 +38,7 @@ public class SkillAbsorb extends ActiveSkill {
 
     @Override
     public ConfigurationSection getDefaultConfig() {
-    	ConfigurationSection node = super.getDefaultConfig();
+        final ConfigurationSection node = super.getDefaultConfig();
         node.set("mana-amount", 20);
         node.set(SkillSetting.APPLY_TEXT.node(), "%target% is absorbing damage!");
         node.set(SkillSetting.EXPIRE_TEXT.node(), "Absorb faded from %target%!");
@@ -44,37 +48,42 @@ public class SkillAbsorb extends ActiveSkill {
     @Override
     public void init() {
         super.init();
-        applyText = SkillConfigManager.getRaw(this, SkillSetting.APPLY_TEXT, "%target% is absorbing damage!").replace("%target%", "$1");
-        expireText = SkillConfigManager.getRaw(this, SkillSetting.EXPIRE_TEXT, "Absorb faded from %target%!").replace("%target%", "$1");
+        applyText = SkillConfigManager.getRaw(this, SkillSetting.APPLY_TEXT, "%target% is absorbing damage!").replace("%target%", "$1").replace("$target$", "$1");
+        expireText = SkillConfigManager.getRaw(this, SkillSetting.EXPIRE_TEXT, "Absorb faded from %target%!").replace("%target%", "$1").replace("$target$", "$1");
     }
 
     @Override
-    public SkillResult use(Hero hero, String[] args) {
+    public SkillResult use(final Hero hero, final String[] args) {
         broadcastExecuteText(hero);
-        hero.addEffect(new AbsorbEffect(this));
+        hero.addEffect(new AbsorbEffect(this, hero.getPlayer()));
         return SkillResult.NORMAL;
+    }
+
+    @Override
+    public String getDescription(final Hero hero) {
+        return getDescription();
     }
 
     public class AbsorbEffect extends Effect {
 
-        public AbsorbEffect(Skill skill) {
-            super(skill, "Absorb");
+        public AbsorbEffect(final Skill skill, final Player applier) {
+            super(skill, "Absorb", applier);
             this.types.add(EffectType.BENEFICIAL);
             this.types.add(EffectType.DISPELLABLE);
             this.types.add(EffectType.MAGIC);
         }
 
         @Override
-        public void applyToHero(Hero hero) {
+        public void applyToHero(final Hero hero) {
             super.applyToHero(hero);
-            Player player = hero.getPlayer();
+            final Player player = hero.getPlayer();
             broadcast(player.getLocation(), "    " + applyText, player.getName());
         }
 
         @Override
-        public void removeFromHero(Hero hero) {
+        public void removeFromHero(final Hero hero) {
             super.removeFromHero(hero);
-            Player player = hero.getPlayer();
+            final Player player = hero.getPlayer();
             broadcast(player.getLocation(), "    " + expireText, player.getName());
         }
 
@@ -83,12 +92,13 @@ public class SkillAbsorb extends ActiveSkill {
     public class SkillHeroListener implements Listener {
 
         private final Skill skill;
-        public SkillHeroListener(Skill skill) {
+
+        public SkillHeroListener(final Skill skill) {
             this.skill = skill;
         }
-        
+
         @EventHandler(priority = EventPriority.HIGHEST)
-        public void onSkillDamage(SkillDamageEvent event) {
+        public void onSkillDamage(final SkillDamageEvent event) {
             if (event.isCancelled() || !(event.getEntity() instanceof Player)) {
                 return;
             }
@@ -96,19 +106,19 @@ public class SkillAbsorb extends ActiveSkill {
         }
 
         @EventHandler(priority = EventPriority.HIGHEST)
-        public void onWeaponDamage(WeaponDamageEvent event) {
+        public void onWeaponDamage(final WeaponDamageEvent event) {
             if (event.isCancelled() || !(event.getEntity() instanceof Player)) {
                 return;
             }
             event.setDamage(getAdjustment((Player) event.getEntity(), event.getDamage()));
         }
-        
-        private double getAdjustment(Player player, double d) {
-            Hero hero = plugin.getCharacterManager().getHero(player);
+
+        private double getAdjustment(final Player player, double d) {
+            final Hero hero = plugin.getCharacterManager().getHero(player);
             if (hero.hasEffect("Absorb")) {
-                int absorbAmount = SkillConfigManager.getUseSetting(hero, skill, "mana-amount", 20, false);
+                final int absorbAmount = SkillConfigManager.getUseSetting(hero, skill, "mana-amount", 20, false);
                 d = ((int) (d * 0.50));
-                int mana = hero.getMana();
+                final int mana = hero.getMana();
                 if (mana + absorbAmount > hero.getMaxMana()) {
                     hero.removeEffect(hero.getEffect("Absorb"));
                 } else {
@@ -120,10 +130,5 @@ public class SkillAbsorb extends ActiveSkill {
             }
             return d;
         }
-    }
-
-    @Override
-    public String getDescription(Hero hero) {
-        return getDescription();
     }
 }

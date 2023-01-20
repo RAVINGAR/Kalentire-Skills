@@ -4,7 +4,6 @@ import org.bukkit.*;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
-import org.bukkit.Sound;
 import org.bukkit.event.entity.EntityDamageEvent.DamageCause;
 import org.bukkit.util.Vector;
 
@@ -89,13 +88,11 @@ public class SkillSpear extends TargettedSkill {
 
         // push them "up" first. THEN we can pull them to us.
         double delay = SkillConfigManager.getUseSetting(hero, this, "pull-delay", 0.2, false);
-        Bukkit.getScheduler().scheduleSyncDelayedTask(plugin, new Runnable() {
-            public void run() {
-                // Push them away
-                //double yDir = player.getVelocity().getY();
-                Vector pushVector = new Vector(xDir, 0, zDir).normalize().multiply(hPower).setY(vPower);
-                target.setVelocity(pushVector);
-            }
+        Bukkit.getScheduler().scheduleSyncDelayedTask(plugin, () -> {
+            // Push them away
+            //double yDir = player.getVelocity().getY();
+            Vector pushVector = new Vector(xDir, 0, zDir).normalize().multiply(hPower).setY(vPower);
+            target.setVelocity(pushVector);
         }, (long) (delay * 20));
 
         //player.getWorld().spigot().playEffect(target.getLocation().add(0, 0.5, 0), org.bukkit.Effect.CRIT, 0, 0, 0, 0, 0, 1, 25, 16);

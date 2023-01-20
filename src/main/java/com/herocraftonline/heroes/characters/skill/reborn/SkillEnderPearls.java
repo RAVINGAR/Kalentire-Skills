@@ -9,7 +9,6 @@ import org.bukkit.block.BlockFace;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.EnderPearl;
 import org.bukkit.entity.Player;
-import org.bukkit.Sound;
 import org.bukkit.event.Event.Result;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
@@ -76,7 +75,7 @@ public class SkillEnderPearls extends PassiveSkill {
 
     public class SkillEntityListener implements Listener {
 
-        private Skill skill;
+        private final Skill skill;
 
         public SkillEntityListener(Skill skill) {
             this.skill = skill;
@@ -237,7 +236,7 @@ public class SkillEnderPearls extends PassiveSkill {
     }
 
     // Effect required for implementing an internal cooldown on healing
-    private class CooldownEffect extends ExpirableEffect {
+    private static class CooldownEffect extends ExpirableEffect {
         public CooldownEffect(Skill skill, Player applier, long duration) {
             super(skill, "EnderPearlUsageCooldownEffect", applier, duration);
         }

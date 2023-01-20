@@ -50,7 +50,7 @@ public class SkillSinisterUrge extends PassiveSkill {
     }
 
     private class SinisterUrgeListener implements Listener {
-        private Skill skill;
+        private final Skill skill;
 
         public SinisterUrgeListener(Skill skill) {
             this.skill = skill;

@@ -3,7 +3,11 @@ package com.herocraftonline.heroes.characters.skill.general;
 import com.herocraftonline.heroes.Heroes;
 import com.herocraftonline.heroes.api.SkillResult;
 import com.herocraftonline.heroes.characters.Hero;
-import com.herocraftonline.heroes.characters.skill.*;
+import com.herocraftonline.heroes.characters.skill.ActiveSkill;
+import com.herocraftonline.heroes.characters.skill.Skill;
+import com.herocraftonline.heroes.characters.skill.SkillConfigManager;
+import com.herocraftonline.heroes.characters.skill.SkillSetting;
+import com.herocraftonline.heroes.characters.skill.SkillType;
 import com.herocraftonline.heroes.chat.ChatComponents;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
@@ -19,7 +23,7 @@ public class SkillRiptide extends ActiveSkill {
 
     String applyText;
 
-    public SkillRiptide(Heroes plugin) {
+    public SkillRiptide(final Heroes plugin) {
         super(plugin, "Riptide");
         setUsage("/skill riptide");
         setIdentifiers("skill riptide");
@@ -29,13 +33,14 @@ public class SkillRiptide extends ActiveSkill {
         Bukkit.getServer().getPluginManager().registerEvents(new GlidingListener(this), plugin);
     }
 
-    public String getDescription(Hero hero) {
+    @Override
+    public String getDescription(final Hero hero) {
         return getDescription();
     }
 
+    @Override
     public ConfigurationSection getDefaultConfig() {
-        ConfigurationSection cs = super.getDefaultConfig();
-        return cs;
+        return super.getDefaultConfig();
     }
 
     @Override
@@ -43,30 +48,31 @@ public class SkillRiptide extends ActiveSkill {
         super.init();
 
         applyText = SkillConfigManager.getRaw(this, SkillSetting.APPLY_TEXT, ChatComponents.GENERIC_SKILL
-                + "%hero% used Riptide!")
-                .replace("%hero%", "$2");
+                        + "%hero% used Riptide!")
+                .replace("%hero%", "$2").replace("$hero$", "$2");
     }
 
-    public SkillResult use(Hero hero, String[] args) {
+    @Override
+    public SkillResult use(final Hero hero, final String[] args) {
         final Player player = hero.getPlayer();
 
-        Location playerLocation = player.getLocation();
+        final Location playerLocation = player.getLocation();
 
-        float pitch = playerLocation.getPitch();
-        float yaw = playerLocation.getYaw();
+        final float pitch = playerLocation.getPitch();
+        final float yaw = playerLocation.getYaw();
 
         // f = yaw; f1 = pitch
 
         float f2 = (float) (-Math.sin(yaw * 0.017453292F) * Math.cos(pitch * 0.017453292F));
         float f3 = (float) -Math.sin(pitch * 0.017453292F);
         float f4 = (float) (Math.cos(yaw * 0.017453292F) * Math.cos(pitch * 0.017453292F));
-        float f5 = (float) Math.sqrt(f2 * f2 + f3 * f3 + f4 * f4);
+        final float f5 = (float) Math.sqrt(f2 * f2 + f3 * f3 + f4 * f4);
 
         f2 *= 3.0F / f5;
         f3 *= 3.0F / f5;
         f4 *= 3.0F / f5;
 
-        Vector vector = new Vector(f2, f3, f4);
+        final Vector vector = new Vector(f2, f3, f4);
 
         player.setVelocity(vector);
         player.setGliding(true);
@@ -81,37 +87,37 @@ public class SkillRiptide extends ActiveSkill {
 
 
     // Will set the players EnumAnimation type to SPEAR, which will hopefully be the animation when the player interacts with a trident...
-    private void SpearAnimation(Player player) {
+    private void SpearAnimation(final Player player) {
 
     }
 
     // Using the Elytra Glide animation and spinning the player around to re-create riptide animation
-    private void RiptideAnimation(Player player) {
+    private void RiptideAnimation(final Player player) {
 
     }
 
     // Elytra glide animation while spinning the player around
-    private void SpinAnimation(Player player) {
+    private void SpinAnimation(final Player player) {
 
     }
 
     // Cool particle effect
-    private void RiptideParticleEffect(Player player) {
+    private void RiptideParticleEffect(final Player player) {
 
     }
 
-    public class GlidingListener implements Listener {
+    public static class GlidingListener implements Listener {
         private final Skill skill;
 
-        GlidingListener(Skill skill) {
+        GlidingListener(final Skill skill) {
             this.skill = skill;
         }
 
         @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
-        public void onEntityToggleGlide(EntityToggleGlideEvent event) {
-            Player player = (Player) event.getEntity();
+        public void onEntityToggleGlide(final EntityToggleGlideEvent event) {
+            final Player player = (Player) event.getEntity();
 
-            if(!player.isOnGround()) {
+            if (!player.isOnGround()) {
                 event.setCancelled(true);
                 return;
             }

@@ -8,30 +8,15 @@ import com.herocraftonline.heroes.characters.skill.ActiveSkill;
 import com.herocraftonline.heroes.characters.skill.SkillConfigManager;
 import com.herocraftonline.heroes.characters.skill.SkillSetting;
 import com.herocraftonline.heroes.characters.skill.SkillType;
-import com.herocraftonline.heroes.chat.ChatComponents;
-import com.herocraftonline.heroes.util.Util;
-import net.md_5.bungee.api.ChatColor;
 import org.bukkit.*;
-import org.bukkit.block.Block;
 import org.bukkit.configuration.ConfigurationSection;
-import org.bukkit.entity.Entity;
-import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
-import org.bukkit.Sound;
-import org.bukkit.entity.Snowball;
-import org.bukkit.event.entity.EntityDamageEvent;
-import org.bukkit.scheduler.BukkitRunnable;
-import org.bukkit.util.BlockIterator;
-import org.bukkit.util.Vector;
 
 import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Random;
 
 public class SkillFlare extends ActiveSkill
 {
-	private ArrayList<Player> Flares = new ArrayList<Player>();
+	private final ArrayList<Player> Flares = new ArrayList<>();
 	
 	public SkillFlare(Heroes plugin)
 	{
@@ -80,7 +65,7 @@ public class SkillFlare extends ActiveSkill
 
 		double increment = (2 * Math.PI) / particleAmount;
 
-		ArrayList<Location> locations = new ArrayList<Location>();
+		ArrayList<Location> locations = new ArrayList<>();
 
 		for (int i = 0; i < particleAmount; i++)
 		{
@@ -92,7 +77,6 @@ public class SkillFlare extends ActiveSkill
 		return locations;
 	}
 
-	@SuppressWarnings("deprecation")
 	public SkillResult use(Hero hero, String[] args)
 	{
 		final int firebolts = SkillConfigManager.getUseSetting(hero, this, "firebolts", 30, false) + ((SkillConfigManager.getUseSetting(hero, this, "firebolts-per-level", 2, false) * hero.getHeroLevel(this)));
@@ -105,7 +89,7 @@ public class SkillFlare extends ActiveSkill
 		int boltsPerSec = firebolts / 6;
 		int boltInterval = 20 / boltsPerSec;
 
-		ArrayList<Location> boltLocs = new ArrayList<Location>();
+		ArrayList<Location> boltLocs = new ArrayList<>();
 
 		Player player = hero.getPlayer();
 

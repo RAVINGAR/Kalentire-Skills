@@ -11,9 +11,7 @@ import com.herocraftonline.heroes.characters.skill.*;
 import com.herocraftonline.heroes.characters.skill.ncp.NCPFunction;
 import com.herocraftonline.heroes.characters.skill.ncp.NCPUtils;
 import org.bukkit.Bukkit;
-import org.bukkit.Effect;
 import org.bukkit.Particle;
-import org.bukkit.Sound;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.*;
 import org.bukkit.event.EventHandler;
@@ -30,7 +28,7 @@ import java.util.Random;
 
 public class SkillFireSwell extends ActiveSkill {
     
-    private Map<Fireball, Long> fireballs = new LinkedHashMap<Fireball, Long>(100) {
+    private final Map<Fireball, Long> fireballs = new LinkedHashMap<Fireball, Long>(100) {
         private static final long serialVersionUID = 4329526013158603250L;
 
         @Override
@@ -98,24 +96,19 @@ public class SkillFireSwell extends ActiveSkill {
         final double velocityMultiplier = SkillConfigManager.getUseSetting(hero, this, "velocity-multiplier", 0.75, false);
 
         // Let's bypass the nocheat issues...
-        NCPUtils.applyExemptions(player, new NCPFunction() {
+        NCPUtils.applyExemptions(player, () -> {
+            for (double i = 0; i < numFireballs; i++) {
+                Fireball fireBall = player.launchProjectile(Fireball.class);
+                fireBall.setFireTicks(100);
 
-            @Override
-            public void execute()
-            {
-                for (double i = 0; i < numFireballs; i++) {
-                    Fireball fireBall = player.launchProjectile(Fireball.class);
-                    fireBall.setFireTicks(100);
+                double randomX = ranGen.nextGaussian();
+                double randomY = ranGen.nextGaussian();
+                double randomZ = ranGen.nextGaussian();
 
-                    double randomX = ranGen.nextGaussian();
-                    double randomY = ranGen.nextGaussian();
-                    double randomZ = ranGen.nextGaussian();
+                Vector vel = new Vector(randomX, randomY, randomZ);
+                fireBall.setVelocity(vel.multiply(velocityMultiplier));
 
-                    Vector vel = new Vector(randomX, randomY, randomZ);
-                    fireBall.setVelocity(vel.multiply(velocityMultiplier));
-
-                    fireballs.put(fireBall, time);
-                }
+                fireballs.put(fireBall, time);
             }
         }, Lists.newArrayList("BLOCKPLACE_SPEED"), 0);
 

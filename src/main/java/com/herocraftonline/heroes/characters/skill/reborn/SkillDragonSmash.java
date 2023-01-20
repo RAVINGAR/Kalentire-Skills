@@ -34,8 +34,8 @@ import java.util.logging.Level;
 
 public class SkillDragonSmash extends ActiveSkill implements Listener {
 
-    private static String midDragonSmashEffectName = "MidDragonSmash";
-    private List<FallingBlock> fallingBlocks = new ArrayList<FallingBlock>();
+    private static final String midDragonSmashEffectName = "MidDragonSmash";
+    private final List<FallingBlock> fallingBlocks = new ArrayList<>();
 
     public SkillDragonSmash(Heroes plugin) {
         super(plugin, "DragonSmash");
@@ -111,20 +111,17 @@ public class SkillDragonSmash extends ActiveSkill implements Listener {
         player.setVelocity(new Vector(currentVelocity.getX(), currentVelocity.getY() + vPowerUp, currentVelocity.getZ()));
 
         BukkitScheduler scheduler = Bukkit.getServer().getScheduler();
-        scheduler.runTaskLater(plugin, new Runnable() {
-            @Override
-            public void run() {
-                player.setFallDistance(-512);
-                player.setVelocity(new Vector(0, -vPowerDown, 0));
+        scheduler.runTaskLater(plugin, () -> {
+            player.setFallDistance(-512);
+            player.setVelocity(new Vector(0, -vPowerDown, 0));
 
-                DragonSmashUpdateTask updateTask = new DragonSmashUpdateTask(scheduler, hero);
-                updateTask.setTaskId(scheduler.scheduleSyncRepeatingTask(plugin, updateTask, 1L, 1L));
-            }
+            DragonSmashUpdateTask updateTask = new DragonSmashUpdateTask(scheduler, hero);
+            updateTask.setTaskId(scheduler.scheduleSyncRepeatingTask(plugin, updateTask, 1L, 1L));
         }, delayTicksBeforeDrop);
         return SkillResult.NORMAL;
     }
 
-    private class MidDragonSmashEffect extends Effect {
+    private static class MidDragonSmashEffect extends Effect {
         MidDragonSmashEffect(Skill skill, Player player) {
             super(skill, midDragonSmashEffectName, player);
         }

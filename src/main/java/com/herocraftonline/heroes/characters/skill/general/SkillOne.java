@@ -15,7 +15,7 @@ public class SkillOne extends ActiveSkill {
     private String applyText;
     private String expireText;
 
-    public SkillOne(Heroes plugin) {
+    public SkillOne(final Heroes plugin) {
         super(plugin, "One");
         setDescription("You gain a burst of speed for $1 second(s).");
         setUsage("/skill one");
@@ -26,7 +26,7 @@ public class SkillOne extends ActiveSkill {
 
     @Override
     public ConfigurationSection getDefaultConfig() {
-        ConfigurationSection node = super.getDefaultConfig();
+        final ConfigurationSection node = super.getDefaultConfig();
         node.set("speed-potion-amplifier", 2);
         node.set(SkillSetting.DURATION.node(), 15000);
         node.set(SkillSetting.APPLY_TEXT.node(), "%hero% gained a burst of speed!");
@@ -35,23 +35,23 @@ public class SkillOne extends ActiveSkill {
     }
 
     @Override
-    public String getDescription(Hero hero) {
-        int duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, 1, false);
+    public String getDescription(final Hero hero) {
+        final int duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, 1, false);
         return getDescription().replace("$1", duration / 1000 + "");
     }
 
     @Override
     public void init() {
         super.init();
-        applyText = SkillConfigManager.getRaw(this, SkillSetting.APPLY_TEXT, "%hero% gained a burst of speed!").replace("%hero%", "$1");
-        expireText = SkillConfigManager.getRaw(this, SkillSetting.EXPIRE_TEXT, "%hero% returned to normal speed!").replace("%hero%", "$1");
+        applyText = SkillConfigManager.getRaw(this, SkillSetting.APPLY_TEXT, "%hero% gained a burst of speed!").replace("%hero%", "$1").replace("$hero$", "$1");
+        expireText = SkillConfigManager.getRaw(this, SkillSetting.EXPIRE_TEXT, "%hero% returned to normal speed!").replace("%hero%", "$1").replace("$hero$", "$1");
     }
 
     @Override
-    public SkillResult use(Hero hero, String[] args) {
+    public SkillResult use(final Hero hero, final String[] args) {
         broadcastExecuteText(hero);
 
-        int duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, 15000, false);
+        final int duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, 15000, false);
         int multiplier = SkillConfigManager.getUseSetting(hero, this, "speed-potion-amplifier", 2, false);
         if (multiplier > 20) {
             multiplier = 20;

@@ -1,12 +1,5 @@
 package com.herocraftonline.heroes.characters.skill.general;
 
-import org.bukkit.configuration.ConfigurationSection;
-import org.bukkit.entity.LivingEntity;
-import org.bukkit.entity.Player;
-import org.bukkit.Sound;
-import org.bukkit.potion.PotionEffect;
-import org.bukkit.potion.PotionEffectType;
-
 import com.herocraftonline.heroes.Heroes;
 import com.herocraftonline.heroes.api.SkillResult;
 import com.herocraftonline.heroes.attributes.AttributeType;
@@ -22,12 +15,17 @@ import com.herocraftonline.heroes.characters.skill.SkillType;
 import com.herocraftonline.heroes.characters.skill.TargettedSkill;
 import com.herocraftonline.heroes.chat.ChatComponents;
 import com.herocraftonline.heroes.util.Util;
+import org.bukkit.configuration.ConfigurationSection;
+import org.bukkit.entity.LivingEntity;
+import org.bukkit.entity.Player;
+import org.bukkit.potion.PotionEffect;
+import org.bukkit.potion.PotionEffectType;
 
 public class SkillThickenBlood extends TargettedSkill {
     private String applyText;
     private String expireText;
 
-    public SkillThickenBlood(Heroes plugin) {
+    public SkillThickenBlood(final Heroes plugin) {
         super(plugin, "ThickenBlood");
         setDescription("Thicken the blood of your target, causing them to be unable to use stamina for $1 second(s).");
         setUsage("/skill thickenblood");
@@ -36,18 +34,20 @@ public class SkillThickenBlood extends TargettedSkill {
         setTypes(SkillType.SILENCEABLE, SkillType.AGGRESSIVE, SkillType.ABILITY_PROPERTY_DARK, SkillType.STAMINA_FREEZING, SkillType.DEBUFFING);
     }
 
-    public String getDescription(Hero hero) {
+    @Override
+    public String getDescription(final Hero hero) {
         int duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, 2000, false);
-        int durationIncrease = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION_INCREASE_PER_INTELLECT, 75, false);
+        final int durationIncrease = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION_INCREASE_PER_INTELLECT, 75, false);
         duration += hero.getAttributeValue(AttributeType.INTELLECT) * durationIncrease;
 
-        String formattedDuration = Util.decFormat.format(duration / 1000.0);
+        final String formattedDuration = Util.decFormat.format(duration / 1000.0);
 
         return getDescription().replace("$1", formattedDuration);
     }
 
+    @Override
     public ConfigurationSection getDefaultConfig() {
-        ConfigurationSection node = super.getDefaultConfig();
+        final ConfigurationSection node = super.getDefaultConfig();
 
         node.set(SkillSetting.MAX_DISTANCE.node(), 7);
         node.set(SkillSetting.DURATION.node(), 2000);
@@ -62,26 +62,28 @@ public class SkillThickenBlood extends TargettedSkill {
     public void init() {
         super.init();
 
-        applyText = SkillConfigManager.getRaw(this, SkillSetting.APPLY_TEXT, ChatComponents.GENERIC_SKILL + "%target%'s blood has thickened!").replace("%target%", "$1");
-        expireText = SkillConfigManager.getRaw(this, SkillSetting.EXPIRE_TEXT, ChatComponents.GENERIC_SKILL + "%target%'s blood returns to normal.").replace("%target%", "$1");
+        applyText = SkillConfigManager.getRaw(this, SkillSetting.APPLY_TEXT, ChatComponents.GENERIC_SKILL + "%target%'s blood has thickened!").replace("%target%", "$1").replace("$target$", "$1");
+        expireText = SkillConfigManager.getRaw(this, SkillSetting.EXPIRE_TEXT, ChatComponents.GENERIC_SKILL + "%target%'s blood returns to normal.").replace("%target%", "$1").replace("$target$", "$1");
     }
 
-    public SkillResult use(Hero hero, LivingEntity target, String[] args) {
+    @Override
+    public SkillResult use(final Hero hero, final LivingEntity target, final String[] args) {
 
-        if (!(target instanceof Player))
+        if (!(target instanceof Player)) {
             return SkillResult.INVALID_TARGET;
+        }
 
-        Player player = hero.getPlayer();
+        final Player player = hero.getPlayer();
 
         broadcastExecuteText(hero, target);
 
         // Get Debuff values
         int duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, 2000, false);
-        int durationIncrease = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION_INCREASE_PER_INTELLECT, 75, false);
+        final int durationIncrease = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION_INCREASE_PER_INTELLECT, 75, false);
         duration += hero.getAttributeValue(AttributeType.INTELLECT) * durationIncrease;
 
-        ThickenBloodEffect tbEffect = new ThickenBloodEffect(this, player, duration);
-        CharacterTemplate targCT = plugin.getCharacterManager().getCharacter(target);
+        final ThickenBloodEffect tbEffect = new ThickenBloodEffect(this, player, duration);
+        final CharacterTemplate targCT = plugin.getCharacterManager().getCharacter(target);
         targCT.addEffect(tbEffect);
 
         return SkillResult.NORMAL;
@@ -90,7 +92,7 @@ public class SkillThickenBlood extends TargettedSkill {
     public class ThickenBloodEffect extends ExpirableEffect {
         private int originalStamina;
 
-        public ThickenBloodEffect(Skill skill, Player applier, int duration) {
+        public ThickenBloodEffect(final Skill skill, final Player applier, final int duration) {
             super(skill, "ThickenedBlood", applier, duration);
 
             types.add(EffectType.MAGIC);
@@ -103,10 +105,11 @@ public class SkillThickenBlood extends TargettedSkill {
         }
 
         @Override
-        public void applyToMonster(Monster monster) {}
+        public void applyToMonster(final Monster monster) {
+        }
 
         @Override
-        public void applyToHero(Hero hero) {
+        public void applyToHero(final Hero hero) {
             super.applyToHero(hero);
             final Player player = hero.getPlayer();
 
@@ -117,10 +120,11 @@ public class SkillThickenBlood extends TargettedSkill {
         }
 
         @Override
-        public void removeFromMonster(Monster monster) {}
+        public void removeFromMonster(final Monster monster) {
+        }
 
         @Override
-        public void removeFromHero(Hero hero) {
+        public void removeFromHero(final Hero hero) {
             super.removeFromHero(hero);
             final Player player = hero.getPlayer();
 

@@ -8,7 +8,11 @@ import com.herocraftonline.heroes.characters.classes.HeroClass;
 import com.herocraftonline.heroes.characters.effects.EffectType;
 import com.herocraftonline.heroes.characters.effects.PeriodicDamageEffect;
 import com.herocraftonline.heroes.characters.effects.common.interfaces.HealthRegainReduction;
-import com.herocraftonline.heroes.characters.skill.*;
+import com.herocraftonline.heroes.characters.skill.Skill;
+import com.herocraftonline.heroes.characters.skill.SkillConfigManager;
+import com.herocraftonline.heroes.characters.skill.SkillSetting;
+import com.herocraftonline.heroes.characters.skill.SkillType;
+import com.herocraftonline.heroes.characters.skill.TargettedSkill;
 import com.herocraftonline.heroes.nms.NMSHandler;
 import com.herocraftonline.heroes.util.Util;
 import org.bukkit.Bukkit;
@@ -29,7 +33,7 @@ public class SkillMortalWound extends TargettedSkill {
     private String applyText;
     private String expireText;
 
-    public SkillMortalWound(Heroes plugin) {
+    public SkillMortalWound(final Heroes plugin) {
         super(plugin, "MortalWound");
         setDescription("You strike your target reducing healing by $1%, and causing them to bleed for $2 damage over $3 second(s).");
         setUsage("/skill mortalwound");
@@ -40,17 +44,17 @@ public class SkillMortalWound extends TargettedSkill {
     }
 
     @Override
-    public String getDescription(Hero hero) {
-        double heal = 1 - SkillConfigManager.getUseSetting(hero, this, "heal-multiplier", .5, true);
-        int duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, 10000, false);
-        double period = SkillConfigManager.getUseSetting(hero, this, SkillSetting.PERIOD, 2000, false);
-        double damage = SkillConfigManager.getUseSetting(hero, this, "tick-damage", 1, false);
+    public String getDescription(final Hero hero) {
+        final double heal = 1 - SkillConfigManager.getUseSetting(hero, this, "heal-multiplier", .5, true);
+        final int duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, 10000, false);
+        final double period = SkillConfigManager.getUseSetting(hero, this, SkillSetting.PERIOD, 2000, false);
+        final double damage = SkillConfigManager.getUseSetting(hero, this, "tick-damage", 1, false);
         return getDescription().replace("$1", heal * 100 + "").replace("$2", damage * duration / period + "").replace("$3", duration / 1000 + "");
     }
 
     @Override
     public ConfigurationSection getDefaultConfig() {
-        ConfigurationSection node = super.getDefaultConfig();
+        final ConfigurationSection node = super.getDefaultConfig();
         node.set("weapons", Util.swords);
         node.set(SkillSetting.DURATION.node(), 12000);
         node.set(SkillSetting.PERIOD.node(), 3000);
@@ -65,35 +69,35 @@ public class SkillMortalWound extends TargettedSkill {
     @Override
     public void init() {
         super.init();
-        applyText = SkillConfigManager.getRaw(this, SkillSetting.APPLY_TEXT, "%target% has been mortally wounded by %hero%!").replace("%target%", "$1").replace("%hero%", "$2");
-        expireText = SkillConfigManager.getRaw(this, SkillSetting.EXPIRE_TEXT, "%target% has recovered from their mortal wound!").replace("%target%", "$1");
+        applyText = SkillConfigManager.getRaw(this, SkillSetting.APPLY_TEXT, "%target% has been mortally wounded by %hero%!").replace("%target%", "$1").replace("$target$", "$1").replace("%hero%", "$2").replace("$hero$", "$2");
+        expireText = SkillConfigManager.getRaw(this, SkillSetting.EXPIRE_TEXT, "%target% has recovered from their mortal wound!").replace("%target%", "$1").replace("$target$", "$1");
     }
 
     @Override
-    public SkillResult use(Hero hero, LivingEntity target, String[] args) {
-        Player player = hero.getPlayer();
-        HeroClass heroClass = hero.getHeroClass();
+    public SkillResult use(final Hero hero, final LivingEntity target, final String[] args) {
+        final Player player = hero.getPlayer();
+        final HeroClass heroClass = hero.getHeroClass();
 
-        Material item = NMSHandler.getInterface().getItemInMainHand(player.getInventory()).getType();
+        final Material item = NMSHandler.getInterface().getItemInMainHand(player.getInventory()).getType();
         if (!SkillConfigManager.getUseSetting(hero, this, "weapons", Util.swords).contains(item.name())) {
             player.sendMessage("You can't use Mortal Wound with that weapon!");
             return SkillResult.INVALID_TARGET_NO_MSG;
         }
 
-        double damage = heroClass.getItemDamage(item) == null ? 0 : heroClass.getItemDamage(item).getScaled(hero); //getScaled(hero)
+        final double damage = heroClass.getItemDamage(item) == null ? 0 : heroClass.getItemDamage(item).getScaled(hero); //getScaled(hero)
         addSpellTarget(target, hero);
         damageEntity(target, player, damage, DamageCause.ENTITY_ATTACK);
 
-        long duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, 12000, false);
-        long period = SkillConfigManager.getUseSetting(hero, this, SkillSetting.PERIOD, 3000, true);
-        double tickDamage = SkillConfigManager.getUseSetting(hero, this, "tick-damage", 1, false);
-        double healMultiplier = SkillConfigManager.getUseSetting(hero, this, "heal-multiplier", 0.5, true);
+        final long duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, 12000, false);
+        final long period = SkillConfigManager.getUseSetting(hero, this, SkillSetting.PERIOD, 3000, true);
+        final double tickDamage = SkillConfigManager.getUseSetting(hero, this, "tick-damage", 1, false);
+        final double healMultiplier = SkillConfigManager.getUseSetting(hero, this, "heal-multiplier", 0.5, true);
         plugin.getCharacterManager().getCharacter(target).addEffect(new MortalWoundEffect(this, player, period, duration, tickDamage, healMultiplier));
 
         //player.getWorld().spigot().playEffect(target.getLocation().add(0, 0.5, 0), org.bukkit.Effect.CRIT, 0, 0, 0, 0, 0, 1, 25, 16);
         player.getWorld().spawnParticle(Particle.CRIT, target.getLocation().add(0, 0.5, 0), 25, 0, 0, 0, 1);
         player.getWorld().playEffect(player.getLocation(), org.bukkit.Effect.MOBSPAWNER_FLAMES, 3);
-        hero.getPlayer().getWorld().playSound(hero.getPlayer().getLocation(), Sound.ENTITY_PLAYER_HURT , 0.8F, 1.0F);
+        hero.getPlayer().getWorld().playSound(hero.getPlayer().getLocation(), Sound.ENTITY_PLAYER_HURT, 0.8F, 1.0F);
 
         return SkillResult.NORMAL;
     }
@@ -102,7 +106,7 @@ public class SkillMortalWound extends TargettedSkill {
 
         private double healMultiplier;
 
-        public MortalWoundEffect(Skill skill, Player applier, long period, long duration, double tickDamage, double healMultiplier) {
+        public MortalWoundEffect(final Skill skill, final Player applier, final long period, final long duration, final double tickDamage, final double healMultiplier) {
             super(skill, "MortalWoundEffect", applier, period, duration, tickDamage, applyText, expireText);
             this.healMultiplier = healMultiplier;
 
@@ -120,7 +124,7 @@ public class SkillMortalWound extends TargettedSkill {
         }
 
         @Override
-        public void setDelta(Double delta) {
+        public void setDelta(final Double delta) {
             this.healMultiplier = delta;
         }
     }
@@ -128,24 +132,24 @@ public class SkillMortalWound extends TargettedSkill {
     public class SkillEntityListener implements Listener {
 
         @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
-        public void onEntityRegainHealth(EntityRegainHealthEvent event) {
+        public void onEntityRegainHealth(final EntityRegainHealthEvent event) {
             if (!(event.getEntity() instanceof Player)) {
                 return;
             }
 
-            Hero hero = plugin.getCharacterManager().getHero((Player) event.getEntity());
+            final Hero hero = plugin.getCharacterManager().getHero((Player) event.getEntity());
             if (hero.hasEffect("MortalWoundEffect")) {
-                MortalWoundEffect mwEffect = (MortalWoundEffect) hero.getEffect("MortalWoundEffect");
+                final MortalWoundEffect mwEffect = (MortalWoundEffect) hero.getEffect("MortalWoundEffect");
                 if (mwEffect != null) {
                     event.setAmount((event.getAmount() * mwEffect.getHealMultiplier()));
                 }
             }
         }
-        
+
         @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
-        public void onHeroRegainHealth(HeroRegainHealthEvent event) {
+        public void onHeroRegainHealth(final HeroRegainHealthEvent event) {
             if (event.getHero().hasEffect("MortalWoundEffect")) {
-                MortalWoundEffect mwEffect = (MortalWoundEffect) event.getHero().getEffect("MortalWoundEffect");
+                final MortalWoundEffect mwEffect = (MortalWoundEffect) event.getHero().getEffect("MortalWoundEffect");
                 if (mwEffect != null) {
                     event.setDelta((event.getDelta() * mwEffect.getHealMultiplier()));
                 }

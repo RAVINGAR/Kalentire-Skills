@@ -8,7 +8,11 @@ import com.herocraftonline.heroes.characters.CustomNameManager;
 import com.herocraftonline.heroes.characters.Hero;
 import com.herocraftonline.heroes.characters.effects.EffectType;
 import com.herocraftonline.heroes.characters.effects.ExpirableEffect;
-import com.herocraftonline.heroes.characters.skill.*;
+import com.herocraftonline.heroes.characters.skill.ActiveSkill;
+import com.herocraftonline.heroes.characters.skill.Skill;
+import com.herocraftonline.heroes.characters.skill.SkillConfigManager;
+import com.herocraftonline.heroes.characters.skill.SkillSetting;
+import com.herocraftonline.heroes.characters.skill.SkillType;
 import com.herocraftonline.heroes.util.Util;
 import org.bukkit.Bukkit;
 import org.bukkit.Sound;
@@ -27,7 +31,7 @@ public class SkillDefensiveStance extends ActiveSkill {
     private String parrySkillText;
     private String parrySkillMagicText;
 
-    public SkillDefensiveStance(Heroes plugin) {
+    public SkillDefensiveStance(final Heroes plugin) {
         super(plugin, "DefensiveStance");
         setDescription("When prepared you have a $1% chance to completely negate the next incoming attack within $2 second(s) using your blade (and shield).");
         setUsage("/skill defensivestance");
@@ -39,7 +43,7 @@ public class SkillDefensiveStance extends ActiveSkill {
 
     @Override
     public ConfigurationSection getDefaultConfig() {
-        ConfigurationSection node = super.getDefaultConfig();
+        final ConfigurationSection node = super.getDefaultConfig();
         node.set(SkillSetting.DELAY.node(), 1000);
         node.set(SkillSetting.DURATION.node(), 5000);
         node.set(SkillSetting.CHANCE.node(), 0.8);
@@ -53,15 +57,15 @@ public class SkillDefensiveStance extends ActiveSkill {
     }
 
     @Override
-    public String getDescription(Hero hero) {
-        int duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, 5000, false);
-        double chance = SkillConfigManager.getUseSetting(hero, this, SkillSetting.CHANCE, 0.8, false);
-        double chancePerLevel = SkillConfigManager.getUseSetting(hero, this, SkillSetting.CHANCE_PER_LEVEL, 0.02, false);
+    public String getDescription(final Hero hero) {
+        final int duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, 5000, false);
+        final double chance = SkillConfigManager.getUseSetting(hero, this, SkillSetting.CHANCE, 0.8, false);
+        final double chancePerLevel = SkillConfigManager.getUseSetting(hero, this, SkillSetting.CHANCE_PER_LEVEL, 0.02, false);
 
         double overallChance = chance + chancePerLevel * hero.getHeroLevel();
-        if (overallChance > 1){
+        if (overallChance > 1) {
             overallChance = 1;
-        } else if (overallChance < 0){
+        } else if (overallChance < 0) {
             overallChance = 0;
         }
         return getDescription().replace("$1", (overallChance * 100) + "")
@@ -72,27 +76,27 @@ public class SkillDefensiveStance extends ActiveSkill {
     public void init() {
         super.init();
         applyText = SkillConfigManager.getRaw(this, SkillSetting.APPLY_TEXT,
-                "%hero% steadies themself in a defensive stance!").replace("%hero%", "$1");
+                "%hero% steadies themself in a defensive stance!").replace("%hero%", "$1").replace("$hero$", "$1");
         expireText = SkillConfigManager.getRaw(this, SkillSetting.EXPIRE_TEXT,
-                "%hero% loosened their stance!").replace("%hero%", "$1");
+                "%hero% loosened their stance!").replace("%hero%", "$1").replace("$hero$", "$1");
         parryText = SkillConfigManager.getRaw(this, "parry-text", "%hero% parried an attack!");
         parrySkillText = SkillConfigManager.getRaw(this, "parry-skill-text", "%hero% has parried %target%'s %skill%.");
         parrySkillMagicText = SkillConfigManager.getRaw(this, "parry-skill-magic-text", "%hero% has countered %target%'s magic.");
     }
 
     @Override
-    public SkillResult use(Hero hero, String[] args) {
+    public SkillResult use(final Hero hero, final String[] args) {
         broadcastExecuteText(hero);
-        int duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, 5000, false);
+        final int duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, 5000, false);
         hero.addEffect(new DefensiveStanceEffect(this, hero.getPlayer(), duration));
 
-        hero.getPlayer().getWorld().playSound(hero.getPlayer().getLocation(), Sound.BLOCK_ANVIL_LAND , 0.6F, 1.0F);
+        hero.getPlayer().getWorld().playSound(hero.getPlayer().getLocation(), Sound.BLOCK_ANVIL_LAND, 0.6F, 1.0F);
         return SkillResult.NORMAL;
     }
 
     public class DefensiveStanceEffect extends ExpirableEffect {
 
-        public DefensiveStanceEffect(Skill skill, Player applier, long duration) {
+        public DefensiveStanceEffect(final Skill skill, final Player applier, final long duration) {
             super(skill, "DefensiveStance", applier, duration);
             this.types.add(EffectType.PHYSICAL);
             this.types.add(EffectType.MAGIC);
@@ -100,16 +104,16 @@ public class SkillDefensiveStance extends ActiveSkill {
         }
 
         @Override
-        public void applyToHero(Hero hero) {
+        public void applyToHero(final Hero hero) {
             super.applyToHero(hero);
-            Player player = hero.getPlayer();
+            final Player player = hero.getPlayer();
             broadcast(player.getLocation(), "    " + applyText, player.getName());
         }
 
         @Override
-        public void removeFromHero(Hero hero) {
+        public void removeFromHero(final Hero hero) {
             super.removeFromHero(hero);
-            Player player = hero.getPlayer();
+            final Player player = hero.getPlayer();
             broadcast(player.getLocation(), "    " + expireText, player.getName());
         }
     }
@@ -117,31 +121,31 @@ public class SkillDefensiveStance extends ActiveSkill {
     public class SkillEntityListener implements Listener {
 
         @SuppressWarnings("unused")
-        private Skill skill;
+        private final Skill skill;
 
-        SkillEntityListener(Skill skill) {
+        SkillEntityListener(final Skill skill) {
             this.skill = skill;
         }
 
         @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
-        public void onWeaponDamage(WeaponDamageEvent event) {
+        public void onWeaponDamage(final WeaponDamageEvent event) {
             if (event.getDamage() == 0 || !(event.getEntity() instanceof Player)) {
                 return;
             }
 
-            Player player = (Player) event.getEntity();
-            Hero hero = plugin.getCharacterManager().getHero(player);
+            final Player player = (Player) event.getEntity();
+            final Hero hero = plugin.getCharacterManager().getHero(player);
             if (hero.hasEffect(getName())) {
-                double chance = SkillConfigManager.getUseSetting(hero, skill, SkillSetting.CHANCE, 0.8, false);
-                double chancePerLevel = SkillConfigManager.getUseSetting(hero, skill, SkillSetting.CHANCE_PER_LEVEL, 0.02, false);
+                final double chance = SkillConfigManager.getUseSetting(hero, skill, SkillSetting.CHANCE, 0.8, false);
+                final double chancePerLevel = SkillConfigManager.getUseSetting(hero, skill, SkillSetting.CHANCE_PER_LEVEL, 0.02, false);
                 double overallChance = chance + chancePerLevel * hero.getHeroLevel();
-                if (overallChance > 1){
+                if (overallChance > 1) {
                     overallChance = 1;
-                } else if (overallChance < 0){
+                } else if (overallChance < 0) {
                     overallChance = 0;
                 }
 
-                if (overallChance != 1 && Util.nextRand() > overallChance){
+                if (overallChance != 1 && Util.nextRand() > overallChance) {
                     return;
                 }
 
@@ -156,24 +160,24 @@ public class SkillDefensiveStance extends ActiveSkill {
         }
 
         @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
-        public void onSkillDamage(SkillDamageEvent event) {
+        public void onSkillDamage(final SkillDamageEvent event) {
             if (event.getDamage() == 0 || !(event.getEntity() instanceof Player)) {
                 return;
             }
-            Player player = (Player) event.getEntity();
-            Hero hero = plugin.getCharacterManager().getHero(player);
+            final Player player = (Player) event.getEntity();
+            final Hero hero = plugin.getCharacterManager().getHero(player);
             if (hero.hasEffect(getName())) {
-                double chance = SkillConfigManager.getUseSetting(hero, skill, SkillSetting.CHANCE, 0.8, false);
-                double chancePerLevel = SkillConfigManager.getUseSetting(hero, skill, SkillSetting.CHANCE_PER_LEVEL, 0.02, false);
+                final double chance = SkillConfigManager.getUseSetting(hero, skill, SkillSetting.CHANCE, 0.8, false);
+                final double chancePerLevel = SkillConfigManager.getUseSetting(hero, skill, SkillSetting.CHANCE_PER_LEVEL, 0.02, false);
                 double overallChance = chance + chancePerLevel * hero.getHeroLevel();
-                if (overallChance > 1){
+                if (overallChance > 1) {
                     overallChance = 1;
-                } else if (overallChance < 0){
+                } else if (overallChance < 0) {
                     overallChance = 0;
                 }
 
                 //TODO: Check if the random chance is properly checked.
-                if (overallChance != 1 && Util.nextRand() > overallChance){
+                if (overallChance != 1 && Util.nextRand() > overallChance) {
                     return;
                 }
 

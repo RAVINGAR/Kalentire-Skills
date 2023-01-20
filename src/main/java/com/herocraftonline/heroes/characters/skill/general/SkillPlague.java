@@ -9,7 +9,11 @@ import com.herocraftonline.heroes.characters.Hero;
 import com.herocraftonline.heroes.characters.Monster;
 import com.herocraftonline.heroes.characters.effects.EffectType;
 import com.herocraftonline.heroes.characters.effects.PeriodicDamageEffect;
-import com.herocraftonline.heroes.characters.skill.*;
+import com.herocraftonline.heroes.characters.skill.Skill;
+import com.herocraftonline.heroes.characters.skill.SkillConfigManager;
+import com.herocraftonline.heroes.characters.skill.SkillSetting;
+import com.herocraftonline.heroes.characters.skill.SkillType;
+import com.herocraftonline.heroes.characters.skill.TargettedSkill;
 import com.herocraftonline.heroes.chat.ChatComponents;
 import com.herocraftonline.heroes.util.Util;
 import org.bukkit.Sound;
@@ -24,7 +28,7 @@ public class SkillPlague extends TargettedSkill {
     private String applyText;
     private String expireText;
 
-    public SkillPlague(Heroes plugin) {
+    public SkillPlague(final Heroes plugin) {
         super(plugin, "Plague");
         setUsage("/skill plague");
         setDescription("You cast a plague, dealing $1 damage over $2 seconds to everything and spreading to nearby enemies within a radius of $3 blocks.");
@@ -34,26 +38,26 @@ public class SkillPlague extends TargettedSkill {
     }
 
     @Override
-    public String getDescription(Hero hero) {
+    public String getDescription(final Hero hero) {
 
-        int radius = SkillConfigManager.getUseSetting(hero, this, SkillSetting.RADIUS.node(), 4, false);
+        final int radius = SkillConfigManager.getUseSetting(hero, this, SkillSetting.RADIUS.node(), 4, false);
 
-        int duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, 20000, false);
-        int period = SkillConfigManager.getUseSetting(hero, this, SkillSetting.PERIOD, 2500, false);
+        final int duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, 20000, false);
+        final int period = SkillConfigManager.getUseSetting(hero, this, SkillSetting.PERIOD, 2500, false);
 
         double tickDamage = SkillConfigManager.getUseSetting(hero, this, "tick-damage", 17, false);
-        double tickDamageIncrease = hero.getAttributeValue(AttributeType.INTELLECT) * SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE_INCREASE_PER_INTELLECT, 0.17, false);
+        final double tickDamageIncrease = hero.getAttributeValue(AttributeType.INTELLECT) * SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE_INCREASE_PER_INTELLECT, 0.17, false);
         tickDamage += tickDamageIncrease;
 
-        String formattedDamage = Util.decFormat.format(tickDamage * ((double) duration / (double) period));
-        String formattedDuration = Util.decFormat.format(duration / 1000.0);
+        final String formattedDamage = Util.decFormat.format(tickDamage * ((double) duration / (double) period));
+        final String formattedDuration = Util.decFormat.format(duration / 1000.0);
 
         return getDescription().replace("$1", formattedDamage).replace("$2", formattedDuration).replace("$3", radius + "");
     }
 
     @Override
     public ConfigurationSection getDefaultConfig() {
-        ConfigurationSection node = super.getDefaultConfig();
+        final ConfigurationSection node = super.getDefaultConfig();
 
         node.set(SkillSetting.MAX_DISTANCE.node(), 12);
         node.set(SkillSetting.DURATION.node(), 15000);
@@ -71,21 +75,21 @@ public class SkillPlague extends TargettedSkill {
     public void init() {
         super.init();
 
-        applyText = SkillConfigManager.getRaw(this, SkillSetting.APPLY_TEXT, ChatComponents.GENERIC_SKILL + "%target% is infected with the plague!").replace("%target%", "$1");
-        expireText = SkillConfigManager.getRaw(this, SkillSetting.EXPIRE_TEXT, ChatComponents.GENERIC_SKILL + "%target% is no longer infected with the plague!").replace("%target%", "$1");
+        applyText = SkillConfigManager.getRaw(this, SkillSetting.APPLY_TEXT, ChatComponents.GENERIC_SKILL + "%target% is infected with the plague!").replace("%target%", "$1").replace("$target$", "$1");
+        expireText = SkillConfigManager.getRaw(this, SkillSetting.EXPIRE_TEXT, ChatComponents.GENERIC_SKILL + "%target% is no longer infected with the plague!").replace("%target%", "$1").replace("$target$", "$1");
     }
 
     @Override
-    public SkillResult use(Hero hero, LivingEntity target, String[] args) {
-        Player player = hero.getPlayer();
+    public SkillResult use(final Hero hero, final LivingEntity target, final String[] args) {
+        final Player player = hero.getPlayer();
 
         broadcastExecuteText(hero, target);
 
-        long duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, 20000, false);
-        long period = SkillConfigManager.getUseSetting(hero, this, SkillSetting.PERIOD, 2500, true);
+        final long duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, 20000, false);
+        final long period = SkillConfigManager.getUseSetting(hero, this, SkillSetting.PERIOD, 2500, true);
 
         double tickDamage = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE_TICK, (double) 17, false);
-        double tickDamageIncrease = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE_TICK_INCREASE_PER_INTELLECT, 0.17, false);
+        final double tickDamageIncrease = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE_TICK_INCREASE_PER_INTELLECT, 0.17, false);
         tickDamage += (tickDamageIncrease * hero.getAttributeValue(AttributeType.INTELLECT));
 
         plugin.getCharacterManager().getCharacter(target).addEffect(new PlagueEffect(this, player, duration, period, tickDamage));
@@ -98,7 +102,7 @@ public class SkillPlague extends TargettedSkill {
     public class PlagueEffect extends PeriodicDamageEffect {
         private boolean jumped = false;
 
-        public PlagueEffect(Skill skill, Player applier, long duration, long period, double tickDamage) {
+        public PlagueEffect(final Skill skill, final Player applier, final long duration, final long period, final double tickDamage) {
             super(skill, "Plague", applier, period, duration, tickDamage);
 
             types.add(EffectType.DISPELLABLE);
@@ -108,7 +112,7 @@ public class SkillPlague extends TargettedSkill {
         }
 
         // Clone Constructor
-        private PlagueEffect(PlagueEffect pEffect) {
+        private PlagueEffect(final PlagueEffect pEffect) {
             super(pEffect.getSkill(), pEffect.getName(), pEffect.getApplier(), pEffect.getPeriod(), pEffect.getRemainingTime(), pEffect.tickDamage);
 
             types.add(EffectType.DISPELLABLE);
@@ -120,38 +124,38 @@ public class SkillPlague extends TargettedSkill {
         }
 
         @Override
-        public void applyToMonster(Monster monster) {
+        public void applyToMonster(final Monster monster) {
             super.applyToMonster(monster);
         }
 
         @Override
-        public void applyToHero(Hero hero) {
+        public void applyToHero(final Hero hero) {
             super.applyToHero(hero);
-            Player player = hero.getPlayer();
+            final Player player = hero.getPlayer();
             broadcast(player.getLocation(), "    " + applyText, player.getName());
         }
 
         @Override
-        public void removeFromMonster(Monster monster) {
+        public void removeFromMonster(final Monster monster) {
             super.removeFromMonster(monster);
             broadcast(monster.getEntity().getLocation(), "    " + expireText, CustomNameManager.getName(monster));
         }
 
         @Override
-        public void removeFromHero(Hero hero) {
+        public void removeFromHero(final Hero hero) {
             super.removeFromHero(hero);
-            Player player = hero.getPlayer();
+            final Player player = hero.getPlayer();
             broadcast(player.getLocation(), "    " + expireText, player.getName());
         }
 
         @Override
-        public void tickMonster(Monster monster) {
+        public void tickMonster(final Monster monster) {
             super.tickMonster(monster);
             spreadToNearbyEntities(monster.getEntity());
         }
 
         @Override
-        public void tickHero(Hero hero) {
+        public void tickHero(final Hero hero) {
             super.tickHero(hero);
             spreadToNearbyEntities(hero.getPlayer());
         }
@@ -159,17 +163,17 @@ public class SkillPlague extends TargettedSkill {
         /**
          * Attempts to spread the effect to all nearby entities
          * Will not target non-pvpable targets
-         * 
+         *
          * @param lEntity
          */
-        private void spreadToNearbyEntities(LivingEntity lEntity) {
+        private void spreadToNearbyEntities(final LivingEntity lEntity) {
             if (jumped) {
                 return;
             }
             final Player applier = getApplier();
-            Hero applyHero = plugin.getCharacterManager().getHero(applier);
-            int radius = SkillConfigManager.getUseSetting(applyHero, skill, SkillSetting.RADIUS.node(), 4, false);
-            for (Entity target : lEntity.getNearbyEntities(radius, radius, radius)) {
+            final Hero applyHero = plugin.getCharacterManager().getHero(applier);
+            final int radius = SkillConfigManager.getUseSetting(applyHero, skill, SkillSetting.RADIUS.node(), 4, false);
+            for (final Entity target : lEntity.getNearbyEntities(radius, radius, radius)) {
                 if (!(target instanceof LivingEntity)) {
                     continue;
                 }
@@ -178,11 +182,10 @@ public class SkillPlague extends TargettedSkill {
                     continue;
                 }
 
-                CharacterTemplate character = plugin.getCharacterManager().getCharacter((LivingEntity) target);
+                final CharacterTemplate character = plugin.getCharacterManager().getCharacter((LivingEntity) target);
                 if (character.hasEffect("Plague")) {
                     continue;
-                }
-                else {
+                } else {
                     character.addEffect(new PlagueEffect(this));
                 }
             }

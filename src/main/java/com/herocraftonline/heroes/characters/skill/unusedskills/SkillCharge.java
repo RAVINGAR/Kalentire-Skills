@@ -10,7 +10,6 @@ import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
-import org.bukkit.Sound;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
@@ -35,7 +34,7 @@ import com.herocraftonline.heroes.characters.skill.TargettedSkill;
 
 public class SkillCharge extends TargettedSkill {
 
-    private Set<String> chargingPlayers = new HashSet<String>();
+    private final Set<String> chargingPlayers = new HashSet<>();
 
     public SkillCharge(Heroes plugin) {
         super(plugin, "Charge");
@@ -73,12 +72,7 @@ public class SkillCharge extends TargettedSkill {
         player.setVelocity(v);
 
         chargingPlayers.add(hero.getName());
-        plugin.getServer().getScheduler().scheduleSyncDelayedTask(plugin, new Runnable() {
-            @Override
-            public void run() {
-                player.setFallDistance(8f);
-            }
-        }, 2);
+        plugin.getServer().getScheduler().scheduleSyncDelayedTask(plugin, () -> player.setFallDistance(8f), 2);
         broadcastExecuteText(hero, target);
         return SkillResult.NORMAL;
     }

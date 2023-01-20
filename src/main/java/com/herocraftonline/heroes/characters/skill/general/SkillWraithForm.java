@@ -2,17 +2,13 @@ package com.herocraftonline.heroes.characters.skill.general;
 
 import com.herocraftonline.heroes.Heroes;
 import com.herocraftonline.heroes.api.SkillResult;
-import com.herocraftonline.heroes.api.events.EffectAddEvent;
 import com.herocraftonline.heroes.characters.Hero;
 import com.herocraftonline.heroes.characters.effects.EffectType;
 import com.herocraftonline.heroes.characters.effects.ExpirableEffect;
 import com.herocraftonline.heroes.characters.skill.*;
 import com.herocraftonline.heroes.util.Util;
 import org.bukkit.Bukkit;
-import org.bukkit.Effect;
 import org.bukkit.Particle;
-import org.bukkit.Sound;
-import org.bukkit.Sound;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
 import org.bukkit.Sound;
@@ -79,7 +75,7 @@ public class SkillWraithForm extends ActiveSkill {
     }
 
     public class WraithFormEffect extends ExpirableEffect {
-        private Skill skill;
+        private final Skill skill;
 
         public WraithFormEffect(Skill skill, Heroes plugin, Player applier, long duration) {
             super(skill, plugin, EFFECT_NAME, applier, duration);

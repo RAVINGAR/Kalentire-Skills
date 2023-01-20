@@ -17,9 +17,7 @@ import org.bukkit.util.BlockIterator;
 import org.bukkit.util.Vector;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
-import java.util.Set;
 
 public class SkillFlameDash extends ActiveSkill {
 
@@ -95,12 +93,12 @@ public class SkillFlameDash extends ActiveSkill {
             return SkillResult.INVALID_TARGET_NO_MSG;
         }
 
-        List<Material> mustStepDownBlocks = new ArrayList<Material>(Util.transparentBlocks);
+        List<Material> mustStepDownBlocks = new ArrayList<>(Util.transparentBlocks);
         mustStepDownBlocks.remove(Material.FIRE);
         mustStepDownBlocks.remove(Material.LAVA);
 
-        List<Block> fireTickBlocks = new ArrayList<Block>();
-        List<Block> possibleFireTickBlocks = new ArrayList<Block>();
+        List<Block> fireTickBlocks = new ArrayList<>();
+        List<Block> possibleFireTickBlocks = new ArrayList<>();
         Block previousBlock = currentPlayerLoc.getBlock();
         Block currentBlock = null;
         int totalStepUpsTaken = 0;

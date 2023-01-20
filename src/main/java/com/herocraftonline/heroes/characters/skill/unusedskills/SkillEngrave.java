@@ -9,9 +9,8 @@ import com.herocraftonline.heroes.characters.skill.SkillSetting;
 import com.herocraftonline.heroes.characters.skill.SkillType;
 import com.herocraftonline.heroes.nms.NMSHandler;
 import com.herocraftonline.heroes.util.Util;
-import org.apache.commons.lang.StringUtils;
+import org.bukkit.ChatColor;
 import org.bukkit.Material;
-import org.bukkit.Sound;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
 import org.bukkit.Sound;
@@ -98,8 +97,14 @@ public class SkillEngrave extends ActiveSkill {
         double chance = (SkillConfigManager.getUseSetting(hero, this, SkillSetting.CHANCE.node(), 1.0, false) + (SkillConfigManager.getUseSetting(hero, this, SkillSetting.CHANCE_PER_LEVEL.node(), 0.0, false) * hero.getHeroLevel(this)));
         chance = chance > 0 ? chance : 0;
         if (Math.random() <= chance) {
-
-            String str = StringUtils.join(text, " "); //Thanks to NodinChan and blha303 and Gummy
+            StringBuilder builder = new StringBuilder();
+            for(int i = 0; i < text.length; i++) {
+                builder.append(ChatColor.translateAlternateColorCodes('&', text[i]));
+                if(i + 1 < text.length) {
+                    builder.append(" ");
+                }
+            }
+            String str = builder.toString(); //Thanks to NodinChan and blha303 and Gummy
             ItemMeta im = item.getItemMeta();
 
             im.setDisplayName(str);

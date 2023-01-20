@@ -17,7 +17,7 @@ import com.sk89q.worldguard.bukkit.WorldGuardPlugin;
 import com.sk89q.worldguard.protection.flags.Flags;
 import com.sk89q.worldguard.protection.regions.RegionContainer;
 import com.sk89q.worldguard.protection.regions.RegionQuery;
-import org.apache.commons.lang.StringUtils;
+import io.lumine.mythic.bukkit.utils.lib.lang3.StringUtils;
 import org.bukkit.*;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
@@ -26,7 +26,7 @@ import java.util.logging.Level;
 
 public class SkillMark extends ActiveSkill {
 
-    private boolean towny = false;
+    private final boolean towny = false;
     private WorldGuardPlugin wgp;
     private boolean worldguard = false;
     private boolean townships = false;
@@ -103,8 +103,9 @@ public class SkillMark extends ActiveSkill {
                 player.sendMessage("Your recall location is improperly set!");
                 return SkillResult.SKIP_POST_USAGE;
             }
-            if (StringUtils.isNotEmpty(skillSettings.getString("server"))) {
-                player.sendMessage("Your recall is currently marked on " + skillSettings.getString("server") + "," + world.getName() + " at: " + (int) xyzyp[0] + ", " + (int) xyzyp[1] + ", " + (int) xyzyp[2]);
+            String str = skillSettings.getString("server");
+            if (str != null && !str.isEmpty()) {
+                player.sendMessage("Your recall is currently marked on " + str + "," + world.getName() + " at: " + (int) xyzyp[0] + ", " + (int) xyzyp[1] + ", " + (int) xyzyp[2]);
             } else {
                 player.sendMessage("Your recall is currently marked on " + world.getName() + " at: " + (int) xyzyp[0] + ", " + (int) xyzyp[1] + ", " + (int) xyzyp[2]);
             }
@@ -241,7 +242,7 @@ public class SkillMark extends ActiveSkill {
 
         if (skillSetting != null) {
             final String worldName = skillSetting.getString("world");
-            if (StringUtils.isNotEmpty(worldName)) {
+            if (worldName != null && !worldName.isEmpty()) {
                 world = Bukkit.getServer().getWorld(worldName);
             }
         }

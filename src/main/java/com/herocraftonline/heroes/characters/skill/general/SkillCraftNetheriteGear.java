@@ -47,7 +47,7 @@ public class SkillCraftNetheriteGear extends PassiveSkill {
 
         netheriteGear = new HashSet<>();
 
-        if(Properties.SUBVERSION >= this.SUBVERSION) {
+        if(Properties.SUBVERSION >= SUBVERSION) {
             netheriteGear.add(Material.NETHERITE_SWORD);
             netheriteGear.add(Material.NETHERITE_PICKAXE);
             netheriteGear.add(Material.NETHERITE_AXE);

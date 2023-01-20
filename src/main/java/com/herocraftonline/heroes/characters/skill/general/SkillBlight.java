@@ -1,16 +1,5 @@
 package com.herocraftonline.heroes.characters.skill.general;
 
-import org.bukkit.Color;
-import org.bukkit.FireworkEffect;
-import org.bukkit.configuration.ConfigurationSection;
-import org.bukkit.entity.Entity;
-import org.bukkit.entity.LivingEntity;
-import org.bukkit.entity.Player;
-import org.bukkit.Sound;
-import org.bukkit.event.entity.EntityDamageEvent.DamageCause;
-import org.bukkit.potion.PotionEffect;
-import org.bukkit.potion.PotionEffectType;
-
 import com.herocraftonline.heroes.Heroes;
 import com.herocraftonline.heroes.api.SkillResult;
 import com.herocraftonline.heroes.attributes.AttributeType;
@@ -28,6 +17,13 @@ import com.herocraftonline.heroes.characters.skill.TargettedSkill;
 import com.herocraftonline.heroes.characters.skill.VisualEffect;
 import com.herocraftonline.heroes.chat.ChatComponents;
 import com.herocraftonline.heroes.util.Util;
+import org.bukkit.configuration.ConfigurationSection;
+import org.bukkit.entity.Entity;
+import org.bukkit.entity.LivingEntity;
+import org.bukkit.entity.Player;
+import org.bukkit.event.entity.EntityDamageEvent.DamageCause;
+import org.bukkit.potion.PotionEffect;
+import org.bukkit.potion.PotionEffectType;
 
 public class SkillBlight extends TargettedSkill {
     // This is for Firework Effects
@@ -36,7 +32,7 @@ public class SkillBlight extends TargettedSkill {
     private String applyText;
     private String expireText;
 
-    public SkillBlight(Heroes plugin) {
+    public SkillBlight(final Heroes plugin) {
         super(plugin, "Blight");
         setDescription("You disease your target, dealing $1 dark damage over $2 seconds, enemies that get too close will also be damaged.");
         setUsage("/skill blight");
@@ -46,23 +42,23 @@ public class SkillBlight extends TargettedSkill {
     }
 
     @Override
-    public String getDescription(Hero hero) {
-        int duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, 17500, false);
-        int period = SkillConfigManager.getUseSetting(hero, this, SkillSetting.PERIOD, 2500, false);
+    public String getDescription(final Hero hero) {
+        final int duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, 17500, false);
+        final int period = SkillConfigManager.getUseSetting(hero, this, SkillSetting.PERIOD, 2500, false);
 
         double tickDamage = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE_TICK, 15, false);
-        double tickDamageIncrease = hero.getAttributeValue(AttributeType.INTELLECT) * SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE_TICK_INCREASE_PER_INTELLECT, 0.4, false);
+        final double tickDamageIncrease = hero.getAttributeValue(AttributeType.INTELLECT) * SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE_TICK_INCREASE_PER_INTELLECT, 0.4, false);
         tickDamage += tickDamageIncrease;
 
-        String formattedDamage = Util.decFormat.format(tickDamage * ((double) duration / (double) period));
-        String formattedDuration = Util.decFormat.format(duration / 1000.0);
+        final String formattedDamage = Util.decFormat.format(tickDamage * ((double) duration / (double) period));
+        final String formattedDuration = Util.decFormat.format(duration / 1000.0);
 
         return getDescription().replace("$1", formattedDamage).replace("$2", formattedDuration);
     }
 
     @Override
     public ConfigurationSection getDefaultConfig() {
-        ConfigurationSection node = super.getDefaultConfig();
+        final ConfigurationSection node = super.getDefaultConfig();
 
         node.set(SkillSetting.MAX_DISTANCE.node(), 12);
         node.set(SkillSetting.DURATION.node(), 17500);
@@ -80,24 +76,24 @@ public class SkillBlight extends TargettedSkill {
     public void init() {
         super.init();
 
-        applyText = SkillConfigManager.getRaw(this, SkillSetting.APPLY_TEXT, ChatComponents.GENERIC_SKILL + "%target% begins to radiate a cloud of disease!").replace("%target%", "$1");
-        expireText = SkillConfigManager.getRaw(this, SkillSetting.EXPIRE_TEXT, ChatComponents.GENERIC_SKILL + "%target% is no longer diseased!").replace("%target%", "$1");
+        applyText = SkillConfigManager.getRaw(this, SkillSetting.APPLY_TEXT, ChatComponents.GENERIC_SKILL + "%target% begins to radiate a cloud of disease!").replace("%target%", "$1").replace("$target$", "$1");
+        expireText = SkillConfigManager.getRaw(this, SkillSetting.EXPIRE_TEXT, ChatComponents.GENERIC_SKILL + "%target% is no longer diseased!").replace("%target%", "$1").replace("$target$", "$1");
     }
 
     @Override
-    public SkillResult use(Hero hero, LivingEntity target, String[] args) {
-        Player player = hero.getPlayer();
+    public SkillResult use(final Hero hero, final LivingEntity target, final String[] args) {
+        final Player player = hero.getPlayer();
 
         broadcastExecuteText(hero, target);
 
-        int duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, 17500, false);
-        int period = SkillConfigManager.getUseSetting(hero, this, SkillSetting.PERIOD, 2500, true);
+        final int duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, 17500, false);
+        final int period = SkillConfigManager.getUseSetting(hero, this, SkillSetting.PERIOD, 2500, true);
 
         double tickDamage = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE_TICK, 15, false);
-        double tickDamageIncrease = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE_TICK_INCREASE_PER_INTELLECT, 0.4, false);
+        final double tickDamageIncrease = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE_TICK_INCREASE_PER_INTELLECT, 0.4, false);
         tickDamage += (tickDamageIncrease * hero.getAttributeValue(AttributeType.INTELLECT));
 
-        CharacterTemplate targetCT = plugin.getCharacterManager().getCharacter(target);
+        final CharacterTemplate targetCT = plugin.getCharacterManager().getCharacter(target);
         targetCT.addEffect(new BlightEffect(this, player, duration, period, tickDamage));
 
         // this is our fireworks shit
@@ -124,7 +120,7 @@ public class SkillBlight extends TargettedSkill {
 
     public class BlightEffect extends PeriodicDamageEffect {
 
-        public BlightEffect(Skill skill, Player applier, long duration, long period, double tickDamage) {
+        public BlightEffect(final Skill skill, final Player applier, final long duration, final long period, final double tickDamage) {
             super(skill, "Blight", applier, period, duration, tickDamage);
 
             types.add(EffectType.DISEASE);
@@ -136,51 +132,51 @@ public class SkillBlight extends TargettedSkill {
         }
 
         @Override
-        public void applyToMonster(Monster monster) {
+        public void applyToMonster(final Monster monster) {
             super.applyToMonster(monster);
         }
 
         @Override
-        public void applyToHero(Hero hero) {
+        public void applyToHero(final Hero hero) {
             super.applyToHero(hero);
-            Player player = hero.getPlayer();
+            final Player player = hero.getPlayer();
             broadcast(player.getLocation(), "    " + applyText, player.getName(), applier.getName());
         }
 
         @Override
-        public void removeFromMonster(Monster monster) {
+        public void removeFromMonster(final Monster monster) {
             super.removeFromMonster(monster);
             broadcast(monster.getEntity().getLocation(), "    " + expireText, CustomNameManager.getName(monster), applier.getName());
         }
 
         @Override
-        public void removeFromHero(Hero hero) {
+        public void removeFromHero(final Hero hero) {
             super.removeFromHero(hero);
-            Player player = hero.getPlayer();
+            final Player player = hero.getPlayer();
             broadcast(player.getLocation(), "    " + expireText, player.getName(), applier.getName());
         }
 
         @Override
-        public void tickMonster(Monster monster) {
+        public void tickMonster(final Monster monster) {
             super.tickMonster(monster);
             damageNearby(monster.getEntity());
         }
 
         @Override
-        public void tickHero(Hero hero) {
+        public void tickHero(final Hero hero) {
             super.tickHero(hero);
             damageNearby(hero.getPlayer());
         }
 
-        private void damageNearby(LivingEntity lEntity) {
-            Hero applyHero = plugin.getCharacterManager().getHero(getApplier());
-            int radius = SkillConfigManager.getUseSetting(applyHero, skill, SkillSetting.RADIUS, 4, false);
-            for (Entity target : lEntity.getNearbyEntities(radius, radius, radius)) {
+        private void damageNearby(final LivingEntity lEntity) {
+            final Hero applyHero = plugin.getCharacterManager().getHero(getApplier());
+            final int radius = SkillConfigManager.getUseSetting(applyHero, skill, SkillSetting.RADIUS, 4, false);
+            for (final Entity target : lEntity.getNearbyEntities(radius, radius, radius)) {
                 if (!(target instanceof LivingEntity)) {
                     continue;
                 }
 
-                LivingEntity lTarget = (LivingEntity) target;
+                final LivingEntity lTarget = (LivingEntity) target;
 
                 if (!damageCheck(applier, lTarget)) {
                     continue;

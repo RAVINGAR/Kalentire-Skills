@@ -10,7 +10,6 @@ import org.bukkit.*;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
-import org.bukkit.Sound;
 import org.bukkit.entity.Snowball;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
@@ -25,7 +24,7 @@ import java.util.HashMap;
 
 public class SkillBloodbolt extends ActiveSkill
 {
-	private HashMap<Snowball, Player> bolts = new HashMap<Snowball, Player>();
+	private final HashMap<Snowball, Player> bolts = new HashMap<>();
 
 	public SkillBloodbolt(Heroes plugin)
 	{
@@ -78,7 +77,7 @@ public class SkillBloodbolt extends ActiveSkill
 		new BukkitRunnable()
 		{
 			private int ticks = 0;
-			private int maxTicks = 4;
+			private final int maxTicks = 4;
 			public void run()
 			{
 				if (ticks < maxTicks)
@@ -111,7 +110,7 @@ public class SkillBloodbolt extends ActiveSkill
 
 	public class BloodboltListener implements Listener
 	{
-		Skill skill;
+		final Skill skill;
 		public BloodboltListener(Skill skill)
 		{
 			this.skill = skill;
@@ -140,10 +139,7 @@ public class SkillBloodbolt extends ActiveSkill
 			if (hero.hasEffect("BloodUnionEffect")) {
 				BloodUnionEffect buEffect = (BloodUnionEffect) hero.getEffect("BloodUnionEffect");
 
-				if (target instanceof Player)
-					buEffect.addBloodUnion(bloodUnionIncrease, true);
-				else
-					buEffect.addBloodUnion(bloodUnionIncrease, false);
+                buEffect.addBloodUnion(bloodUnionIncrease, target instanceof Player);
 			}
 
 			addSpellTarget(target, hero);

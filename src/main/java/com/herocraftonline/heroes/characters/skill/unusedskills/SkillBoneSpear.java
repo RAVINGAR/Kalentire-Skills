@@ -89,7 +89,7 @@ public class SkillBoneSpear extends ActiveSkill {
         return SkillResult.NORMAL;
     }
 
-    class BoneSpearProjectile extends BasicDamageMissile {
+    static class BoneSpearProjectile extends BasicDamageMissile {
         private final double blockCollisionSizeSquared;
         private final int visualTickRate;
 

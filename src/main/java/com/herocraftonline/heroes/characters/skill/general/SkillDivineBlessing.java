@@ -12,12 +12,10 @@ import com.herocraftonline.heroes.characters.skill.SkillType;
 import com.herocraftonline.heroes.util.GeometryUtil;
 import org.bukkit.Location;
 import org.bukkit.Particle;
-import org.bukkit.World;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitRunnable;
 
-import java.util.ArrayList;
 import java.util.List;
 
 public class SkillDivineBlessing extends ActiveSkill {
@@ -74,10 +72,9 @@ public class SkillDivineBlessing extends ActiveSkill {
 					for (double r = 1; r < 5 * 2; r++)
 					{
 						List<Location> particleLocations = GeometryUtil.circle(playerLoc, 36, r / 2);
-						for (int i = 0; i < particleLocations.size(); i++)
-						{
+						for (Location particleLocation : particleLocations) {
 							//playerLoc.getWorld().spigot().playEffect(particleLocations.get(i), Effect.FIREWORKS_SPARK, 0, 0, 0, 0.1F, 0, 0.1F, 1, 16);
-							playerLoc.getWorld().spawnParticle(Particle.FIREWORKS_SPARK, particleLocations.get(i), 1, 0, 0.1, 0, 0.1);
+							playerLoc.getWorld().spawnParticle(Particle.FIREWORKS_SPARK, particleLocation, 1, 0, 0.1, 0, 0.1);
 						}
 					}
 					cancel();

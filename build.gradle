@@ -5,6 +5,7 @@ plugins {
 ext {
     hcRepoUsername = System.getenv("HC_REPO_USERNAME") ?: hcRepoUsername
     hcRepoPassword = System.getenv("HC_REPO_PASSWORD") ?: hcRepoPassword
+
 }
 
 allprojects {
@@ -12,10 +13,10 @@ allprojects {
     apply plugin: 'idea'
 
     group 'com.herocraftonline.heroes.characters.skill'
-    version '1.9.25'
+    version '1.9.27'
 
-    sourceCompatibility = JavaVersion.VERSION_16
-    targetCompatibility = JavaVersion.VERSION_16
+    sourceCompatibility = JavaVersion.VERSION_1_8
+    targetCompatibility = JavaVersion.VERSION_1_8
 }
 repositories {
     //mavenLocal()
@@ -80,14 +81,13 @@ ext.getGitHash = { ->
 }
 
 dependencies {
-    compileOnly "com.herocraftonline.heroes:Heroes:1.9.25-SNAPSHOT"
+    compileOnly "com.herocraftonline.heroes:Heroes:1.9.28-TEST-SNAPSHOT"
     compileOnly "org.spigotmc:spigot-api:1.18.2-R0.1-SNAPSHOT"
     compileOnly "net.milkbowl.vault:VaultAPI:1.7"
     compileOnly "com.sk89q.worldguard:worldguard-bukkit:7.0.3"
     compileOnly "com.comphenix.protocol:ProtocolLib:4.7.0"
     compileOnly "LibsDisguises:LibsDisguises:10.0.26"
     compileOnly "com.griefcraft.lwc:LWC:4.4.0"
-    compileOnly "de.slikey:EffectLib:6.1"
     compileOnly "com.herocraftonline:townships:1.1.0-SNAPSHOT"
     compileOnly "fr.neatmonster:nocheatplus:3.16.1-SNAPSHOT"
     compileOnly 'io.lumine:Mythic-Dist:5.1.0-SNAPSHOT'
@@ -217,7 +217,7 @@ tasks.register("public1", CompilePackTask) {
 tasks.register("pack1", CompilePackTask) {
     pack = "pack1"
     skills = [
-            "Bloodbeam",
+            "BloodBeam",
             "BloodBond",
             "BloodDrinker",
             "BloodGift",
@@ -377,7 +377,7 @@ tasks.register("pack6", CompilePackTask) {
             "Flash",
             "FrostBlast",
             "Fulmination",
-            "Icebolt",
+            "IceBolt",
             "Innervate",
             "Ire",
             "Kotesu",
@@ -872,15 +872,16 @@ tasks.register("remastered", CompilePackTask) {
 
 tasks.register("dev", CompilePackTask) {
     pack = "dev"
-    skills = [
-            "Mining",
-            "Backstab"
-    ]
+    skills = []
 }
 
 tasks.register("kalentire", CompilePackTask) {
     pack = "kalentire"
     skills = [
+            "AssassinsGuile",
+            "Darts",
+            "DeadlyToxins",
+            "SerratedEdge",
             "Bandage",
             "Bloodbath",
             "Maim",
@@ -1019,21 +1020,26 @@ abstract class CompilePackTask extends DefaultTask {
     String pack = ""
 
     @Input
+    String packGroup = "general"
+
+    @Input
     ArrayList<String> skills = new ArrayList<>()
 
     @TaskAction
     def compile() {
         def src = "bin/" + pack
-        def srcpath = "com/herocraftonline/heroes/characters/skill/general"
+        def srcpath = "com/herocraftonline/heroes/characters/skill/" + packGroup
+
+        ant.delete(dir: "bin")
+        ant.delete(dir: "build/" + pack)
 
         ant.mkdir(dir: "bin")
-        ant.mkdir(dir: "dist")
 
         //Copy source files to group based on defined var skills
-        ant.mkdir(dir: "bin/" + pack)
+        ant.mkdir(dir: src)
 
         project.copy {
-            into "bin/" + pack
+            into src
             skills.forEach {
                 def name = "Skill" + it + ".java"
                 from "src/main/java/$srcpath/$name"
@@ -1052,10 +1058,10 @@ abstract class CompilePackTask extends DefaultTask {
                 , encoding: "utf-8"
                 , fork: "yes"
                 , classpath: project.configurations.packClasspath.asPath
-                , source: 16
-                , target: 16)
+                , source: 8
+                , target: 8)
 
-        ant.delete(dir: "bin/" + pack)
+        ant.delete(dir: src)
 
         def scanner = ant.fileScanner {
             fileset(dir: "bin/" + srcpath) {
@@ -1070,7 +1076,7 @@ abstract class CompilePackTask extends DefaultTask {
             def classname = f.name.replaceAll(".class", "")
             def infopath = "bin/skill.info"
             ant.echo(message: src + "/" + classname)
-            ant.echo(file: infopath, message: "main-class: com.herocraftonline.heroes.characters.skill.general" + "." + classname + ",version: " + version)
+            ant.echo(file: infopath, message: "main-class: com.herocraftonline.heroes.characters.skill." + packGroup + "." + classname + ",version: " + version)
             ant.jar(jarfile: "build/" + pack + "/" + classname + ".jar", basedir: "bin", includes: srcpath + "/" + classname + "*.class, skill.info") {
                 manifest {
                     attribute(name: "Class-Path", value: "../../Heroes.jar")
@@ -1088,7 +1094,7 @@ abstract class CompilePackTask extends DefaultTask {
             }
         }
 
-        ant.delete(dir: "bin/" + srcpath)
+        ant.delete(dir: "bin")
         ant.delete(dir: "build/" + pack)
     }
 }

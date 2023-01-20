@@ -30,7 +30,7 @@ import java.util.concurrent.ThreadLocalRandom;
 
 public class SkillChaosStream extends ActiveSkill {
 
-    private Map<EnderPearl, Long> projectiles = new LinkedHashMap<EnderPearl, Long>(100) {
+    private final Map<EnderPearl, Long> projectiles = new LinkedHashMap<EnderPearl, Long>(100) {
         private static final long serialVersionUID = 2329013558608752L;
 
         @Override
@@ -111,35 +111,31 @@ public class SkillChaosStream extends ActiveSkill {
         int totalDelayedLaunchLoops = numFireballs / projectilesPerLaunch;
         for (int launchLoopCount = 0; launchLoopCount < totalDelayedLaunchLoops; launchLoopCount++) {
 
-            Bukkit.getScheduler().scheduleSyncDelayedTask(plugin, new Runnable() {
-                public void run() {
+            Bukkit.getScheduler().scheduleSyncDelayedTask(plugin, () -> {
 
-                    for(int launchedThisLoop = 0; launchedThisLoop < projectilesPerLaunch; launchedThisLoop++) {
-                        EnderPearl projectile = player.launchProjectile(EnderPearl.class);
+                for(int launchedThisLoop = 0; launchedThisLoop < projectilesPerLaunch; launchedThisLoop++) {
+                    EnderPearl projectile = player.launchProjectile(EnderPearl.class);
 
-                        Vector newVelocity = player.getLocation().getDirection().normalize()
-                                .add(new Vector(ThreadLocalRandom.current().nextDouble(randomMin, randomMax), 0, ThreadLocalRandom.current().nextDouble(randomMin, randomMax)))
-                                .multiply(mult);
-                        projectile.setGravity(true);
-                        projectile.setVelocity(newVelocity);
+                    Vector newVelocity = player.getLocation().getDirection().normalize()
+                            .add(new Vector(ThreadLocalRandom.current().nextDouble(randomMin, randomMax), 0, ThreadLocalRandom.current().nextDouble(randomMin, randomMax)))
+                            .multiply(mult);
+                    projectile.setGravity(true);
+                    projectile.setVelocity(newVelocity);
 
-                        // Nesting schedulers weeeee.
-                        Bukkit.getScheduler().scheduleSyncDelayedTask(plugin, new Runnable() {
-                            public void run() {
-                                if (!projectile.isDead()) {
-                                    projectile.setVelocity(projectile.getVelocity().setY(-yValue));
-                                }
-                            }
-                        }, ticksBeforeDrop);
+                    // Nesting schedulers weeeee.
+                    Bukkit.getScheduler().scheduleSyncDelayedTask(plugin, () -> {
+                        if (!projectile.isDead()) {
+                            projectile.setVelocity(projectile.getVelocity().setY(-yValue));
+                        }
+                    }, ticksBeforeDrop);
 
-                        projectile.setFireTicks(100);
-                        projectiles.put(projectile, System.currentTimeMillis());
-                        projectile.setShooter(player);
-                    }
-
-                    player.getWorld().playSound(player.getLocation(), Sound.ENTITY_BLAZE_SHOOT, 0.3F, 0.6F);
+                    projectile.setFireTicks(100);
+                    projectiles.put(projectile, System.currentTimeMillis());
+                    projectile.setShooter(player);
                 }
-            }, launchLoopCount * launchDelay);
+
+                player.getWorld().playSound(player.getLocation(), Sound.ENTITY_BLAZE_SHOOT, 0.3F, 0.6F);
+            }, (long) launchLoopCount * launchDelay);
         }
 
         broadcastExecuteText(hero);

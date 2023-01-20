@@ -13,12 +13,12 @@ import org.bukkit.Material;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
-import org.bukkit.Sound;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
@@ -45,7 +45,7 @@ public class SkillPickPocket extends TargettedSkill {
         node.set("failure-message", "%hero% failed to steal from %target%!");
         node.set("noisy-success-message", "%hero% stole %target%s %item%!");
         node.set(SkillSetting.USE_TEXT.node(), "");
-        node.set("disallowed-items", Arrays.asList(""));
+        node.set("disallowed-items", Collections.singletonList(""));
         node.set("always-steal-all", true);
         node.set("max-stolen", 64);
         return node;
@@ -81,7 +81,7 @@ public class SkillPickPocket extends TargettedSkill {
         final ItemStack[] items = tInventory.getContents();
         // Never steal items in the hotbar - We consider these 'active' and in the players hand.
         final int slot = Util.nextInt(27) + 9;
-        final Set<String> disallowed = new HashSet<String>(SkillConfigManager.getUseSetting(hero, this, "disallowed-items", new ArrayList<String>()));
+        final Set<String> disallowed = new HashSet<>(SkillConfigManager.getUseSetting(hero, this, "disallowed-items", new ArrayList<>()));
         if ((items[slot] == null) || (items[slot].getType() == Material.AIR) || disallowed.contains(items[slot].getType().name())) {
             player.sendMessage(ChatColor.GRAY + "You failed to steal anything from " + tPlayer.getDisplayName());
             return SkillResult.NORMAL;

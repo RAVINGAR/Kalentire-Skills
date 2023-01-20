@@ -27,9 +27,9 @@ import java.util.Arrays;
 import java.util.HashMap;
 
 public class SkillEarthtoss extends ActiveSkill {
-    private HashMap<FallingBlock, Player> blocks = new HashMap<FallingBlock, Player>();
+    private final HashMap<FallingBlock, Player> blocks = new HashMap<>();
 
-    private ArrayList<Material> naturalMaterials = new ArrayList<Material>();
+    private final ArrayList<Material> naturalMaterials = new ArrayList<>();
 
     public SkillEarthtoss(Heroes plugin) {
         super(plugin, "Earthtoss");

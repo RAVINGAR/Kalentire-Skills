@@ -46,14 +46,13 @@ public class SkillMining extends PassiveSkill {
 
     public class SkillBlockListener implements Listener {
 
-        private Skill skill;
+        private final Skill skill;
 
         SkillBlockListener(Skill skill) {
             this.skill = skill;
         }
 
-        @SuppressWarnings("deprecation")
-		@EventHandler(priority = EventPriority.MONITOR)
+        @EventHandler(priority = EventPriority.MONITOR)
         public void onBlockBreak(BlockBreakEvent event) {
             if (event.isCancelled() || HBlockListener.placedBlocks.containsKey(event.getBlock().getLocation())) {
                 return;

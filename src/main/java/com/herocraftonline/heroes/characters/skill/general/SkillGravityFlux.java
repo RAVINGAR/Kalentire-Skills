@@ -5,21 +5,23 @@ import com.herocraftonline.heroes.api.SkillResult;
 import com.herocraftonline.heroes.characters.CharacterTemplate;
 import com.herocraftonline.heroes.characters.Hero;
 import com.herocraftonline.heroes.characters.Monster;
-import com.herocraftonline.heroes.characters.effects.Effect;
 import com.herocraftonline.heroes.characters.effects.EffectType;
-import com.herocraftonline.heroes.characters.effects.ExpirableEffect;
 import com.herocraftonline.heroes.characters.effects.PeriodicExpirableEffect;
-import com.herocraftonline.heroes.characters.skill.*;
-import com.herocraftonline.heroes.chat.ChatComponents;
-import com.herocraftonline.heroes.nms.physics.NMSPhysics;
-import com.herocraftonline.heroes.nms.physics.RayCastHit;
+import com.herocraftonline.heroes.characters.skill.Skill;
+import com.herocraftonline.heroes.characters.skill.SkillConfigManager;
+import com.herocraftonline.heroes.characters.skill.SkillSetting;
+import com.herocraftonline.heroes.characters.skill.SkillType;
+import com.herocraftonline.heroes.characters.skill.TargettedLocationSkill;
+import com.herocraftonline.heroes.characters.skill.VisualEffect;
+import com.herocraftonline.heroes.libs.slikey.effectlib.effect.HelixEffect;
+import com.herocraftonline.heroes.libs.slikey.effectlib.util.DynamicLocation;
 import com.herocraftonline.heroes.util.Util;
-import de.slikey.effectlib.EffectManager;
-import de.slikey.effectlib.effect.HelixEffect;
-import de.slikey.effectlib.effect.SphereEffect;
-import de.slikey.effectlib.util.DynamicLocation;
-import org.bukkit.*;
-import org.bukkit.block.Block;
+import org.bukkit.Color;
+import org.bukkit.FireworkEffect;
+import org.bukkit.Location;
+import org.bukkit.Particle;
+import org.bukkit.Sound;
+import org.bukkit.World;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
@@ -28,13 +30,11 @@ import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 import org.bukkit.util.Vector;
 
-import java.util.ArrayList;
 import java.util.Collection;
-import java.util.List;
 
 public class SkillGravityFlux extends TargettedLocationSkill {
 
-    public SkillGravityFlux(Heroes plugin) {
+    public SkillGravityFlux(final Heroes plugin) {
         super(plugin, "GravityFlux");
         setDescription("Warp the space in a $1 block radius around a target location, reversing gravity for all of those that are nearby. "
                 + "Lasts for $2 seconds. Affects both allies and enemies. Use with caution!");
@@ -45,9 +45,9 @@ public class SkillGravityFlux extends TargettedLocationSkill {
     }
 
     @Override
-    public String getDescription(Hero hero) {
-        double radius = SkillConfigManager.getUseSetting(hero, this, SkillSetting.RADIUS, 5, false);
-        long duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, 5000, false);
+    public String getDescription(final Hero hero) {
+        final double radius = SkillConfigManager.getUseSetting(hero, this, SkillSetting.RADIUS, 5, false);
+        final long duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, 5000, false);
 
         return getDescription()
                 .replace("$1", Util.decFormat.format(radius))
@@ -56,7 +56,7 @@ public class SkillGravityFlux extends TargettedLocationSkill {
 
     @Override
     public ConfigurationSection getDefaultConfig() {
-        ConfigurationSection config = super.getDefaultConfig();
+        final ConfigurationSection config = super.getDefaultConfig();
         config.set(SkillSetting.MAX_DISTANCE.node(), 14.0);
         config.set(ALLOW_TARGET_AIR_BLOCK_NODE, true);
         config.set(TRY_GET_SOLID_BELOW_BLOCK_NODE, false);
@@ -69,33 +69,36 @@ public class SkillGravityFlux extends TargettedLocationSkill {
     }
 
     @Override
-    public SkillResult use(Hero hero, Location targetLoc, String[] args) {
-        Player player = hero.getPlayer();
+    public SkillResult use(final Hero hero, final Location targetLoc, final String[] args) {
+        final Player player = hero.getPlayer();
 
         broadcastExecuteText(hero);
 
-        long duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, 5000, false);
-        double radius = SkillConfigManager.getUseSetting(hero, this, SkillSetting.RADIUS, 5.0, false);
-        int amplifier = SkillConfigManager.getUseSetting(hero, this, "levitation-amplifier", 0, false);
-        long soundPeriod = SkillConfigManager.getUseSetting(hero, this, "sound-period", 2000, false);
+        final long duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, 5000, false);
+        final double radius = SkillConfigManager.getUseSetting(hero, this, SkillSetting.RADIUS, 5.0, false);
+        final int amplifier = SkillConfigManager.getUseSetting(hero, this, "levitation-amplifier", 0, false);
+        final long soundPeriod = SkillConfigManager.getUseSetting(hero, this, "sound-period", 2000, false);
 
-        Collection<Entity> nearbyEnts = targetLoc.getWorld().getNearbyEntities(targetLoc, radius, radius, radius);
-        for (Entity ent : nearbyEnts) {
-            if (!(ent instanceof LivingEntity))
+        final Collection<Entity> nearbyEnts = targetLoc.getWorld().getNearbyEntities(targetLoc, radius, radius, radius);
+        for (final Entity ent : nearbyEnts) {
+            if (!(ent instanceof LivingEntity)) {
                 continue;
+            }
 
-            LivingEntity target = (LivingEntity) ent;
-            if (!hero.isAlliedTo(target) && !damageCheck(player, target))
+            final LivingEntity target = (LivingEntity) ent;
+            if (!hero.isAlliedTo(target) && !damageCheck(player, target)) {
                 continue;
+            }
 
-            CharacterTemplate ctTarget = plugin.getCharacterManager().getCharacter(target);
-            if (ctTarget == null)
+            final CharacterTemplate ctTarget = plugin.getCharacterManager().getCharacter(target);
+            if (ctTarget == null) {
                 continue;
+            }
 
             ctTarget.addEffect(new HaultGravityEffect(this, player, soundPeriod, duration, amplifier));
         }
 
-        FireworkEffect firework = FireworkEffect.builder()
+        final FireworkEffect firework = FireworkEffect.builder()
                 .flicker(false)
                 .trail(false)
                 .withColor(Color.PURPLE)
@@ -109,11 +112,9 @@ public class SkillGravityFlux extends TargettedLocationSkill {
         return SkillResult.NORMAL;
     }
 
-    public class HaultGravityEffect extends PeriodicExpirableEffect {
+    public static class HaultGravityEffect extends PeriodicExpirableEffect {
 
-        private EffectManager effectManager;
-
-        HaultGravityEffect(Skill skill, Player applier, long period, long duration, int amplifier) {
+        HaultGravityEffect(final Skill skill, final Player applier, final long period, final long duration, final int amplifier) {
             super(skill, "HaultedGravity", applier, period, duration, null, null);
 
             types.add(EffectType.DISPELLABLE);
@@ -124,59 +125,39 @@ public class SkillGravityFlux extends TargettedLocationSkill {
         }
 
         @Override
-        public void applyToHero(Hero hero) {
+        public void applyToHero(final Hero hero) {
             super.applyToHero(hero);
 
             applyVisuals(hero.getPlayer());
         }
 
         @Override
-        public void applyToMonster(Monster monster) {
+        public void applyToMonster(final Monster monster) {
             super.applyToMonster(monster);
 
             applyVisuals(monster.getEntity());
         }
 
         @Override
-        public void removeFromMonster(Monster monster) {
-            super.removeFromMonster(monster);
-
-            if (this.effectManager != null)
-                this.effectManager.dispose();
-        }
-
-        @Override
-        public void removeFromHero(Hero hero) {
-            super.removeFromHero(hero);
-
-            if (this.effectManager != null)
-                this.effectManager.dispose();
-        }
-
-        @Override
-        public void tickMonster(Monster monster) {
-            LivingEntity ent = monster.getEntity();
+        public void tickMonster(final Monster monster) {
+            final LivingEntity ent = monster.getEntity();
             ent.getWorld().playSound(ent.getLocation(), Sound.BLOCK_BEACON_AMBIENT, 1.4F, 2F);
         }
 
         @Override
-        public void tickHero(Hero hero) {
-            Player player = hero.getPlayer();
+        public void tickHero(final Hero hero) {
+            final Player player = hero.getPlayer();
             player.getWorld().playSound(player.getLocation(), Sound.BLOCK_BEACON_AMBIENT, 1.4F, 2F);
         }
 
-        private void applyVisuals(LivingEntity target) {
+        private void applyVisuals(final LivingEntity target) {
             final World world = target.getWorld();
             final Location loc = target.getLocation();
             final int durationTicks = (int) this.getDuration() / 50;
 
-            if (this.effectManager != null)
-                this.effectManager.dispose();
+            final HelixEffect visualEffect = new HelixEffect(effectLib);
 
-            this.effectManager = new EffectManager(plugin);
-            HelixEffect visualEffect = new HelixEffect(effectManager);
-
-            DynamicLocation dynamicLoc = new DynamicLocation(target);
+            final DynamicLocation dynamicLoc = new DynamicLocation(target);
             dynamicLoc.addOffset(new Vector(0, -target.getEyeHeight(), 0));
             visualEffect.setDynamicOrigin(dynamicLoc);
             visualEffect.disappearWithOriginEntity = true;
@@ -188,8 +169,7 @@ public class SkillGravityFlux extends TargettedLocationSkill {
             visualEffect.particle = Particle.REDSTONE;
             visualEffect.particles = 5;
 
-            effectManager.start(visualEffect);
-            effectManager.disposeOnTermination();
+            effectLib.start(visualEffect);
         }
     }
 }

@@ -2,16 +2,17 @@ package com.herocraftonline.heroes.characters.skill.general;
 
 import com.herocraftonline.heroes.Heroes;
 import com.herocraftonline.heroes.api.SkillResult;
-import com.herocraftonline.heroes.api.events.HeroRegainHealthEvent;
 import com.herocraftonline.heroes.characters.Hero;
 import com.herocraftonline.heroes.characters.classes.HeroClass;
 import com.herocraftonline.heroes.characters.classes.scaling.Scaling;
 import com.herocraftonline.heroes.characters.effects.EffectType;
 import com.herocraftonline.heroes.characters.effects.PeriodicDamageEffect;
-import com.herocraftonline.heroes.characters.effects.common.RootEffect;
-import com.herocraftonline.heroes.characters.effects.common.interfaces.WalkSpeedDecrease;
 import com.herocraftonline.heroes.characters.effects.common.interfaces.WalkSpeedPercentDecrease;
-import com.herocraftonline.heroes.characters.skill.*;
+import com.herocraftonline.heroes.characters.skill.Skill;
+import com.herocraftonline.heroes.characters.skill.SkillConfigManager;
+import com.herocraftonline.heroes.characters.skill.SkillSetting;
+import com.herocraftonline.heroes.characters.skill.SkillType;
+import com.herocraftonline.heroes.characters.skill.TargettedSkill;
 import com.herocraftonline.heroes.chat.ChatComponents;
 import com.herocraftonline.heroes.nms.NMSHandler;
 import com.herocraftonline.heroes.util.Util;
@@ -22,20 +23,14 @@ import org.bukkit.Sound;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
-import org.bukkit.event.EventHandler;
-import org.bukkit.event.EventPriority;
-import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityDamageEvent.DamageCause;
-import org.bukkit.event.entity.EntityRegainHealthEvent;
-import org.bukkit.potion.PotionEffect;
-import org.bukkit.potion.PotionEffectType;
 
 public class SkillDeepWound extends TargettedSkill {
 
     private String applyText;
     private String expireText;
 
-    public SkillDeepWound(Heroes plugin) {
+    public SkillDeepWound(final Heroes plugin) {
         super(plugin, "DeepWound");
         setDescription("You inflict a deep wound on your target, slowing them by $1% and causing them to bleed for $2 damage over $3 second(s).");
         setUsage("/skill deepwound");
@@ -45,11 +40,11 @@ public class SkillDeepWound extends TargettedSkill {
     }
 
     @Override
-    public String getDescription(Hero hero) {
-        double reductionPercent = 1.0 - SkillConfigManager.getUseSetting(hero, this, "movespeed-reduction-percent", 0.2, true);
-        long duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, 10000, false);
-        double period = SkillConfigManager.getUseSetting(hero, this, SkillSetting.PERIOD, 2000, false);
-        double damage = SkillConfigManager.getUseSetting(hero, this, "tick-damage", 1, false);
+    public String getDescription(final Hero hero) {
+        final double reductionPercent = 1.0 - SkillConfigManager.getUseSetting(hero, this, "movespeed-reduction-percent", 0.2, true);
+        final long duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, 10000, false);
+        final double period = SkillConfigManager.getUseSetting(hero, this, SkillSetting.PERIOD, 2000, false);
+        final double damage = SkillConfigManager.getUseSetting(hero, this, "tick-damage", 1, false);
 
         return getDescription()
                 .replace("$1", reductionPercent * 100 + "")
@@ -59,7 +54,7 @@ public class SkillDeepWound extends TargettedSkill {
 
     @Override
     public ConfigurationSection getDefaultConfig() {
-        ConfigurationSection node = super.getDefaultConfig();
+        final ConfigurationSection node = super.getDefaultConfig();
         node.set("weapons", Util.axes);
         node.set(SkillSetting.DURATION.node(), 10000);
         node.set(SkillSetting.PERIOD.node(), 2000);
@@ -75,41 +70,41 @@ public class SkillDeepWound extends TargettedSkill {
     public void init() {
         super.init();
         applyText = SkillConfigManager.getRaw(this, SkillSetting.APPLY_TEXT,
-                ChatComponents.GENERIC_SKILL + "%target% has been deeply wounded by %hero%!")
-                .replace("%target%", "$1")
-                .replace("%hero%", "$2");
+                        ChatComponents.GENERIC_SKILL + "%target% has been deeply wounded by %hero%!")
+                .replace("%target%", "$1").replace("$target$", "$1")
+                .replace("%hero%", "$2").replace("$hero$", "$2");
 
         expireText = SkillConfigManager.getRaw(this, SkillSetting.EXPIRE_TEXT,
-                ChatComponents.GENERIC_SKILL + "%target% has recovered from their deep wound.")
-                .replace("%target%", "$1");
+                        ChatComponents.GENERIC_SKILL + "%target% has recovered from their deep wound.")
+                .replace("%target%", "$1").replace("$target$", "$1");
     }
 
     @Override
-    public SkillResult use(Hero hero, LivingEntity target, String[] args) {
-        Player player = hero.getPlayer();
-        HeroClass heroClass = hero.getHeroClass();
+    public SkillResult use(final Hero hero, final LivingEntity target, final String[] args) {
+        final Player player = hero.getPlayer();
+        final HeroClass heroClass = hero.getHeroClass();
 
-        Material item = NMSHandler.getInterface().getItemInMainHand(player.getInventory()).getType();
+        final Material item = NMSHandler.getInterface().getItemInMainHand(player.getInventory()).getType();
         if (!SkillConfigManager.getUseSetting(hero, this, "weapons", Util.axes).contains(item.name())) {
             player.sendMessage("You can't use Deep Wound with that weapon!");
             return SkillResult.INVALID_TARGET_NO_MSG;
         }
 
-        Scaling itemDamage = heroClass.getItemDamage(item);
-        double damage = itemDamage == null ? 0 : itemDamage.getScaled(hero);
+        final Scaling itemDamage = heroClass.getItemDamage(item);
+        final double damage = itemDamage == null ? 0 : itemDamage.getScaled(hero);
 
         addSpellTarget(target, hero);
         damageEntity(target, player, damage, DamageCause.ENTITY_ATTACK);
 
-        long duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, 10000, false);
-        long period = SkillConfigManager.getUseSetting(hero, this, SkillSetting.PERIOD, 2000, true);
-        double tickDamage = SkillConfigManager.getUseSetting(hero, this, "tick-damage", 10, false);
-        double moveSpeedReductionPercent = SkillConfigManager.getUseSetting(hero, this, "movespeed-reduction-percent", 0.2, true);
+        final long duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, 10000, false);
+        final long period = SkillConfigManager.getUseSetting(hero, this, SkillSetting.PERIOD, 2000, true);
+        final double tickDamage = SkillConfigManager.getUseSetting(hero, this, "tick-damage", 10, false);
+        final double moveSpeedReductionPercent = SkillConfigManager.getUseSetting(hero, this, "movespeed-reduction-percent", 0.2, true);
         plugin.getCharacterManager().getCharacter(target).addEffect(new DeepWoundEffect(this, player, period, duration, tickDamage, moveSpeedReductionPercent));
 
         player.getWorld().spawnParticle(Particle.CRIT, target.getLocation().add(0, 0.5, 0), 25, 0, 0, 0, 1);
         player.getWorld().playEffect(player.getLocation(), org.bukkit.Effect.MOBSPAWNER_FLAMES, 3);
-        hero.getPlayer().getWorld().playSound(hero.getPlayer().getLocation(), Sound.ENTITY_PLAYER_HURT , 0.8F, 1.0F);
+        hero.getPlayer().getWorld().playSound(hero.getPlayer().getLocation(), Sound.ENTITY_PLAYER_HURT, 0.8F, 1.0F);
 
         return SkillResult.NORMAL;
     }
@@ -118,7 +113,7 @@ public class SkillDeepWound extends TargettedSkill {
 
         private double decreasePercent;
 
-        DeepWoundEffect(Skill skill, Player applier, long period, long duration, double tickDamage, double decreasePercent) {
+        DeepWoundEffect(final Skill skill, final Player applier, final long period, final long duration, final double tickDamage, final double decreasePercent) {
             super(skill, applier.getName() + "-DeepWound", applier, period, duration, tickDamage, applyText, expireText);
             this.decreasePercent = decreasePercent;
 
@@ -139,7 +134,7 @@ public class SkillDeepWound extends TargettedSkill {
             Bukkit.getScheduler().scheduleSyncDelayedTask(this.plugin, () -> syncTask(hero), 1L);
         }
 
-        private void syncTask(Hero hero) {
+        private void syncTask(final Hero hero) {
             hero.resolveMovementSpeed();
         }
 
@@ -149,7 +144,7 @@ public class SkillDeepWound extends TargettedSkill {
         }
 
         @Override
-        public void setDelta(Double delta) {
+        public void setDelta(final Double delta) {
             this.decreasePercent = delta;
         }
     }

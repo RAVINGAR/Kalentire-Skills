@@ -6,11 +6,14 @@ import com.herocraftonline.heroes.characters.Hero;
 import com.herocraftonline.heroes.characters.effects.Effect;
 import com.herocraftonline.heroes.characters.effects.EffectType;
 import com.herocraftonline.heroes.characters.effects.ExpirableEffect;
-import com.herocraftonline.heroes.characters.skill.*;
+import com.herocraftonline.heroes.characters.skill.ActiveSkill;
+import com.herocraftonline.heroes.characters.skill.Skill;
+import com.herocraftonline.heroes.characters.skill.SkillConfigManager;
+import com.herocraftonline.heroes.characters.skill.SkillSetting;
+import com.herocraftonline.heroes.characters.skill.SkillType;
 import org.bukkit.Bukkit;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
-import org.bukkit.Sound;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityDamageEvent;
@@ -20,7 +23,7 @@ public class SkillNumbingRage
     private String applyText;
     private String expireText;
 
-    public SkillNumbingRage(Heroes plugin) {
+    public SkillNumbingRage(final Heroes plugin) {
         super(plugin, "NumbingRage");
         setDescription("You ignore all fire and bleed damage for $1 second(s). This also exstinguises fire ticks.");
         setUsage("/skill numbingrage");
@@ -30,36 +33,45 @@ public class SkillNumbingRage
         Bukkit.getServer().getPluginManager().registerEvents(new SkillListener(this), plugin);
     }
 
+    @Override
     public ConfigurationSection getDefaultConfig() {
-        ConfigurationSection node = super.getDefaultConfig();
-        node.set(SkillSetting.DURATION.node(), Integer.valueOf(10000));
+        final ConfigurationSection node = super.getDefaultConfig();
+        node.set(SkillSetting.DURATION.node(), 10000);
         node.set("apply-text", "%hero%'s rage numbs them to pain!");
         node.set("expire-text", "%hero%'s numbing rage subsides.");
         return node;
     }
 
+    @Override
     public void init() {
         super.init();
-        SkillConfigManager.getRaw(this, SkillSetting.APPLY_TEXT, "%hero%'s rage numbs them to pain!").replace("%hero%", "$1");
-        SkillConfigManager.getRaw(this, SkillSetting.EXPIRE_TEXT, "%hero%'s numbing rage subsides.").replace("%hero%", "$1");
+        SkillConfigManager.getRaw(this, SkillSetting.APPLY_TEXT, "%hero%'s rage numbs them to pain!").replace("%hero%", "$1").replace("$hero$", "$1");
+        SkillConfigManager.getRaw(this, SkillSetting.EXPIRE_TEXT, "%hero%'s numbing rage subsides.").replace("%hero%", "$1").replace("$hero$", "$1");
     }
 
-    public SkillResult use(Hero hero, String[] args) {
+    @Override
+    public SkillResult use(final Hero hero, final String[] args) {
         broadcastExecuteText(hero);
 
-        long duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, 10000, false);
+        final long duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, 10000, false);
 
         hero.addEffect(new noPainEffect(this, hero.getPlayer(), duration, this.applyText, this.expireText));
         return SkillResult.NORMAL;
     }
 
-    public class noPainEffect
+    @Override
+    public String getDescription(final Hero hero) {
+        final long duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, 10000, false);
+        return getDescription().replace("$1", (duration / 1000) + "");
+    }
+
+    public static class noPainEffect
             extends ExpirableEffect {
-        private String applyText;
-        private String expireText;
+        private final String applyText;
+        private final String expireText;
 
 
-        public noPainEffect(Skill skill, Player applier, long duration, String applyText, String expireText) {
+        public noPainEffect(final Skill skill, final Player applier, final long duration, final String applyText, final String expireText) {
             super(skill, "noPain", applier, duration);
             this.types.add(EffectType.BENEFICIAL);
             this.types.add(EffectType.DISPELLABLE);
@@ -71,16 +83,18 @@ public class SkillNumbingRage
 
         }
 
-        public void applyToHero(Hero hero) {
+        @Override
+        public void applyToHero(final Hero hero) {
             super.applyToHero(hero);
-            Player player = hero.getPlayer();
+            final Player player = hero.getPlayer();
             broadcast(player.getLocation(), this.applyText, new Object[]{player.getDisplayName()});
         }
 
 
-        public void removeFromHero(Hero hero) {
+        @Override
+        public void removeFromHero(final Hero hero) {
             super.removeFromHero(hero);
-            Player player = hero.getPlayer();
+            final Player player = hero.getPlayer();
             broadcast(player.getLocation(), this.expireText, new Object[]{player.getDisplayName()});
         }
 
@@ -89,32 +103,29 @@ public class SkillNumbingRage
 
     public class SkillListener
             implements Listener {
-        public SkillListener(Skill skill) {
+        public SkillListener(final Skill skill) {
         }
 
         @EventHandler
-        public void onEntityDamage(EntityDamageEvent event) {
-            if (!(event.getEntity() instanceof Player))
+        public void onEntityDamage(final EntityDamageEvent event) {
+            if (!(event.getEntity() instanceof Player)) {
                 return;
-            Player p = (Player) event.getEntity();
-            Hero hero = SkillNumbingRage.this.plugin.getCharacterManager().getHero(p);
-            if (!(hero.hasEffect("noPain")))
+            }
+            final Player p = (Player) event.getEntity();
+            final Hero hero = SkillNumbingRage.this.plugin.getCharacterManager().getHero(p);
+            if (!(hero.hasEffect("noPain"))) {
                 return;
+            }
 
             if (hero.hasEffectType(EffectType.BLEED)) {
-                for (Effect e : hero.getEffects()) {
-                    if (e.isType(EffectType.BLEED))
+                for (final Effect e : hero.getEffects()) {
+                    if (e.isType(EffectType.BLEED)) {
                         hero.removeEffect(e);
+                    }
                 }
             }
 
         }
 
-    }
-
-    @Override
-    public String getDescription(Hero hero) {
-        long duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION, 10000, false);
-        return getDescription().replace("$1", (duration / 1000) + "");
     }
 }

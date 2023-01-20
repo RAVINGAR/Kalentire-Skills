@@ -13,7 +13,6 @@ import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
-import org.bukkit.Sound;
 import org.bukkit.event.entity.EntityDamageEvent.DamageCause;
 
 import java.util.ArrayList;
@@ -77,32 +76,28 @@ public class SkillTempest extends ActiveSkill {
         final int maxTargets = SkillConfigManager.getUseSetting(hero, this, "max-targets", 0, false);
 
         // Damage all entities near the center after the fireworks finish playing
-        Bukkit.getScheduler().runTaskLater(plugin, new Runnable() {
-            @Override
-            public void run() {
-                int targetsHit = 0;
-                for (Entity entity : getNearbyEntities(centerLocation, radius, radius, radius)) {
-                    // Check to see if we've exceeded the max targets
-                    if (maxTargets > 0 && targetsHit >= maxTargets)
-                        break;
-                    
-                    // Check to see if the entity can be damaged
-                    if (!(entity instanceof LivingEntity) || !damageCheck(player, (LivingEntity) entity))
-                        continue;
+        Bukkit.getScheduler().runTaskLater(plugin, () -> {
+            int targetsHit = 0;
+            for (Entity entity : getNearbyEntities(centerLocation, radius, radius, radius)) {
+                // Check to see if we've exceeded the max targets
+                if (maxTargets > 0 && targetsHit >= maxTargets)
+                    break;
 
-                    // Damage the target
-                    addSpellTarget(entity, hero);
-                    damageEntity((LivingEntity) entity, player, damage, DamageCause.MAGIC, false);
-                    // Lightning like this is too annoying.
-                    // entity.getWorld().strikeLightningEffect(entity.getLocation());
-                    entity.getWorld().spigot().strikeLightningEffect(entity.getLocation(), true);
-                    entity.getWorld().playSound(entity.getLocation(), Sound.ENTITY_LIGHTNING_BOLT_THUNDER, lightningVolume, 1.0F);
-                    
-                    // Increase counter
-                    targetsHit++;
-                }
+                // Check to see if the entity can be damaged
+                if (!(entity instanceof LivingEntity) || !damageCheck(player, (LivingEntity) entity))
+                    continue;
+
+                // Damage the target
+                addSpellTarget(entity, hero);
+                damageEntity((LivingEntity) entity, player, damage, DamageCause.MAGIC, false);
+                // Lightning like this is too annoying.
+                // entity.getWorld().strikeLightningEffect(entity.getLocation());
+                entity.getWorld().spigot().strikeLightningEffect(entity.getLocation(), true);
+                entity.getWorld().playSound(entity.getLocation(), Sound.ENTITY_LIGHTNING_BOLT_THUNDER, lightningVolume, 1.0F);
+
+                // Increase counter
+                targetsHit++;
             }
-
         }, ticksPerFirework * fireworksSize);
 
         // Finish
@@ -134,7 +129,7 @@ public class SkillTempest extends ActiveSkill {
     }
 
     protected List<Location> circle(Location loc, Integer r, Integer h, boolean hollow, boolean sphere, int plus_y) {
-        List<Location> circleblocks = new ArrayList<Location>();
+        List<Location> circleblocks = new ArrayList<>();
         int cx = loc.getBlockX();
         int cy = loc.getBlockY();
         int cz = loc.getBlockZ();

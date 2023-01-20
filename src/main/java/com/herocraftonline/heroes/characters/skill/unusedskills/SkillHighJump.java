@@ -4,7 +4,6 @@ import java.util.HashSet;
 import java.util.Set;
 
 import org.bukkit.Material;
-import org.bukkit.Sound;
 import org.bukkit.block.BlockFace;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
@@ -22,7 +21,7 @@ public class SkillHighJump extends ActiveSkill {
 
     private static final Set<Material> noJumpMaterials;
     static {
-        noJumpMaterials = new HashSet<Material>();
+        noJumpMaterials = new HashSet<>();
         noJumpMaterials.add(Material.WATER);
         noJumpMaterials.add(Material.AIR);
         noJumpMaterials.add(Material.LAVA);

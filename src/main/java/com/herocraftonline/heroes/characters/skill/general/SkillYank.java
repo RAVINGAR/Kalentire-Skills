@@ -23,7 +23,7 @@ import org.bukkit.util.Vector;
 import java.util.Arrays;
 
 public class SkillYank extends TargettedSkill {
-    public static String skillName = "Yank";
+    public static final String skillName = "Yank";
 
     public SkillYank(Heroes plugin) {
         super(plugin, "Yank");
@@ -122,12 +122,10 @@ public class SkillYank extends TargettedSkill {
 
     private void pullTarget(Hero hero, LivingEntity target, double vPower, double hPower, Vector locDiff) {
         double delay = SkillConfigManager.getUseSetting(hero, this, "pull-delay", 0.2, false);
-        Bukkit.getScheduler().scheduleSyncDelayedTask(plugin, new Runnable() {
-            public void run() {
-                Vector pushVector = locDiff.multiply(hPower).setY(vPower);
-                target.setVelocity(pushVector);
-                playSound(target.getWorld(), target.getLocation());
-            }
+        Bukkit.getScheduler().scheduleSyncDelayedTask(plugin, () -> {
+            Vector pushVector = locDiff.multiply(hPower).setY(vPower);
+            target.setVelocity(pushVector);
+            playSound(target.getWorld(), target.getLocation());
         }, (long) (delay * 20));
     }
 
@@ -136,12 +134,7 @@ public class SkillYank extends TargettedSkill {
 
         long exemptionDuration = SkillConfigManager.getUseSetting(hero, this, "ncp-exemption-duration", 1000, false);
         if (exemptionDuration > 0) {
-            NCPUtils.applyExemptions(target, new NCPFunction() {
-                @Override
-                public void execute() {
-                    target.setVelocity(pushUpVector);
-                }
-            }, Lists.newArrayList("MOVING"), exemptionDuration);
+            NCPUtils.applyExemptions(target, () -> target.setVelocity(pushUpVector), Lists.newArrayList("MOVING"), exemptionDuration);
         } else {
             target.setVelocity(pushUpVector);
         }

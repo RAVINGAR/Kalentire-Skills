@@ -101,12 +101,7 @@ public class SkillRisingLance extends ActiveSkill {
     public void launchTarget(Hero hero, LivingEntity target, Vector velocity) {
         long exemptionDuration = SkillConfigManager.getUseSetting(hero, this, "ncp-exemption-duration", 0, false);
         if (exemptionDuration > 0) {
-            NCPUtils.applyExemptions(target, new NCPFunction() {
-                @Override
-                public void execute() {
-                    applyJumpVelocity(target, velocity);
-                }
-            }, Lists.newArrayList("MOVING"), exemptionDuration);
+            NCPUtils.applyExemptions(target, () -> applyJumpVelocity(target, velocity), Lists.newArrayList("MOVING"), exemptionDuration);
         } else {
             applyJumpVelocity(target, velocity);
         }

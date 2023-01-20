@@ -17,11 +17,11 @@ import com.herocraftonline.heroes.util.Util;
 import org.bukkit.Bukkit;
 import org.bukkit.Effect;
 import org.bukkit.Material;
+import org.bukkit.Sound;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
-import org.bukkit.Sound;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
@@ -36,12 +36,26 @@ import static com.herocraftonline.heroes.characters.skill.SkillConfigManager.get
 import static com.herocraftonline.heroes.characters.skill.SkillConfigManager.getUseSetting;
 
 public class SkillShieldReflect extends ActiveSkill {
+    private static Field shieldItemsField = null;
+
+    static {
+        final Skill skill = Heroes.getInstance().getSkillManager().getSkill("Shield");
+        if (skill != null) {
+            final Class<?> skillClass = skill.getClass();
+
+            try {
+                shieldItemsField = skillClass.getDeclaredField("shieldItems");
+                shieldItemsField.setAccessible(true);
+            } catch (final NoSuchFieldException ex) {
+                // This space intentionally left blank.
+            }
+        }
+    }
+
     private String applyText;
     private String expireText;
 
-    private static Field shieldItemsField = null;
-
-    public SkillShieldReflect(Heroes plugin) {
+    public SkillShieldReflect(final Heroes plugin) {
         super(plugin, "ShieldReflect");
         setDescription("Reflect incoming damage back at your attackers for $1 second(s). Reflected damage is returned at a $2% rate.");
         setUsage("/skill shieldreflect");
@@ -53,19 +67,19 @@ public class SkillShieldReflect extends ActiveSkill {
     }
 
     @Override
-    public String getDescription(Hero hero) {
-        double damageModifier = getUseSetting(hero, this, "reflected-damage-modifier", 0.8, false);
-        int duration = getUseSetting(hero, this, SkillSetting.DURATION, 3000, false);
+    public String getDescription(final Hero hero) {
+        final double damageModifier = getUseSetting(hero, this, "reflected-damage-modifier", 0.8, false);
+        final int duration = getUseSetting(hero, this, SkillSetting.DURATION, 3000, false);
 
-        String formattedDuration = Util.decFormat.format(duration / 1000.0);
-        String formattedDamageModifier = Util.decFormat.format(damageModifier * 100);
+        final String formattedDuration = Util.decFormat.format(duration / 1000.0);
+        final String formattedDamageModifier = Util.decFormat.format(damageModifier * 100);
 
         return getDescription().replace("$1", formattedDuration).replace("$2", formattedDamageModifier);
     }
 
     @Override
     public ConfigurationSection getDefaultConfig() {
-        ConfigurationSection node = super.getDefaultConfig();
+        final ConfigurationSection node = super.getDefaultConfig();
 
         node.set(SkillSetting.DURATION.node(), 3000);
         node.set("reflected-damage-modifier", 0.8);
@@ -79,48 +93,69 @@ public class SkillShieldReflect extends ActiveSkill {
     public void init() {
         super.init();
 
-        applyText = getRaw(this, SkillSetting.APPLY_TEXT, ChatComponents.GENERIC_SKILL + "%hero% holds up their shield and is now reflecting incoming attacks!").replace("%hero%", "$1");
-        expireText = getRaw(this, SkillSetting.EXPIRE_TEXT, ChatComponents.GENERIC_SKILL + "%hero% is no longer reflecting attacks!").replace("%hero%", "$1");
+        applyText = getRaw(this, SkillSetting.APPLY_TEXT, ChatComponents.GENERIC_SKILL + "%hero% holds up their shield and is now reflecting incoming attacks!").replace("%hero%", "$1").replace("$hero$", "$1");
+        expireText = getRaw(this, SkillSetting.EXPIRE_TEXT, ChatComponents.GENERIC_SKILL + "%hero% is no longer reflecting attacks!").replace("%hero%", "$1").replace("$hero$", "$1");
     }
 
     @Override
-    public SkillResult use(Hero hero, String[] args) {
-        Player player = hero.getPlayer();
+    public SkillResult use(final Hero hero, final String[] args) {
+        final Player player = hero.getPlayer();
 
         if (isWieldingShield(hero)) {
             broadcastExecuteText(hero);
 
-            int duration = getUseSetting(hero, this, SkillSetting.DURATION, 3000, false);
+            final int duration = getUseSetting(hero, this, SkillSetting.DURATION, 3000, false);
             hero.addEffect(new ShieldReflectEffect(this, player, duration));
 
             player.getWorld().playEffect(player.getLocation(), Effect.MOBSPAWNER_FLAMES, 3);
             player.getWorld().playSound(player.getLocation(), Sound.ENTITY_ZOMBIE_ATTACK_IRON_DOOR, 0.8F, 1.0F);
 
             return SkillResult.NORMAL;
-        }
-        else {
+        } else {
             player.sendMessage("You must have a shield equipped to use this skill");
             return SkillResult.FAIL;
         }
     }
 
+    @SuppressWarnings("unchecked") // Probably not the best way, but it's a pain to do it any other.
+    private boolean isWieldingShield(final Hero hero) {
+        final Material type = NMSHandler.getInterface().getItemInOffHand(hero.getPlayer().getInventory()).getType();
+        if (type == Material.SHIELD) {
+            return true;
+        } else if (shieldItemsField != null) {
+            final Skill skill = Heroes.getInstance().getSkillManager().getSkill("Shield");
+            if (skill != null && hero.hasAccessToSkill(skill)) {
+                try {
+                    final List<Material> shieldItems = (List<Material>) shieldItemsField.get(skill);
+                    if (shieldItems.contains(type)) {
+                        return true;
+                    }
+                } catch (final IllegalAccessException ex) {
+                    // This space intentionally left blank.
+                }
+            }
+        }
+        return false;
+    }
+
     public class SkillEntityListener implements Listener {
         private final Skill skill;
 
-        public SkillEntityListener(Skill skill) {
+        public SkillEntityListener(final Skill skill) {
             this.skill = skill;
         }
 
         @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
-        public void onSkillDamage(SkillDamageEvent event) {
-            if (!(event.getEntity() instanceof Player))
+        public void onSkillDamage(final SkillDamageEvent event) {
+            if (!(event.getEntity() instanceof Player)) {
                 return;
+            }
 
-            Hero defenderHero = plugin.getCharacterManager().getHero((Player) event.getEntity());
+            final Hero defenderHero = plugin.getCharacterManager().getHero((Player) event.getEntity());
             if (defenderHero.hasEffect("ShieldReflect")) {
-                CharacterTemplate attackerCT = event.getDamager();
+                final CharacterTemplate attackerCT = event.getDamager();
                 if ((attackerCT instanceof Player)) {
-                    Player attackerPlayer = (Player) attackerCT;
+                    final Player attackerPlayer = (Player) attackerCT;
                     if (plugin.getCharacterManager().getHero(attackerPlayer).hasEffect(getName())) {
                         event.setCancelled(true);
                         return;
@@ -131,38 +166,39 @@ public class SkillShieldReflect extends ActiveSkill {
                     }
                 }
 
-                Player defenderPlayer = defenderHero.getPlayer();
+                final Player defenderPlayer = defenderHero.getPlayer();
                 if (isWieldingShield(defenderHero)) {
-                    double damageModifier = getUseSetting(defenderHero, skill, "reflected-damage-modifier", 0.8, false);
-                    double damage = event.getDamage() * damageModifier;
-                    LivingEntity target = event.getDamager().getEntity();
+                    final double damageModifier = getUseSetting(defenderHero, skill, "reflected-damage-modifier", 0.8, false);
+                    final double damage = event.getDamage() * damageModifier;
+                    final LivingEntity target = event.getDamager().getEntity();
 
-                    Skill eSkill = event.getSkill();
+                    final Skill eSkill = event.getSkill();
 
                     addSpellTarget(target, defenderHero);
-                    if (eSkill.isType(SkillType.ABILITY_PROPERTY_PHYSICAL) && !eSkill.isType(SkillType.ARMOR_PIERCING))
+                    if (eSkill.isType(SkillType.ABILITY_PROPERTY_PHYSICAL) && !eSkill.isType(SkillType.ARMOR_PIERCING)) {
                         damageEntity(target, defenderPlayer, damage, DamageCause.ENTITY_ATTACK, false);
-                    else
+                    } else {
                         damageEntity(target, defenderPlayer, damage, DamageCause.MAGIC, false);
+                    }
                 }
             }
         }
 
         @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
-        public void onEntityDamage(EntityDamageEvent event) {
+        public void onEntityDamage(final EntityDamageEvent event) {
             if (!(event instanceof EntityDamageByEntityEvent)) {
                 return;
             }
 
-            EntityDamageByEntityEvent edbe = (EntityDamageByEntityEvent) event;
-            Entity defender = edbe.getEntity();
-            Entity attacker = edbe.getDamager();
+            final EntityDamageByEntityEvent edbe = (EntityDamageByEntityEvent) event;
+            final Entity defender = edbe.getEntity();
+            final Entity attacker = edbe.getDamager();
             if (((attacker instanceof LivingEntity)) && ((defender instanceof Player))) {
-                Player defenderPlayer = (Player) defender;
-                Hero defenderHero = plugin.getCharacterManager().getHero(defenderPlayer);
+                final Player defenderPlayer = (Player) defender;
+                final Hero defenderHero = plugin.getCharacterManager().getHero(defenderPlayer);
                 if (defenderHero.hasEffect("ShieldReflect")) {
                     if ((attacker instanceof Player)) {
-                        Player attackerPlayer = (Player) attacker;
+                        final Player attackerPlayer = (Player) attacker;
                         if (plugin.getCharacterManager().getHero(attackerPlayer).hasEffect(getName())) {
                             event.setCancelled(true);
                             return;
@@ -170,10 +206,10 @@ public class SkillShieldReflect extends ActiveSkill {
                     }
 
                     if (isWieldingShield(defenderHero)) {
-                        double damageModifier = getUseSetting(defenderHero, skill, "reflected-damage-modifier", 0.8, false);
-                        double damage = event.getDamage() * damageModifier;
+                        final double damageModifier = getUseSetting(defenderHero, skill, "reflected-damage-modifier", 0.8, false);
+                        final double damage = event.getDamage() * damageModifier;
 
-                        LivingEntity target = (LivingEntity) attacker;
+                        final LivingEntity target = (LivingEntity) attacker;
                         addSpellTarget(target, defenderHero);
                         damageEntity(target, defenderPlayer, damage, DamageCause.ENTITY_ATTACK, false);
                     }
@@ -183,48 +219,11 @@ public class SkillShieldReflect extends ActiveSkill {
 
     }
 
-    @SuppressWarnings("unchecked") // Probably not the best way, but it's a pain to do it any other.
-    private boolean isWieldingShield(Hero hero) {
-        Material type = NMSHandler.getInterface().getItemInOffHand(hero.getPlayer().getInventory()).getType();
-        if (type == Material.SHIELD) {
-            return true;
-        }
-        else if (shieldItemsField != null) {
-            Skill skill = Heroes.getInstance().getSkillManager().getSkill("Shield");
-            if (skill != null && hero.hasAccessToSkill(skill)) {
-                try {
-                    List<Material> shieldItems = (List<Material>) shieldItemsField.get(skill);
-                    if (shieldItems.contains(type)) {
-                        return true;
-                    }
-                }
-                catch (IllegalAccessException ex) {
-                    // This space intentionally left blank.
-                }
-            }
-        }
-        return false;
-    }
-
     public class ShieldReflectEffect extends ExpirableEffect {
-        public ShieldReflectEffect(Skill skill, Player applier, long duration) {
+        public ShieldReflectEffect(final Skill skill, final Player applier, final long duration) {
             super(skill, "ShieldReflect", applier, duration, applyText, expireText);
 
             types.add(EffectType.BENEFICIAL);
-        }
-    }
-
-    static {
-        Skill skill = Heroes.getInstance().getSkillManager().getSkill("Shield");
-        if (skill != null) {
-            Class<?> skillClass = skill.getClass();
-
-            try {
-                shieldItemsField = skillClass.getDeclaredField("shieldItems");
-                shieldItemsField.setAccessible(true);
-            } catch (NoSuchFieldException ex) {
-                // This space intentionally left blank.
-            }
         }
     }
 }

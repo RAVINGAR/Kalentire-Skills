@@ -6,7 +6,11 @@ import com.herocraftonline.heroes.attributes.AttributeType;
 import com.herocraftonline.heroes.characters.Hero;
 import com.herocraftonline.heroes.characters.effects.EffectType;
 import com.herocraftonline.heroes.characters.effects.PeriodicHealEffect;
-import com.herocraftonline.heroes.characters.skill.*;
+import com.herocraftonline.heroes.characters.skill.Skill;
+import com.herocraftonline.heroes.characters.skill.SkillConfigManager;
+import com.herocraftonline.heroes.characters.skill.SkillSetting;
+import com.herocraftonline.heroes.characters.skill.SkillType;
+import com.herocraftonline.heroes.characters.skill.TargettedSkill;
 import com.herocraftonline.heroes.chat.ChatComponents;
 import com.herocraftonline.heroes.util.Util;
 import org.bukkit.Particle;
@@ -18,7 +22,7 @@ public class SkillRejuvenate extends TargettedSkill {
     private String expireText;
     private String applyText;
 
-    public SkillRejuvenate(Heroes plugin) {
+    public SkillRejuvenate(final Heroes plugin) {
         super(plugin, "Rejuvenate");
         setDescription("You restore $1 health to the target over $2 second(s). You are only healed for $3 health from this effect.");
         setUsage("/skill rejuvenate <target>");
@@ -27,24 +31,26 @@ public class SkillRejuvenate extends TargettedSkill {
         setTypes(SkillType.BUFFING, SkillType.HEALING, SkillType.SILENCEABLE);
     }
 
-    public String getDescription(Hero hero) {
-        int period = SkillConfigManager.getUseSetting(hero, this, SkillSetting.PERIOD, 2000, false);
-        int duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION.node(), 20000, false);
+    @Override
+    public String getDescription(final Hero hero) {
+        final int period = SkillConfigManager.getUseSetting(hero, this, SkillSetting.PERIOD, 2000, false);
+        final int duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION.node(), 20000, false);
 
         double healing = SkillConfigManager.getUseSetting(hero, this, SkillSetting.HEALING_TICK, 10, false);
         healing = getScaledHealing(hero, healing);
-        double healingIncrease = SkillConfigManager.getUseSetting(hero, this, SkillSetting.HEALING_INCREASE_PER_WISDOM, 0.25, false);
+        final double healingIncrease = SkillConfigManager.getUseSetting(hero, this, SkillSetting.HEALING_INCREASE_PER_WISDOM, 0.25, false);
         healing += (hero.getAttributeValue(AttributeType.WISDOM) * healingIncrease);
 
-        String formattedHealing = Util.decFormat.format(healing * ((double) duration / (double) period));
-        String formattedSelfHealing = Util.decFormat.format((healing * ((double) duration / (double) period)) * Heroes.properties.selfHeal);
-        String formattedDuration = Util.decFormat.format(duration / 1000.0);
+        final String formattedHealing = Util.decFormat.format(healing * ((double) duration / (double) period));
+        final String formattedSelfHealing = Util.decFormat.format((healing * ((double) duration / (double) period)) * Heroes.properties.selfHeal);
+        final String formattedDuration = Util.decFormat.format(duration / 1000.0);
 
         return getDescription().replace("$1", formattedHealing).replace("$2", formattedDuration).replace("$3", formattedSelfHealing);
     }
 
+    @Override
     public ConfigurationSection getDefaultConfig() {
-        ConfigurationSection node = super.getDefaultConfig();
+        final ConfigurationSection node = super.getDefaultConfig();
 
         node.set(SkillSetting.MAX_DISTANCE.node(), 10);
         node.set(SkillSetting.DURATION.node(), 20000);
@@ -59,17 +65,18 @@ public class SkillRejuvenate extends TargettedSkill {
     public void init() {
         super.init();
 
-        applyText = SkillConfigManager.getRaw(this, SkillSetting.APPLY_TEXT, ChatComponents.GENERIC_SKILL + "%target% is rejuvenating health!").replace("%target%", "$1");
-        expireText = SkillConfigManager.getRaw(this, SkillSetting.EXPIRE_TEXT, ChatComponents.GENERIC_SKILL + "%target% has stopped rejuvenating health!").replace("%target%", "$1");
+        applyText = SkillConfigManager.getRaw(this, SkillSetting.APPLY_TEXT, ChatComponents.GENERIC_SKILL + "%target% is rejuvenating health!").replace("%target%", "$1").replace("$target$", "$1");
+        expireText = SkillConfigManager.getRaw(this, SkillSetting.EXPIRE_TEXT, ChatComponents.GENERIC_SKILL + "%target% has stopped rejuvenating health!").replace("%target%", "$1").replace("$target$", "$1");
     }
 
     @Override
-    public SkillResult use(Hero hero, LivingEntity target, String[] args) {
-        Player player = hero.getPlayer();
-        if (!(target instanceof Player))
+    public SkillResult use(final Hero hero, final LivingEntity target, final String[] args) {
+        final Player player = hero.getPlayer();
+        if (!(target instanceof Player)) {
             return SkillResult.INVALID_TARGET;
+        }
 
-        Hero targetHero = plugin.getCharacterManager().getHero((Player) target);
+        final Hero targetHero = plugin.getCharacterManager().getHero((Player) target);
 
         if (target.getHealth() >= target.getMaxHealth()) {
             player.sendMessage("Target is already fully healed.");
@@ -78,13 +85,13 @@ public class SkillRejuvenate extends TargettedSkill {
 
         double healing = SkillConfigManager.getUseSetting(hero, this, SkillSetting.HEALING_TICK, 10, false);
         healing = getScaledHealing(hero, healing);
-        double healingIncrease = SkillConfigManager.getUseSetting(hero, this, SkillSetting.HEALING_INCREASE_PER_WISDOM, 0.25, false);
+        final double healingIncrease = SkillConfigManager.getUseSetting(hero, this, SkillSetting.HEALING_INCREASE_PER_WISDOM, 0.25, false);
         healing += (hero.getAttributeValue(AttributeType.WISDOM) * healingIncrease);
 
-        int period = SkillConfigManager.getUseSetting(hero, this, SkillSetting.PERIOD, 2000, false);
-        int duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION.node(), 20000, false);
+        final int period = SkillConfigManager.getUseSetting(hero, this, SkillSetting.PERIOD, 2000, false);
+        final int duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION.node(), 20000, false);
 
-        RejuvenateEffect rEffect = new RejuvenateEffect(this, player, period, duration, healing);
+        final RejuvenateEffect rEffect = new RejuvenateEffect(this, player, period, duration, healing);
         targetHero.addEffect(rEffect);
 
         return SkillResult.NORMAL;
@@ -92,7 +99,7 @@ public class SkillRejuvenate extends TargettedSkill {
 
     public class RejuvenateEffect extends PeriodicHealEffect {
 
-        public RejuvenateEffect(Skill skill, Player applier, long period, long duration, double tickHealth) {
+        public RejuvenateEffect(final Skill skill, final Player applier, final long period, final long duration, final double tickHealth) {
             super(skill, "Rejuvenate", applier, period, duration, tickHealth);
 
             types.add(EffectType.MAGIC);
@@ -100,24 +107,24 @@ public class SkillRejuvenate extends TargettedSkill {
         }
 
         @Override
-        public void applyToHero(Hero hero) {
+        public void applyToHero(final Hero hero) {
             super.applyToHero(hero);
-            Player player = hero.getPlayer();
+            final Player player = hero.getPlayer();
             broadcast(player.getLocation(), "    " + applyText, player.getName());
         }
 
         @Override
-        public void removeFromHero(Hero hero) {
+        public void removeFromHero(final Hero hero) {
             super.removeFromHero(hero);
-            Player player = hero.getPlayer();
+            final Player player = hero.getPlayer();
             broadcast(player.getLocation(), "    " + expireText, player.getName());
         }
-        
-        public void tickHero(Hero hero)
-        {
-        	super.tickHero(hero);
-        	Player player = hero.getPlayer();
-        	//player.getWorld().spigot().playEffect(player.getLocation(), Effect.HAPPY_VILLAGER, 0, 0, 0.5F, 1.0F, 0.5F, 0.1F, 25, 16);
+
+        @Override
+        public void tickHero(final Hero hero) {
+            super.tickHero(hero);
+            final Player player = hero.getPlayer();
+            //player.getWorld().spigot().playEffect(player.getLocation(), Effect.HAPPY_VILLAGER, 0, 0, 0.5F, 1.0F, 0.5F, 0.1F, 25, 16);
             player.getWorld().spawnParticle(Particle.VILLAGER_HAPPY, player.getLocation(), 25, 0.5, 1, 0.5, 0.1);
         }
     }

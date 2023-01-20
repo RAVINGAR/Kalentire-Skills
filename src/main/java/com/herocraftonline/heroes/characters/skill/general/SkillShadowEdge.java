@@ -6,9 +6,18 @@ import com.herocraftonline.heroes.attributes.AttributeType;
 import com.herocraftonline.heroes.characters.CharacterTemplate;
 import com.herocraftonline.heroes.characters.Hero;
 import com.herocraftonline.heroes.characters.effects.common.RootEffect;
-import com.herocraftonline.heroes.characters.skill.*;
+import com.herocraftonline.heroes.characters.skill.ActiveSkill;
+import com.herocraftonline.heroes.characters.skill.Skill;
+import com.herocraftonline.heroes.characters.skill.SkillConfigManager;
+import com.herocraftonline.heroes.characters.skill.SkillSetting;
+import com.herocraftonline.heroes.characters.skill.SkillType;
 import com.herocraftonline.heroes.util.Util;
-import org.bukkit.*;
+import org.bukkit.Bukkit;
+import org.bukkit.Effect;
+import org.bukkit.Location;
+import org.bukkit.Material;
+import org.bukkit.Particle;
+import org.bukkit.Sound;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
 import org.bukkit.configuration.ConfigurationSection;
@@ -33,10 +42,10 @@ import java.util.List;
 /**
  * Created by Donal on 06/01/2017.
  */
-public class SkillShadowEdge extends ActiveSkill implements Listener{
-    private List<ThrownAxe> axes;
+public class SkillShadowEdge extends ActiveSkill implements Listener {
+    private final List<ThrownAxe> axes;
 
-    public SkillShadowEdge(Heroes plugin) {
+    public SkillShadowEdge(final Heroes plugin) {
         super(plugin, "ShadowEdge");
         setDescription("Throw out a dagger, when it hits a target you teleport to it.");
         setUsage("/skill ShadowEdge");
@@ -51,7 +60,7 @@ public class SkillShadowEdge extends ActiveSkill implements Listener{
 
     @Override
     public ConfigurationSection getDefaultConfig() {
-        ConfigurationSection node = super.getDefaultConfig();
+        final ConfigurationSection node = super.getDefaultConfig();
 
         node.set("weapons", Util.axes);
         node.set(SkillSetting.DAMAGE.node(), 50);
@@ -72,27 +81,27 @@ public class SkillShadowEdge extends ActiveSkill implements Listener{
     }
 
     @Override
-    public String getDescription(Hero hero) {
+    public String getDescription(final Hero hero) {
         int damage = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE, 50, false);
-        double damageIncrease = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE_INCREASE_PER_STRENGTH, 0.75, false);
+        final double damageIncrease = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE_INCREASE_PER_STRENGTH, 0.75, false);
         damage += (int) (damageIncrease * hero.getAttributeValue(AttributeType.STRENGTH));
 
         return getDescription().replace("$1", damage + "");
     }
 
     @Override
-    public SkillResult use(Hero hero, String[] args) {
+    public SkillResult use(final Hero hero, final String[] args) {
         final Player player = hero.getPlayer();
 
         broadcastExecuteText(hero);
-        Material itemType = Material.DIAMOND_SWORD;
+        final Material itemType = Material.DIAMOND_SWORD;
 
         double damage = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE, 50, false);
-        double damageIncrease = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE_INCREASE_PER_STRENGTH, 1.0, false);
+        final double damageIncrease = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DAMAGE_INCREASE_PER_STRENGTH, 1.0, false);
         damage += damageIncrease * hero.getAttributeValue(AttributeType.STRENGTH);
 
         double axeThrowMultiplier = SkillConfigManager.getUseSetting(hero, this, "axe-throw-multiplier", 0.9, false);
-        double axeThrowMultiplierIncrease = SkillConfigManager.getUseSetting(hero, this, "axe-throw-multiplier-per-dexterity", 0.1, false);
+        final double axeThrowMultiplierIncrease = SkillConfigManager.getUseSetting(hero, this, "axe-throw-multiplier-per-dexterity", 0.1, false);
         axeThrowMultiplier += axeThrowMultiplierIncrease * hero.getAttributeValue(AttributeType.DEXTERITY);
 
         final Item dropItem = player.getWorld().dropItem(player.getEyeLocation(), new ItemStack(itemType, 1));
@@ -101,13 +110,10 @@ public class SkillShadowEdge extends ActiveSkill implements Listener{
 
         axes.add(new ThrownAxe(dropItem, hero, damage));
 
-        Bukkit.getScheduler().runTaskLater(plugin, new Runnable() {
-            @Override
-            public void run() {
-                if (dropItem.isValid()) {
-                    // No need to remove disarm here, it has its own expiry timer
-                    dropItem.remove();
-                }
+        Bukkit.getScheduler().runTaskLater(plugin, () -> {
+            if (dropItem.isValid()) {
+                // No need to remove disarm here, it has its own expiry timer
+                dropItem.remove();
             }
         }, 3); // 1 sec after thrown, pull it back
         // 5 is 20 blocks
@@ -116,47 +122,113 @@ public class SkillShadowEdge extends ActiveSkill implements Listener{
         return SkillResult.NORMAL;
     }
 
+    @EventHandler(priority = EventPriority.LOWEST)
+    public void onItemPickup(final EntityPickupItemEvent event) {
+        if (event.getEntity() instanceof Player) {
+            final Player player = (Player) event.getEntity();
+            final Item item = event.getItem();
+            for (final ThrownAxe axe : axes) {
+
+                if (axe.getItem().equals(item)) {
+                    event.setCancelled(true);
+                    final Hero hero = axe.getOwner();
+                    if (player == hero.getPlayer() && item.getTicksLived() > 3) {
+                        item.remove();
+                    }
+                }
+            }
+        }
+    }
+
+    // Safety measure, likely unnecessary
+    @EventHandler(priority = EventPriority.MONITOR)
+    public void onPluginDisable(final PluginDisableEvent e) {
+
+        if (e.getPlugin() != plugin) {
+            return;
+        }
+
+        for (final ThrownAxe axe : axes) {
+            axe.getItem().remove();
+        }
+        axes.clear();
+    }
+
+    public static class ThrownAxe {
+        private final Item item;
+        private final Hero owner;
+        private final double hitDamage;
+        //private Vector targetThrowVelocity;
+        private final List<LivingEntity> hitTargets;
+
+        //, Vector throwVelocity
+        public ThrownAxe(final Item axe, final Hero thrower, final double damage) {
+            item = axe;
+            owner = thrower;
+            hitDamage = damage;
+            hitTargets = new ArrayList<>();
+        }
+
+        public Item getItem() {
+            return item;
+        }
+
+        public Hero getOwner() {
+            return owner;
+        }
+
+        public double getHitDamage() {
+            return hitDamage;
+        }
+
+        public List<LivingEntity> getHitTargets() {
+            return hitTargets;
+        }
+    }
+
     private class ThrowAxeAxeTask implements Runnable {
 
-        private Skill skill;
+        private final Skill skill;
 
-        public ThrowAxeAxeTask(Skill skill){
+        public ThrowAxeAxeTask(final Skill skill) {
             this.skill = skill;
         }
 
+        @Override
         public void run() {
-            Iterator<ThrownAxe> axeIter = axes.iterator();
-            while(axeIter.hasNext()) {
-                ThrownAxe axe = axeIter.next();
-                Item axeItem = axe.getItem();
+            final Iterator<ThrownAxe> axeIter = axes.iterator();
+            while (axeIter.hasNext()) {
+                final ThrownAxe axe = axeIter.next();
+                final Item axeItem = axe.getItem();
 
-                if(!axeItem.isValid()) { // The delayed task above handles axe timeout and removal, so we just need to kill it from the list after that
+                if (!axeItem.isValid()) { // The delayed task above handles axe timeout and removal, so we just need to kill it from the list after that
                     axeIter.remove();
                     continue;
                 }
 
-                Hero hero = axe.getOwner();
+                final Hero hero = axe.getOwner();
                 final Player player = hero.getPlayer();
-                for(Entity entity : axeItem.getNearbyEntities(1, 1, 1)) {
-                    if(!(entity instanceof LivingEntity))
+                for (final Entity entity : axeItem.getNearbyEntities(1, 1, 1)) {
+                    if (!(entity instanceof LivingEntity)) {
                         continue;
+                    }
 
                     final LivingEntity target = (LivingEntity) entity;
-                    if(axe.getHitTargets().contains(target) || !damageCheck(player, target))
+                    if (axe.getHitTargets().contains(target) || !damageCheck(player, target)) {
                         continue;
+                    }
 
                     axe.getHitTargets().add(target);
-                    Location playerLoc = player.getLocation();
-                    Location targetLoc = target.getLocation().clone();
+                    final Location playerLoc = player.getLocation();
+                    final Location targetLoc = target.getLocation().clone();
                     targetLoc.setPitch(0);      // Reset pitch so that we don't have to worry about it.
 
                     BlockIterator iter = null;
                     try {
-                        Vector direction = targetLoc.getDirection().multiply(-1);
-                        int blocksBehindTarget = 1;
+                        final Vector direction = targetLoc.getDirection().multiply(-1);
+                        final int blocksBehindTarget = 1;
                         iter = new BlockIterator(target.getWorld(), targetLoc.toVector(), direction, 0, blocksBehindTarget);
-                    }
-                    catch (IllegalStateException e) {
+                    } catch (final IllegalStateException e) {
                         player.sendMessage("There was an error getting the ShadowEdge location!");
                         return;
                     }
@@ -170,22 +242,21 @@ public class SkillShadowEdge extends ActiveSkill implements Listener{
                         // Validate blocks near destination
                         if (Util.transparentBlocks.contains(b.getType()) && (Util.transparentBlocks.contains(b.getRelative(BlockFace.UP).getType()) || Util.transparentBlocks.contains(b.getRelative(BlockFace.DOWN).getType()))) {
                             prev = b;
-                        }
-                        else {
+                        } else {
                             break;
                         }
                     }
                     if (prev != null) {
-                        Location targetTeleportLoc = prev.getLocation().clone();
+                        final Location targetTeleportLoc = prev.getLocation().clone();
                         targetTeleportLoc.add(new Vector(.5, 0, .5));
 
                         // Set the blink location yaw/pitch to that of the target
                         targetTeleportLoc.setPitch(0);
                         targetTeleportLoc.setYaw(targetLoc.getYaw());
                         player.teleport(targetTeleportLoc);
-                        CharacterTemplate targCT = plugin.getCharacterManager().getCharacter(target);
+                        final CharacterTemplate targCT = plugin.getCharacterManager().getCharacter(target);
                         final long duration = SkillConfigManager.getUseSetting(hero, this.skill, SkillSetting.DURATION, 1000, false);
-                        RootEffect root = new RootEffect(this.skill, hero.getPlayer(), 1, duration);
+                        final RootEffect root = new RootEffect(this.skill, hero.getPlayer(), 1, duration);
                         targCT.addEffect(root);
                         //plugin.getCharacterManager().getCharacter(target).addEffect(new RootEffect(skill, hero.getPlayer(), 500));
 
@@ -206,69 +277,6 @@ public class SkillShadowEdge extends ActiveSkill implements Listener{
                     return;
                 }
             }
-        }
-    }
-
-    @EventHandler(priority = EventPriority.LOWEST)
-    public void onItemPickup(EntityPickupItemEvent event) {
-        if(event.getEntity() instanceof Player player) {
-            Item item = event.getItem();
-            for(ThrownAxe axe : axes) {
-
-                if(axe.getItem().equals(item)) {
-                    event.setCancelled(true);
-                    Hero hero = axe.getOwner();
-
-                    if(player == hero.getPlayer() && item.getTicksLived() > 3){
-                        item.remove();
-                    }
-                }
-            }
-        }
-    }
-
-    // Safety measure, likely unnecessary
-    @EventHandler(priority = EventPriority.MONITOR)
-    public void onPluginDisable(PluginDisableEvent e) {
-
-        if(e.getPlugin() != plugin) {
-            return;
-        }
-
-        for(ThrownAxe axe : axes) {
-            axe.getItem().remove();
-        }
-        axes.clear();
-    }
-
-    public class ThrownAxe {
-        private Item item;
-        private Hero owner;
-        private double hitDamage;
-        //private Vector targetThrowVelocity;
-        private List<LivingEntity> hitTargets;
-        //, Vector throwVelocity
-        public ThrownAxe(Item axe, Hero thrower, double damage) {
-            item = axe;
-            owner = thrower;
-            hitDamage = damage;
-            hitTargets = new ArrayList<>();
-        }
-
-        public Item getItem() {
-            return item;
-        }
-
-        public Hero getOwner() {
-            return owner;
-        }
-
-        public double getHitDamage() {
-            return hitDamage;
-        }
-
-        public List<LivingEntity> getHitTargets() {
-            return  hitTargets;
         }
     }
 }

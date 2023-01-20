@@ -8,14 +8,26 @@ import com.herocraftonline.heroes.characters.Hero;
 import com.herocraftonline.heroes.characters.Monster;
 import com.herocraftonline.heroes.characters.effects.EffectType;
 import com.herocraftonline.heroes.characters.effects.ExpirableEffect;
-import com.herocraftonline.heroes.characters.skill.*;
+import com.herocraftonline.heroes.characters.skill.Skill;
+import com.herocraftonline.heroes.characters.skill.SkillConfigManager;
+import com.herocraftonline.heroes.characters.skill.SkillSetting;
+import com.herocraftonline.heroes.characters.skill.SkillType;
+import com.herocraftonline.heroes.characters.skill.TargettedSkill;
 import com.herocraftonline.heroes.chat.ChatComponents;
 import com.herocraftonline.heroes.util.Util;
-import org.bukkit.*;
+import org.bukkit.Bukkit;
+import org.bukkit.Effect;
+import org.bukkit.Location;
+import org.bukkit.Material;
+import org.bukkit.Sound;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
 import org.bukkit.configuration.ConfigurationSection;
-import org.bukkit.entity.*;
+import org.bukkit.entity.Entity;
+import org.bukkit.entity.ItemFrame;
+import org.bukkit.entity.LivingEntity;
+import org.bukkit.entity.Painting;
+import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
@@ -30,10 +42,10 @@ import java.util.Set;
 
 public class SkillWeb extends TargettedSkill {
 
+    private static final Set<Location> changedBlocks = new HashSet<>();
     private String applyText;
-    private static Set<Location> changedBlocks = new HashSet<Location>();
 
-    public SkillWeb(Heroes plugin) {
+    public SkillWeb(final Heroes plugin) {
         super(plugin, "Web");
         setDescription("You conjure a web around your target that will hinder them and any nearby targets for $1 second(s).");
         setUsage("/skill web");
@@ -45,19 +57,19 @@ public class SkillWeb extends TargettedSkill {
     }
 
     @Override
-    public String getDescription(Hero hero) {
+    public String getDescription(final Hero hero) {
         int duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION.node(), 4000, false);
-        int durationIncrease = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION_INCREASE_PER_CHARISMA, 50, false);
+        final int durationIncrease = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION_INCREASE_PER_CHARISMA, 50, false);
         duration += hero.getAttributeValue(AttributeType.CHARISMA) * durationIncrease;
 
-        String formattedDuration = Util.decFormat.format(duration / 1000.0);
+        final String formattedDuration = Util.decFormat.format(duration / 1000.0);
 
         return getDescription().replace("$1", formattedDuration);
     }
 
     @Override
     public ConfigurationSection getDefaultConfig() {
-        ConfigurationSection node = super.getDefaultConfig();
+        final ConfigurationSection node = super.getDefaultConfig();
 
         node.set(SkillSetting.MAX_DISTANCE.node(), 8);
         node.set(SkillSetting.MAX_DISTANCE_INCREASE_PER_INTELLECT.node(), 0.15);
@@ -73,21 +85,21 @@ public class SkillWeb extends TargettedSkill {
     public void init() {
         super.init();
 
-        applyText = SkillConfigManager.getRaw(this, SkillSetting.APPLY_TEXT, ChatComponents.GENERIC_SKILL + "%hero% conjured a web at %target%'s feet!").replace("%hero%", "$2").replace("%target%", "$1");
+        applyText = SkillConfigManager.getRaw(this, SkillSetting.APPLY_TEXT, ChatComponents.GENERIC_SKILL + "%hero% conjured a web at %target%'s feet!").replace("%hero%", "$2").replace("$hero$", "$2").replace("%target%", "$1").replace("$target$", "$1");
     }
 
     @Override
-    public SkillResult use(Hero hero, LivingEntity target, String[] args) {
-        Player player = hero.getPlayer();
+    public SkillResult use(final Hero hero, final LivingEntity target, final String[] args) {
+        final Player player = hero.getPlayer();
 
         int duration = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION.node(), 4000, false);
-        int durationIncrease = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION_INCREASE_PER_CHARISMA, 50, false);
+        final int durationIncrease = SkillConfigManager.getUseSetting(hero, this, SkillSetting.DURATION_INCREASE_PER_CHARISMA, 50, false);
         duration += hero.getAttributeValue(AttributeType.CHARISMA) * durationIncrease;
 
-        long rootDuration = SkillConfigManager.getUseSetting(hero, this, "root-duration", 500, false);
-        WebEffect wEffect = new WebEffect(this, player, duration, rootDuration);
+        final long rootDuration = SkillConfigManager.getUseSetting(hero, this, "root-duration", 500, false);
+        final WebEffect wEffect = new WebEffect(this, player, duration, rootDuration);
 
-        CharacterTemplate targCT = plugin.getCharacterManager().getCharacter(target);
+        final CharacterTemplate targCT = plugin.getCharacterManager().getCharacter(target);
         targCT.addEffect(wEffect);
 
         player.getWorld().playEffect(player.getLocation(), Effect.POTION_BREAK, 3);
@@ -96,12 +108,13 @@ public class SkillWeb extends TargettedSkill {
         return SkillResult.NORMAL;
     }
 
-    public class SkillBlockListener implements Listener {
+    public static class SkillBlockListener implements Listener {
 
         @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
-        public void onBlockBreak(BlockBreakEvent event) {
-            if (event.getBlock().getType() != Material.COBWEB)
+        public void onBlockBreak(final BlockBreakEvent event) {
+            if (event.getBlock().getType() != Material.COBWEB) {
                 return;
+            }
 
             if (changedBlocks.contains(event.getBlock().getLocation())) {
                 event.setCancelled(true);
@@ -111,23 +124,23 @@ public class SkillWeb extends TargettedSkill {
 
     private class WebEffect extends ExpirableEffect {
 
-        private List<Location> locations = new ArrayList<>();
+        private final List<Location> locations = new ArrayList<>();
         private Location loc;
 
-        public WebEffect(Skill skill, Player applier, long webDuration, long rootDuration) {
+        public WebEffect(final Skill skill, final Player applier, final long webDuration, final long rootDuration) {
             super(skill, "Web", applier, webDuration, applyText, null);
 
             types.add(EffectType.MAGIC);
             types.add(EffectType.HARMFUL);
 
             if (rootDuration > 0) {
-                addPotionEffect(new PotionEffect(PotionEffectType.SLOW, (int) ((rootDuration / 1000.0) * 20), 127), false);      // Max slowness is 127
-                addPotionEffect(new PotionEffect(PotionEffectType.JUMP, (int) ((rootDuration / 1000.0) * 20), 128), false);      // Max negative jump boost
+                addPotionEffect(new PotionEffect(PotionEffectType.SLOW, (int) ((rootDuration / 1000.0) * 20), 127));      // Max slowness is 127
+                addPotionEffect(new PotionEffect(PotionEffectType.JUMP, (int) ((rootDuration / 1000.0) * 20), 128));      // Max negative jump boost
             }
         }
 
         @Override
-        public void applyToMonster(Monster monster) {
+        public void applyToMonster(final Monster monster) {
             super.applyToMonster(monster);
 
             loc = monster.getEntity().getLocation();
@@ -136,60 +149,61 @@ public class SkillWeb extends TargettedSkill {
         }
 
         @Override
-        public void applyToHero(Hero hero) {
+        public void applyToHero(final Hero hero) {
             super.applyToHero(hero);
             createWeb(hero.getPlayer());
         }
 
         @Override
-        public void removeFromHero(Hero hero) {
+        public void removeFromHero(final Hero hero) {
             super.removeFromHero(hero);
 
             revertBlocks();
         }
 
         @Override
-        public void removeFromMonster(Monster monster) {
+        public void removeFromMonster(final Monster monster) {
             super.removeFromMonster(monster);
 
             revertBlocks();
         }
 
-        private void createWeb(Entity placedOnEntity) {
+        private void createWeb(final Entity placedOnEntity) {
 
             loc = placedOnEntity.getLocation();
 
-            List<Entity> entities = placedOnEntity.getNearbyEntities(10, 10, 10);
-            List<Entity> blockEntities = new ArrayList<>();
-            for (Entity entity : entities) {
-                if (entity instanceof ItemFrame)
+            final List<Entity> entities = placedOnEntity.getNearbyEntities(10, 10, 10);
+            final List<Entity> blockEntities = new ArrayList<>();
+            for (final Entity entity : entities) {
+                if (entity instanceof ItemFrame) {
                     blockEntities.add(entity);
-                else if (entity instanceof Painting)
+                } else if (entity instanceof Painting) {
                     blockEntities.add(entity);
+                }
             }
 
             attemptToChangeBlock(blockEntities, loc);
-            Block block = loc.getBlock();
+            final Block block = loc.getBlock();
             attemptToChangeBlock(blockEntities, block.getRelative(BlockFace.DOWN).getLocation());
-            for (BlockFace face : BlockFace.values()) {
+            for (final BlockFace face : BlockFace.values()) {
                 if (face == BlockFace.UP || face == BlockFace.DOWN) {
                     continue;
                 }
 
-                Location currentFaceLoc = block.getRelative(face).getLocation();
+                final Location currentFaceLoc = block.getRelative(face).getLocation();
                 attemptToChangeBlock(blockEntities, currentFaceLoc);
 
                 attemptToChangeBlock(blockEntities, currentFaceLoc.getBlock().getRelative(BlockFace.UP).getLocation());
                 attemptToChangeBlock(blockEntities, currentFaceLoc.getBlock().getRelative(BlockFace.DOWN).getLocation());
 
-                Location clockwiseFaceLoc = block.getRelative(getClockwise(face)).getLocation();
+                final Location clockwiseFaceLoc = block.getRelative(getClockwise(face)).getLocation();
                 attemptToChangeBlock(blockEntities, clockwiseFaceLoc);
 
                 attemptToChangeBlock(blockEntities, clockwiseFaceLoc.getBlock().getRelative(BlockFace.UP).getLocation());
                 attemptToChangeBlock(blockEntities, clockwiseFaceLoc.getBlock().getRelative(BlockFace.DOWN).getLocation());
 
                 if (!(face.toString().contains("_"))) {
-                    Location sideBlock = block.getRelative(face, 2).getLocation();
+                    final Location sideBlock = block.getRelative(face, 2).getLocation();
                     attemptToChangeBlock(blockEntities, sideBlock);
 
                     attemptToChangeBlock(blockEntities, sideBlock.getBlock().getRelative(BlockFace.UP).getLocation());
@@ -199,7 +213,7 @@ public class SkillWeb extends TargettedSkill {
         }
 
         private void revertBlocks() {
-            for (Location location : locations) {
+            for (final Location location : locations) {
                 location.getBlock().setType(Material.AIR);
                 changedBlocks.remove(location);
             }
@@ -207,15 +221,16 @@ public class SkillWeb extends TargettedSkill {
             locations.clear();
         }
 
-        private void attemptToChangeBlock(List<Entity> blockEntities, Location location) {
-            Block block = location.getBlock();
+        private void attemptToChangeBlock(final List<Entity> blockEntities, final Location location) {
+            final Block block = location.getBlock();
             switch (block.getType()) {
                 case SNOW:
                 case AIR:
                     boolean isBlockEntityBlock = false;
-                    for (Entity blockEntity : blockEntities) {
-                        if (blockEntity.getLocation().getBlock().equals(block))
+                    for (final Entity blockEntity : blockEntities) {
+                        if (blockEntity.getLocation().getBlock().equals(block)) {
                             isBlockEntityBlock = true;
+                        }
                     }
                     if (!isBlockEntityBlock) {
                         changedBlocks.add(location);
@@ -227,7 +242,7 @@ public class SkillWeb extends TargettedSkill {
             }
         }
 
-        private BlockFace getClockwise(BlockFace face) {
+        private BlockFace getClockwise(final BlockFace face) {
             switch (face) {
                 case NORTH:
                     return BlockFace.EAST;

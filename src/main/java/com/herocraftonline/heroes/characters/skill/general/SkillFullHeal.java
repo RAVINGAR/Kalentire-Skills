@@ -2,10 +2,8 @@ package com.herocraftonline.heroes.characters.skill.general;
 
 import java.util.ArrayList;
 
-import org.bukkit.Effect;
 import org.bukkit.Location;
 import org.bukkit.Particle;
-import org.bukkit.Sound;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
@@ -54,7 +52,7 @@ public class SkillFullHeal extends TargettedSkill {
     
     public ArrayList<Location> helix(Location center, double height, double radius, double particleInterval)
 	{
-		ArrayList<Location> locations = new ArrayList<Location>();
+		ArrayList<Location> locations = new ArrayList<>();
 		
 		for (double y = 0; y <= height; y += particleInterval) 
 		{

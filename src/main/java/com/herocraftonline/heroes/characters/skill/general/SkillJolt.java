@@ -24,7 +24,7 @@ import java.util.HashMap;
 
 public class SkillJolt extends ActiveSkill 
 {
-	private HashMap<SmallFireball, Player> fireballs = new HashMap<SmallFireball, Player>();
+	private final HashMap<SmallFireball, Player> fireballs = new HashMap<>();
     
     public SkillJolt(Heroes plugin) 
     {

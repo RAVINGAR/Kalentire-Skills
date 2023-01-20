@@ -22,7 +22,7 @@ import java.util.Map;
 
 public class SkillFirewave extends ActiveSkill {
 
-    private Map<Snowball, Long> fireballs = new LinkedHashMap<Snowball, Long>(100) {
+    private final Map<Snowball, Long> fireballs = new LinkedHashMap<Snowball, Long>(100) {
         private static final long serialVersionUID = 4329526013158603250L;
         @Override
         protected boolean removeEldestEntry(Map.Entry<Snowball, Long> eldest) {
