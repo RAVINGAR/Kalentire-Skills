@@ -6,7 +6,10 @@ import com.herocraftonline.heroes.characters.CharacterTemplate;
 import com.herocraftonline.heroes.characters.CustomNameManager;
 import com.herocraftonline.heroes.characters.Hero;
 import com.herocraftonline.heroes.characters.effects.EffectType;
-import com.herocraftonline.heroes.characters.skill.*;
+import com.herocraftonline.heroes.characters.skill.PassiveSkill;
+import com.herocraftonline.heroes.characters.skill.SkillConfigManager;
+import com.herocraftonline.heroes.characters.skill.SkillSetting;
+import com.herocraftonline.heroes.characters.skill.SkillType;
 import com.herocraftonline.heroes.chat.ChatComponents;
 import com.herocraftonline.heroes.util.Util;
 import org.bukkit.Bukkit;
@@ -23,7 +26,7 @@ import org.bukkit.event.Listener;
 public class SkillIllusionist extends PassiveSkill {
     private String missText;
 
-    public SkillIllusionist(Heroes plugin) {
+    public SkillIllusionist(final Heroes plugin) {
         //todo rework this because it involves like no player skill.
         super(plugin, "Illusionist");
         setDescription("Enemies have a $1% chance for their melee attacks to miss you completely.");
@@ -34,7 +37,7 @@ public class SkillIllusionist extends PassiveSkill {
 
     @Override
     public ConfigurationSection getDefaultConfig() {
-        ConfigurationSection config = super.getDefaultConfig();
+        final ConfigurationSection config = super.getDefaultConfig();
         config.set("miss-chance", 0.20);
         config.set("miss-text", ChatComponents.GENERIC_SKILL + "%target% misses an attack!");
         config.set(SkillSetting.APPLY_TEXT.node(), "");
@@ -43,8 +46,8 @@ public class SkillIllusionist extends PassiveSkill {
     }
 
     @Override
-    public String getDescription(Hero hero) {
-        double chance = SkillConfigManager.getScaledUseSettingDouble(hero, this, "miss-chance", false);
+    public String getDescription(final Hero hero) {
+        final double chance = SkillConfigManager.getScaledUseSettingDouble(hero, this, "miss-chance", false);
         return getDescription().replace("$1", Util.decFormat.format(chance * 100.0));
     }
 
@@ -55,17 +58,17 @@ public class SkillIllusionist extends PassiveSkill {
     }
 
     @Override
-    public void apply(Hero hero) {
+    public void apply(final Hero hero) {
         // Note we don't want the default passive effect, we're making our own with a custom constructor
-        double missChance = SkillConfigManager.getScaledUseSettingDouble(hero, this, "miss-chance", false);
+        final double missChance = SkillConfigManager.getScaledUseSettingDouble(hero, this, "miss-chance", false);
         hero.addEffect(new IllusionistEffect(this, hero.getPlayer(), missChance));
     }
 
     public class IllusionistEffect extends PassiveEffect {
         private final double missChance;
 
-        protected IllusionistEffect(Skill skill, Player applier, double missChance) {
-            super(skill, applier, new EffectType[] {EffectType.DARK, EffectType.MAGIC});
+        protected IllusionistEffect(final PassiveSkill skill, final Player applier, final double missChance) {
+            super(skill, applier, new EffectType[]{EffectType.DARK, EffectType.MAGIC});
             this.missChance = missChance;
         }
 
@@ -77,25 +80,27 @@ public class SkillIllusionist extends PassiveSkill {
     public class SkillEventListener implements Listener {
         private final PassiveSkill skill;
 
-        public SkillEventListener(PassiveSkill skill) {
+        public SkillEventListener(final PassiveSkill skill) {
             this.skill = skill;
         }
 
         @EventHandler(priority = EventPriority.HIGHEST)
-        public void onWeaponDamage(WeaponDamageEvent event) {
-            if (event.isCancelled() || event.getDamage() == 0)
+        public void onWeaponDamage(final WeaponDamageEvent event) {
+            if (event.isCancelled() || event.getDamage() == 0) {
                 return;
+            }
 
             final Entity defenderEntity = event.getEntity();
-            if (!(defenderEntity instanceof Player))
+            if (!(defenderEntity instanceof Player)) {
                 return;
+            }
 
-            CharacterTemplate attacker = event.getDamager();
+            final CharacterTemplate attacker = event.getDamager();
             final LivingEntity attackerEntity = attacker.getEntity();
 
             final Hero defender = plugin.getCharacterManager().getHero((Player) defenderEntity);
             if (skill.hasPassive(defender)) {
-                IllusionistEffect cEffect = (IllusionistEffect) defender.getEffect(skill.getName());
+                final IllusionistEffect cEffect = (IllusionistEffect) defender.getEffect(skill.getName());
                 if (cEffect != null && Util.nextRand() < cEffect.getMissChance()) {
                     event.setCancelled(true);
                     //attackerEntity.getWorld().spigot().playEffect(attacker.getEntity().getLocation(), Effect.WITCH_MAGIC, 0, 0, 0.5F, 1.0F, 0.5F, 0.5F, 35, 16);

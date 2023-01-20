@@ -23,6 +23,7 @@ import org.bukkit.inventory.meta.Damageable;
 import org.bukkit.inventory.meta.ItemMeta;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.logging.Level;
@@ -31,7 +32,9 @@ public class SkillRepair extends ActiveSkill {
     private boolean usingMMOItems = false;
     private String useText = null;
 
-    public SkillRepair(Heroes plugin) {
+    private final Map<Material, Integer> repairCostMap;
+
+    public SkillRepair(final Heroes plugin) {
         super(plugin, "Repair");
         setDescription("You are able to repair tools and armor. There is a $1% chance the item will be disenchanted.");
         setUsage("/skill repair <hotbarslot>");
@@ -39,13 +42,16 @@ public class SkillRepair extends ActiveSkill {
         setIdentifiers("skill repair");
         setTypes(SkillType.ITEM_MODIFYING, SkillType.ABILITY_PROPERTY_PHYSICAL);
 
-        if(plugin.getServer().getPluginManager().getPlugin("MMOItems") != null) {
+        repairCostMap = new HashMap<>();
+        if (plugin.getServer().getPluginManager().getPlugin("MMOItems") != null) {
             usingMMOItems = true;
         }
+
+
     }
 
     @Override
-    public String getDescription(Hero hero) {
+    public String getDescription(final Hero hero) {
         double unchant = SkillConfigManager.getUseSetting(hero, this, "unchant-chance", .5, true);
         unchant -= SkillConfigManager.getUseSetting(hero, this, "unchant-chance-reduce", .005, false) * hero.getHeroLevel(this);
         return getDescription().replace("$1", Util.stringDouble(unchant * 100.0));
@@ -53,29 +59,40 @@ public class SkillRepair extends ActiveSkill {
 
     @Override
     public ConfigurationSection getDefaultConfig() {
-        ConfigurationSection node = super.getDefaultConfig();
+        final ConfigurationSection node = super.getDefaultConfig();
         node.set(SkillSetting.USE_TEXT.node(), "%hero% repaired a %item%%ench%");
-        node.set("wood-weapons", 1);
-        node.set("stone-weapons", 1);
-        node.set("iron-weapons", 1);
-        node.set("gold-weapons", 1);
-        node.set("diamond-weapons", 1);
-        node.set("netherite-weapons", 1);
-        node.set("leather-armor", 1);
-        node.set("iron-armor", 1);
-        node.set("chain-armor", 1);
-        node.set("gold-armor", 1);
-        node.set("diamond-armor", 1);
-        node.set("netherite-armor", 1);
-        node.set("wood-tools", 1);
-        node.set("stone-tools", 1);
-        node.set("iron-tools", 1);
-        node.set("gold-tools", 1);
-        node.set("diamond-tools", 1);
-        node.set("netherite-tools", 1);
-        node.set("fishing-rod", 1);
-        node.set("shears", 1);
-        node.set("flint-steel", 1);
+        final List<String> list = new ArrayList<>();
+        final String[] materialTool = new String[]{"wooden", "stone", "golden", "iron", "diamond", "netherite"};
+        final String[] materialArmour = new String[]{"leather", "chainmail", "iron", "golden", "diamond", "netherite"};
+        final String[] tool = new String[]{"pickaxe, axe, shovel, hoe"};
+        final String[] armour = new String[]{"helmet", "chestplate", "leggings", "boots"};
+
+        for (final String mat : materialTool) {
+            for (final String t : tool) {
+                final Material material = Material.matchMaterial(mat + "_" + t);
+                if (material != null) {
+                    list.add(material.name().toLowerCase() + " 1");
+                }
+            }
+        }
+
+        for (final String mat : materialArmour) {
+            for (final String t : armour) {
+                final Material material = Material.matchMaterial(mat + "_" + t);
+                if (material != null) {
+                    list.add(material.name().toLowerCase() + " 1");
+                }
+            }
+        }
+
+        list.add("bow 1");
+        list.add("shield 1");
+        list.add("fishing_rod 1");
+        list.add("shears 1");
+        list.add("flint_and_steel 1");
+
+        node.set("repair-costs", list);
+
         node.set("netherite-armor-max-cost", 1);
         node.set("netherite-tool-max-cost", 1);
         node.set("trident", 1);
@@ -91,38 +108,52 @@ public class SkillRepair extends ActiveSkill {
     public void init() {
         super.init();
         useText = SkillConfigManager.getRaw(this, SkillSetting.USE_TEXT, "%hero% repaired a %item%%ench%");
+
+        SkillConfigManager.getRawKeys(this, "repair-costs").forEach(entry -> {
+            final String[] split = entry.split(" ");
+            if (split.length > 1) {
+                final int i = Integer.parseInt(split[1]);
+                final Material material = Material.matchMaterial(split[0]);
+                if (material != null && i > 0) {
+                    repairCostMap.put(material, i);
+                }
+            }
+        });
     }
 
     @Override
-    public SkillResult use(Hero hero, String[] args) {
-        Player player = hero.getPlayer();
-        ItemStack is;
-        if (args == null || args.length < 1 ) {
+    public SkillResult use(final Hero hero, final String[] args) {
+        final Player player = hero.getPlayer();
+        final ItemStack is;
+        if (args == null || args.length < 1) {
             is = NMSHandler.getInterface().getItemInMainHand(player.getInventory());
         } else {
-            int itemSlotNumber;
+            final int itemSlotNumber;
             try {
                 itemSlotNumber = Integer.parseInt(args[0]);
-            } catch (final NumberFormatException e){
+            } catch (final NumberFormatException e) {
                 player.sendMessage("That is not a valid slot number (0-8).");
                 return SkillResult.INVALID_TARGET_NO_MSG;
             }
 
             // Support only hotbar slots
-            if (itemSlotNumber > 8){
+            if (itemSlotNumber > 8) {
                 player.sendMessage("That is not a valid hotbar slot number (0-8).");
                 return SkillResult.INVALID_TARGET_NO_MSG;
             }
 
             is = player.getInventory().getItem(itemSlotNumber);
         }
-        if(is == null) {
+        if (is == null) {
             player.sendMessage("You cannot repair nothing");
             return SkillResult.FAIL;
         }
-        Material isType = is.getType();
-        int level = getRequiredLevel(hero, isType);
-        Material reagent = getRequiredReagent(hero, isType);
+        final Material isType = is.getType();
+        Integer level = repairCostMap.get(isType);
+        if (level == null) {
+            level = -1;
+        }
+        final Material reagent = getRequiredReagent(hero, isType);
         final ItemMeta itemMeta = is.getItemMeta();
 
         if (level == -1 || reagent == null || !(itemMeta instanceof Damageable)) { // note implies itemMeta == null
@@ -136,19 +167,19 @@ public class SkillRepair extends ActiveSkill {
         }
         //if (is.getDurability() == 0) {
 
-        if (((Damageable)itemMeta).getDamage() == 0) {
-            player.sendMessage( "That item is already at full durability!");
+        if (((Damageable) itemMeta).getDamage() == 0) {
+            player.sendMessage("That item is already at full durability!");
             return SkillResult.INVALID_TARGET_NO_MSG;
         }
 
-        boolean enchanted = !is.getEnchantments().isEmpty();
+        final boolean enchanted = !is.getEnchantments().isEmpty();
         double repairCost = getRepairCost(hero, is);
         if (enchanted) {
-            double additionalCostPerEnchantmentLevels = SkillConfigManager.getUseSetting(hero, this, "additional-cost-per-enchantment-levels", 1.0, true);
+            final double additionalCostPerEnchantmentLevels = SkillConfigManager.getUseSetting(hero, this, "additional-cost-per-enchantment-levels", 1.0, true);
             int enchantmentLevels = 0;
-            for (Map.Entry<Enchantment, Integer> entry : is.getEnchantments().entrySet()) {
-                Enchantment enchantment = entry.getKey();
-                Integer enchantmentLevel = entry.getValue();
+            for (final Map.Entry<Enchantment, Integer> entry : is.getEnchantments().entrySet()) {
+                final Enchantment enchantment = entry.getKey();
+                final Integer enchantmentLevel = entry.getValue();
                 enchantmentLevels += enchantmentLevel;
             }
             repairCost += (additionalCostPerEnchantmentLevels * enchantmentLevels);
@@ -158,7 +189,7 @@ public class SkillRepair extends ActiveSkill {
         if (repairCost > 0) {
             if (reagent == Material.OAK_PLANKS) {
                 //Handle all wood variants as a reagent
-                List<Material> woodMaterials = new ArrayList<>();
+                final List<Material> woodMaterials = new ArrayList<>();
                 woodMaterials.add(Material.OAK_PLANKS);
                 woodMaterials.add(Material.BIRCH_PLANKS);
                 woodMaterials.add(Material.SPRUCE_PLANKS);
@@ -169,8 +200,8 @@ public class SkillRepair extends ActiveSkill {
                 woodMaterials.add(Material.WARPED_PLANKS);
 
                 boolean hasReagant = false;
-                for (Material woodMaterial : woodMaterials) {
-                    reagentStack = new ItemStack(woodMaterial, (int)repairCost);
+                for (final Material woodMaterial : woodMaterials) {
+                    reagentStack = new ItemStack(woodMaterial, (int) repairCost);
                     hasReagant = hasReagentCost(player, reagentStack);
                     if (hasReagant) {
                         // Found valid wood reagent that the player has
@@ -179,7 +210,7 @@ public class SkillRepair extends ActiveSkill {
                 }
 
                 if (!hasReagant) {
-                    String planksString = MaterialUtil.getFriendlyName(Material.OAK_PLANKS)
+                    final String planksString = MaterialUtil.getFriendlyName(Material.OAK_PLANKS)
                             + " or " + MaterialUtil.getFriendlyName(Material.BIRCH_PLANKS)
                             + " or " + MaterialUtil.getFriendlyName(Material.SPRUCE_PLANKS)
                             + " or " + MaterialUtil.getFriendlyName(Material.JUNGLE_PLANKS)
@@ -190,7 +221,7 @@ public class SkillRepair extends ActiveSkill {
                     return new SkillResult(ResultType.MISSING_REAGENT, true, repairCost, planksString);
                 }
             } else {
-                reagentStack = new ItemStack(reagent, (int)repairCost);
+                reagentStack = new ItemStack(reagent, (int) repairCost);
                 if (!hasReagentCost(player, reagentStack)) {
                     return new SkillResult(ResultType.MISSING_REAGENT, true, reagentStack.getAmount(), MaterialUtil.getFriendlyName(reagentStack.getType()));
                 }
@@ -202,7 +233,7 @@ public class SkillRepair extends ActiveSkill {
             double unchant = SkillConfigManager.getUseSetting(hero, this, "unchant-chance", .5, true);
             unchant -= SkillConfigManager.getUseSetting(hero, this, "unchant-chance-reduce", .005, false) * hero.getHeroLevel(this);
             if (Util.nextRand() <= unchant) {
-                for (Enchantment enchant : new ArrayList<>(is.getEnchantments().keySet())) {
+                for (final Enchantment enchant : new ArrayList<>(is.getEnchantments().keySet())) {
                     is.removeEnchantment(enchant);
                 }
                 lost = true;
@@ -214,17 +245,15 @@ public class SkillRepair extends ActiveSkill {
 //        is.setItemMeta(itemMeta); // apply meta changes
 
         // Repair item (applies meta changes too)
-        if(usingMMOItems && NBTItem.get(is).hasType()) {
-            DurabilityItem durabilityItem = new DurabilityItem(hero.getPlayer(), is);
+        if (usingMMOItems && NBTItem.get(is).hasType()) {
+            final DurabilityItem durabilityItem = new DurabilityItem(hero.getPlayer(), is);
             durabilityItem.addDurability(durabilityItem.getMaxDurability());
             //Repair currently works in that it will always repair to the max
-            ItemMeta result = durabilityItem.toItem().getItemMeta();
+            final ItemMeta result = durabilityItem.toItem().getItemMeta();
             is.setItemMeta(result);
-        }
-        else {
+        } else {
             Util.repairItem(plugin, is, itemMeta);
         }
-
 
 
         if (reagentStack != null) {
@@ -233,43 +262,43 @@ public class SkillRepair extends ActiveSkill {
         }
         hero.getPlayer().getWorld().playSound(hero.getPlayer().getLocation(), Sound.BLOCK_ANVIL_USE, 0.6F, 1.0F);
         //hero.getPlayer().getWorld().spigot().playEffect(hero.getPlayer().getLocation().add(0, 0.6, 0), org.bukkit.Effect.ITEM_BREAK, Material.DIAMOND_SWORD.getId(), 0, 0.1F, 0.1F, 0.1F, 0.0F, 15, 16);
-        String message = useText.replace("%hero%", player.getName())
+        final String message = useText.replace("%hero%", player.getName())
                 .replace("%item%", MaterialUtil.getFriendlyName(is.getType()))
                 .replace("%ench%", !enchanted ? "." : lost ? " and stripped it of enchantments!" : " and successfully kept the enchantments.");
         broadcast(player.getLocation(), message);
         return SkillResult.NORMAL;
     }
 
-    private int getRepairCost(Hero hero, ItemStack item) {
-        if(!item.hasItemMeta()) {
+    private int getRepairCost(final Hero hero, final ItemStack item) {
+        if (!item.hasItemMeta()) {
             return 0;
         }
 
-        Material mat = item.getType();
+        final Material mat = item.getType();
 
         final double currDurability;
         final double maxDurability;
 
-        if(usingMMOItems && NBTItem.get(item).hasType()) {
-            DurabilityItem dura = new DurabilityItem(hero.getPlayer(), item);
+        if (usingMMOItems && NBTItem.get(item).hasType()) {
+            final DurabilityItem dura = new DurabilityItem(hero.getPlayer(), item);
             currDurability = dura.getDurability();
             maxDurability = dura.getMaxDurability();
-        }
-        else {
-            Damageable is = (Damageable)(item.getItemMeta());
+        } else {
+            final Damageable is = (Damageable) (item.getItemMeta());
             maxDurability = mat.getMaxDurability();
             currDurability = maxDurability - is.getDamage();
         }
 
-        int amt;
+        final int amt;
         switch (mat) {
             case BOW:
                 amt = (int) ((currDurability / maxDurability) * 2.0);
                 return Math.max(amt, 1);
             case TRIDENT:
-                int cost = SkillConfigManager.getUseSetting(hero, this, "trident-max-cost", 2, true);
-                if (cost <= 0)
+                final int cost = SkillConfigManager.getUseSetting(hero, this, "trident-max-cost", 2, true);
+                if (cost <= 0) {
                     return 0;
+                }
                 amt = (int) ((currDurability / maxDurability) * cost);
                 return Math.max(amt, 1);
             case NETHERITE_CHESTPLATE:
@@ -318,6 +347,7 @@ public class SkillRepair extends ActiveSkill {
         }
     }
 
+    /*
     private int getRequiredLevel(Hero hero, Material material) {
         return switch (material) {
             case WOODEN_SWORD, WOODEN_AXE, BOW, CROSSBOW -> SkillConfigManager.getUseSetting(hero, this, "wood-weapons", 1, true);
@@ -344,9 +374,9 @@ public class SkillRepair extends ActiveSkill {
             case TRIDENT -> SkillConfigManager.getUseSetting(hero, this, "trident", 1, true);
             default -> -1;
         };
-    }
+    }*/ // I REFUSE TO CONVERT THIS TO JAVA 8 FORMAT. SO DO THE CONFIG YA SELF
 
-    private Material getRequiredReagent(Hero hero, Material material) {
+    private Material getRequiredReagent(final Hero hero, final Material material) {
         switch (material) {
             case WOODEN_SWORD:
             case WOODEN_AXE:
