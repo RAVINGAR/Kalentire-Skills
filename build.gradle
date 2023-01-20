@@ -377,7 +377,7 @@ tasks.register("pack6", CompilePackTask) {
             "Flash",
             "FrostBlast",
             "Fulmination",
-            "Icebolt",
+            "IceBolt",
             "Innervate",
             "Ire",
             "Kotesu",
@@ -1031,6 +1031,9 @@ abstract class CompilePackTask extends DefaultTask {
     def compile() {
         def src = "bin/" + pack
         def srcpath = "com/herocraftonline/heroes/characters/skill/" + packGroup
+
+        ant.delete(dir: "bin")
+        ant.delete(dir: "build/" + pack)
 
         ant.mkdir(dir: "bin")
 

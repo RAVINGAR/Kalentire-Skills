@@ -13,7 +13,6 @@ import com.herocraftonline.heroes.characters.skill.SkillConfigManager;
 import com.herocraftonline.heroes.characters.skill.SkillSetting;
 import com.herocraftonline.heroes.characters.skill.SkillType;
 import com.herocraftonline.heroes.chat.ChatComponents;
-import com.herocraftonline.heroes.util.Messaging;
 import com.herocraftonline.heroes.util.Util;
 import org.bukkit.ChatColor;
 import org.bukkit.Particle;
@@ -137,9 +136,9 @@ public class SkillSmokeBomb extends ActiveSkill {
                 // Override the standard invis effect message display so that we actually display a message to nearby players
                 //      even though we have a "silent actions" effect type.
                 if (hero.isInCombat()) {
-                    broadcast(player.getLocation(), "    " + expireText, player.getName());
+                    broadcast(player.getLocation(), expireText, player.getName());
                 } else {
-                    Messaging.send(player, "    " + expireText, player.getName());
+                    player.sendMessage(expireText.replace("$1", player.getName()));
                 }
             }
         }
